@@ -10,22 +10,89 @@ canvas{display:block;width:100vw;height:100vh;height:100dvh}
 .b.lit{background:rgba(255,200,80,.6)}
 .b.on{background:rgba(255,255,255,.7);color:#246}
 #lbl{position:fixed;top:max(8px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));background:#0006;color:#fff;padding:4px 10px;border-radius:8px;font:600 14px system-ui}
-#help{position:fixed;text-align:left!important;left:max(10px,env(safe-area-inset-left));right:auto!important;top:44px!important;font-size:11px!important;line-height:1.3;background:#0004;padding:4px 8px;border-radius:8px;top:max(8px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));color:#fff;font:12px system-ui;text-align:right;text-shadow:0 1px 2px #000a}
+#oldhelp{position:fixed;text-align:left!important;left:max(10px,env(safe-area-inset-left));right:auto!important;top:44px!important;font-size:11px!important;line-height:1.3;background:#0004;padding:4px 8px;border-radius:8px;top:max(8px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));color:#fff;font:12px system-ui;text-align:right;text-shadow:0 1px 2px #000a}
+.b.s{width:52px;height:52px;font-size:13px}.b.t{width:40px;height:40px;font-size:18px}
+#hint{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);color:#fff9;font:12px system-ui}
+@media (pointer:coarse){#hint{display:none}}
+#moves{display:none;position:fixed;inset:0;background:#0009;z-index:5;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+body.ov #moves{display:block}
+#moves .box{max-width:760px;margin:12px auto;background:#1e2a44;color:#fff;border-radius:14px;padding:10px 16px;font:13px system-ui;position:relative}
+#moves h2{margin:4px 0 8px;font:28px Bangers,Impact,sans-serif;letter-spacing:1px;color:#ffe14d}
+#moves table{border-collapse:collapse;width:100%}#moves td,#moves th{padding:3px 6px;border-bottom:1px solid #fff2;text-align:left;vertical-align:top}
+#moves th{color:#9fd8ff}#moves button{font:600 14px system-ui;margin:3px;padding:6px 10px;border-radius:8px;border:0;background:#ffe14d;color:#222}
+#mclose{position:absolute;right:10px;top:8px;font-size:18px!important}.tip{opacity:.7}
 #rot{display:none;position:fixed;inset:0;background:#246;color:#fff;font:600 20px system-ui;align-items:center;justify-content:center;text-align:center}
-@media (pointer:coarse){#help{display:none}}
-@media (orientation:portrait) and (pointer:coarse){#rot{display:flex}}
+@media (pointer:coarse){#oldhelp{display:none}}
+@media (orientation:portrait) and (pointer:coarse){.b.s{width:52px;height:52px;font-size:13px}.b.t{width:40px;height:40px;font-size:18px}
+#hint{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);color:#fff9;font:12px system-ui}
+@media (pointer:coarse){#hint{display:none}}
+#moves{display:none;position:fixed;inset:0;background:#0009;z-index:5;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+body.ov #moves{display:block}
+#moves .box{max-width:760px;margin:12px auto;background:#1e2a44;color:#fff;border-radius:14px;padding:10px 16px;font:13px system-ui;position:relative}
+#moves h2{margin:4px 0 8px;font:28px Bangers,Impact,sans-serif;letter-spacing:1px;color:#ffe14d}
+#moves table{border-collapse:collapse;width:100%}#moves td,#moves th{padding:3px 6px;border-bottom:1px solid #fff2;text-align:left;vertical-align:top}
+#moves th{color:#9fd8ff}#moves button{font:600 14px system-ui;margin:3px;padding:6px 10px;border-radius:8px;border:0;background:#ffe14d;color:#222}
+#mclose{position:absolute;right:10px;top:8px;font-size:18px!important}.tip{opacity:.7}
+#rot{display:flex}}
 </style></head><body>
 <canvas id="c"></canvas>
 <div style="position:absolute;opacity:0;font-family:Bangers">.</div><div id="lbl">idle</div>
-<div id="help">←/→ or A/D move (hold Shift = run)<br>↓/S crouch<br>Space/↑/W jump (again in air = double jump)<br>Double-tap ←/→ = DASH · after double jump = WINGED DASH<br>X/J claw (tap 3x combo) · claw in/after dash = DASH STRIKE<br>Air: claw = AIR SWIPE · after double jump = AIR SPIN<br>Air: ↓ = DIVE BOMB · ↓+←/→ (or ↓ then claw) = DIVE CLAW<br> · C/K special<br>Q/V hunt mode (claw = pounce)<br>Hit the scratching posts to build COMBOS (keep hitting within ~1.2s) · H = hurt (resets combo)<br>? = show/hide this help<br>Wall: hold → climb, ← or jump leaps off, ↓ drops</div>
+<div id="hint">press ? for moves</div>
 <div id="ui">
  <div class="b" data-k="left"  style="left:calc(16px + env(safe-area-inset-left));bottom:24px">◀</div>
  <div class="b" data-k="right" style="left:calc(96px + env(safe-area-inset-left));bottom:24px">▶</div>
  <div class="b" data-k="down"  style="left:calc(56px + env(safe-area-inset-left));bottom:96px;width:56px;height:56px">▼</div>
  <div class="b" data-k="attack"  style="right:calc(96px + env(safe-area-inset-right));bottom:24px">Claw</div>
  <div class="b" data-k="jump"    style="right:calc(16px + env(safe-area-inset-right));bottom:56px;width:72px;height:72px">Jump</div>
- <div class="b" data-k="hunt" style="right:calc(176px + env(safe-area-inset-right));bottom:60px;width:56px;height:56px;font-size:13px">Hunt</div>
  <div class="b" data-k="special" style="right:calc(100px + env(safe-area-inset-right));bottom:100px">Zap</div>
+ <div class="b s" data-k="hunt" style="right:calc(176px + env(safe-area-inset-right));bottom:44px">Hunt</div>
+ <div class="b s" data-k="tail" style="right:calc(176px + env(safe-area-inset-right));bottom:108px">Tail</div>
+ <div class="b s t" data-k="tiger" style="right:calc(64px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🐯</div>
+ <div class="b s t" id="qbtn" style="right:calc(8px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">?</div>
 </div>
+<div id="moves"><div class="box"><button id="mclose">✕</button><h2>Paddy's moves</h2>
+<table>
+<tr><th>Move</th><th>Keyboard</th><th>iPhone</th></tr>
+<tr><td>Walk</td><td>← → / A D</td><td>hold ◀ ▶</td></tr>
+<tr><td>Run (start + skid stop)</td><td>hold Shift + ← →</td><td>keep holding ◀ ▶</td></tr>
+<tr><td>Jump / Double jump</td><td>Space / ↑ / W (again in air)</td><td>Jump (again in air)</td></tr>
+<tr><td>Hard landing</td><td>fall from high up</td><td>fall from high up</td></tr>
+<tr><td>Crouch / Slide</td><td>↓ (while running = slide)</td><td>▼ (while running = slide)</td></tr>
+<tr><td>Dash</td><td>double-tap ← or →</td><td>double-tap ◀ or ▶</td></tr>
+<tr><td>Winged dash</td><td>dash after a double jump</td><td>same</td></tr>
+<tr><td>Wall climb / Ledge grab</td><td>hold → at the wall, climb to the top</td><td>hold ▶ at the wall</td></tr>
+<tr><td>Wall jump</td><td>Jump or ← while on the wall</td><td>Jump or ◀ on the wall</td></tr>
+<tr><td>Claw combo (3 hits)</td><td>X / J ×3</td><td>Claw ×3</td></tr>
+<tr><td>Finisher</td><td>2–3 claws then C/K (or F on its own) — also a 4th claw on an 8+ combo</td><td>Claw ×2–3 then Zap</td></tr>
+<tr><td>Dash strike</td><td>claw during / right after a dash</td><td>same</td></tr>
+<tr><td>Uppercut</td><td>hold ↑ / W + X</td><td>hold Jump + Claw</td></tr>
+<tr><td>Air swipe</td><td>X in the air</td><td>Claw in the air</td></tr>
+<tr><td>Air spin</td><td>X after a double jump</td><td>Claw after a double jump</td></tr>
+<tr><td>Dive bomb</td><td>↓ in the air</td><td>▼ in the air</td></tr>
+<tr><td>Dive claw</td><td>↓ + ←/→ in the air (or X while diving)</td><td>▼ + ◀/▶ in the air</td></tr>
+<tr><td>Hunt mode / Stalk</td><td>Q / V</td><td>Hunt</td></tr>
+<tr><td>Butt-wiggle + Pounce</td><td>X in hunt mode</td><td>Claw in hunt mode</td></tr>
+<tr><td>Catch a rat → carry it</td><td>pounce / claw / swat a rat · ↓ drops it</td><td>same · ▼ drops it</td></tr>
+<tr><td>Tail whip</td><td>T / L</td><td>Tail</td></tr>
+<tr><td>Energy blast</td><td>C / K</td><td>Zap</td></tr>
+<tr><td>Swat</td><td>↓ + X (or R)</td><td>▼ + Claw</td></tr>
+<tr><td>Hiss</td><td>↓ + C (or E)</td><td>▼ + Zap</td></tr>
+<tr><td>Zoomies</td><td>Z</td><td>button below</td></tr>
+<tr><td>Fire Tiger (20 s)</td><td>G (again = back early)</td><td>🐯</td></tr>
+<tr><td>Tiger: claw · pounce · fireball · roar</td><td>X · ↓+X or dash · C · T</td><td>Claw · ▼+Claw · Zap · Tail</td></tr>
+<tr><td>Hurt / Victory</td><td>H / Y (victory also after a 10+ combo)</td><td>buttons below</td></tr>
+<tr><td>Idle: groom, stretch, sit &amp; tail flick, sniff, loaf</td><td colspan="2">stand still ~4 seconds</td></tr>
+</table>
+<p>Try now: <button data-try="zoomies">Zoomies</button><button data-try="hiss">Hiss</button><button data-try="swat">Swat</button><button data-try="victory">Victory</button><button data-try="hurtTest">Hurt</button></p>
+<p class="tip">Hit the scratching posts to build combos (keep hitting within ~1.2 s).</p></div></div>
 <div id="rot">🔄 Turn your phone sideways to play with Paddy</div>
-<script src="game.js"></script></body></html>
+<script src="game.js"></script>
+<script>
+const ov=v=>{document.body.classList.toggle('ov',v);for(const k in K)K[k]=0};
+document.getElementById('qbtn').addEventListener('pointerdown',e=>{e.preventDefault();ov(true)});
+document.getElementById('mclose').addEventListener('click',()=>ov(false));
+document.getElementById('moves').addEventListener('click',e=>{if(e.target.id==='moves')ov(false)});
+document.querySelectorAll('[data-try]').forEach(b=>b.addEventListener('click',()=>{ov(false);setTimeout(()=>{P[b.dataset.try]=1},50)}));
+addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.classList.contains('ov'))}else if(e.key==='Escape')ov(false)});
+lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
+</script></body></html>
