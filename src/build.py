@@ -11,7 +11,7 @@ w=lambda n:(lambda ys,xs: xs.max()-xs.min())(*bbox_cat(R(n)))
 sc={'s1':TH/h('s1_05'),'s2':TH/h('s2_00'),'s3':TH/h('s3_00')}
 sc['s4']=sc['s1']*w('s1_08')/w('s4_00')*0.95; sc['s5']=sc['s4']
 print(sc)
-FLIP={'s1_00','s1_01','s1_02','s1_03','s1_04','s1_11','s2_09','s2_10','s2_11','s3_12','s1_29','s1_30','s1_31'}
+FLIP={'s1_00','s1_01','s1_02','s1_03','s1_04','s1_11','s2_09','s2_10','s2_11','s3_12','s1_29','s1_30','s1_31','s2_08','s3_14'}
 anims={
  'idle':['s1_05','s1_05','s1_06','s1_06'],
  'walk':['s1_07','s1_08','s1_09','s1_10','s1_12','s1_13','s1_14','s1_16'],
@@ -20,7 +20,7 @@ anims={
  'crouch':['s4_00'],'lie':['s1_04'],
  'claw1':['s2_05'],'claw2':['s3_04'],'claw3':['s3_06','s3_07'],
  'charge':['s2_14'],'blast':['s2_15'],'hurt':['s2_11'],'roar':['s2_12'],
- 'climb':['s5_00','s5_01','s5_02','s5_03'],'dash':['s3_15'],'projectile':['s3_08'],'wingdash':['s3_02'],'stalk':['s1_29','s1_30'],'pounce':['s1_33','s1_31'],
+ 'climb':['s5_00','s5_01','s5_02','s5_03'],'dash':['s3_15'],'projectile':['s3_08'],'wingdash':['s3_02'],'dashstrike':['s2_08'],'airswipe':['s3_09'],'airspin':['s3_06','s3_12','s3_14'],'dive':['s1_31'],'diveclaw':['s4_03'],'stalk':['s1_29','s1_30'],'pounce':['s1_33','s1_31'],
 }
 os.makedirs('../assets',exist_ok=True); out={}; done={}
 for an,fr in anims.items():

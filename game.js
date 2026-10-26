@@ -18,17 +18,20 @@ document.querySelectorAll('.b').forEach(b=>{const k=b.dataset.k;
  const on=e=>{e.preventDefault();if(!K[k]){P[k]=1;tapDir(k)}K[k]=1;b.classList.add('on')},off=e=>{e.preventDefault();K[k]=0;b.classList.remove('on')};
  b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('pointerleave',off);});
 // player
-const p={x:300,y:GROUND,vx:0,vy:0,face:1,ground:true,state:'normal',t:0,anim:'idle',fi:0,ft:0,combo:0,queued:false,cool:0,inv:0,wall:false,jumps:0,dashCool:0,airDash:false,hunt:false};
-const shots=[],sparks=[],ghosts=[],texts=[];let shake=0;
+const p={x:300,y:GROUND,vx:0,vy:0,face:1,ground:true,state:'normal',t:0,anim:'idle',fi:0,ft:0,combo:0,queued:false,cool:0,inv:0,wall:false,jumps:0,dashCool:0,airDash:false,hunt:false,lastDash:-9,airSpin:false,airSwipe:false};
+const waves=[],shots=[],sparks=[],ghosts=[],texts=[];let shake=0;
 const lastTap={left:-9,right:-9};let now=0;
 function tapDir(k){if(k!=='left'&&k!=='right')return;if(now-lastTap[k]<0.28){P.dash=k;lastTap[k]=-9}else lastTap[k]=now}
-function say(t,c){texts.push({t,c:c||'#fff',l:1})}
+function say(t,c){texts.length=0;texts.push({t,c:c||'#fff',l:1})}
 function setAnim(a){if(p.anim!==a){p.anim=a;p.fi=0;p.ft=0}}
-const FPS={idle:3,walk:11,run:12,jump:8,fall:6,land:10,crouch:4,claw1:1,claw2:1,claw3:12,charge:1,blast:1,hurt:1,climb:8,dash:1,roar:1,lie:1,stalk:4,pounce:1,wingdash:1};
+const FPS={idle:3,walk:11,run:12,jump:8,fall:6,land:10,crouch:4,claw1:1,claw2:1,claw3:12,charge:1,blast:1,hurt:1,climb:8,dash:1,roar:1,lie:1,dashstrike:1,airswipe:1,airspin:14,dive:1,diveclaw:1,stalk:4,pounce:1,wingdash:1};
 const floorAt=x=>(x>WALL_X-20&&x<WALL_X+100)?WT:GROUND;
 function startClaw(){p.combo++;p.state='claw';p.t=0;setAnim('claw'+p.combo);p.queued=false;
  p.vx=p.face*(p.combo===3?260:140);shake=p.combo===3?6:3;if(p.combo===3)say('TRIPLE CLAW!','#bfe8ff');
  for(let i=0;i<6;i++)sparks.push({x:p.x+p.face*70,y:p.y-70,vx:p.face*(100+Math.random()*200),vy:-Math.random()*200,l:.35,c:'#bfe8ff'});}
+function dashStrike(){p.state='dashstrike';p.t=0;setAnim('dashstrike');p.vx=p.face*1150;if(!p.ground)p.vy=-120;say('DASH STRIKE!','#ff9fd0');shake=9;
+ for(let i=0;i<14;i++)sparks.push({x:p.x+p.face*80,y:p.y-60+(Math.random()-.5)*60,vx:p.face*(300+Math.random()*400),vy:(Math.random()-.5)*200,l:.4,c:i%2?'#fff':'#ffb0e0'})}
+function impact(big){shake=big?16:10;waves.push({x:p.x,y:p.y,r:10,l:1,big});for(let i=0;i<(big?26:14);i++)sparks.push({x:p.x+(Math.random()-.5)*60,y:p.y,vx:(Math.random()-.5)*(big?700:400),vy:-Math.random()*300,l:.5,c:i%3?'#d9c49a':'#fff'})}
 function doDash(dir){p.face=dir==='right'?1:-1;p.wall=false;p.t=0;p.dashCool=.45;
  if(!p.ground&&p.jumps>=2&&!p.airDash){p.airDash=true;p.state='wingdash';setAnim('wingdash');p.vx=p.face*1000;p.vy=-60;say('WINGED DASH!','#8fe0ff');shake=6}
  else{p.state='dash';setAnim(p.ground?'run':'dash');p.vx=p.face*900;if(!p.ground)p.vy=Math.min(p.vy,0);say('DASH!');shake=3}}
@@ -45,10 +48,22 @@ function update(dt){
  case 'land': p.vx*=.8;if(p.t>.12)p.state='normal';break;
  case 'dash': if(p.ground){p.vy=0}else p.vy=Math.min(p.vy,120);
   if(p.t%0.03<dt)ghosts.push({x:p.x,y:p.y,f:(F[p.anim]||F.idle)[p.fi],face:p.face,l:.25,c:'rgba(255,255,255,'});
-  if(p.t>.22){p.state='normal';p.vx=p.face*300} break;
+  if(P.attack){dashStrike();break}
+  if(p.t>.22){p.state='normal';p.vx=p.face*300;p.lastDash=now} break;
  case 'wingdash': p.vy=-30;
   if(p.t%0.025<dt){ghosts.push({x:p.x,y:p.y,f:F.wingdash[0],face:p.face,l:.3,blue:1});for(let i=0;i<3;i++)sparks.push({x:p.x-p.face*60,y:p.y-60+(Math.random()-.5)*50,vx:-p.face*200,vy:(Math.random()-.5)*80,l:.4,c:i?'#5cc8ff':'#fff'})}
   if(p.t>.38){p.state='normal';p.vx=p.face*350} break;
+ case 'dashstrike': p.vx*=Math.pow(.06,dt); if(!p.ground)p.vy=Math.min(p.vy,200);
+  if(p.t%0.025<dt)ghosts.push({x:p.x,y:p.y,f:F.dashstrike[0],face:p.face,l:.28,blue:1});
+  if(p.t>.38){p.state='normal'} break;
+ case 'airswipe': p.vy=Math.min(p.vy,150); if(p.t>.3)p.state='normal'; if(p.ground&&p.t>.05)p.state='normal'; break;
+ case 'airspin': p.vy=p.t<.45?-30:p.vy; p.vx*=.97; if(p.t%0.04<dt)ghosts.push({x:p.x,y:p.y,f:F.airspin[p.fi],face:p.face,l:.2,blue:1});
+  if(p.t%0.06<dt)sparks.push({x:p.x+Math.cos(p.t*20)*70,y:p.y-60+Math.sin(p.t*20)*50,vx:0,vy:0,l:.3,c:'#5cc8ff'});
+  if(p.t>.6||p.ground)p.state='normal'; break;
+ case 'dive': p.vx=0;p.vy=1400; if(P.attack||K.left||K.right){p.state='diveclaw';p.t=0;setAnim('diveclaw');p.face=K.left?-1:K.right?1:p.face;p.vx=p.face*650;p.vy=950;say('DIVE CLAW!','#ffb070')}
+  else if(p.ground){impact(true);p.state='land';p.t=0;setAnim('land')} if(p.t%0.03<dt)ghosts.push({x:p.x,y:p.y,f:F.dive[0],face:p.face,l:.2}); break;
+ case 'diveclaw': p.vx=p.face*650;p.vy=950; if(p.t%0.03<dt)ghosts.push({x:p.x,y:p.y,f:F.diveclaw[0],face:p.face,l:.25,blue:1});
+  if(p.ground){impact(false);burst(p.x+p.face*50,p.y-20);p.state='land';p.t=0;setAnim('land');p.vx=p.face*200} break;
  case 'pounce': p.fi=p.vy<0?0:1; if(p.ground&&p.t>.1){p.state='land';p.t=0;setAnim('land');shake=7;burst(p.x+p.face*60,p.y-10)} break;
  }
  if(p.state==='normal'){
@@ -64,7 +79,11 @@ function update(dt){
     if(p.y<WT+18){p.wall=false;p.y=WT;p.vy=-250;p.x=WALL_X+10;p.vx=120;say('MADE IT!','#ffe08a')}}}
   else if(P.jump&&p.ground){p.vy=p.hunt?-560:-720;p.ground=false;p.jumps=1;}
   else if(P.jump&&!p.ground&&p.jumps<2){p.vy=-650;p.jumps=2;say('DOUBLE JUMP!');for(let i=0;i<10;i++)sparks.push({x:p.x+(Math.random()-.5)*50,y:p.y,vx:(Math.random()-.5)*200,vy:Math.random()*150,l:.4,c:'#fff'})}
-  if(P.attack&&p.cool<=0&&!p.wall){ if(p.hunt&&p.ground){p.state='pounce';p.t=0;setAnim('pounce');p.vy=-520;p.vx=p.face*560;p.ground=false;say('POUNCE!','#ffb070')} else {p.combo=0;startClaw()} }
+  if(!p.ground&&!p.wall&&P.down){ if(K.left||K.right){p.face=K.left?-1:1;p.state='diveclaw';p.t=0;setAnim('diveclaw');say('DIVE CLAW!','#ffb070')} else {p.state='dive';p.t=0;setAnim('dive');p.face=p.face;say('DIVE BOMB!','#ffd070')} }
+  else if(P.attack&&!p.wall&&p.ground&&now-p.lastDash<.2&&!p.hunt)dashStrike();
+  else if(P.attack&&!p.ground&&!p.wall&&p.state==='normal'){ if(p.jumps>=2&&!p.airSpin){p.airSpin=true;p.state='airspin';p.t=0;setAnim('airspin');p.vy=-200;say('AIR SPIN!','#8fe0ff');shake=5}
+   else if(!p.airSwipe){p.airSwipe=true;p.state='airswipe';p.t=0;setAnim('airswipe');p.vy=Math.min(p.vy,-120);p.vx=p.face*Math.max(Math.abs(p.vx),280);say('AIR SWIPE!','#bfe8ff');for(let i=0;i<8;i++)sparks.push({x:p.x+p.face*70,y:p.y-60,vx:p.face*(150+Math.random()*250),vy:(Math.random()-.5)*200,l:.35,c:'#bfe8ff'})} }
+  else if(P.attack&&p.cool<=0&&!p.wall){ if(p.hunt&&p.ground){p.state='pounce';p.t=0;setAnim('pounce');p.vy=-520;p.vx=p.face*560;p.ground=false;say('POUNCE!','#ffb070')} else {p.combo=0;startClaw()} }
   else if(P.special&&p.cool<=0&&!p.wall){p.state='charge';p.t=0;setAnim('charge');p.vx=0}
   if(p.state==='normal'){
    if(p.wall)setAnim('climb');
@@ -75,17 +94,18 @@ function update(dt){
  }
  if(P.hurtTest){p.state='hurt';p.t=0;setAnim('hurt');p.vy=-400;p.vx=-p.face*200;p.ground=false;p.wall=false}
  // physics
- if(!p.wall&&p.state!=='wingdash')p.vy+=1900*dt; p.x+=p.vx*dt;p.y+=p.vy*dt;
+ if(!p.wall&&!['wingdash','dive','diveclaw'].includes(p.state))p.vy+=(p.state==='airspin'?600:1900)*dt; p.x+=p.vx*dt;p.y+=p.vy*dt;
  if(p.y>WT+2&&p.x>WALL_X-60&&p.x<WALL_X+60)p.x=WALL_X-60; // wall side
  const fl=floorAt(p.x);
- if(p.y>=fl&&p.vy>=0){p.y=fl;if(!p.ground&&p.vy>300&&p.state==='normal'){p.state='land';p.t=0;setAnim('land');for(let i=0;i<8;i++)sparks.push({x:p.x+(Math.random()-.5)*80,y:fl,vx:(Math.random()-.5)*200,vy:-Math.random()*120,l:.4,c:'#d9c49a'})}p.vy=0;p.ground=true;p.jumps=0;p.airDash=false;}else p.ground=false;
+ if(p.y>=fl&&p.vy>=0){p.y=fl;if(!p.ground&&p.vy>300&&p.state==='normal'){p.state='land';p.t=0;setAnim('land');for(let i=0;i<8;i++)sparks.push({x:p.x+(Math.random()-.5)*80,y:fl,vx:(Math.random()-.5)*200,vy:-Math.random()*120,l:.4,c:'#d9c49a'})}p.vy=0;p.ground=true;p.jumps=0;p.airDash=false;p.airSpin=false;p.airSwipe=false;}else p.ground=false;
  if(p.x<50)p.x=50;if(p.x>WALL_X+60)p.x=WALL_X+60;
  // anim frames
  const fr=F[p.anim]||F.idle;
  if(p.anim!=='pounce'){p.ft+=dt*(FPS[p.anim]||8)*(p.anim==='stalk'?Math.min(1,Math.abs(p.vx)/80):1);
  if(p.anim==='climb'&&p.vy>=0)p.ft-=dt*FPS.climb;
- const loop=['idle','walk','run','climb','fall','jump','claw3','stalk'].includes(p.anim);
+ const loop=['idle','walk','run','climb','fall','jump','claw3','stalk','airspin'].includes(p.anim);
  p.fi=loop?Math.floor(p.ft)%fr.length:Math.min(fr.length-1,Math.floor(p.ft));}
+ for(const w of waves){w.r+=dt*(w.big?900:600);w.l-=dt*2.2}for(let i=waves.length-1;i>=0;i--)if(waves[i].l<=0)waves.splice(i,1);
  for(const g of ghosts)g.l-=dt;for(let i=ghosts.length-1;i>=0;i--)if(ghosts[i].l<=0)ghosts.splice(i,1);
  for(const t of texts)t.l-=dt*.8;for(let i=texts.length-1;i>=0;i--)if(texts[i].l<=0)texts.splice(i,1);
  for(const s of shots){s.x+=s.vx*dt;s.l-=dt;s.a+=dt*14;if(s.x>WALL_X-20&&s.vx>0&&s.y>WT){s.l=0;burst(s.x,s.y)}if(s.x<20){s.l=0;burst(s.x,s.y)}if(Math.random()<.8)sparks.push({x:s.x,y:s.y+(Math.random()-.5)*30,vx:-s.vx*.1,vy:(Math.random()-.5)*60,l:.3,c:'#7fd4ff'})}
@@ -119,9 +139,10 @@ function draw(){
  ctx.globalCompositeOperation='lighter';
  for(const s of sparks){ctx.globalAlpha=Math.max(0,s.l*2.5);ctx.fillStyle=s.c;ctx.fillRect(s.x-3,s.y-3,6,6)}
  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+ for(const w of waves){ctx.globalAlpha=Math.max(0,w.l);ctx.strokeStyle=w.big?'#fff':'#ffe0b0';ctx.lineWidth=8*w.l;ctx.beginPath();ctx.ellipse(w.x,w.y,w.r,w.r*.22,0,0,6.28);ctx.stroke()}ctx.globalAlpha=1;
  if(p.hunt){ctx.fillStyle='rgba(20,10,40,.18)';ctx.fillRect(-500,0,VW+1000,VH)}
  ctx.textAlign='center';ctx.font='900 40px system-ui';
- texts.forEach((t,i)=>{ctx.globalAlpha=Math.min(1,t.l*2);const y=150-i*44-(1-t.l)*30;ctx.lineWidth=6;ctx.strokeStyle='#123';ctx.strokeText(t.t,VW/2,y);ctx.fillStyle=t.c;ctx.fillText(t.t,VW/2,y)});
+ texts.forEach((t,i)=>{ctx.globalAlpha=Math.min(1,t.l*2);const y=150-(1-t.l)*30;ctx.lineWidth=6;ctx.strokeStyle='#123';ctx.strokeText(t.t,VW/2,y);ctx.fillStyle=t.c;ctx.fillText(t.t,VW/2,y)});
  ctx.globalAlpha=1;ctx.textAlign='left';
 }
 let last=0;function loop(t){const dt=Math.min(.033,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(loop)}
