@@ -1,0 +1,28 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><link rel="icon" href="assets/s1_05.png"><title>Paddy – move test</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#87c6f0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;font-family:system-ui,sans-serif}
+canvas{display:block;width:100vw;height:100vh;height:100dvh}
+#ui{position:fixed;inset:0;pointer-events:none}
+.b{position:absolute;pointer-events:auto;width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.8);color:#fff;font:bold 15px system-ui;display:flex;align-items:center;justify-content:center;text-shadow:0 1px 2px #0008}
+.b.on{background:rgba(255,255,255,.7);color:#246}
+#lbl{position:fixed;top:max(8px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));background:#0006;color:#fff;padding:4px 10px;border-radius:8px;font:600 14px system-ui}
+#help{position:fixed;top:max(8px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));color:#fff;font:12px system-ui;text-align:right;text-shadow:0 1px 2px #000a}
+#rot{display:none;position:fixed;inset:0;background:#246;color:#fff;font:600 20px system-ui;align-items:center;justify-content:center;text-align:center}
+@media (pointer:coarse){#help{display:none}}
+@media (orientation:portrait) and (pointer:coarse){#rot{display:flex}}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="lbl">idle</div>
+<div id="help">←/→ or A/D move (hold Shift = run)<br>Space/↑/W jump · ↓/S crouch<br>X/J claw (tap 3x combo) · C/K special</div>
+<div id="ui">
+ <div class="b" data-k="left"  style="left:calc(16px + env(safe-area-inset-left));bottom:24px">◀</div>
+ <div class="b" data-k="right" style="left:calc(96px + env(safe-area-inset-left));bottom:24px">▶</div>
+ <div class="b" data-k="down"  style="left:calc(56px + env(safe-area-inset-left));bottom:96px;width:56px;height:56px">▼</div>
+ <div class="b" data-k="attack"  style="right:calc(96px + env(safe-area-inset-right));bottom:24px">Claw</div>
+ <div class="b" data-k="jump"    style="right:calc(16px + env(safe-area-inset-right));bottom:56px;width:72px;height:72px">Jump</div>
+ <div class="b" data-k="special" style="right:calc(100px + env(safe-area-inset-right));bottom:100px">Zap</div>
+</div>
+<div id="rot">🔄 Turn your phone sideways to play with Paddy</div>
+<script src="game.js"></script></body></html>
