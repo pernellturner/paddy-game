@@ -217,7 +217,7 @@ function update(dt){
    spark(p.x+p.face*50,p.y-80,22,['#ffe14d','#fff','#ffb0e0'],350);say('YUM!','#ffd84d',true);shake=5}
   if(p.t>1.25){p.state='normal';p.rush=15;say('SNACK RUSH!','#ffd84d',true);waves.push({x:p.x,y:p.y,r:10,l:1,big:true});spark(p.x,p.y-60,30,['#ffd84d','#fff'],450)}break;
  case 'manner': if(anyInput()){p.state='normal';p.idleT=0}else if(p.t>(p.anim==='loaf'?4:p.anim==='groom'||p.anim==='sitflick'?2.5:dur(p.anim)+.3)){p.state='normal';p.idleT=0}break;
- case 'victory': p.vx=0;if(end&&p.t>1)p.state='normal';break;
+ case 'victory': p.vx=0;if((end&&p.t>1)||(p.t>.12&&(P.attack||P.tail||P.jump||P.special||P.dash||dir))){p.state='normal'}break;
  case 'ledge': {p.vx=0;p.vy=0;const L=.75,u=Math.min(1,p.t/L),e=x=>x*x*(3-2*x);
   const uy=e(Math.min(1,u/.6)),ux=e(Math.max(0,(u-.35)/.65));
   p.y=p.ly0+(WT-p.ly0)*uy;p.x=p.lx0+(WALL_X+30-p.lx0)*ux;p.fi=Math.min(FR.ledge.length-1,Math.floor(u*FR.ledge.length));p.ft=p.fi;
