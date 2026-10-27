@@ -100,7 +100,11 @@ for name,(parts,dropped,fg) in cut.items():
         rgba=rgba.resize((W,H),Image.LANCZOS)
         bm=body(c,m); ys,xs=np.nonzero(bm)
         ax=float(np.median(xs))*sc if len(xs) else W/2
-        ay=H if name in AIR else (ground-y0)*sc
+        # anchor on the lowest solid pixel (sunk 3px like the original sprites) so nothing hovers;
+        # frames that are genuinely airborne in the sheet keep the sheet's shared ground line
+        rows=np.nonzero((np.asarray(rgba)[...,3]>128).sum(1)>2)[0]; low=(rows.max()+1) if len(rows) else H
+        air_in_sheet=(ground-y1)*sc>15
+        ay=(low+3 if name in AIR or not air_in_sheet else (ground-y0)*sc+3)
         fn=f'p/{name}_{kk:02d}'; rgba.save(f'assets/{fn}.png',optimize=True)
         frames[name].append(dict(f=fn,ax=round(ax),ay=round(ay),w=W,h=H))
     report.append(f'{name}: {len(parts)} frames scale {sc:.3f}'+(f' (dropped {dropped} fused/cut-off)' if dropped else ''))
