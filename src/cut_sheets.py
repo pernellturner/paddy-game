@@ -4,9 +4,9 @@ import numpy as np, json, os, glob, sys
 from PIL import Image, ImageFilter
 from scipy import ndimage as nd
 os.chdir(os.path.join(os.path.dirname(__file__), '..'))
-PADDY='idle_test_1 run jump doublejump dash divebomb stalk walk startstop hardland wingeddash wallclimb walljump ledge wiggle slide clawcombo dashstrike uppercut airswipe airspin diveclaw pounce tailwhip energyblast finisher hurt victory groom stretch sitflick sniff loaf hiss swat zoomies catchrat carryrat'.split()
-TIGER='idle run jump claw pounce roar fireball hurt victory morph'.split()
-AIR={'jump','doublejump','airspin','airswipe','divebomb','diveclaw','wingeddash','wallclimb','walljump','ledge','pounce','t_jump','t_pounce'}
+PADDY='idle_test_1 run jump doublejump dash divebomb stalk walk startstop hardland wingeddash wallclimb walljump ledge wiggle slide clawcombo dashstrike uppercut airswipe airspin diveclaw pounce tailwhip energyblast finisher hurt victory groom stretch sitflick sniff loaf hiss swat zoomies catchrat carryrat bunnykick blinkbarge launcher'.split()
+TIGER='idle run jump claw pounce roar fireball hurt victory morph combo air'.split()
+AIR={'jump','doublejump','airspin','airswipe','divebomb','diveclaw','wingeddash','wallclimb','walljump','ledge','pounce','t_jump','t_pounce','t_air'}
 FIX={'t_jump':1.3,'t_claw':1.2,'t_run':1.15}  # flame-heavy sheets fool the area metric; matched to t_run by eye
 SKIP=set(sys.argv[1:])
 ref=np.asarray(Image.open('assets/s1_05.png'))[...,3]>128
@@ -63,7 +63,7 @@ def grade(c,m,strength=.75):
     g=(c-M)/S*RS+RM; fx=(c[...,2]>c[...,0]+20)[...,None]
     return np.where(fx,c,c*(1-strength)+g*strength)
 jobs=[(n,f'generated/{n}.png' if os.path.exists(f'generated/{n}.png') else f'generated/{n}.jpg') for n in PADDY]+[('t_'+n,f'generated/tiger/{n}.jpg') for n in TIGER]
-OLD_T={'t_idle':1.117,'t_run':1.38,'t_jump':1.45,'t_claw':1.42,'t_pounce':.88,'t_roar':1.169,'t_fireball':1.256,'t_hurt':1.163,'t_victory':.738,'t_morph':.967}
+OLD_T={'t_idle':1.117,'t_run':1.38,'t_jump':1.45,'t_claw':1.42,'t_pounce':.88,'t_roar':1.169,'t_fireball':1.256,'t_hurt':1.163,'t_victory':.738,'t_morph':.967,'t_combo':1.3,'t_air':1.0}
 cut={}
 for name,path in jobs:
     if name in SKIP: continue
@@ -78,6 +78,9 @@ for name,(parts,_,_) in cut.items():
     if name.startswith('t_'): continue
     hs=[h for h in (head(c,m) for *_,m,c in parts) if h]
     SC[name]=REFHEAD/np.median(hs)
+# sheets where the face-mask metric misjudges (big close-up faces) - matched to the original idle by eye
+for n,m in {'bunnykick':.8,'blinkbarge':.68,'launcher':.85}.items():
+    if n in SC: SC[n]*=m
 # morph: first frame (Paddy) matches Paddy; tiger sheets match the morph's last frame height
 mp=cut['t_morph'][0]; SC['t_morph']=REFHEAD/head(mp[0][5],mp[0][4])
 tig_h=(mp[-1][3]-mp[-1][2])*SC['t_morph']
