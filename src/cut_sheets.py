@@ -4,9 +4,9 @@ import numpy as np, json, os, glob, sys
 from PIL import Image, ImageFilter
 from scipy import ndimage as nd
 os.chdir(os.path.join(os.path.dirname(__file__), '..'))
-PADDY='idle_test_1 run jump doublejump dash divebomb stalk walk startstop hardland wingeddash wallclimb walljump ledge wiggle slide clawcombo dashstrike uppercut airswipe airspin diveclaw pounce tailwhip energyblast finisher hurt victory groom stretch sitflick sniff loaf hiss swat zoomies catchrat carryrat bunnykick blinkbarge launcher'.split()
+PADDY='idle_test_1 run jump doublejump dash divebomb stalk walk startstop hardland wingeddash wallclimb walljump ledge wiggle slide clawcombo dashstrike uppercut airswipe airspin diveclaw pounce tailwhip energyblast finisher hurt victory groom stretch sitflick sniff loaf hiss swat zoomies catchrat carryrat bunnykick blinkbarge launcher clawsa clawsb clawsc'.split()
 TIGER='idle run jump claw pounce roar fireball hurt victory morph combo air'.split()
-NINJA='idle run jump attack flip throw dashslash'.split()
+NINJA='idle run jump attack flip throw dashslash clawsa clawsb'.split()
 AIR={'n_jump','n_flip','jump','doublejump','airspin','airswipe','divebomb','diveclaw','wingeddash','wallclimb','walljump','ledge','pounce','t_jump','t_pounce','t_air'}
 FIX={'t_jump':1.3,'t_claw':1.2,'t_run':1.15}  # flame-heavy sheets fool the area metric; matched to t_run by eye
 SKIP=set(sys.argv[1:])
@@ -89,7 +89,7 @@ idle_h=np.median([p[3]-p[2] for p in cut['t_idle'][0]])*OLD_T['t_idle']
 k=tig_h/idle_h
 # neon ninja: one scale for the whole family so the body width of idle matches the original idle Paddy (223px)
 NK=223/np.median([p[1]-p[0] for p in cut['n_idle'][0]])
-for n in NINJA: SC['n_'+n]=NK*{'flip':1.0,'throw':1.0,'dashslash':1.0,'jump':1.0,'attack':1.0,'run':1.0}.get(n,1)
+for n in NINJA: SC['n_'+n]=NK*{'clawsb':1.25,'flip':1.0,'throw':1.0,'dashslash':1.0,'jump':1.0,'attack':1.0,'run':1.0}.get(n,1)
 for n,v in OLD_T.items():
     if n!='t_morph': SC[n]=v*k
 for name,(parts,dropped,fg) in cut.items():
