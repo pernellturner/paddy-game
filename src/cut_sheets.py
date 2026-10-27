@@ -6,7 +6,8 @@ from scipy import ndimage as nd
 os.chdir(os.path.join(os.path.dirname(__file__), '..'))
 PADDY='idle_test_1 run jump doublejump dash divebomb stalk walk startstop hardland wingeddash wallclimb walljump ledge wiggle slide clawcombo dashstrike uppercut airswipe airspin diveclaw pounce tailwhip energyblast finisher hurt victory groom stretch sitflick sniff loaf hiss swat zoomies catchrat carryrat bunnykick blinkbarge launcher'.split()
 TIGER='idle run jump claw pounce roar fireball hurt victory morph combo air'.split()
-AIR={'jump','doublejump','airspin','airswipe','divebomb','diveclaw','wingeddash','wallclimb','walljump','ledge','pounce','t_jump','t_pounce','t_air'}
+NINJA='idle run jump attack flip throw dashslash'.split()
+AIR={'n_jump','n_flip','jump','doublejump','airspin','airswipe','divebomb','diveclaw','wingeddash','wallclimb','walljump','ledge','pounce','t_jump','t_pounce','t_air'}
 FIX={'t_jump':1.3,'t_claw':1.2,'t_run':1.15}  # flame-heavy sheets fool the area metric; matched to t_run by eye
 SKIP=set(sys.argv[1:])
 ref=np.asarray(Image.open('assets/s1_05.png'))[...,3]>128
@@ -62,7 +63,7 @@ def grade(c,m,strength=.75):
     px=c[m&~(c[...,2]>c[...,0]+20)]; M,S=px.mean(0),px.std(0)+1e-3
     g=(c-M)/S*RS+RM; fx=(c[...,2]>c[...,0]+20)[...,None]
     return np.where(fx,c,c*(1-strength)+g*strength)
-jobs=[(n,f'generated/{n}.png' if os.path.exists(f'generated/{n}.png') else f'generated/{n}.jpg') for n in PADDY]+[('t_'+n,f'generated/tiger/{n}.jpg') for n in TIGER]
+jobs=[(n,f'generated/{n}.png' if os.path.exists(f'generated/{n}.png') else f'generated/{n}.jpg') for n in PADDY]+[('t_'+n,f'generated/tiger/{n}.jpg') for n in TIGER]+[('n_'+n,f'generated/cyborg/c_ninja/{n}.jpg') for n in NINJA]
 OLD_T={'t_idle':1.117,'t_run':1.38,'t_jump':1.45,'t_claw':1.42,'t_pounce':.88,'t_roar':1.169,'t_fireball':1.256,'t_hurt':1.163,'t_victory':.738,'t_morph':.967,'t_combo':1.3,'t_air':1.0}
 cut={}
 for name,path in jobs:
@@ -75,7 +76,7 @@ for name,path in jobs:
 # ---- scales: Paddy sheets by face-mask size vs the original idle sprite ----
 SC={}
 for name,(parts,_,_) in cut.items():
-    if name.startswith('t_'): continue
+    if name.startswith('t_') or name.startswith('n_'): continue
     hs=[h for h in (head(c,m) for *_,m,c in parts) if h]
     SC[name]=REFHEAD/np.median(hs)
 # sheets where the face-mask metric misjudges (big close-up faces) - matched to the original idle by eye
@@ -86,6 +87,9 @@ mp=cut['t_morph'][0]; SC['t_morph']=REFHEAD/head(mp[0][5],mp[0][4])
 tig_h=(mp[-1][3]-mp[-1][2])*SC['t_morph']
 idle_h=np.median([p[3]-p[2] for p in cut['t_idle'][0]])*OLD_T['t_idle']
 k=tig_h/idle_h
+# neon ninja: one scale for the whole family so the body width of idle matches the original idle Paddy (223px)
+NK=223/np.median([p[1]-p[0] for p in cut['n_idle'][0]])
+for n in NINJA: SC['n_'+n]=NK*{'flip':1.0,'throw':1.0,'dashslash':1.0,'jump':1.0,'attack':1.0,'run':1.0}.get(n,1)
 for n,v in OLD_T.items():
     if n!='t_morph': SC[n]=v*k
 for name,(parts,dropped,fg) in cut.items():
@@ -97,7 +101,7 @@ for name,(parts,dropped,fg) in cut.items():
         c=c.copy(); edge=np.asarray(a)<250
         spill=np.minimum(c[...,0],c[...,2])-c[...,1]; fix=edge&(spill>15)
         c[fix,0]-=spill[fix]*.7; c[fix,2]-=spill[fix]*.7
-        if not name.startswith('t_'): c=grade(c,m)
+        if not name.startswith(('t_','n_')): c=grade(c,m)
         rgba=Image.fromarray(np.clip(c,0,255).astype(np.uint8)).convert('RGBA'); rgba.putalpha(a)
         W,H=max(1,round(rgba.width*sc)),max(1,round(rgba.height*sc))
         rgba=rgba.resize((W,H),Image.LANCZOS)

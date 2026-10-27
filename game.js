@@ -25,6 +25,9 @@ const A={ // name:[sheet, frames (null=all), fps, loop]. o_* = original first-ve
  hiss:['o_roar',null,1,0],swat:['swat',null,14,0],zoomies:['zoomies',null,20,1],catch:['catchrat',null,8,0],
  carry:['carryrat',null,11,1],bk_leap:['bunnykick',[0,1],8,0],bk_roll:['bunnykick',[2],1,0],bk_kick:['bunnykick',[3,2],1,0],bk_land:['bunnykick',[4,5],6,0],barge:['blinkbarge',[2,3],8,0],pawpop:['launcher',[0,1,2,3],16,0],
  t_swipe:['t_combo',[1,2,3],12,0],t_smash:['t_combo',[4,5,6],10,0],t_spin:['t_air',[0,1],12,1],t_lunge:['t_air',[2,3],10,0],t_dive:['t_air',[4,5],8,1],carryidle:['carryrat',[0],1,0],chomp:['carryrat',[0],1,0],
+ n_idle:['n_idle',[1,2,3,4,3,2],6,1],n_run:['n_run',null,15,1],n_rise:['n_jump',[2],1,0],n_fall:['n_jump',[3],1,0],n_land:['n_jump',[5],1,0],n_flip:['n_flip',[1,2,3,4],13,0],n_flip2:['n_flip',[2,3,4],13,0],
+ n_a1:['n_attack',[0,1,2],22,0],n_a2:['n_attack',[2,3],18,0],n_a3:['n_dashslash',[2,3],16,0],n_a4:['n_attack',[3,4],18,0],n_a5:['n_attack',[1,2,3],20,0],n_rise5:['n_flip',[1,2],12,0],n_a6:['n_dashslash',[3,4,5],10,0],n_air1:['n_attack',[2,3],16,0],n_air2:['n_flip',[2,3],16,0],
+ n_throw:['n_throw',[1,2,3,4],18,0],n_dash:['n_dashslash',[2,3],12,1],n_step:['n_dashslash',[3,4],12,0],n_dive:['n_jump',[4],1,0],n_hurt:['n_jump',[4],1,0],n_wall:['n_run',null,20,1],n_charge:['n_idle',[1,2,3,4,3,2],8,1],
  t_idle:['t_idle',null,8,1],t_run:['t_run',null,14,1],t_jump:['t_jump',[3,4,5],9,0],t_fall:['t_jump',[6,7],6,0],t_land:['t_jump',[8,9],12,0],
  t_claw:['t_claw',null,14,0],t_pounce:['t_pounce',null,12,1],t_roar:['t_roar',null,10,0],t_fire:['t_fireball',null,14,0],
  t_hurt:['t_hurt',null,12,0],t_victory:['t_victory',null,8,0],morph:['t_morph',null,8,0],unmorph:['t_morph',[7,6,5,4,3,2,1,0],10,0]};
@@ -33,7 +36,7 @@ const dur=a=>FR[a]?Math.max(FR[a].length/A[a][2],a==='blast'?.5:.3):.4;
 const K={},P={};
 const map={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowDown:'down',KeyS:'down',
  Space:'jump',ArrowUp:'up',KeyW:'up',KeyX:'attack',KeyJ:'attack',KeyC:'special',KeyK:'special',KeyQ:'hunt',KeyV:'hunt',
- ShiftLeft:'run',ShiftRight:'run',KeyT:'tail',KeyL:'tail',KeyG:'tiger',KeyZ:'zoomies',KeyE:'hiss',KeyR:'swat',KeyF:'finisher',KeyH:'hurtTest',KeyY:'victory',KeyB:'eat',KeyN:'blink',ControlLeft:'blink',ControlRight:'blink'};
+ ShiftLeft:'run',ShiftRight:'run',KeyT:'tail',KeyL:'tail',KeyG:'tiger',KeyZ:'zoomies',KeyE:'hiss',KeyR:'swat',KeyF:'finisher',KeyH:'hurtTest',KeyY:'victory',KeyB:'eat',KeyN:'blink',KeyM:'morph',Digit3:'morph',ControlLeft:'blink',ControlRight:'blink'};
 let touchMode=false;
 function press(k){if(k==='up'){press('jump');K.up=1;return}if(!K[k]){P[k]=1;BUF[k]=now;tapDir(k)}K[k]=1}
 function release(k){if(k==='up'){K.up=0;K.jump=0;return}K[k]=0}
@@ -44,13 +47,13 @@ document.querySelectorAll('.b[data-k]').forEach(b=>{const k=b.dataset.k;
  b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('pointerleave',off);});
 // ---------- player ----------
 const p={x:300,y:GROUND,vx:0,vy:0,face:1,ground:true,state:'normal',t:0,anim:'idle',fi:0,ft:0,combo:0,queued:false,cool:0,wall:false,jumps:0,dashCool:0,airDash:false,hunt:false,lastDash:-9,airSpin:false,airSwipe:false,
- idleT:0,rush:0,tcombo:0,tcT:0,tpow:0,tpowUsed:false,airHits:0,hang:0,dashStart:-9,grab:null,tair:0,lives:9,hp:3,inv:0,blinkCool:0,keepT:0,keepCombo:0,jc:0,mc:0,rot:0,fallTop:GROUND,perfect:false,miss:false,blend:0,prevF:null,holdT:0,wj:0,dj:0,startT:0,tiger:0,carry:false,rats:0,shot:false,lastJump:-9};
-let acted=false;const BUF={};const INSTANT=['hunt','tiger','hurtTest','victory','blink'];
+ idleT:0,rush:0,tcombo:0,tcT:0,tpow:0,tpowUsed:false,airHits:0,hang:0,dashStart:-9,grab:null,tair:0,lives:9,hp:3,inv:0,blinkCool:0,keepT:0,keepCombo:0,jc:0,mc:0,rot:0,fallTop:GROUND,perfect:false,miss:false,blend:0,prevF:null,holdT:0,wj:0,dj:0,startT:0,tiger:0,ninja:false,ncombo:0,ncT:0,nair:0,nc:0,nsteps:0,nstepT:0,nstepCool:0,storm:null,mfrom:null,carry:false,rats:0,shot:false,lastJump:-9};
+let acted=false;const BUF={};const INSTANT=['morph','hunt','tiger','hurtTest','victory','blink'];
 const waves=[],shots=[],sparks=[],ghosts=[],texts=[];let shake=0;
 const lastTap={left:-9,right:-9};let now=0;
 function tapDir(k){if(k!=='left'&&k!=='right')return;if(now-lastTap[k]<0.28){P.dash=k;BUF.dash=now;lastTap[k]=-9}else lastTap[k]=now}
 function say(t,c,big){if(p.rush>0)c='#ffd84d';texts.length=0;texts.push({t,c:c||'#fff',l:1,rot:(Math.random()-.5)*.18,big:!!big})}
-function setAnim(a,force){if(!FR[a])a=p.tiger?'t_idle':'idle';if(p.anim!==a||force){const cf=(FR[p.anim]||[])[p.fi];if(cf&&p.anim!==a){p.prevF=cf;p.prevFace=p.face;p.prevX=p.x+(p.wall?40:0);p.prevY=p.y;p.blend=.1}p.anim=a;p.fi=0;p.ft=0}}
+function setAnim(a,force){if(!FR[a])a=p.tiger?'t_idle':p.ninja?'n_idle':'idle';if(p.anim!==a||force){const cf=(FR[p.anim]||[])[p.fi];if(cf&&p.anim!==a){p.prevF=cf;p.prevFace=p.face;p.prevX=p.x+(p.wall?40:0);p.prevY=p.y;p.blend=.1}p.anim=a;p.fi=0;p.ft=0}}
 function act(state,anim,o){p.state=state;p.t=0;p.shot=false;acted=true;setAnim(anim,true);if(o&&o.say)say(o.say,o.c||'#fff')}
 const floorAt=x=>(x>WALL_X-20&&x<WALL_X+100)?WT:GROUND;
 const spark=(x,y,n,c,s=300)=>{for(let i=0;i<n;i++)sparks.push({x,y,vx:(Math.random()-.5)*s*2,vy:-Math.random()*s,l:.4,c:Array.isArray(c)?c[i%c.length]:c})};
@@ -82,7 +85,7 @@ function sonicMeow(c){const big=c>.15;meows.push({x:p.x+p.face*70,y:p.y-75,face:
  bubble={t:big?'SONIC MEOW!!':'MEOW!',l:1.1,big};meowSound(big?c:0);shake=big?6+10*c:3;
  for(const r of rats)if(!r.gone&&Math.abs(r.x-p.x)<(big?180+320*c:150)){r.scare=2.5;r.dir=Math.sign(r.x-p.x)||1}}
 let bubble=null;
-function blink(){if(sky||p.blinkCool>0||['morph','unmorph','ledge','eat','catch','bunny','skyrise','skyslam','t_launch'].includes(p.state))return false;
+function blink(){if(p.ninja)return nStep();if(sky||p.blinkCool>0||['morph','unmorph','ledge','eat','catch','bunny','skyrise','skyslam','t_launch'].includes(p.state))return false;
  const from=p.x;puffShadow(p.x,p.y);const kc=p.state==='claw'?p.combo:0;
  let nx=p.x+p.face*330;nx=Math.max(50,Math.min(WALL_X+60,nx));if(p.y>WT+2&&from<WALL_X-60&&nx>WALL_X-60)nx=WALL_X-60;
  const barge=(p.state==='dash'||now-p.dashStart<.45)&&!p.tiger;
@@ -90,14 +93,14 @@ function blink(){if(sky||p.blinkCool>0||['morph','unmorph','ledge','eat','catch'
  if(barge){puffShadow(p.x,p.y);blinkBarge();extend();acted=true;return true}
  if(kc){p.keepCombo=kc;p.keepT=.7}extend();puffShadow(p.x,p.y);say('SHADOW BLINK!','#c9a7ff');acted=true;return true}
 function puffShadow(x,y){for(let i=0;i<16;i++){const a=Math.random()*6.28;puffs.push({x:x+Math.cos(a)*30,y:y-60+Math.sin(a)*40,vx:Math.cos(a)*70,vy:Math.sin(a)*50,r:12+Math.random()*12,l:.55,dark:1})}}
-function loseLife(){p.lives--;say(p.lives>0?'LOST A LIFE ('+p.lives+' left)':'OUT OF LIVES!','#ffb0b0',true);act('respawn','hurt');p.vx=0;p.vy=-200;p.ground=false}
+function loseLife(){p.lives--;say(p.lives>0?'LOST A LIFE ('+p.lives+' left)':'OUT OF LIVES!','#ffb0b0',true);act('respawn',p.ninja?'n_hurt':'hurt');p.rot=0;p.vx=0;p.vy=-200;p.ground=false}
 // ---- BUNNY KICK GRAB (perfect 8th hit) ----
 function bunnyKick(){C.atk++;popNum(8,'#ff4fa3');act('bunny','bk_leap',{say:'BUNNY KICK GRAB!',c:'#ff9ad5'});p.vx=p.face*300;p.vy=0;
  let best=null,bd=230;for(const d of dummies){const dx=(d.x-p.x)*p.face;if(d.alive&&dx>-40&&dx<bd&&Math.abs(d.y-p.y)<160){bd=dx;best=d}}p.grab=best;p.kick=0}
 // ---- BLINK BARGE (blink during a dash) ----
 function blinkBarge(){act('barge','barge',{say:'BLINK BARGE!',c:'#c9a7ff'});p.vx=p.face*950;p.inv=.5;shake=8;C.atk++}
 // ---- juggling rats ----
-function hitRat(r,move,dir){const launch=['uppercut','superleap','pawpop','t_launch','launcher'].includes(move),air=r.y<GROUND-5;
+function hitRat(r,move,dir){const launch=['uppercut','superleap','pawpop','t_launch','launcher','nrise'].includes(move),air=r.y<GROUND-5;
  if(!launch&&!air)return false;r.vy=launch?-900:-520;r.vx=dir*(launch?120:220);r.fl=.5;r.scare=3;spark(r.x,r.y-15,8,['#fff','#ffe14d']);
  addHit(move);if(air)say('JUGGLE!','#7fffd4');return true}
 // ---- tiger chain ----
@@ -120,13 +123,13 @@ function dashStrike(){act('dashstrike','dashstrike',{say:'DASH STRIKE!',c:'#ff9f
  for(let i=0;i<14;i++)sparks.push({x:p.x+p.face*80,y:p.y-60+(Math.random()-.5)*60,vx:p.face*(300+Math.random()*400),vy:(Math.random()-.5)*200,l:.4,c:i%2?'#fff':'#ffb0e0'})}
 function uppercut(){act('uppercut','uppercut',{say:'UPPERCUT!',c:'#ffe08a'});p.vy=-780;p.vx=p.face*120;p.ground=false;p.jumps=2;shake=6;spark(p.x+p.face*50,p.y-40,10,['#fff','#ffe08a'])}
 function impact(big){areaHit(p.x,p.y,big?190:130,big?'dive':'diveclaw');shake=big?16:10;waves.push({x:p.x,y:p.y,r:10,l:1,big});for(let i=0;i<(big?26:14);i++)sparks.push({x:p.x+(Math.random()-.5)*60,y:p.y,vx:(Math.random()-.5)*(big?700:400),vy:-Math.random()*300,l:.5,c:i%3?'#d9c49a':'#fff'})}
-function doDash(dir){p.face=dir==='right'?1:-1;p.wall=false;p.dashCool=.45;p.dashStart=now;
+function doDash(dir){if(p.ninja){nDash(dir);return}p.face=dir==='right'?1:-1;p.wall=false;p.dashCool=.45;p.dashStart=now;
  if(p.tiger){act('t_pounce','t_pounce',{say:'TIGER POUNCE!',c:'#ffb040'});p.vy=-420;p.vx=p.face*720;p.ground=false;return}
  if(!p.ground&&p.jumps>=2&&!p.airDash){p.airDash=true;act('wingdash','wingdash',{say:'WINGED DASH!',c:'#8fe0ff'});p.vx=p.face*1000;p.vy=-60;shake=6}
  else{act('dash','dash',{say:'DASH!'});p.vx=p.face*900;if(!p.ground)p.vy=Math.min(p.vy,0);shake=3}}
-function hurtMe(){comboEnd(true);p.hp--;if(p.hp<=0){p.hp=3;dropRat();p.wall=false;loseLife();return}dropRat();p.wall=false;act('hurt',p.tiger?'t_hurt':'hurt',{say:'OUCH!',c:'#ff8080'});p.vy=-400;p.vx=-p.face*200;p.ground=false}
-function victory(){act('victory',p.tiger?'t_victory':'victory',{say:'VICTORY!',c:'#ffe14d'});p.vx=0;spark(p.x,p.y-80,24,['#ffe14d','#fff','#ff9ad5'],400)}
-function morph(){p.wall=false;p.hunt=false;dropRat();huntBtn&&huntBtn.classList.remove('lit');act('morph','morph',{say:'FIRE TIGER!',c:'#ff9a2e'});p.vx=0;shake=10;waves.push({x:p.x,y:p.y,r:10,l:1,big:true})}
+function hurtMe(){comboEnd(true);p.hp--;if(p.hp<=0){p.hp=3;dropRat();p.wall=false;loseLife();return}dropRat();p.wall=false;p.rot=0;act('hurt',p.tiger?'t_hurt':p.ninja?'n_hurt':'hurt',{say:'OUCH!',c:'#ff8080'});p.vy=-400;p.vx=-p.face*200;p.ground=false}
+function victory(){act('victory',p.tiger?'t_victory':p.ninja?'n_flip':'victory',{say:'VICTORY!',c:'#ffe14d'});p.vx=0;spark(p.x,p.y-80,24,['#ffe14d','#fff','#ff9ad5'],400)}
+function morph(){p.ninja=false;p.rot=0;p.wall=false;p.hunt=false;dropRat();huntBtn&&huntBtn.classList.remove('lit');act('morph','morph',{say:'FIRE TIGER!',c:'#ff9a2e'});p.vx=0;shake=10;waves.push({x:p.x,y:p.y,r:10,l:1,big:true})}
 function shoot(fire){shots.push({x:p.x+p.face*110,y:p.y-60,vx:p.face*(fire?700:620),l:1.6,a:0,hit:new Set(),fire});shake=8}
 const MANNER=['groom','stretch','sitflick','sniff','loaf'];
 const anyInput=()=>Object.keys(P).length>0||K.left||K.right||K.down||K.jump;
@@ -134,6 +137,7 @@ const huntBtn=document.querySelector('[data-k=hunt]'),tigerBtn=document.querySel
 function update(dt){
  now+=dt;p.t+=dt;p.cool-=dt;p.dashCool-=dt;p.wj-=dt;p.dj-=dt;p.startT-=dt;
  const dir=(K.right?1:0)-(K.left?1:0);p.holdT=dir?p.holdT+dt:0;
+ if(P.morph)toggleNinja();nUpdate(dt);
  // tiger timer
  if(sky){sky.t+=dt;if(sky.phase==='fight'){p.tiger=Math.max(p.tiger,3);
    if(sky.t>14||P.tiger){exitSky(true)}
@@ -150,16 +154,16 @@ function update(dt){
  if(P.blink)blink();
  if(P.hurtTest&&p.inv<=0&&p.state!=='respawn')hurtMe();
  if(P.victory&&p.ground&&p.state==='normal')victory();
- if(P.hunt&&!p.tiger){p.hunt=!p.hunt;say(p.hunt?'HUNT MODE':'hunt off','#ffe08a');huntBtn.classList.toggle('lit',p.hunt)}
+ if(P.hunt&&!p.tiger&&!p.ninja){p.hunt=!p.hunt;say(p.hunt?'HUNT MODE':'hunt off','#ffe08a');huntBtn.classList.toggle('lit',p.hunt)}
  if(P.dash&&p.dashCool<=0&&['normal','land','zoomies'].includes(p.state)&&!(p.hunt&&p.ground)){if(p.carry)dropRat();doDash(P.dash)}
  // cancel windows: after a short commit time these moves can flow straight into the next one
- const CANCEL={pawpop:.15,barge:.25,t_air:.15,meow:.2,claw:.12,airswipe:.12,swat:.12,tailwhip:.15,dashstrike:.2,uppercut:.16,land:0,hardland:.12,stop:0,blast:.42,hiss:.3,t_claw:.15,finisher:.6,airspin:.15,slide:.15};
+ const CANCEL={nflip:99,pawpop:.15,barge:.25,t_air:.15,meow:.2,claw:.12,airswipe:.12,swat:.12,tailwhip:.15,dashstrike:.2,uppercut:.16,land:0,hardland:.12,stop:0,blast:.42,hiss:.3,t_claw:.15,finisher:.6,airspin:.15,slide:.15};
  if(CANCEL[p.state]!=null&&p.t>CANCEL[p.state]){
   if(P.dash&&p.dashCool<=0){if(['claw','swat','tailwhip'].includes(p.state)&&!p.tiger){p.face=P.dash==='right'?1:-1;dashStrike()}else doDash(P.dash)}
   else if((P.jump&&p.ground)||(P.down&&!p.ground)||(P.attack&&(K.up||!p.ground)&&p.state!=='claw'&&p.state!=='airspin')||(P.attack&&K.up&&p.ground)||((P.special||P.tail)&&!['meow','hiss','finisher'].includes(p.state))){p.state='normal';p.combo=0}
  }
- const MAXT={bunny:2.5,barge:1,t_launch:1.5,t_air:1,skyrise:2,skyslam:2.5,zoomies:3,manner:5,hurt:3,respawn:4,mcharge:3.5,jcharge:4.5,superleap:2,morph:2,unmorph:2,ledge:1.5,victory:2.5,eat:2,catch:2,finisher:2.5};
- if(p.state!=='normal'&&p.t>(MAXT[p.state]||2.5)){console.warn('safety net: reset from',p.state);p.state='normal';p.wall=false;p.vx=0;p.combo=0;p.jc=0;p.mc=0;if(p.tiger<=0&&p.anim.startsWith('t_'))setAnim('idle')}
+ const MAXT={nmorph:1,ncharge:3,nstorm:3,wallrun:2.2,nflip:2,nbflip:2,ndive:2,bunny:2.5,barge:1,t_launch:1.5,t_air:1,skyrise:2,skyslam:2.5,zoomies:3,manner:5,hurt:3,respawn:4,mcharge:3.5,jcharge:4.5,superleap:2,morph:2,unmorph:2,ledge:1.5,victory:2.5,eat:2,catch:2,finisher:2.5};
+ if(p.state!=='normal'&&p.t>(MAXT[p.state]||2.5)){console.warn('safety net: reset from',p.state);p.state='normal';p.wall=false;p.vx=0;p.combo=0;p.jc=0;p.mc=0;if(p.tiger<=0&&p.anim.startsWith('t_'))setAnim('idle');if(!p.ninja&&p.anim.startsWith('n_'))setAnim('idle');p.rot=0}
  const S=p.state,end=p.t>dur(p.anim);
  switch(S){
  case 'claw': {const H=p.combo>=3?.4:.26; p.vx*=Math.pow(.02,dt);
@@ -243,6 +247,7 @@ function update(dt){
  case 'skyslam': p.vx=0;p.vy=1700;if(p.ground){act('hardland','t_land');impact(true);shake=26;slowT=.2;flashT=.2;waves.push({x:p.x,y:p.y,r:30,l:1,big:true});burst(p.x,p.y-40,1);p.inv=.5}break;
  case 'morph': p.vx=0;if(p.t%0.05<dt)spark(p.x+(Math.random()-.5)*80,p.y-40,2,['#ff9a2e','#ffe14d'],250);if(end){p.state='normal';p.tiger=20}break;
  case 'unmorph': p.vx=0;if(end)p.state='normal';break;
+ default: if(NST.includes(S))nState(S,dt,end,dir);break;
  case 't_claw': p.vx*=Math.pow(.03,dt);if(P.attack)p.queued=true;
   if(p.t>.14){ if(P.special){act('t_fire','t_fire',{say:'FIREBALL!',c:'#ff7a2e'});p.tcT=1.2;break} if(P.tail){act('t_roar','t_roar',{say:'ROAR WAVE!',c:'#ffcf40'});p.tcT=1.4;break}
    if(P.dash||(p.queued&&K.down)){act('t_pounce','t_pounce',{say:'FLAME POUNCE!',c:'#ffb040'});p.vy=-380;p.vx=p.face*760;p.ground=false;p.tcT=1.2;p.queued=false;break}
@@ -253,24 +258,26 @@ function update(dt){
  case 't_fire': p.vx=0;if(p.t>.4&&!p.shot){p.shot=true;shoot(true)}if(end){p.state='normal';p.cool=.2}break;
  }
  if(p.state==='normal'){
-  const T=p.tiger>0,running=K.run||(touchMode&&p.holdT>.6)||T,spd=(p.hunt?110:(T?420:260*(running?1.6:1)))*(p.rush>0?1.4:1),JB=p.rush>0?1.14:1;
+  const T=p.tiger>0,N=p.ninja,running=K.run||(touchMode&&p.holdT>.6)||T||N,spd=(p.hunt?110:(T?420:N?470:260*(running?1.6:1)))*(p.rush>0?1.4:1),JB=p.rush>0?1.14:1;
   if(p.carry&&P.down&&p.ground)dropRat();
-  if(K.down&&p.ground&&!p.hunt&&Math.abs(p.vx)>300&&P.down&&!T){act('slide','slide',{say:'SLIDE!'});}
-  else if(K.down&&p.ground&&!p.hunt&&!T){p.vx*=.7;setAnim('crouch');}
-  else{p.vx+=(dir*spd-p.vx)*Math.min(1,dt*(T?(p.ground?(dir?4.5:6):2.5):(p.ground?(dir?7:9):4)));if(dir&&!p.wall)p.face=dir;}
+  if(K.down&&p.ground&&!p.hunt&&Math.abs(p.vx)>300&&P.down&&!T&&!N){act('slide','slide',{say:'SLIDE!'});}
+  else if(K.down&&p.ground&&!p.hunt&&!T&&!N){p.vx*=.7;setAnim('crouch');}
+  else{p.vx+=(dir*spd-p.vx)*Math.min(1,dt*(N?(p.ground?(dir?8:10):5):T?(p.ground?(dir?4.5:6):2.5):(p.ground?(dir?7:9):4)));if(dir&&!p.wall)p.face=dir;}
   if(p.state==='normal'){
-  if(p.ground&&!dir&&Math.abs(p.vx)>330&&!p.hunt&&!T&&!p.carry){act('stop','stop')}
-  if(p.ground&&dir&&running&&Math.abs(p.vx)<40&&!p.hunt&&!T&&!p.carry)p.startT=.18;
+  if(p.ground&&!dir&&Math.abs(p.vx)>330&&!p.hunt&&!T&&!N&&!p.carry){act('stop','stop')}
+  if(p.ground&&dir&&running&&Math.abs(p.vx)<40&&!p.hunt&&!T&&!N&&!p.carry)p.startT=.18;
   // wall climb: hold → to climb, release to cling, ← / jump to leap off, ↓ to drop
-  if(!T&&!p.wall&&p.y>WT+10&&p.x>=WALL_X-62&&K.right&&!K.down&&!p.hunt){p.wall=true;dropRat();p.jumps=0;p.airDash=false;say('CLIMB!','#ffe08a')}
+  if(!T&&!N&&!p.wall&&p.y>WT+10&&p.x>=WALL_X-62&&K.right&&!K.down&&!p.hunt){p.wall=true;dropRat();p.jumps=0;p.airDash=false;say('CLIMB!','#ffe08a')}
   if(p.wall){p.face=1;p.vx=0;
    if(K.down){p.wall=false}
    else if(P.jump||K.left){p.wall=false;p.vy=-650;p.vx=-340;p.face=-1;p.jumps=1;p.wj=.45;setAnim('walljump');say('WALL JUMP!');extend('WALL JUMP!')}
    else{p.vy=K.right?-190:35;
     const cf=FR.climb[p.fi]||FR.climb[0];if(p.y-cf.ay*SC<WT-20&&K.right){p.lx0=p.x+40;p.ly0=p.y;p.wall=false;act('ledge','ledge',{say:'LEDGE GRAB!',c:'#ffe08a'});p.x=p.lx0}}}
+  else if(N){}
   else if(P.jump&&p.ground){act('jcharge','crouch');p.jc=0}
   else if(P.jump&&!p.ground&&(p.jumps<2||sky)){acted=true;p.vy=(sky?-520:T?-560:-650)*JB;p.jumps=2;p.dj=.45;setAnim(T?'t_jump':'djump');p.anim=T?'t_jump':'djump';p.ft=0;say('DOUBLE JUMP!');extend();spark(p.x,p.y,10,'#fff',150)}
   if(p.state!=='normal'){}
+  else if(N){nMoves(dir)}
   else if(T){ // ---- fire tiger moves ----
    if(sky&&P.attack&&K.down){exitSky(true)}
    else if(P.attack&&(p.hunt||K.down)&&p.ground){act('t_pounce','t_pounce',{say:'FLAME POUNCE!',c:'#ffb040'});p.vy=-380;p.vx=p.face*700;p.ground=false;p.tcT=1.2}
@@ -299,17 +306,18 @@ function update(dt){
   }
   if(p.state==='normal'){
    if(T){ if(!p.ground)setAnim(p.vy<0?'t_jump':'t_fall');else setAnim(Math.abs(p.vx)>25?'t_run':'t_idle') }
+   else if(N){ if(!p.ground)setAnim(p.vy<0?'n_rise':'n_fall');else setAnim(Math.abs(p.vx)>25?'n_run':'n_idle') }
    else if(p.wall)setAnim('climb');
    else if(!p.ground)setAnim(p.wj>0?'walljump':p.dj>0?'djump':p.vy<0?'jump':'fall');
    else if(p.hunt)setAnim('stalk');
    else if(!K.down){const v=Math.abs(p.vx);
     setAnim(p.carry?(v>25?'carry':'carryidle'):p.startT>0?'start':v>300?'run':v>25?'walk':'idle')}
    // idle mannerisms after ~4s of doing nothing
-   if(p.ground&&!T&&!p.hunt&&!p.carry&&p.anim==='idle'&&!anyInput()){p.idleT+=dt;if(p.idleT>4){p.idleT=0;const m=MANNER[Math.floor(Math.random()*MANNER.length)];act('manner',m)}}else p.idleT=0;
+   if(p.ground&&!T&&!N&&!p.hunt&&!p.carry&&p.anim==='idle'&&!anyInput()){p.idleT+=dt;if(p.idleT>4){p.idleT=0;const m=MANNER[Math.floor(Math.random()*MANNER.length)];act('manner',m)}}else p.idleT=0;
   }
  }
  // physics
- if(!p.wall&&!['wingdash','dive','diveclaw','ledge'].includes(p.state))p.vy+=(sky?520:p.state==='airspin'?600:p.hang>0?700:p.tiger>0?2000:1900)*dt;
+ if(!p.wall&&!['wingdash','dive','diveclaw','ledge','wallrun','nstorm'].includes(p.state))p.vy+=(sky?520:p.state==='airspin'?600:p.hang>0?700:p.tiger>0?2000:1900)*dt;
  if(p.state!=='ledge'){p.x+=p.vx*dt;p.y+=p.vy*dt;}
  if(!sky&&p.state!=='ledge'&&p.state!=='skyslam'&&p.y>WT+2&&p.x>WALL_X-60&&p.x<WALL_X+60){p.x=WALL_X-60;if(p.state==='zoomies')p.face=-1} // wall side
  if(sky&&sky.phase==='fight'){if(p.y>440){p.y=440;p.vy=Math.min(p.vy,-380)}if(p.y<70){p.y=70;p.vy=Math.max(p.vy,0)}p.ground=false;p.x=Math.max(60,Math.min(900,p.x))}
@@ -317,11 +325,12 @@ function update(dt){
  if(p.state!=='ledge'){
  if(p.ground||p.vy<0||p.wall||p.state==='ledge')p.fallTop=p.y;
  // long fall: acrobatic flip just before touching down
- if(p.state!=='bunny'){const h=floorAt(p.x)-p.y;p.rot=(!p.ground&&p.state==='normal'&&!p.tiger&&p.vy>300&&floorAt(p.x)-p.fallTop>300&&h<170)?(1-h/170)*6.283*p.face:0}
+ if(p.state!=='bunny'){const h=floorAt(p.x)-p.y;const tr=p.state==='wallrun'?-1.5708:(!p.ground&&p.state==='normal'&&!p.tiger&&p.vy>300&&floorAt(p.x)-p.fallTop>300&&h<170)?(1-h/170)*6.283*p.face:0;
+  if(p.ninja){let df=((tr-p.rot+Math.PI)%6.2832+6.2832)%6.2832-Math.PI;p.rot=Math.abs(df)<.01?tr:p.rot+df*Math.min(1,dt*(p.state==='wallrun'?16:12));if(Math.abs(p.rot)<.01&&!tr)p.rot=0}else p.rot=tr}
  if(p.y>=fl&&p.vy>=0){p.y=fl;if(!p.ground&&p.state==='normal'){
    if(fl-p.fallTop>300&&!p.tiger){act('land','land',{say:'LANDS ON HIS FEET!',c:'#ffe08a'});spark(p.x,fl,14,['#fff','#d9c49a'],200);shake=4}
-   else if(p.vy>300){act('land',p.tiger?'t_land':'land');spark(p.x,fl,8,'#d9c49a',120)}}
-  p.vy=0;p.ground=true;p.jumps=0;p.airDash=false;p.airSpin=false;p.airSwipe=false;p.tair=0;p.airHits=0;p.wj=0;p.dj=0}else p.ground=false;}
+   else if(p.vy>300){act('land',p.tiger?'t_land':p.ninja?'n_land':'land');spark(p.x,fl,8,'#d9c49a',120)}}
+  p.vy=0;p.ground=true;p.jumps=0;p.airDash=false;p.airSpin=false;p.airSwipe=false;p.tair=0;p.nair=0;p.airHits=0;p.wj=0;p.dj=0}else p.ground=false;}
  if(p.x<50)p.x=50;if(p.x>WALL_X+60)p.x=WALL_X+60;
  // anim frames
  const fr=FR[p.anim]||FR.idle,a=A[p.anim]||A.idle;
@@ -346,12 +355,12 @@ function update(dt){
  shake*=.85; // input buffer: an unused press stays live for ~0.15s so moves chain; any new action consumes it
  for(const k in P)if(acted||INSTANT.includes(k)||now-(BUF[k]??-9)>.15)delete P[k];acted=false;
  const nm={manner:p.anim,claw:p.anim.replace(/^claw(\d)/,'claw $1/3')}[p.state]||(p.state==='normal'?p.anim:p.state);
- if(now-errShown>3)lbl.textContent=(p.rush>0?'✨ SNACK RUSH '+Math.ceil(p.rush)+'s · ':'')+(p.tiger?'🔥 TIGER '+Math.ceil(p.tiger)+'s · ':'')+nm.replace(/^t_/,'')+(p.wall?' (wall)':'')+(p.hunt?' · HUNT':'')+(p.carry?' · carrying rat':'')+(p.rats?' · rats '+p.rats:'');
+ if(now-errShown>3)lbl.textContent=(p.rush>0?'✨ SNACK RUSH '+Math.ceil(p.rush)+'s · ':'')+(p.tiger?'🔥 TIGER '+Math.ceil(p.tiger)+'s · ':'')+(p.ninja?'🥷 NEON NINJA · ':'')+nm.replace(/^[tn]_/,'')+(p.wall?' (wall)':'')+(p.hunt?' · HUNT':'')+(p.carry?' · carrying rat':'')+(p.rats?' · rats '+p.rats:'');
 }
 // ---------- rats ----------
 const rats=[{x:150,dir:1},{x:520,dir:-1},{x:700,dir:1}].map(r=>({...r,y:GROUND,spd:70+Math.random()*40,t:Math.random()*5,scare:0,gone:0,hop:0}));
 function updRats(dt){
- const catching=['claw','pounce','diveclaw','wiggle'].includes(p.state)&&!sky&&!p.tiger&&!p.carry;
+ const catching=['claw','pounce','diveclaw','wiggle'].includes(p.state)&&!sky&&!p.tiger&&!p.ninja&&!p.carry;
  for(const r of rats){
   if(r.gone){if(!p.carry&&p.state!=='catch'){r.gone-=dt;if(r.gone<=0){r.gone=0;r.spd=70+Math.random()*40;r.x=Math.random()<.5?40:WALL_X-60;r.dir=r.x<100?1:-1;r.scare=0}}continue}
   if(r.vy||r.y<GROUND){r.fl=(r.fl||0)-dt;r.vy=(r.vy||0)+(r.fl>0?500:1500)*dt;r.y+=r.vy*dt;r.x+=(r.vx||0)*dt;if(r.y>=GROUND){r.y=GROUND;r.vy=0;r.vx=0;r.scare=2}r.x=Math.max(40,Math.min(WALL_X-30,r.x));r.t+=dt;continue}
@@ -382,7 +391,7 @@ function draw(){
  const camT=sky&&sky.phase==='fight'?0:Math.max(0,170-p.y);camY+=(camT-camY)*Math.min(1,(1/60)*(sky?12:7));if(!isFinite(camY))camY=0;
  ctx.setTransform(scale,0,0,scale,offX+sx*scale,offY+(sy+camY)*scale);
  if(sky&&sky.phase==='fight'){drawSky();return}
- const g=ctx.createLinearGradient(0,0,0,VH);g.addColorStop(0,p.tiger?'#ffc89a':'#9fd6f7');g.addColorStop(1,p.tiger?'#ffe8c8':'#d8f0ff');ctx.fillStyle=g;ctx.fillRect(-500,0,VW+1000,VH);
+ const g=ctx.createLinearGradient(0,0,0,VH);g.addColorStop(0,p.tiger?'#ffc89a':p.ninja?'#b4a4ea':'#9fd6f7');g.addColorStop(1,p.tiger?'#ffe8c8':p.ninja?'#ebe3ff':'#d8f0ff');ctx.fillStyle=g;ctx.fillRect(-500,0,VW+1000,VH);
  ctx.fillStyle='#6dbb4a';ctx.fillRect(-500,GROUND,VW+1000,14);ctx.fillStyle='#b98a55';ctx.fillRect(-500,GROUND+14,VW+1000,200);
  // wall
  ctx.fillStyle='#8a7a6a';ctx.fillRect(WALL_X,WT,80,GROUND-WT);ctx.strokeStyle='#6c5e50';ctx.lineWidth=2;
@@ -396,9 +405,10 @@ function draw(){
  if(p.rush>0){const pul=1+Math.sin(now*10)*.08,a=Math.min(1,p.rush/2);ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.55*a;
   const gg=ctx.createRadialGradient(p.x,p.y-60,10,p.x,p.y-60,110*pul);gg.addColorStop(0,'rgba(255,220,90,.9)');gg.addColorStop(1,'rgba(255,180,0,0)');ctx.fillStyle=gg;ctx.beginPath();ctx.arc(p.x,p.y-60,110*pul,0,6.28);ctx.fill();ctx.restore()}
  if(p.blend>0&&p.prevF)drawFrame(p.prevF,p.prevX,p.prevY,p.prevFace,(p.hunt?.55:1)*p.blend/.1);
+ const mu=p.state==='nmorph'?Math.min(1,p.t/.5):1;if(mu<1&&p.mfrom)drawFrame(p.mfrom,p.x,p.y,p.face,1-mu*mu*(3-2*mu));
  const sq=p.state==='eat'&&p.t<.35?1+Math.sin(p.t*40)*.06:1;
  ctx.save();ctx.translate(p.x,p.y-(p.rot?60:0));ctx.rotate(p.rot||0);ctx.scale(2-sq,sq);ctx.translate(-p.x,-p.y+(p.rot?60:0));if(p.inv>0&&Math.floor(now*20)%2)ctx.globalAlpha=.45;
- drawFrame((FR[p.anim]||FR.idle)[p.fi],p.x+(p.wall?40:0),p.y,p.face,p.hunt?.55:(p.blend>0?1-.5*p.blend/.1:null));ctx.restore();
+ drawFrame((FR[p.anim]||FR.idle)[p.fi],p.x+(p.wall?40:p.state==='wallrun'?14:0),p.y,p.face,mu<1?mu*mu*(3-2*mu):p.hunt?.55:(p.blend>0?1-.5*p.blend/.1:null));ctx.restore();
  for(const f of puffs){ctx.globalAlpha=Math.max(0,f.l)*(f.dark?.8:1);ctx.fillStyle=f.dark?'#3a2d4f':'#fff';ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,6.28);ctx.fill()}ctx.globalAlpha=1;
  // shots
  for(const s of shots){ctx.save();ctx.translate(s.x,s.y);ctx.globalCompositeOperation='lighter';
@@ -421,7 +431,7 @@ function drawHUD(){const sx=0;ctx.setTransform(scale,0,0,scale,offX,offY);
  drawTexts();drawCombo();drawLives();
  ctx.globalAlpha=1;ctx.textAlign='left';
 }
-function drawFx(){
+function drawFx(){nDrawFx();
  // claw slash trails: bright curved crescents
  for(const sl of slashes){ctx.save();ctx.translate(sl.x,sl.y);ctx.scale(sl.face,1);ctx.globalCompositeOperation='lighter';
   const prog=1-sl.l,a1=sl.a0,a2=sl.a0+sl.sweep*Math.min(1,prog*2.2+.3);
@@ -507,9 +517,9 @@ function hitDummy(d,move,dir){const k=KB[move]||KB.claw1;
 function r_reach(st){return (REACH[st]||[0])[0]}
 function meleeHits(dt){if(sky&&sky.phase!=='fight')return;const st=p.state==='claw'?p.anim:p.state;if(p.state==='bunny')return;
  if(st!==C.lastState){C.lastState=st;C.atk++}
- if(st==='airspin'||st==='finisher'||st==='superleap'){C.spinT+=dt;if(C.spinT>.12){C.spinT=0;C.atk++}}
+ if(st==='airspin'||st==='finisher'||st==='superleap'||(st==='n6'&&p.t<.42)){C.spinT+=dt;if(C.spinT>(st==='n6'?.07:.12)){C.spinT=0;C.atk++}}
  const r=REACH[st];if(!r)return;
- if((st.startsWith('claw')||st==='swat'||st==='t_claw'||st==='t_air')&&p.t>.22)return;if(st==='finisher'&&p.t<.25)return;
+ if((st.startsWith('claw')||st==='swat'||st==='t_claw'||st==='t_air')&&p.t>.22)return;if(/^n[1-5]$|^nrise$|^nair$|^nstep$/.test(st)&&p.t>.2)return;if(st==='n6'&&p.t>.42)return;if(st==='finisher'&&p.t<.25)return;
  // rats can be popped up and juggled too
  for(const r of rats){if(r.gone||r.last===C.atk)continue;const dx=(r.x-p.x)*p.face;if(dx>-35&&dx<r_reach(st)&&Math.abs(r.y-p.y)<140){r.last=C.atk;hitRat(r,st,p.face)}}
  for(const d of dummies){if(!d.alive||d.last===C.atk||(sky&&!d.inSky)||(!sky&&d.inSky))continue;
@@ -555,3 +565,114 @@ function drawCombo(){if(C.n<1)return;const col=tierCol(C.n),sh=C.pop*8;
  fancy('x'+C.n,x-10,y,64+C.pop*22,-.08,1,1,col);fancy('HITS',x+5,y+44,28,-.08,1,1,col);
  ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(VW-200,y+66,170,10);ctx.fillStyle=col;ctx.fillRect(VW-200,y+66,170*Math.max(0,C.t/C.max),10)}
 document.fonts&&document.fonts.load(`40px Bangers`).catch(()=>{});
+// ===================== NEON NINJA (cyborg form) =====================
+// acrobatic: flips, wall-run, shadow-step teleport strikes, air flurry, throwing stars, hold-charge Shadow Storm
+const NST=['nrise','nmorph','n1','n2','n3','n4','n5','n6','nstep','nstorm','ncharge','nthrow','nair','ndive','nflip','nbflip','wallrun','ndash'];
+const NV='#b98cff',NC='#7fe8ff';
+const NCH=[null,{s:'n1',a:'n_a1',k:'down',lunge:230,nm:'NEON SLASH!'},{s:'n2',a:'n_a2',k:'up',lunge:250,nm:'TWIN FANG!'},{s:'n3',a:'n_a3',k:'flat',lunge:340,nm:'SPIRAL CUT!'},
+ {s:'n4',a:'n_a4',k:'down',lunge:270,nm:'SHADOW RAKE!'},{s:'n5',a:'n_a5',k:'flat',lunge:300,nm:'VIOLET STORM!'},{s:'n6',a:'n_a6',k:'cross',lunge:430,nm:'THOUSAND CUTS!'},{s:'nrise',a:'n_rise5',k:'up',lunge:120,nm:'RISING CRESCENT!'}];
+Object.assign(NAMES,{n1:'NEON SLASH!',n2:'TWIN FANG!',n3:'SPIRAL CUT!',n4:'SHADOW RAKE!',n5:'VIOLET STORM!',nrise:'RISING CRESCENT!',n6:'THOUSAND CUTS!',n6fin:'THOUSAND CUTS!!',nair:'AIR FLURRY!',nstar:'THROWING STAR!',nstep:'SHADOW STEP!',nstorm:'SHADOW STORM!',ndive:'FALLING STAR!',ndash:'SHADOW DASH!'});
+Object.assign(KB,{n1:[200,-200,0,.035],n2:[220,-260,0,.035],n3:[360,-300,.1,.045],n4:[260,-260,.05,.04],n5:[330,-330,.1,.045],nrise:[70,-880,.55,.07],n6:[120,-240,.3,.025],n6fin:[650,-720,.35,.1],
+ nair:[150,-300,.45,.04],nstar:[120,-150,.25,.03],nstep:[280,-650,.4,.07],nstorm:[160,-780,.5,.06],ndive:[350,-520,.2,.08],ndash:[560,-340,.15,.06]});
+Object.assign(REACH,{n1:[135,140],n2:[140,150],n3:[175,140],n4:[145,140],n5:[170,160],nrise:[145,215],n6:[175,170],nair:[155,175],nstep:[160,180],ndash:[165,140],ndive:[130,140]});
+let stars=[];
+const ninjaBtn=document.querySelector('[data-k=morph]');
+const clampX=x=>Math.max(55,Math.min(p.y>WT+2?WALL_X-62:WALL_X+60,x));
+function toggleNinja(){if(sky||['nmorph','morph','unmorph','respawn','bunny','skyrise','skyslam','t_launch','ledge','eat','catch'].includes(p.state))return;
+ const from=(FR[p.anim]||FR.idle)[p.fi];p.tiger=0;p.ninja=!p.ninja;p.hunt=false;huntBtn&&huntBtn.classList.remove('lit');dropRat();p.wall=false;p.combo=0;p.ncombo=0;p.rot=0;
+ act('nmorph',p.ninja?'n_idle':'idle',{say:p.ninja?'NEON NINJA!':'back to Paddy',c:p.ninja?NV:'#ffe08a'});p.mfrom=from;p.blend=0;p.vx*=.3;
+ waves.push({x:p.x,y:p.y,r:10,l:1,big:true});puffShadow(p.x,p.y);spark(p.x,p.y-70,26,[NV,NC,'#fff'],380);shake=8}
+function nTarget(range){let best=null,bd=range;for(const d of dummies){if(!d.alive||(!!d.inSky!==!!sky))continue;const dd=Math.abs(d.x-p.x)+((d.x-p.x)*p.face<0?120:0);if(dd<bd){bd=dd;best=d}}return best}
+function nHit(i){const c=NCH[i];p.ncombo=i;p.ncT=.6;C.atk++;act(c.s,c.a,{say:c.nm,c:i%2?NV:NC});p.queued=false;p.vx=p.face*c.lunge;
+ slash(c.k,i%2?NV:NC,{scale:i===6?1.5:1.15});popNum(i,i%2?NV:NC);spark(p.x+p.face*80,p.y-70,6+i*2,[NV,NC,'#fff'],320);shake=3+i;
+ if(i===7){p.vy=-660;p.ground=false;p.jumps=1;p.nair=0}}
+function nJump(){if(p.ground){if(K.down){act('nbflip','n_flip',{say:'BACKFLIP!',c:NV});p.vy=-760;p.vx=-p.face*380;p.inv=.4;p.ground=false;p.jumps=1;return true}
+  p.state='normal';p.vy=-730;p.ground=false;p.jumps=1;p.lastJump=now;setAnim('n_rise');spark(p.x,p.y,8,[NV,'#fff'],150);acted=true;return true}
+ if(p.jumps<3){p.jumps=Math.max(2,p.jumps+1);act('nflip','n_flip2',{say:p.jumps>=3?'TRIPLE FLIP!':'FLIP!',c:NV});p.vy=-640;spark(p.x,p.y-30,10,[NV,NC],180);extend();return true}return false}
+function nStep(){if(p.nstepCool>0||['nmorph','nstorm','hurt','respawn','wallrun'].includes(p.state))return false;
+ p.nsteps=(p.nstepT>0?p.nsteps:0)+1;p.nstepT=1;if(p.nsteps>=3)p.nstepCool=.7;
+ const d=nTarget(600),fx=p.x,fy=p.y;puffShadow(p.x,p.y);
+ if(d){const side=d.x>p.x?1:-1;p.x=clampX(d.x+side*80);p.face=d.x>p.x?1:-1;if(d.y<GROUND-40){p.y=d.y;p.ground=false;p.vy=-150}}
+ else p.x=clampX(p.x+p.face*280);
+ for(let k=1;k<=6;k++)ghosts.push({x:fx+(p.x-fx)*k/7,y:fy+(p.y-fy)*k/7,f:FR.n_step[0],face:p.face,l:.12+k*.03,blue:1});
+ act('nstep','n_step',{say:'SHADOW STEP!',c:NV});p.vx=p.face*160;p.inv=.3;C.atk++;slash('cross',NV,{scale:1.1});puffShadow(p.x,p.y);extend();return true}
+function nStorm(c){const list=dummies.filter(d=>d.alive&&!!d.inSky===!!sky&&Math.abs(d.x-p.x)<700).sort((a,b)=>Math.abs(a.x-p.x)-Math.abs(b.x-p.x));
+ const n=3+Math.round(c*3),seq=[];for(let i=0;i<n&&list.length;i++)seq.push(list[i%list.length]);
+ act('nstorm','n_a3',{say:'SHADOW STORM!',c:NV});p.storm={seq,i:0,t:.12,x0:p.x};p.inv=1.5;p.vx=0;p.vy=0;shake=10;flashT=.12;
+ for(let i=0;i<3;i++)waves.push({x:p.x,y:p.y-40*i,r:10+i*20,l:1,big:true})}
+function nThrow(){act('nthrow','n_throw',{say:'THROWING STARS!',c:NC});if(!p.ground)p.vy=Math.min(p.vy,-90);p.vx*=.4}
+function nAir(){if(p.nair>=6)return false;p.nair++;C.atk++;popNum(p.nair,p.nair%2?NV:NC);
+ if(p.nair===6){act('ndive','n_dive',{say:'FALLING STAR!',c:NC});p.vy=1150;p.vx=p.face*520;return true}
+ act('nair',p.nair%2?'n_air1':'n_air2',{say:p.nair>=4?'AIR FLURRY x'+p.nair+'!':'AIR FLURRY!',c:NV});p.vy=Math.min(p.vy,-190);p.vx=p.face*240;
+ slash(['down','up','flat','down','cross'][p.nair-1],p.nair%2?NV:NC,{scale:1.2});spark(p.x+p.face*70,p.y-70,8,[NV,NC]);return true}
+function nDash(dir){p.face=dir==='right'?1:-1;p.dashCool=.4;p.dashStart=now;if(!p.ground){if(p.airDash)return;p.airDash=true}
+ act('ndash','n_dash',{say:'SHADOW DASH!',c:NV});p.vx=p.face*1100;if(!p.ground)p.vy=-40;p.inv=.2;shake=4}
+function nCancel(){if(P.special){act('ncharge','n_charge');p.nc=0;return true}if(P.tail||P.swat||P.hiss){nThrow();return true}
+ if(P.jump&&nJump())return true;if(P.dash&&p.dashCool<=0&&!(p.airDash&&!p.ground)){nDash(P.dash);return true}return false}
+function nMoves(dir){
+ if(!p.wall&&p.y>WT+10&&p.x>=WALL_X-64&&K.right&&!K.down){act('wallrun','n_wall',{say:'WALL RUN!',c:NV});p.face=1;p.vx=0;p.jumps=1;p.airDash=false;return}
+ if(P.jump&&nJump())return;
+ if(!p.ground&&P.down&&!P.attack){act('ndive','n_dive',{say:'FALLING STAR!',c:NC});p.vy=1150;p.vx=p.face*(dir?520:150);return}
+ if(P.attack){if(!p.ground){if(K.down){act('ndive','n_dive',{say:'FALLING STAR!',c:NC});p.vy=1150;p.vx=p.face*520}else nAir();return}
+  if(K.up||K.down){nHit(7);return}nHit(p.ncT>0&&p.ncombo<6?p.ncombo+1:1);return}
+ if(P.special){act('ncharge','n_charge');p.nc=0;return}
+ if(P.tail||P.swat||P.hiss){nThrow();return}}
+function nState(S,dt,end,dir){switch(S){
+ case 'nmorph': p.vx*=Math.pow(.05,dt);if(p.t%.04<dt)spark(p.x+(Math.random()-.5)*90,p.y-Math.random()*120,2,[NV,NC,'#fff'],200);if(p.t>.5)p.state='normal';break;
+ case 'n1':case 'n2':case 'n3':case 'n4':case 'n5':case 'nrise':{p.vx*=Math.pow(.02,dt);if(S==='nrise'&&!p.ground)p.vx=0;if(P.attack)p.queued=true;
+  if(p.t>.1&&nCancel())break;
+  if(p.queued&&p.t>.13){p.queued=false;if(!p.ground){nAir()}else nHit(S==='nrise'?1:p.ncombo%6+1)}
+  else if(p.t>(S==='nrise'?.42:.34)||(S==='nrise'&&p.ground&&p.t>.15)){p.state='normal'}}break;
+ case 'n6': p.vx*=Math.pow(.05,dt);if(p.t%.05<dt)ghosts.push({x:p.x,y:p.y,f:FR.n_a6[p.fi],face:p.face,l:.2,blue:1});
+  if(p.t%.07<dt)slash(['down','up','flat'][Math.floor(p.t/.07)%3],Math.floor(p.t/.07)%2?NV:NC,{scale:1.2});
+  if(p.t>.42&&!p.shot){p.shot=true;for(const d of dummies)if(d.alive&&!!d.inSky===!!sky){const dx=(d.x-p.x)*p.face;if(dx>-40&&dx<200&&Math.abs(d.y-p.y)<170)hitDummy(d,'n6fin',p.face)}
+   shake=16;slowT=.18;flashT=.15;say('THOUSAND CUTS!!',NV,true);waves.push({x:p.x+p.face*80,y:p.y-60,r:10,l:1,big:true})}
+  if(p.t>.3&&nCancel())break;if(p.t>.62){p.state='normal';p.ncombo=0}break;
+ case 'nstep': p.vx*=Math.pow(.05,dt);if(!p.ground)p.vy=Math.min(p.vy,120);if(P.attack)p.queued=true;
+  if(p.t>.12){if(P.special){if(nStep())break}if(p.queued){p.queued=false;if(p.ground)nHit(p.ncombo%6+1);else nAir();break}if(nCancel())break}
+  if(p.t>.34)p.state='normal';break;
+ case 'ncharge': p.vx*=Math.pow(.03,dt);if(!p.ground)p.vy=Math.min(p.vy,60);p.nc=Math.max(0,Math.min(1,(p.t-.3)/.8));
+  if(p.t>.3&&p.t%.04<dt){const a=Math.random()*6.28;sparks.push({x:p.x+Math.cos(a)*80,y:p.y-60+Math.sin(a)*60,vx:-Math.cos(a)*160,vy:-Math.sin(a)*160,l:.4,c:Math.random()<.5?NV:NC})}
+  if(!K.special||p.t>2.4){if(p.t<.3){if(!nStep())p.state='normal'}else nStorm(p.nc)}break;
+ case 'nstorm':{const s=p.storm;p.vx=0;p.vy=0;s.t-=dt;
+  if(s.t<=0){if(s.i<s.seq.length){const d=s.seq[s.i],side=s.i%2?-1:1,fx=p.x,fy=p.y;
+    p.x=clampX(d.x+side*85);p.face=d.x>p.x?1:-1;p.y=Math.min(GROUND,d.y);
+    for(let k=1;k<=4;k++)ghosts.push({x:fx+(p.x-fx)*k/5,y:fy+(p.y-fy)*k/5,f:FR.n_a3[0],face:p.face,l:.1+k*.04,blue:1});
+    puffShadow(p.x,p.y);setAnim(s.i%2?'n_a4':'n_a3',true);slash(s.i%2?'up':'down',s.i%2?NC:NV,{scale:1.3});if(d.alive){d.hp=Math.max(2,d.hp);hitDummy(d,'nstorm',p.face)}s.i++;s.t=.15}
+   else{p.state='normal';p.vy=-320;p.ground=false;p.inv=.5;shake=18;slowT=.25;flashT=.25;say('SHADOW STORM!!',NV,true);burst(p.x,p.y-60);p.storm=null}}}break;
+ case 'nthrow': p.vx*=Math.pow(.05,dt);if(!p.ground)p.vy=Math.min(p.vy,100);
+  if(p.t>.1&&!p.shot){p.shot=true;for(const a of [-.13,0,.13])stars.push({x:p.x+p.face*60,y:p.y-85,vx:p.face*950*Math.cos(a),vy:950*Math.sin(a),r:0,l:.85,hit:new Set()});shake=3}
+  if(p.t>.16&&(P.tail||P.swat)){nThrow();break}if(p.t>.16&&nCancel())break;if(P.attack&&p.t>.14){if(p.ground)nHit(1);else nAir();break}if(p.t>.3)p.state='normal';break;
+ case 'nair': p.vy=Math.min(p.vy,140);if(p.t>.08&&P.attack){if(K.down){act('ndive','n_dive',{say:'FALLING STAR!',c:NC});p.vy=1150;p.vx=p.face*520}else nAir();break}
+  if(p.t>.1&&nCancel())break;if(p.t>.28||p.ground)p.state='normal';break;
+ case 'ndive': p.vy=1150;if(p.t%.03<dt)ghosts.push({x:p.x,y:p.y,f:FR.n_dive[0],face:p.face,l:.22,blue:1});
+  if(p.ground){areaHit(p.x,p.y,160,'ndive');shake=12;waves.push({x:p.x,y:p.y,r:10,l:1,big:true});spark(p.x,p.y,18,[NV,NC,'#fff'],380);act('land','n_land');p.vx=p.face*160}break;
+ case 'nflip':case 'nbflip': p.vx+=(dir*470-p.vx)*Math.min(1,dt*5);if(p.t%.04<dt)ghosts.push({x:p.x,y:p.y,f:FR[p.anim][p.fi],face:p.face,l:.16,blue:1});
+  if(P.attack){nAir();break}if(p.t>.08&&nCancel())break;if(P.down){act('ndive','n_dive',{say:'FALLING STAR!',c:NC});p.vy=1150;p.vx=p.face*520;break}
+  if(p.ground&&p.t>.1){act('land','n_land');break}if(end){p.state='normal'}break;
+ case 'wallrun': p.x=WALL_X-60;p.vx=0;p.vy=-640;p.face=1;if(p.t%.03<dt)sparks.push({x:WALL_X-2,y:p.y-20,vx:-60-Math.random()*80,vy:120,l:.3,c:Math.random()<.5?NV:NC});
+  if(P.jump){p.rotHold=0;act('nflip','n_flip2',{say:'WALL KICK!',c:NV});p.vy=-700;p.vx=-430;p.face=-1;p.jumps=1;extend('WALL KICK!');break}
+  if(!K.right||K.down){p.state='normal';p.vy=-100;break}
+  if(p.y<WT+24){act('nflip','n_flip2',{say:'FLIP OVER!',c:NV});p.x=WALL_X+15;p.y=WT-24;p.vy=-430;p.vx=200;p.jumps=1;break}break;
+ case 'ndash': if(p.ground)p.vy=0;else p.vy=Math.min(p.vy,60);if(p.t%.025<dt)ghosts.push({x:p.x,y:p.y,f:FR.n_dash[p.fi],face:p.face,l:.28,blue:1});
+  if(P.attack&&p.t>.04){if(p.ground)nHit(3);else nAir();break}if(p.t>.08&&(P.special||P.tail||P.jump)&&nCancel())break;
+  if(p.t>.24){p.state='normal';p.vx=p.face*380}break;
+ }}
+function nUpdate(dt){p.ncT-=dt;if(p.ncT<=0&&!NST.includes(p.state))p.ncombo=0;p.nstepT-=dt;p.nstepCool-=dt;
+ ninjaBtn&&ninjaBtn.classList.toggle('lit',!!p.ninja);
+ for(const s of stars){s.x+=s.vx*dt;s.y+=s.vy*dt;s.r+=dt*26;s.l-=dt;
+  for(const d of dummies)if(d.alive&&!!d.inSky===!!sky&&!s.hit.has(d)&&Math.abs(d.x-s.x)<42&&s.y>d.y-155&&s.y<d.y+5){s.hit.add(d);hitDummy(d,'nstar',Math.sign(s.vx));s.l=Math.min(s.l,.05);spark(s.x,s.y,8,[NC,'#fff'])}
+  for(const r of rats)if(!r.gone&&Math.abs(r.x-s.x)<30&&Math.abs(r.y-12-s.y)<30){r.scare=2.5;r.dir=Math.sign(s.vx);r.vy=-420;r.fl=.3;s.l=.05}
+  if((s.x>WALL_X-20&&s.y>WT&&s.vx>0)||s.x<10||s.x>VW+40){s.l=0;spark(s.x,s.y,6,[NC,'#fff'])}}
+ for(let i=stars.length-1;i>=0;i--)if(stars[i].l<=0)stars.splice(i,1)}
+function nDrawFx(){
+ for(const s of stars){ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.r);ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,s.l*4);
+  const g=ctx.createRadialGradient(0,0,2,0,0,26);g.addColorStop(0,'rgba(200,250,255,.9)');g.addColorStop(1,'rgba(120,80,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,26,0,6.283);ctx.fill();
+  ctx.globalCompositeOperation='source-over';ctx.fillStyle='#e8fbff';ctx.strokeStyle='#5a3fb0';ctx.lineWidth=2;ctx.beginPath();
+  for(let k=0;k<8;k++){const a=k*Math.PI/4,r=k%2?5:16;ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()}
+ if(p.state==='ncharge'&&p.t>.3){const ch=p.nc;ctx.save();ctx.globalCompositeOperation='lighter';const R2=40+70*ch+Math.sin(now*30)*4;
+  const g=ctx.createRadialGradient(p.x,p.y-60,6,p.x,p.y-60,R2);g.addColorStop(0,'rgba(200,160,255,.85)');g.addColorStop(1,'rgba(90,40,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y-60,R2,0,6.283);ctx.fill();
+  ctx.strokeStyle=NC;ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x,p.y-60,30+50*ch,now*6,now*6+4.5);ctx.stroke();ctx.restore();
+  ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(p.x-50,p.y-185,100,9);ctx.fillStyle=ch>=1?'#fff':NV;ctx.fillRect(p.x-50,p.y-185,100*ch,9)}
+ if(p.state==='nmorph'){const u=Math.min(1,p.t/.5);ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.sin(u*Math.PI)*.8;
+  const g=ctx.createRadialGradient(p.x,p.y-60,10,p.x,p.y-60,150);g.addColorStop(0,'rgba(220,190,255,.9)');g.addColorStop(1,'rgba(100,60,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y-60,150,0,6.283);ctx.fill();ctx.restore()}}
