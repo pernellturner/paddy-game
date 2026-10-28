@@ -3,6 +3,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"><link rel="icon" href="assets/s1_05.png"><title>Paddy – move test</title>
 <style>
 @font-face{font-family:'Bangers';src:url(fonts/Bangers.woff2) format('woff2');font-display:block}
+@font-face{font-family:'Kanji';src:url(fonts/Kanji.woff2) format('woff2');font-display:block}
 html,body{margin:0;height:100%;overflow:hidden;background:#87c6f0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;font-family:system-ui,sans-serif}
 canvas{display:block;width:100vw;height:100vh;height:100dvh}
 #ui{position:fixed;inset:0;pointer-events:none}
@@ -36,7 +37,7 @@ body.ov #moves{display:block}
 #rot{display:flex}}
 </style></head><body>
 <canvas id="c"></canvas>
-<div style="position:absolute;opacity:0;font-family:Bangers">.</div><div id="lbl">idle</div>
+<div style="position:absolute;opacity:0;font-family:Bangers">.</div><div style="position:absolute;opacity:0;font-family:Kanji">斬侍風桜必殺一閃返し</div><div id="lbl">idle</div>
 <div id="hint">press ? for moves</div>
 <div id="ui">
  <div class="b" data-k="left"  style="left:calc(16px + env(safe-area-inset-left));bottom:24px">◀</div>
@@ -48,9 +49,8 @@ body.ov #moves{display:block}
  <div class="b s" data-k="hunt" style="right:calc(176px + env(safe-area-inset-right));bottom:44px">Hunt</div>
  <div class="b s" data-k="tail" style="right:calc(176px + env(safe-area-inset-right));bottom:108px">Tail</div>
  <div class="b s" data-k="blink" style="right:calc(236px + env(safe-area-inset-right));bottom:44px">Blink</div>
- <div class="b s t" data-k="morph" style="right:calc(176px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🥷</div>
+ <div class="b s t" data-k="morph" style="right:calc(64px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🥷</div>
  <div class="b s t" id="mute" style="right:calc(120px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🔊</div>
- <div class="b s t" data-k="tiger" style="right:calc(64px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🐯</div>
  <div class="b s t" id="qbtn" style="right:calc(8px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">?</div>
 </div>
 <div id="moves"><div class="box"><button id="mclose">✕</button><h2>Paddy's moves</h2>
@@ -81,24 +81,16 @@ body.ov #moves{display:block}
 <tr><td>Dive claw</td><td>↓ + ←/→ in the air (or X while diving)</td><td>▼ + ◀/▶ in the air</td></tr>
 <tr><td>Hunt mode / Stalk</td><td>Q / V</td><td>Hunt</td></tr>
 <tr><td>Butt-wiggle + Pounce</td><td>X in hunt mode</td><td>Claw in hunt mode</td></tr>
-<tr><td>Catch a rat → carry it</td><td>pounce / claw / swat a rat · ↓ drops it</td><td>same · ▼ drops it</td></tr>
-<tr><td><b>Eat the rat → SNACK RUSH</b> (15 s: faster, higher jumps, double combo damage)</td><td>B (or X while carrying a rat)</td><td>tap Claw while carrying a rat</td></tr>
 <tr><td>Tail whip chain: Tail Whip → Double Whip → TAIL LAUNCHER (3rd one launches you both up)</td><td>T / L ×3 (in rhythm)</td><td>Tail ×3</td></tr>
 <tr><td>Meow (small sound wave)</td><td>tap C / K</td><td>tap Meow</td></tr>
 <tr><td>SONIC MEOW!! (longer hold = bigger)</td><td>hold C / K, release</td><td>hold Meow, release</td></tr>
-<tr><td>Paw Pop (launcher: pops posts and rats up)</td><td>↓ + X</td><td>▼ + Claw</td></tr>
+<tr><td>Paw Pop (launcher: pops the Rottweiler up)</td><td>↓ + X</td><td>▼ + Claw</td></tr>
 <tr><td>Swat</td><td>R</td><td>Swat button in this list</td></tr>
 <tr><td><b>Air combos &amp; JUGGLES</b></td><td>launch with Uppercut, Super Leap or Paw Pop, then jump and chain X (air swipes, air spin), ↓+←/→ dive claw — each air hit lifts you both higher — keep going and you rise past the clouds, sunset and into SPACE (altitude meter on the right)</td><td>same with Jump / Claw / ▼</td></tr>
 <tr><td>Hiss</td><td>↓ + C (or E)</td><td>▼ + Meow</td></tr>
 <tr><td>Zoomies</td><td>Z</td><td>button below</td></tr>
-<tr><td>Fire Tiger (20 s)</td><td>G (again = back early)</td><td>🐯</td></tr>
-<tr><td>Tiger claw chain (6 hits, fire slashes, repeats)</td><td>X X X …</td><td>Claw Claw Claw …</td></tr>
-<tr><td>Tiger mix-ins during the chain</td><td>C = Fireball · T = Roar Wave · ↓+X or dash = Flame Pounce</td><td>Meow · Tail · ▼+Claw</td></tr>
-<tr><td>Tiger air chain</td><td>X in the air (up to 4)</td><td>Claw in the air</td></tr>
-<tr><td>TIGER POWER UP (double damage ~8 s)</td><td colspan="2">automatic at a 10-hit combo while you're the tiger</td></tr>
-<tr><td><b>SKY BATTLE</b> (tiger)</td><td>hold ↑ + X near a post → fight in the sky: X / Space / C / T · ↓+X = Meteor Slam back down</td><td>hold Jump + Claw → Claw / Jump / Meow / Tail · ▼+Claw = slam</td></tr>
 <tr><th colspan="3" style="color:#c9a7ff">🥷 NEON NINJA (cyborg form)</th></tr>
-<tr><td>Become the Neon Ninja / back to Paddy</td><td>M or 3</td><td>🥷 (top right)</td></tr>
+<tr><td>Change form: Paddy → Neon Ninja → Samurai → Paddy (morph mid-combo = Transform Strike)</td><td>M (cycles) · 3 = Ninja · 4 = Samurai (same key again = back to Paddy)</td><td>top-right form button (shows the next form)</td></tr>
 <tr><td>Ninja run, Jump, FLIP (2nd jump), TRIPLE FLIP (3rd jump)</td><td>← → · Space / ↑ up to 3 times</td><td>◀ ▶ · Jump up to 3 times</td></tr>
 <tr><td>BACKFLIP (dodges hits)</td><td>↓ + Space</td><td>▼ + Jump</td></tr>
 <tr><td>WALL RUN → Flip Over or WALL KICK</td><td>hold → into the wall · Space to kick off</td><td>hold ▶ into the wall · Jump</td></tr>
@@ -106,26 +98,45 @@ body.ov #moves{display:block}
 <tr><td><b>NEON ECLIPSE</b> (perfect 8th hit: darkness, 10 shadow-clone strikes, giant crescent, light pillar)</td><td>keep the perfect timing through hit 7 → 8</td><td>same on Claw</td></tr>
 <tr><td>RISING CRESCENT (launcher – then juggle in the air)</td><td>↑ + X or ↓ + X</td><td>▼ + Claw</td></tr>
 <tr><td>AIR FLURRY (keeps going while it keeps hitting – rises higher and higher) → FALLING STAR dive</td><td>X in the air · ↓ + X or ↓ in the air = dive</td><td>Claw in the air · ▼</td></tr>
-<tr><td>SHADOW STEP (teleport behind the nearest post and strike, up to 3 in a row)</td><td>tap C, or N / Ctrl</td><td>tap Meow, or Blink</td></tr>
-<tr><td><b>SHADOW STORM</b> (hold to charge: teleports between posts striking 3–6 times)</td><td>hold C, release</td><td>hold Meow, release</td></tr>
+<tr><td>SHADOW STEP (teleport behind the Rottweiler and strike, up to 3 in a row)</td><td>tap C, or N / Ctrl</td><td>tap Meow, or Blink</td></tr>
+<tr><td><b>SHADOW STORM</b> (hold to charge: teleports around the Rottweiler striking 3–6 times)</td><td>hold C, release</td><td>hold Meow, release</td></tr>
 <tr><td>THROWING STARS (3 at once, ground or air)</td><td>T / L (or R / E)</td><td>Tail</td></tr>
 <tr><td>SHADOW DASH (hits as you pass, X during it = Spiral Cut)</td><td>double-tap ← / →</td><td>double-tap ◀ / ▶</td></tr>
 <tr><td>Mix it up</td><td colspan="2">almost any ninja move cancels into Jump, Shadow Step, Throwing Stars or Dash after a split second, so chains flow</td></tr>
+<tr><th colspan="3" style="color:#ff6b6b">⚔️ SAMURAI PADDY (red armour, katana) — big moves flash kanji</th></tr>
+<tr><td>Become Samurai Paddy (draws his sword · 侍 SAMURAI)</td><td>4 (or M twice)</td><td>form button until ⚔️</td></tr>
+<tr><td>Run, Jump, FLIP (2nd jump)</td><td>← → · Space / ↑ twice</td><td>◀ ▶ · Jump twice</td></tr>
+<tr><td>8-hit katana chain: Horizontal Cut → Diagonal Cut → Overhead Chop, then PERFECT timing: Rising Moon → Whirlwind Spin → Piercing Thrust → Cross Slash (斬)</td><td>X ×3, then X as each cut lands (green ring)</td><td>Claw ×3, then on the ring</td></tr>
+<tr><td><b>ISSEN — ONE FLASH</b> (perfect 8th hit: Jumping Cleave, he sheathes his sword, the world goes still, one flash dash straight through, cuts appear, sword clicks home → 必殺)</td><td>keep the perfect timing through hit 7 → 8</td><td>same on Claw</td></tr>
+<tr><td>RISING DRAGON (launcher – then juggle)</td><td>↑ + X or ↓ + X</td><td>▼ + Claw</td></tr>
+<tr><td>AIR SLASHES (keep going while they keep hitting, rising higher; every 6th = 風 Wind Spiral) → FALLING CLEAVE dive</td><td>X in the air · ↓ + X or ↓ in the air</td><td>Claw in the air · ▼</td></tr>
+<tr><td>IAIDO QUICK DRAW (sheathed stance, then a flash-dash straight through; a moment later the cut lands → 一閃)</td><td>double-tap ← / →, or N / Ctrl</td><td>double-tap ◀ / ▶, or Blink</td></tr>
+<tr><td>GUARD / PARRY (guard just as he attacks = PERFECT PARRY → 返し counter, and your next X jumps to Rising Moon) · X while guarding = Counter</td><td>T / L (hold to keep guarding)</td><td>Tail</td></tr>
+<tr><td>WIND SLASH (flying crescent · 風)</td><td>tap C / K</td><td>tap Meow</td></tr>
+<tr><td>GALE SLASH (half charge · 風) · <b>SAKURA STORM</b> (full charge: petal whirlwind of hits, big launch · 桜)</td><td>hold C / K (kneels and powers up), release</td><td>hold Meow, release</td></tr>
+<tr><td>Mix it up</td><td colspan="2">most samurai moves cancel into Jump, Guard, Iaido, Wind Slash or the launcher after a split second</td></tr>
 <tr><th colspan="3" style="color:#ffe14d">⚡ COMBO STRINGS (C = Claw, T = Tail, M = Morph, each within ~¾ s — inputs show at the bottom)</th></tr>
 <tr><td>TRANSFORM STRIKE (morph mid-combo or mid-air: flashy hit, combo keeps going)</td><td>M during a combo / juggle</td><td>🥷 during a combo</td></tr>
-<tr><td>TAIL TWISTER (Paddy) · STAR VOLLEY (Ninja)</td><td>T T T</td><td>Tail ×3</td></tr>
-<tr><td>TAIL SPIN SLAM (Paddy) · SHADOW CLONE BARRAGE (Ninja)</td><td>C C C T T</td><td>Claw ×3, Tail ×2</td></tr>
-<tr><td>CLAW CYCLONE (Paddy) · NINJA TORNADO (Ninja)</td><td>T T T C C C</td><td>Tail ×3, Claw ×3</td></tr>
-<tr><td>PHANTOM PARADE</td><td>C C M C C</td><td>Claw ×2, 🥷, Claw ×2</td></tr>
+<tr><td>TAIL TWISTER (Paddy) · STAR VOLLEY (Ninja) · TRIPLE WIND (Samurai, T = Guard)</td><td>T T T</td><td>Tail ×3</td></tr>
+<tr><td>TAIL SPIN SLAM (Paddy) · SHADOW CLONE BARRAGE (Ninja) · PARRY BREAKER (Samurai)</td><td>C C C T T</td><td>Claw ×3, Tail ×2</td></tr>
+<tr><td>CLAW CYCLONE (Paddy) · NINJA TORNADO (Ninja) · SAKURA CYCLONE (Samurai)</td><td>T T T C C C</td><td>Tail ×3, Claw ×3</td></tr>
+<tr><td>PHANTOM PARADE · PHANTOM IAIDO (if it ends on Samurai: three flash-dashes through him)</td><td>C C M C C</td><td>Claw ×2, 🥷, Claw ×2</td></tr>
 <tr><td>SHAPESHIFT STAR STORM</td><td>C C C C M T T</td><td>Claw ×4, 🥷, Tail ×2</td></tr>
+<tr><td>BLADE DANCE (Samurai only · 斬)</td><td>C T C T C</td><td>Claw, Tail, Claw, Tail, Claw</td></tr>
+<tr><td>HUNDRED PETALS (Samurai only · 桜)</td><td>C C T T C C</td><td>Claw ×2, Tail ×2, Claw ×2</td></tr>
 <tr><td><b>FINISH HIM!!</b> (cinematic finisher)</td><td>T T T (launch) T T T M M</td><td>Tail ×6, 🥷 ×2</td></tr>
+<tr><th colspan="3" style="color:#ffb070">🐶 THE ARMOURED ROTTWEILER (training partner)</th></tr>
+<tr><td>What he does</td><td colspan="2">plods towards you, then: a BIG PUNCH (glows red with a “!” first – lots of time to dodge or guard), a BITE (licks his lips first), or a BARK (a little shockwave that makes you dizzy for a moment – jump over it). Hitting him interrupts him. He's slow and only does small damage.</td></tr>
+<tr><td>Juggle him</td><td colspan="2">launch him with any launcher and keep him up with air hits – he tumbles around in his armour</td></tr>
+<tr><td>Knock him out</td><td colspan="2">empty his health bar → cartoon K.O. with dizzy stars, he sits up confused, wags his tail happily and gets back up with full health</td></tr>
+<tr><td>Silly dog stuff</td><td colspan="2">leave him alone and he sniffs his own bum, scratches behind his ear, chases his tail or does a goofy howl</td></tr>
 <tr><td>Nine lives</td><td colspan="2">paw icons top-left; 3 hurts = lose a life, then a gentle respawn</td></tr>
 <tr><td>Hurt / Victory</td><td>H / Y (victory also after a 10+ combo)</td><td>buttons below</td></tr>
 <tr><td>Idle: groom, stretch, sit &amp; tail flick, sniff, loaf</td><td colspan="2">stand still ~4 seconds</td></tr>
 </table>
 <p>Try now: <button data-try="zoomies">Zoomies</button><button data-try="hiss">Hiss</button><button data-try="swat">Swat</button><button data-try="victory">Victory</button><button data-try="hurtTest">Hurt</button></p>
-<p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = scare rats away and push the posts · <b>Swat</b> = quick low paw (good for rats) · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
-<p class="tip">Hit the scratching posts to build combos (keep hitting within ~1.2 s).</p></div></div>
+<p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
+<p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p></div></div>
 <div id="rot">🔄 Turn your phone sideways to play with Paddy</div>
 <script src="game.js"></script>
 <script>
