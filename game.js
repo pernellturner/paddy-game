@@ -114,7 +114,7 @@ const huntBtn=document.querySelector('[data-k=hunt]');
 function update(dt){
  now+=dt;p.t+=dt;p.cool-=dt;p.dashCool-=dt;p.wj-=dt;p.dj-=dt;p.startT-=dt;
  const dir=(K.right?1:0)-(K.left?1:0);p.holdT=dir?p.holdT+dt:0;
- if(P.morph)cycleForm();if(P.formN)setForm(1);if(P.formS)setForm(2);nUpdate(dt);r6Update(dt);r8Update(dt);
+ if(P.morph)cycleForm();if(P.formN)setForm(1);if(P.formS)setForm(2);nUpdate(dt);r6Update(dt);r8Update(dt);r9Pre(dt);
  p.blend-=dt;
  for(const f of puffs){f.x+=f.vx*dt;f.y+=f.vy*dt;f.r+=dt*30;f.l-=dt}for(let i=puffs.length-1;i>=0;i--)if(puffs[i].l<=0)puffs.splice(i,1);
  p.inv-=dt;p.blinkCool-=dt;p.keepT-=dt;p.hang-=dt;if(hitNum){hitNum.l-=dt*1.4;if(hitNum.l<=0)hitNum=null}flashT-=dt;
@@ -129,7 +129,7 @@ function update(dt){
   if(P.dash&&p.dashCool<=0){if(['claw','swat','tailwhip'].includes(p.state)){p.face=P.dash==='right'?1:-1;dashStrike()}else doDash(P.dash)}
   else if((P.jump&&p.ground)||(P.down&&!p.ground)||(P.attack&&(K.up||!p.ground)&&p.state!=='claw'&&p.state!=='airspin')||(P.attack&&K.up&&p.ground)||((P.special||(P.tail&&p.state!=='tailwhip'))&&!['meow','hiss','finisher'].includes(p.state))){p.state='normal';p.combo=0}
  }
- const MAXT={eclipse:4.5,finishhim:3.5,nmorph:1,ncharge:3,nstorm:3,wallrun:2.2,nflip:2,nbflip:2,ndive:2,bunny:4.5,barge:1,sfinal:4.5,sparry:1.5,scharge:3.5,ssuper:2,siaido:1.2,sdraw:1,zoomies:3,manner:5,hurt:3,respawn:4,mcharge:3.5,jcharge:4.5,superleap:2,ledge:1.5,victory:2.5,finisher:2.5};
+ const MAXT={lk:1.3,lkult:4.2,eclipse:4.5,finishhim:3.5,nmorph:1,ncharge:3,nstorm:3,wallrun:2.2,nflip:2,nbflip:2,ndive:2,bunny:4.5,barge:1,sfinal:4.5,sparry:1.5,scharge:3.5,ssuper:2,siaido:1.2,sdraw:1,zoomies:3,manner:5,hurt:3,respawn:4,mcharge:3.5,jcharge:4.5,superleap:2,ledge:1.5,victory:2.5,finisher:2.5};
  if(p.state!=='normal'&&p.t>(MAXT[p.state]||2.5)){console.warn('safety net: reset from',p.state);p.state='normal';p.wall=false;p.vx=0;p.combo=0;p.jc=0;p.mc=0;if(!p.ninja&&p.anim.startsWith('n_'))setAnim('idle');if(!p.sam&&p.anim.startsWith('s_'))setAnim('idle');p.rot=0}
  const S=p.state,end=p.t>dur(p.anim);
  switch(S){
@@ -194,7 +194,7 @@ function update(dt){
  case 'pawpop': if(p.t>.45||(p.ground&&p.t>.12))p.state='normal';break;
  case 'barge': p.vx*=Math.pow(.15,dt);if(p.t%.025<dt){ghosts.push({x:p.x,y:p.y,f:FR.barge[p.fi],face:p.face,l:.3});puffs.push({x:p.x-p.face*40,y:p.y-50,vx:-p.face*60,vy:0,r:10,l:.4,dark:1})}if(p.t>.4)p.state='normal';break;
  case 'bunny': bunnyState(dt);break;
- default: if(NST.includes(S))nState(S,dt,end,dir);else if(SST.includes(S))sState(S,dt,end,dir);else if(S==='stun'){p.vx*=Math.pow(.05,dt);if(p.t>.45)p.state='normal'}break;
+ default: if(S==='lk')lkState(dt);else if(S==='lkult')ultState(dt);else if(NST.includes(S))nState(S,dt,end,dir);else if(SST.includes(S))sState(S,dt,end,dir);else if(S==='stun'){p.vx*=Math.pow(.05,dt);if(p.t>.45)p.state='normal'}break;
  }
  if(p.state==='normal'){
   const T=false,N=p.ninja||p.sam,running=K.run||(touchMode&&p.holdT>.6)||N,spd=p.hunt?110:p.ninja?470:p.sam?430:260*(running?1.6:1),JB=1;
@@ -235,9 +235,9 @@ function update(dt){
   }
   if(p.state==='normal'){
    if(p.sam){ if(!p.ground)setAnim(p.vy<0?'s_rise':'s_fall');else setAnim(Math.abs(p.vx)>25?'s_run':'s_idle') }
-   else if(N){ if(!p.ground)setAnim(p.vy<0?'n_rise':'n_fall');else setAnim(Math.abs(p.vx)>25?'n_run':'n_idle') }
+   else if(N){ if(!p.ground)setAnim(p.vy<-260?'n_rise':p.vy<200?'n_apex':'n_fall');else setAnim(Math.abs(p.vx)>25?'n_run':'n_idle') }
    else if(p.wall)setAnim('climb');
-   else if(!p.ground)setAnim(p.wj>0?'walljump':p.dj>0?'djump':p.vy<0?'jump':'fall');
+   else if(!p.ground)setAnim(p.wj>0?'walljump':p.dj>0?'djump':p.vy<-260?'jump':p.vy<200?'apex':'fall');
    else if(p.hunt)setAnim('stalk');
    else if(!K.down){const v=Math.abs(p.vx);
     setAnim(p.startT>0?'start':v>300?'run':v>25?'walk':'idle')}
@@ -246,7 +246,7 @@ function update(dt){
   }
  }
  // physics
- if(!p.wall&&!['wingdash','dive','diveclaw','ledge','wallrun','nstorm','eclipse','finishhim'].includes(p.state))p.vy+=(p.state==='airspin'?600:p.hang>0?700:1900)*dt;
+ if(!p.wall&&!['wingdash','dive','diveclaw','ledge','wallrun','nstorm','eclipse','finishhim','lkult'].includes(p.state))p.vy+=(p.state==='airspin'?600:p.hang>0?700:1900)*dt;
  if(p.state!=='ledge'){p.x+=p.vx*dt;p.y+=p.vy*dt;}
  if(p.state!=='ledge'&&p.y>WT+2&&p.x>WALL_X-60&&p.x<WALL_X+60){p.x=WALL_X-60;if(p.state==='zoomies')p.face=-1} // wall side
  if(p.vy>2200)p.vy=2200;
@@ -265,6 +265,7 @@ function update(dt){
  const fr=FR[p.anim]||FR.idle,a=A[p.anim]||A.idle;
  let fps=a[2];if(p.anim==='stalk')fps*=Math.min(1,Math.abs(p.vx)/80);if(p.anim==='climb'&&p.vy>=0)fps=0;
  if(p.state!=='ledge')p.ft+=dt*fps;p.fi=a[3]?Math.floor(p.ft)%fr.length:Math.min(fr.length-1,Math.floor(p.ft));
+ {const nf=fr[p.fi];if(p.lastF&&nf!==p.lastF&&p.lastA===p.anim&&!(p.blend>0)){p.fPrev=p.lastF;p.fB=.045}p.lastF=nf;p.lastA=p.anim;p.fB=(p.fB||0)-dt}
  if(p.anim==='jump'&&p.vy>-200)p.fi=fr.length-1;
  if(p.anim==='pounce')p.fi=p.vy<0?0:1;
  for(const w of waves){w.r+=dt*(w.big?900:600);w.l-=dt*2.2}for(let i=waves.length-1;i>=0;i--)if(waves[i].l<=0)waves.splice(i,1);
@@ -310,6 +311,7 @@ function draw(){
  const mu=p.state==='nmorph'?Math.min(1,p.t/(p.mquick?.28:.5)):1;if(mu<1&&p.mfrom)drawFrame(p.mfrom,p.x,p.y,p.face,1-mu*mu*(3-2*mu));
  const sq=1;
  ctx.save();ctx.translate(p.x,p.y-(p.rot?60:0));ctx.rotate(p.rot||0);ctx.scale(2-sq,sq);ctx.translate(-p.x,-p.y+(p.rot?60:0));if(p.inv>0&&Math.floor(now*20)%2)ctx.globalAlpha=.45;
+ if(p.fB>0&&p.fPrev&&mu>=1&&!p.hunt)drawFrame(p.fPrev,p.x+(p.wall?40:p.state==='wallrun'?14:0),p.y,p.face,.32*p.fB/.045);
  drawFrame((FR[p.anim]||FR.idle)[p.fi],p.x+(p.wall?40:p.state==='wallrun'?14:0),p.y,p.face,mu<1?mu*mu*(3-2*mu):p.hunt?.55:(p.blend>0?1-.5*p.blend/.1:null));ctx.restore();
  for(const f of puffs){ctx.globalAlpha=Math.max(0,f.l)*(f.dark?.8:1);ctx.fillStyle=f.dark?'#3a2d4f':'#fff';ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,6.28);ctx.fill()}ctx.globalAlpha=1;
  // shots
@@ -375,7 +377,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='8b',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='9a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
 function drawLoading(){if(started)return;requestAnimationFrame(drawLoading);const S=window.SPRITES,u=S&&S.total?(S.loaded+S.failed.length)/S.total:0;
@@ -764,7 +766,7 @@ const SFX=[],sProj=[],dWaves=[];let kanji=null;
 function sLine(x0,y0,x1,y1,col,l,w){SFX.push({t:'line',x0,y0,x1,y1,col,l,l0:l,w})}
 function petals(x,y,n,boom){for(let i=0;i<n;i++){const a=Math.random()*6.283,v=(boom?160:60)+Math.random()*(boom?420:140);SFX.push({t:'petal',x:x+(Math.random()-.5)*30,y:y+(Math.random()-.5)*30,vx:Math.cos(a)*v,vy:Math.sin(a)*v-40,r:Math.random()*6,vr:(Math.random()-.5)*12,l:1+Math.random()*.8,s:.7+Math.random()*.6,c:Math.random()<.25?'#ffffff':Math.random()<.5?'#ffc1dc':'#ff8fbf'})}}
 function kanjiFx(k,en,col,o){const busy=cine.card&&cine.card.t<2;kanji={k,en,col:col||'#c8102e',t:0,x:(o&&o.x)||VW*.2,y:(o&&o.y)||(busy?VH*.13:VH*.34),size:(o&&o.size)||(k.length>1?96:124)}}
-document.fonts&&document.fonts.load(`80px Kanji`,'斬侍風桜必殺一閃返し').catch(()=>{});
+document.fonts&&document.fonts.load(`80px Kanji`,'斬侍風桜必殺一閃返し気月').catch(()=>{});
 function sFx(i,c){const sc=1.05+(i-1)*.09;
  if(c.k==='thrust'){sLine(p.x+p.face*30,p.y-80,p.x+p.face*330,p.y-80,SR,.32,16);sLine(p.x+p.face*60,p.y-80,p.x+p.face*300,p.y-80,SW,.28,6);slash('flat',SW,{lvl:i,scale:.8,dx:150});for(let k=1;k<=4;k++)ghosts.push({x:p.x-p.face*k*34,y:p.y,f:(FR[c.a]||FR.s_idle)[1]||(FR[c.a]||FR.s_idle)[0],face:p.face,l:.08+k*.03,blue:1})}
  else slash(c.k,c.c,{lvl:i,scale:sc,delay:.03,dx:88,col2:SR});
@@ -884,7 +886,7 @@ function sStrFx(fx){
  if(fx==='hundred'){p.hund={t:1.1,k:0,tg:nTarget(800)};kanjiFx('桜','HUNDRED PETALS','#ff3d8e');petals(p.x,p.y-90,50,1);return true}
  return false}
 // ---- forms: Paddy -> Neon Ninja -> Samurai ----
-function setForm(f){if(p.state==='nmorph'&&p.t<.18){p.morphQ=f+1;return}if(['eclipse','finishhim','sfinal','respawn','bunny','ledge'].includes(p.state))return;
+function setForm(f){if(p.state==='nmorph'&&p.t<.18){p.morphQ=f+1;return}if(['eclipse','finishhim','sfinal','respawn','bunny','ledge','lkult'].includes(p.state))return;
  const cur=p.sam?2:p.ninja?1:0;if(f===cur)f=0;if(f===cur)return;
  const from=(FR[p.anim]||FR.idle)[p.fi];p.ninja=f===1;p.sam=f===2;p.hunt=false;huntBtn&&huntBtn.classList.remove('lit');p.wall=false;p.combo=0;p.ncombo=0;p.scombo=0;p.rot=0;p.scyc=null;
  const L=[['idle','back to Paddy','#ffe08a',['#ffe08a','#fff']],['n_idle','NEON NINJA!',NV,[NV,NC,'#fff']],['s_draw','SAMURAI PADDY!',SR,[SR,SG,SP,'#fff']]][f];
@@ -899,7 +901,7 @@ function stunMe(dir){p.state='stun';p.t=0;acted=true;setAnim(p.sam?'s_hurt':p.ni
 function dAnim(d,a){if(d.anim!==a){const cf=(FR[d.anim]||[])[d.fi];if(cf){d.prevF=cf;d.prevFs=d.fs;d.blend=.12}d.anim=a;d.ft=0;d.fi=0}}
 function dSet(d,st,a){if(d.st!==st){d.st=st;d.t=0}if(a)dAnim(d,a)}
 function dogHit(d,move,air){d.aggro=7;d.hitT=now;d.bub=null;if(!d.alive)return;d.st=air||d.vy<-200?'air':'hurt';d.t=0;d.cool=Math.max(d.cool,1.5)}
-function dogStrike(d,dmg,kind){if(p.inv>0||CINE.includes(p.state)||['respawn','nmorph','stun'].includes(p.state))return false;const dir=Math.sign(p.x-d.x)||-1;
+function dogStrike(d,dmg,kind){if(p.inv>0||CINE.includes(p.state)||['respawn','nmorph','stun','lk'].includes(p.state))return false;const dir=Math.sign(p.x-d.x)||-1;
  if(p.state==='sparry'){p.face=d.x>p.x?1:-1;if(p.t<.25){d.stun=1.3;dSet(d,'hurt','r_hurt');d.vx=-dir*260;d.cool=2.6;sRiposte(true,d)}else{say('BLOCKED!','#cfe3ff');p.vx=dir*220;spark(p.x-dir*40,p.y-80,12,['#cfe3ff','#fff'],260);shake=Math.max(shake,5)}return true}
  if(kind==='bark'){stunMe(dir);return true}
  comboEnd(true);p.hp=Math.max(0,p.hp-dmg);if(p.hp<=.01){p.hp=3;p.wall=false;loseLife();return true}
@@ -1012,5 +1014,252 @@ function drawKanji(){if(!kanji)return;const k=kanji,t=k.t,inn=1-Math.pow(1-Math.
  const sc=1.6-.6*inn;ctx.globalAlpha=out*Math.min(1,t/.08);ctx.scale(sc,sc);ctx.font=`${S}px Kanji,'Noto Serif CJK JP','Hiragino Mincho ProN','Yu Mincho',serif`;ctx.textAlign='center';ctx.textBaseline='middle';
  ctx.lineJoin='round';ctx.lineWidth=S*.12;ctx.strokeStyle='#fff';ctx.strokeText(k.k,0,-S*.04);ctx.fillStyle='#160606';ctx.fillText(k.k,0,-S*.04);ctx.restore();
  fancy(k.en,k.x,k.y+S*.62,26,-.04,1,out*Math.min(1,Math.max(0,(t-.08)/.12)),'#fff')}
+
+// ===================== ROUND 9: OPENER COMBOS · LINKS ON THE BEAT · ULTIMATES · PRACTICE · SMOOTHER KITTY + NINJA =====================
+// smoother locomotion: new 8-frame runs, 6-frame jump arcs (rise -> apex -> fall -> land) for Kitty and Ninja
+Object.assign(A,{run:['k_run',null,15,1],jump:['k_jump',[1,2],9,0],apex:['k_jump',[3],1,0],fall:['k_jump',[4],1,0],land:['k_jump',[5],1,0],
+ n_run:['nk_run',null,16,1],n_rise:['nk_jump',[1,2],9,0],n_apex:['nk_jump',[3],1,0],n_fall:['nk_jump',[4],1,0],n_land:['nk_jump',[5],1,0],
+ k_spin:['k_spin',null,17,0],k_meow:['k_meow',[1,2,3,4],11,0],k_lunge:['k_blink',[1,2,3,4],15,0],k_blink:['k_blink',[2,3,4,5],15,0],
+ k_ultA:['k_ult',[0],1,0],k_ultB:['k_ult',[1,2],7,0],k_ultC:['k_ult',[3],1,0],k_ultD:['k_ult',[4],1,0],k_ultE:['k_ult',[5],1,0],
+ nk_spin:['nk_spin',null,17,0],nk_meow:['nk_meow',[1,2,3,4],11,0],nk_lunge:['nk_blink',[1,2,3,4],15,0],nk_blink:['nk_blink',[2,3,4,5],15,0],
+ nk_ultA:['nk_ult',[0],1,0],nk_ultB:['nk_ult',[1,2],7,0],nk_ultC:['nk_ult',[3],1,0],nk_ultD:['nk_ult',[4],1,0],nk_ultE:['nk_ult',[5],1,0],
+ s_spin:['s_combo_b',[2,3,4],14,0],s_kiai:['s_parry_charge',[4,5],8,0],s_cut:['s_combo_a',[2,3],14,0]});
+ESSENTIAL.push('apex','n_rise','n_fall','n_run');
+const LKW=.24,LKD=.62; // link window opens at LKW (ring goes green, beat chime) and the move lets go at LKD
+// per form: what each button does as a LINK, and its upgraded version when you press the same button twice in a row
+const LKF=[
+ {col:'#ff9ad5',col2:'#ffe14d',C:{nm:'POUNCE CLAW!',a:'k_lunge'},CC:{nm:'SKY SCRATCH!',a:'k_lunge'},T:{nm:'TAIL SPIN!',a:'k_spin'},TT:{nm:'TAIL TORNADO!',a:'k_spin'},
+  M:{nm:'MEOW BLAST!',a:'k_meow'},MM:{nm:'MEGA MEOW!',a:'k_meow'},B:{nm:'BLINK SLASH!',a:'k_blink'},BB:{nm:'DOUBLE BLINK!',a:'k_blink'}},
+ {col:NV,col2:NC,C:{nm:'VOLT FANG!',a:'nk_lunge'},CC:{nm:'CRESCENT FANG!',a:'nk_lunge'},T:{nm:'SHURIKEN SPIN!',a:'nk_spin'},TT:{nm:'CYCLONE KICK!',a:'nk_spin'},
+  M:{nm:'NEON SCREECH!',a:'nk_meow'},MM:{nm:'SONIC SCREECH!',a:'nk_meow'},B:{nm:'NEON BLINK CUT!',a:'nk_blink'},BB:{nm:'PHANTOM CROSS!',a:'nk_blink'}},
+ {col:SR,col2:SP,C:{nm:'RISING CUT!',a:'s_h4'},CC:{nm:'HEAVEN CUT!',a:'s_h4'},T:{nm:'SHEATH SPIN!',a:'s_spin'},TT:{nm:'TORNADO SHEATH!',a:'s_spin'},
+  M:{nm:'KIAI SHOUT!',a:'s_kiai'},MM:{nm:'THUNDER KIAI!',a:'s_kiai'},B:{nm:'FLASH STEP!',a:'s_dash'},BB:{nm:'TWIN FLASH!',a:'s_dash'}}];
+// named strings (full button sequence, opener included). fold = an older combo string folded into the new system. ult = the form's ULTIMATE
+const ROUTES=[
+ [{k:'CCCB',nm:'SHADOW POUNCE!',tip:'blinks behind him and X-slashes'},{k:'CCCM',nm:'MEOW CANNON!',tip:'point-blank sound blast'},
+  {k:'CCCTT',nm:'TAIL SPIN SLAM!',fold:'CCCTT',tip:'spin, then a rising tornado and slam'},{k:'TTTMB',nm:'BOOM & ZOOM!',tip:'meow him up, blink up after him'},
+  {k:'CCCCCT',nm:'COMET TAIL!',tip:'5 timed claws, then a blazing tail spin'},{k:'TTTCCC',nm:'CLAW CYCLONE!',fold:'TTTCCC',tip:'tail launch into a claw whirlwind'},
+  {k:'CCCMBBTT',nm:'PURR-NADO!',tip:'blast, zig-zag blinks, tail tornado juggle'},{k:'CCCTMTMC',nm:'PURRFECT CATACLYSM',ult:1,tip:'ULTIMATE: leap, mega dive, giant paw quake'}],
+ [{k:'CCCB',nm:'NEON GHOST CUT!',tip:'teleports through him with a neon cut'},{k:'CCCM',nm:'NEON SHOCKWAVE!',tip:'neon sound-ring blast'},
+  {k:'CCCTT',nm:'SHADOW CLONE BARRAGE!',fold:'CCCTT',tip:'shuriken spin, then clones throw stars'},{k:'TTTBB',nm:'STARFALL STEP!',tip:'star volley, then two blink cuts'},
+  {k:'CCCCCB',nm:'LIGHTNING ZIGZAG!',tip:'5 timed slashes, then a blink cut'},{k:'TTTCCC',nm:'NINJA TORNADO!',fold:'TTTCCC',tip:'stars into a neon tornado'},
+  {k:'CCCMBBTT',nm:'PHANTOM CYCLONE!',tip:'screech, phantom cross, cyclone kick juggle'},{k:'TTTCBMCM',nm:'NEON MOONFALL',ult:1,tip:'ULTIMATE: moonlit flip, neon zig-zags, crater dive'}],
+ [{k:'CCCB',nm:'PHANTOM IAI!',kj:'一閃',tip:'flash-step straight through him'},{k:'CCCM',nm:'KIAI THUNDER!',kj:'気',tip:'battle-shout shockwave'},
+  {k:'CCCTT',nm:'PARRY BREAKER!',fold:'CCCTT',tip:'sheath spin into a guard-breaking slam'},{k:'CCCCCB',nm:'CRESCENT FLASH!',kj:'月',tip:'5 timed cuts, then a moonlit flash-step'},
+  {k:'TTTCCC',nm:'SAKURA CYCLONE!',fold:'TTTCCC',tip:'three guards into a petal whirlwind'},{k:'CCCMBBTT',nm:'SAKURA TEMPEST!',kj:'桜',tip:'kiai, twin flash, tornado sheath juggle'},
+  {k:'CCCCCMTM',nm:'HEAVEN SPLITTER',ult:1,kj:'必殺',tip:'ULTIMATE: still world, one flash, a cut from the sky'}]];
+const LK={on:false,seq:'',n:0,buf:null,dead:false,beat:false,op:null,miss:0,lastSeq:'',lastT:-9,fail:0,flash:null};
+const R9={rings:[],cracks:[],paws:[],moon:null,beam:null,confetti:[]};
+const FORM=()=>p.sam?2:p.ninja?1:0;
+Object.assign(NAMES,{lkC:'',lkC2:'',lkT:'',lkT2:'',lkM:'',lkM2:'',lkB:'',lkB2:'',lkR:'',lkU:'',lkUfin:''});
+Object.assign(KB,{lkC:[170,-480,.4,.05],lkC2:[110,-620,.5,.06],lkT:[40,-300,.4,.025],lkT2:[30,-560,.5,.04],lkM:[380,-400,.3,.08],lkM2:[200,-700,.55,.1],
+ lkB:[-40,-480,.4,.06],lkB2:[40,-640,.45,.07],lkR:[260,-900,.5,.12],lkU:[0,-120,.6,.02],lkUfin:[260,-2500,1,.22]});
+CINE.push('lkult');
+function beat(f,v){if(muted)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v||.05,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+.12);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.14)}catch(e){}}
+function boom(){if(muted)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='sine';
+ o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(38,t+.6);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.8);
+ o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.85)}catch(e){}}
+// ---- where are we in an opener? (3+ timed Claws, or 3 Tails in rhythm) ----
+function openerNow(){const S=p.state;
+ if(S==='claw'&&p.combo>=3&&!p.miss)return{run:'C'.repeat(Math.min(p.combo,8)),W:.2,E:.46};
+ if(/^n[1-7]$/.test(S)&&p.ncombo>=3&&!p.miss)return{run:'C'.repeat(p.ncombo),W:.16,E:.42};
+ if(/^s[1-7]$/.test(S)&&p.scombo>=3&&!p.miss)return{run:'C'.repeat(p.scombo),W:.18,E:.44};
+ if(TST.has(S)&&now-lastTokT<.75){let n=0;for(let i=TOK.length-1;i>=0&&TOK[i].c==='T';i--)n++;
+  if(n>=3)return{run:'TTT',W:S==='nthrow'?.12:.16,E:S==='nthrow'?.3:.45}}return null}
+function lkTarget(){const d=nTarget(900);return d&&d.alive?d:null}
+function lkHit(kb,dir){const g=p.lk&&p.lk.tg&&p.lk.tg.alive?p.lk.tg:null;if(!g)return false;if(Math.abs(g.x-p.x)>300||Math.abs(g.y-p.y)>330)return false;
+ g.hp=Math.max(2,g.hp);NAMES[kb]=p.lk.nm||'LINK!';hitDummy(g,kb,dir||p.face);g.vy=Math.max(g.vy,KB[kb][1]);if(g.y<GROUND-420)g.vy=Math.max(g.vy,-200);return true}
+function lkSay(t,c){say(t,c,true)}
+// ---- one LINK move ----
+function lkStart(L){const f=FORM(),fl=LKF[f],rep=LK.n>0&&LK.seq.slice(-1)===L;
+ LK.seq+=L;LK.n++;LK.buf=null;LK.beat=false;LK.on=true;lastTokT=-9;LK.lastSeq=LK.seq;LK.lastT=now;
+ const route=ROUTES[f].find(r=>r.k===LK.seq);pracCheck(LK.seq);
+ if(route&&route.ult){ultStart(f,route);return}
+ const mv=fl[rep?L+L:L],tg=lkTarget();
+ act('lk',mv.a);p.lk={L,rep,route,tg,nm:mv.nm};p.rot=0;p.vx=0;C.atk++;extend();
+ if(!route)lkSay(mv.nm,L==='C'?fl.col2:fl.col);popNum(LK.seq.length,fl.col);beat(520+LK.n*70,.04);
+ if(L==='B')lkBlink(tg,f,false);
+ if(L==='M'){const big=rep;R9.rings.push({x:p.x+p.face*60,y:p.y-75,r:20,vr:big?1100:800,l:1,col:fl.col,col2:fl.col2,w:big?16:10,f,face:p.face});
+  if(f===0){meowSound(big?1:.5);bubble={t:big?'MEGA MEOW!!':'MEOW!',l:1,big}}else meowSound(big?.8:.3);
+  if(f===2)petals(p.x+p.face*60,p.y-80,big?30:14,1);shake=Math.max(shake,big?10:6)}
+ if(L==='T'&&rep){p.vy=-480;p.ground=false;p.jumps=Math.max(p.jumps,1)}
+ if(route)routeFx(f,route)}
+function lkBlink(tg,f,back){const fx0=p.x,fy0=p.y;puffShadow(p.x,p.y);
+ if(tg){const side=back?-p.face:p.face;p.x=clampX(tg.x+side*90);p.face=tg.x>p.x?1:-1;if(tg.y<GROUND-60){p.y=Math.min(floorAt(p.x),tg.y+40);p.ground=false;p.vy=-120}}
+ else p.x=clampX(p.x+p.face*260);
+ const col=LKF[f].col;for(let k=1;k<=6;k++)ghosts.push({x:fx0+(p.x-fx0)*k/7,y:fy0+(p.y-fy0)*k/7,f:(FR[p.anim]||FR.idle)[p.fi],face:p.face,l:.1+k*.035,blue:1});
+ if(f===2)sLine(fx0,fy0-72,p.x,p.y-72,SW,.45,10);else if(f===1)sLine(fx0,fy0-70,p.x,p.y-70,NC,.4,8);
+ puffShadow(p.x,p.y);shake=Math.max(shake,5)}
+function lkState(dt){const q=p.lk;if(!q){p.state='normal';return}const t=p.t,f=FORM(),fl=LKF[f],tg=q.tg&&q.tg.alive?q.tg:null,at=T=>t>=T&&t-dt<T;
+ p.hang=Math.max(p.hang,.1);if(!p.ground&&!(q.L==='T'&&q.rep&&t<.3))p.vy=Math.min(p.vy,160);
+ if(tg&&q.L!=='B'&&t<.12){const want=tg.x-p.face*(q.L==='M'?150:q.L==='T'?70:95);if(Math.abs(tg.x-p.x)>30)p.face=tg.x>p.x?1:-1;p.x+=(want-p.x)*Math.min(1,dt*16);p.vx=0;
+  if(tg.y<GROUND-70&&q.L!=='M'){const wy=Math.min(floorAt(p.x),tg.y+45);p.y+=(wy-p.y)*Math.min(1,dt*14);p.ground=false;p.vy=Math.min(p.vy,0)}
+  if(Math.abs(want-p.x)>40&&t%.03<dt)ghosts.push({x:p.x,y:p.y,f:(FR[p.anim]||FR.idle)[p.fi],face:p.face,l:.2,blue:1})}
+ else p.vx*=Math.pow(.02,dt);
+ const dir=tg?Math.sign(tg.x-p.x)||p.face:p.face;
+ switch(q.L){
+  case 'C': if(at(.04)){slash(q.rep?'rise':'cross',fl.col2,{lvl:6,scale:1.25,col2:fl.col,dx:80});spark(p.x+p.face*80,p.y-70,14,[fl.col,fl.col2,'#fff'],320);if(f===2)petals(p.x+p.face*80,p.y-80,8,1)}
+   if(at(.08))lkHit(q.rep?'lkC2':'lkC',dir);if(q.rep&&at(.1)){p.vy=-450;p.ground=false}if(q.rep&&at(.17)){slash('up',fl.col,{lvl:7,scale:1.3,dx:70});lkHit('lkC2',dir)}break;
+  case 'T': if(at(.05)||at(.13)||at(.21)||(q.rep&&at(.29))){lkHit(q.rep?'lkT2':'lkT',dir);spark(p.x+Math.cos(t*30)*90,p.y-40,8,[fl.col,fl.col2,'#fff'],260);if(f===1&&at(.13)){for(let i=0;i<8;i++){const a=i/8*6.283;stars.push({x:p.x,y:p.y-60,vx:Math.cos(a)*700,vy:Math.sin(a)*700,r:0,l:.45,hit:new Set()})}}if(f===2)petals(p.x,p.y-50,5,1)}break;
+  case 'M': if(at(.1)){lkHit(q.rep?'lkM2':'lkM',p.face);if(f===2&&!q.route)kanjiFx('気','KIAI','#c8102e')}break;
+  case 'B': if(at(.06)){slash('cross',fl.col,{lvl:7,scale:1.35,col2:fl.col2,dx:60});lkHit(q.rep?'lkB2':'lkB',dir)}
+   if(q.rep&&at(.15)){lkBlink(tg,f,true);slash('cross',fl.col2,{lvl:7,scale:1.4,col2:'#fff',dx:60})}if(q.rep&&at(.19))lkHit('lkB2',tg?Math.sign(tg.x-p.x)||p.face:p.face);break;}
+ if(!LK.beat&&t>=LKW){LK.beat=true;if(!LK.dead)beat(880+LK.n*60,.035)}
+ if(LK.buf&&t>=LKW){const b=LK.buf;lkStart(b);return}
+ if(t>LKD)lkEnd()}
+function lkEnd(){if(p.state==='lk'){p.state='normal';p.lk=null}if(LK.n>=2&&!LK.dead)say(LK.n+'-LINK CHAIN!',LKF[FORM()].col2);
+ LK.on=false;LK.seq='';LK.n=0;LK.buf=null;LK.dead=false;LK.op=null}
+function lkDrop(why){LK.dead=true;LK.flash={t:why,l:1};lkSay(why,'#d8d8e8');beat(220,.03);if(PR.on&&PR.prog>0&&!PR.done)PR.fail=1}
+// ---- named strings: a burst of extra flair + a title card ----
+function routeFx(f,r){const fl=LKF[f];texts.length=0;
+ if(r.fold){const s=STR.find(x=>x.k===r.fold);if(s){strFire(s);p.pendStr=null}}else card(r.nm,r.k.split('').join(' '),fl.col);
+ slowT=Math.max(slowT,.22);flashT=Math.max(flashT,.12);hitstop=Math.max(hitstop,.07);shake=Math.max(shake,14);
+ const tg=lkTarget(),x=tg?tg.x:p.x+p.face*100,y=tg?tg.y-80:p.y-80;
+ for(let i=0;i<3;i++)R9.rings.push({x,y,r:10+i*24,vr:700,l:1,col:i%2?fl.col2:fl.col,w:9,f,face:0});
+ if(f===0)for(let i=0;i<14;i++){const a=i/14*6.283;R9.confetti.push({x,y,vx:Math.cos(a)*380,vy:Math.sin(a)*380-120,l:1.1,c:i%3?'#ff9ad5':'#ffe14d',heart:i%2})}
+ if(f===1)R9.beam={x,l:.6,col:NC};
+ if(f===2){petals(x,y,36,1);if(r.kj)kanjiFx(r.kj,r.nm.replace('!',''),'#c8102e')}
+ if(tg&&p.lk&&!r.fold){tg.hp=Math.max(2,tg.hp);NAMES.lkR=r.nm;hitDummy(tg,'lkR',Math.sign(tg.x-p.x)||p.face);tg.vy=Math.max(tg.vy,tg.y<GROUND-300?-250:-650)}}
+// ---- ULTIMATES (one per form) ----
+function ultStart(f,r){const tg=lkTarget();act('lkult',['k_ultA','nk_ultA','s_stance'][f]);p.ult={f,r,tg,boom:false,hits:0,k:0,x0:p.x};p.vx=0;p.vy=0;p.rot=0;NAMES.lkU=['PURR!','NEON!','SLASH!'][f];NAMES.lkUfin=f===2?'ZAN!!':'KA-BOOM!!';
+ LK.on=false;LK.seq='';LK.n=0;LK.buf=null;cineGo(1.32,f===1?.62:.45);slowT=.12;flashT=.15;shake=10;beat(1320,.06);
+ lkSay(f===2?'必殺…':f===1?'NEON…':'PURRR…',LKF[f].col2);if(f===2)kanjiFx('必殺','HISSATSU · FINISHING SECRET','#c8102e');if(f===1)R9.moon={l:0,on:1};
+ for(let i=0;i<4;i++)waves.push({x:p.x,y:p.y-30*i,r:10+i*20,l:1,big:true})}
+function ultState(dt){const u=p.ult;if(!u){p.state='normal';return}const t=p.t,f=u.f,fl=LKF[f],g=u.tg&&u.tg.alive?u.tg:null,at=T=>t>=T&&t-dt<T;p.rot=0;p.vx=0;p.vy=0;
+ const gx=g?g.x:clampX(p.x+p.face*160),A3=['k_ult','nk_ult',null][f];
+ if(g&&!u.boom){g.vx=0;g.vy=0;g.fl=.6;g.hp=Math.max(3,g.hp);const gy=t<1?GROUND-150-Math.min(1,t/1)*90:GROUND-40;g.y+=(gy-g.y)*Math.min(1,dt*(t<1?5:16));g.x+=(gx-g.x)*.1}
+ const ease=x=>x*x*(3-2*x);
+ if(t<.55){ // wind-up: power gathers in (and he glides down to the ground first)
+  p.y+=(GROUND-p.y)*Math.min(1,dt*9);p.ground=p.y>GROUND-2;
+  if(t%.03<dt){const a=Math.random()*6.283,R=150;sparks.push({x:p.x+Math.cos(a)*R,y:p.y-70+Math.sin(a)*R,vx:-Math.cos(a)*300,vy:-Math.sin(a)*300,l:.45,c:Math.random()<.5?fl.col:fl.col2})}
+  if(f===2&&t%.05<dt)SFX.push({t:'petal',x:p.x+(Math.random()-.5)*400,y:p.y-200-Math.random()*100,vx:0,vy:30,r:0,vr:2,l:1,s:.9,c:'#ffc1dc',pull:1})}
+ else if(t<1.05){const u2=ease((t-.55)/.5);
+  if(f<2){setAnim(f?'nk_ultB':'k_ultB');p.y+=((GROUND-u2*330)-p.y)*Math.min(1,dt*14);p.x+=((gx-p.face*60)-p.x)*Math.min(1,dt*6);if(t%.03<dt)ghosts.push({x:p.x,y:p.y,f:(FR[p.anim]||FR.idle)[p.fi],face:p.face,l:.25,blue:1});
+   u.k-=dt;if(g&&u.k<=0){u.k=.09;C.atk++;g.hp=Math.max(3,g.hp);hitDummy(g,'lkU',p.face);g.vx=0;g.vy=0;
+    if(f===1){const fx0=p.x,fy0=p.y;const a=u.hits*2.3;p.x=clampX(gx+Math.cos(a)*120);p.y=Math.min(GROUND,GROUND-u2*330+Math.sin(a)*60);p.face=gx>p.x?1:-1;sLine(fx0,fy0-70,p.x,p.y-70,u.hits%2?NC:NV,.35,8);puffShadow(p.x,p.y)}
+    else spark(gx,g.y-80,10,['#ff9ad5','#ffe14d','#fff'],300);u.hits++}}
+  else{ // samurai: one flash straight through, then he rises for the cut from heaven
+   if(at(.56)){setAnim('s_dash',true);const x0=p.x;p.x=clampX(gx+p.face*150);sLine(x0,p.y-72,p.x,p.y-72,SW,.6,14);sLine(x0,p.y-72,p.x,p.y-72,SR,.5,5);for(let k=1;k<=6;k++)ghosts.push({x:x0+(p.x-x0)*k/7,y:p.y,f:(FR.s_dash||FR.s_idle)[0],face:p.face,l:.1+k*.04,blue:1});
+    if(g){hitDummy(g,'lkU',p.face);g.vx=0;g.vy=0}kanjiFx('一閃','ONE FLASH','#c8102e');shake=12;flashT=.12}
+   if(t>.75){if(p.anim!=='s_rise')setAnim('s_rise',true);p.face=gx>p.x?1:-1;const u3=ease(Math.min(1,(t-.75)/.3));p.y+=((GROUND-u3*360)-p.y)*Math.min(1,dt*14);p.x+=((gx-p.face*40)-p.x)*Math.min(1,dt*6)}}}
+ else if(t<1.28){const u4=ease((t-1.05)/.23);setAnim(f===2?'s_h3':f?'nk_ultC':'k_ultC');p.y=Math.min(GROUND,p.y+((GROUND-330+u4*330)-p.y)*Math.min(1,dt*20));if(t>1.25)p.y=GROUND;p.x+=((gx-p.face*70)-p.x)*Math.min(1,dt*10);
+  ghosts.push({x:p.x,y:p.y,f:(FR[p.anim]||FR.idle)[p.fi],face:p.face,l:.3,blue:1});if(f===2&&at(1.06)){R9.beam={x:gx,l:1,col:SR,cut:1}}}
+ else{p.y=GROUND;p.ground=true;
+  if(!u.boom){u.boom=true;setAnim(f===2?'s_h3':f?'nk_ultD':'k_ultD',true);boom();const x=gx;
+   if(g){g.hp=Math.min(g.hp,1);hitDummy(g,'lkUfin',p.face);g.vy=-2500;g.vx=p.face*260;g.fl=1}
+   shake=42;slowT=.9;flashT=.4;hitstop=.12;cine.tz=1.12;cine.tdim=.25;cine.pillar={x,l:1.4,col:fl.col};
+   R9.cracks.push(mkCrack(x,f));for(let i=0;i<6;i++)waves.push({x,y:GROUND-4+i*3,r:10+i*35,l:1,big:true});
+   for(let i=0;i<4;i++)R9.rings.push({x,y:GROUND-60,r:20+i*40,vr:1400-i*150,l:1.2,col:i%2?fl.col2:fl.col,w:18-i*3,f,face:0,flat:1});
+   burst(x,GROUND-60,1);burst(x,GROUND-140);
+   for(let i=0;i<110;i++){const a=Math.random()*6.283,v=250+Math.random()*900;sparks.push({x,y:GROUND-60,vx:Math.cos(a)*v,vy:Math.sin(a)*v-300,l:.9,c:[fl.col,fl.col2,'#fff','#ffe14d'][i%4]})}
+   for(let i=0;i<26;i++)sparks.push({x:x+(Math.random()-.5)*300,y:GROUND,vx:(Math.random()-.5)*500,vy:-300-Math.random()*700,l:.9,c:'#b98a55'});
+   if(f===0){R9.paws.push({x,l:1.6});for(let i=0;i<40;i++){const a=Math.random()*6.283,v=200+Math.random()*500;R9.confetti.push({x,y:GROUND-80,vx:Math.cos(a)*v,vy:Math.sin(a)*v-300,l:1.8,c:i%3?'#ff9ad5':'#ffe14d',heart:i%2})}}
+   if(f===1){R9.beam={x,l:1.3,col:NC};if(R9.moon)R9.moon.flash=1}
+   if(f===2){petals(x,GROUND-100,140,1);kanjiFx('必殺','HEAVEN SPLITTER','#c8102e',{size:150})}
+   card(f===2?'HEAVEN SPLITTER!!':u.r.nm+'!!',(f===2?'必殺 · ':'ULTIMATE · ')+u.r.k.split('').join(' '),fl.col)}
+  if(t>1.75&&f<2&&p.anim!==(f?'nk_ultE':'k_ultE'))setAnim(f?'nk_ultE':'k_ultE');if(t>1.9&&f===2&&p.anim!=='s_calm')setAnim('s_calm');
+  if(t>2.9){p.state='normal';p.ult=null;if(R9.moon)R9.moon.on=0;LK.lastT=now}}}
+function mkCrack(x,f){const segs=[];for(let b=0;b<9;b++){const dir=b%2?1:-1,pts=[[x,GROUND]];let cx=x,cy=GROUND,a=(b<4?0:.25)+Math.random()*.25;
+  for(let s=0;s<6;s++){cx+=dir*(18+Math.random()*28);cy+=(Math.random()-.25)*10*a+1.5;pts.push([cx,Math.min(GROUND+60,Math.max(GROUND,cy))])}segs.push(pts)}
+ return {x,segs,l:3,col:LKF[f].col}}
+// ---- per-frame: route inputs into links (runs before the normal move handling, so a link press never also fires its normal move) ----
+const LKKEY=[['attack','C'],['tail','T'],['special','M'],['blink','B']];
+function r9Pre(dt){
+ for(const r of R9.rings){r.r+=r.vr*dt;r.vr*=Math.pow(.15,dt);r.l-=dt*1.6}R9.rings=R9.rings.filter(r=>r.l>0);
+ for(const c of R9.cracks)c.l-=dt;R9.cracks=R9.cracks.filter(c=>c.l>0);for(const w of R9.paws)w.l-=dt;R9.paws=R9.paws.filter(w=>w.l>0);
+ for(const c of R9.confetti){c.x+=c.vx*dt;c.y+=c.vy*dt;c.vy+=500*dt;c.vx*=Math.pow(.4,dt);c.l-=dt}R9.confetti=R9.confetti.filter(c=>c.l>0);
+ if(R9.beam){R9.beam.l-=dt;if(R9.beam.l<=0)R9.beam=null}if(R9.moon){R9.moon.l+=((R9.moon.on?1:0)-R9.moon.l)*Math.min(1,dt*3);if(R9.moon.flash)R9.moon.flash=Math.max(0,R9.moon.flash-dt);if(!R9.moon.on&&R9.moon.l<.02)R9.moon=null}
+ if(LK.flash){LK.flash.l-=dt;if(LK.flash.l<=0)LK.flash=null}
+ pracUpdate(dt);
+ if(p.state==='lkult')return;
+ // the chain only lives inside its own moves (and the opener's grace window)
+ if(LK.on&&p.state!=='lk')lkEnd();
+ const op=openerNow();if(op){LK.op={run:op.run,W:op.W,until:now+Math.max(0,op.E-p.t)+.1,t0:now-p.t,st:p.state,miss:LK.op&&LK.op.st===p.state&&Math.abs(LK.op.t0-(now-p.t))<.01?LK.op.miss:false}}
+ else if(LK.op&&(now>LK.op.until||(p.state!=='normal'&&p.state!==LK.op.st)))LK.op=null;
+ let L=null,key=null;for(const [k,l] of LKKEY)if(P[k]){L=l;key=k;break}
+ if(p.state==='lk'){
+  if(P.jump||P.dash||P.down){lkEnd();return} // escape hatch: jump / dash / down drop the chain cleanly
+  if(!L)return;delete P[key];acted=true;
+  if(LK.dead)return;const t=p.t;
+  if(t<LKW-.07){lkDrop('TOO EARLY!')}else if(t<LKW){LK.buf=L}else lkStart(L);return}
+ if(!L||!LK.op)return;const o=LK.op;if(L===o.run[0])return; // same button = the normal chain carries on (C4, C5... / tail chain)
+ if(o.miss){delete P[key];return}
+ const tt=now-o.t0;delete P[key];acted=true;
+ if(p.state===o.st&&tt<o.W-.07){o.miss=true;lkDrop('TOO EARLY!');return}
+ LK.on=true;LK.seq=o.run;LK.n=0;LK.dead=false;LK.op=null;p.combo=0;p.ncombo=0;p.scombo=0;p.miss=false;p.queued=false;p.pendStr=null;lkStart(L)}
+// ring + beat cue for links and tail openers
+const _cue0=cueInfo;cueInfo=function(){if(p.state==='lk'&&!LK.dead)return{H:LKW+.2};const o=openerNow();if(o&&o.run[0]==='T'&&!(LK.op&&LK.op.miss))return{H:o.W+.2};return _cue0()};
+// ---- PRACTICE MODE (from the ? menu) ----
+const PR={on:false,f:0,i:0,prog:0,done:0,fail:0,idle:0,best:0,clears:0};
+function practice(f,i){PR.on=true;PR.f=f;PR.i=i;PR.prog=0;PR.done=0;PR.fail=0;PR.clears=0;if(FORM()!==f)setForm(f);document.body.classList.add('prac');
+ say('PRACTICE: '+ROUTES[f][i].nm.replace(/!+$/,''),'#ffe14d',true)}
+function pracStop(){PR.on=false;document.body.classList.remove('prac')}
+function liveSeq(){if(LK.on)return LK.seq;const S=p.state;if(S==='claw')return 'C'.repeat(p.combo);if(/^n[1-8]$/.test(S))return 'C'.repeat(p.ncombo);if(/^s[1-7]$/.test(S))return 'C'.repeat(p.scombo);
+ if(TST.has(S)&&now-lastTokT<.75){let n=0;for(let i=TOK.length-1;i>=0&&TOK[i].c==='T';i--)n++;return 'T'.repeat(Math.min(3,n))}return ''}
+function pracCheck(seq){if(!PR.on)return;const k=ROUTES[PR.f][PR.i].k;if(seq===k){PR.done=1.8;PR.prog=k.length;PR.clears++;beat(1568,.06);setTimeout(()=>beat(2093,.06),90);
+ for(let i=0;i<30;i++){const a=Math.random()*6.283,v=200+Math.random()*300;R9.confetti.push({x:VW/2+(Math.random()-.5)*300,y:-camY+120,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1.6,c:['#7fffd4','#ffe14d','#ff9ad5'][i%3],heart:0,hud:1})}}}
+function pracUpdate(dt){if(!PR.on)return;for(const d of dummies)if(d.alive&&!['punch','bite','bark'].includes(d.st))d.cool=Math.max(d.cool,1);
+ if(FORM()!==PR.f&&p.state!=='nmorph')pracStop();
+ if(PR.done>0){PR.done-=dt;if(PR.done<=0){PR.prog=0}return}if(PR.fail>0){PR.fail-=dt*1.6;if(PR.fail<=0)PR.prog=0;return}
+ const k=ROUTES[PR.f][PR.i].k,s=liveSeq();
+ if(s){PR.idle=0;if(k.startsWith(s))PR.prog=Math.max(PR.prog,s.length);else if(PR.prog>0&&s.length>=PR.prog){PR.fail=1}}
+ else if(p.state!=='lkult'){PR.idle+=dt;if(PR.idle>.5&&PR.prog>0&&!PR.done){PR.fail=1;PR.idle=0}}}
+// ---- drawing ----
+const KEYCOL={C:'#ff6fb5',T:'#ffb340',M:'#5cc8ff',B:'#a77bff'};
+function chip(k,x,y,r,st){ctx.save();ctx.fillStyle=st==='off'?'rgba(0,0,0,.35)':KEYCOL[k];ctx.globalAlpha=st==='off'?.8:1;ctx.beginPath();ctx.arc(x,y,r,0,6.283);ctx.fill();
+ ctx.lineWidth=st==='hit'?4:st==='next'?3:2;ctx.strokeStyle=st==='hit'?'#7fffd4':st==='next'?'#fff':'rgba(255,255,255,.7)';ctx.stroke();
+ ctx.fillStyle='#fff';ctx.font=`${Math.round(r*1.15)}px ${FONT}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(k,x,y+1);ctx.restore()}
+function r9DrawWorld(){
+ if(R9.moon&&R9.moon.l>.01){const m=R9.moon,x=VW*.5,y=-camY+120;ctx.save();ctx.globalAlpha=m.l*.9;const g=ctx.createRadialGradient(x,y,10,x,y,170);g.addColorStop(0,'rgba(230,240,255,1)');g.addColorStop(.45,'rgba(190,170,255,.65)');g.addColorStop(1,'rgba(120,90,255,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,170,0,6.283);ctx.fill();ctx.fillStyle='#eef3ff';ctx.beginPath();ctx.arc(x,y,72,0,6.283);ctx.fill();ctx.fillStyle='rgba(185,140,255,.35)';
+  for(const [dx,dy,r] of [[-20,-14,13],[18,10,16],[-4,24,8]]){ctx.beginPath();ctx.arc(x+dx,y+dy,r,0,6.283);ctx.fill()}ctx.restore()}
+ for(const c of R9.cracks){const a=Math.min(1,c.l/1.2);ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+  for(const s of c.segs){ctx.globalAlpha=a;ctx.strokeStyle='#3b2412';ctx.lineWidth=7;ctx.beginPath();s.forEach((q,i)=>i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]));ctx.stroke();
+   ctx.globalCompositeOperation='lighter';ctx.globalAlpha=a*.8;ctx.strokeStyle=c.col;ctx.lineWidth=3;ctx.stroke();ctx.globalCompositeOperation='source-over'}
+  ctx.globalAlpha=a*.6;ctx.fillStyle='#3b2412';ctx.beginPath();ctx.ellipse(c.x,GROUND+6,70,12,0,0,6.283);ctx.fill();ctx.restore()}
+ for(const w of R9.paws){const u=1-w.l/1.6,s=60+u*260,a=Math.min(1,w.l);ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=a*.55;ctx.fillStyle='#ff9ad5';ctx.translate(w.x,GROUND-10);ctx.scale(1,.32);
+  ctx.beginPath();ctx.ellipse(0,s*.25,s*.55,s*.45,0,0,6.283);ctx.fill();for(const [dx,dy] of [[-.62,-.38],[-.22,-.7],[.22,-.7],[.62,-.38]]){ctx.beginPath();ctx.ellipse(dx*s,dy*s,s*.2,s*.24,0,0,6.283);ctx.fill()}ctx.restore()}
+ if(R9.beam){const b=R9.beam,a=Math.min(1,b.l*1.5);ctx.save();ctx.globalCompositeOperation='lighter';
+  if(b.cut){ctx.globalAlpha=a;ctx.strokeStyle=SR;ctx.lineWidth=26*a;ctx.beginPath();ctx.moveTo(b.x+40,-camY-200);ctx.lineTo(b.x-20,GROUND);ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=9*a;ctx.stroke()}
+  else{const w=60+(1-a)*80,g=ctx.createLinearGradient(b.x-w/2,0,b.x+w/2,0);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.5,b.col);g.addColorStop(1,'rgba(0,0,0,0)');ctx.globalAlpha=a*.8;ctx.fillStyle=g;ctx.fillRect(b.x-w/2,-camY-3000,w,GROUND+camY+3000)}ctx.restore()}
+ for(const r of R9.rings){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.max(0,Math.min(1,r.l));ctx.translate(r.x,r.y);
+  if(r.flat){ctx.strokeStyle=r.col;ctx.lineWidth=r.w;ctx.beginPath();ctx.ellipse(0,0,r.r,r.r*.24,0,0,6.283);ctx.stroke()}
+  else if(r.face){ctx.scale(r.face,1);for(let k=0;k<3;k++){const rr=r.r-k*30;if(rr<8)continue;ctx.strokeStyle=k%2?r.col2:k?r.col:'#fff';ctx.lineWidth=r.w-k*2;ctx.beginPath();ctx.arc(0,0,rr,-1.15,1.15);ctx.stroke()}
+   if(r.f===0){ctx.fillStyle='#ff9ad5';for(let k=0;k<3;k++){const a=-.7+k*.7,rr=r.r*.85;heart(Math.cos(a)*rr,Math.sin(a)*rr,7)}}
+   if(r.f===1){ctx.strokeStyle=r.col2;ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,r.r*1.08,-1.3,1.3);ctx.stroke()}}
+  else{ctx.strokeStyle=r.col;ctx.lineWidth=r.w;ctx.beginPath();ctx.arc(0,0,r.r,0,6.283);ctx.stroke()}ctx.restore()}
+ for(const c of R9.confetti){if(c.hud)continue;ctx.save();ctx.globalAlpha=Math.min(1,c.l*1.5);ctx.fillStyle=c.c;if(c.heart)heart(c.x,c.y,6);else{ctx.translate(c.x,c.y);ctx.rotate(c.l*9);ctx.fillRect(-4,-2,8,4)}ctx.restore()}
+ // tail-spin swirl for the T links
+ if(p.state==='lk'&&p.lk&&p.lk.L==='T'){const fl=LKF[FORM()],a0=p.t*30;ctx.save();ctx.globalCompositeOperation='lighter';
+  for(let k=0;k<5;k++){ctx.globalAlpha=(.55-k*.09)*Math.min(1,(LKD-p.t)*4);ctx.strokeStyle=k%2?fl.col:k?fl.col2:'#fff';ctx.lineWidth=12-k*2;ctx.beginPath();ctx.ellipse(p.x,p.y-40-k*(p.lk.rep?22:6),110+k*8,30,0,a0-1.8-k*.3,a0-k*.3);ctx.stroke()}ctx.restore()}}
+function heart(x,y,s){ctx.beginPath();ctx.moveTo(x,y+s*.9);ctx.bezierCurveTo(x-s*1.6,y-s*.2,x-s*.7,y-s*1.5,x,y-s*.5);ctx.bezierCurveTo(x+s*.7,y-s*1.5,x+s*1.6,y-s*.2,x,y+s*.9);ctx.fill()}
+function r9DrawHUD(){
+ // the chain so far, bottom centre: chips light up as each link lands
+ const seq=LK.on?LK.seq:(now-LK.lastT<1.2?LK.lastSeq:'');
+ if(seq){const n=seq.length,x0=VW/2-(n-1)*21,a=LK.on?1:Math.max(0,1.2-(now-LK.lastT))/1.2;ctx.save();ctx.globalAlpha=a;for(let i=0;i<n;i++)chip(seq[i],x0+i*42,VH-38,16,LK.dead&&i===n-1?'off':'hit');ctx.restore();
+  if(p.state==='lk'&&!LK.dead){const u=Math.min(1,p.t/LKW),x=x0+n*42;ctx.save();ctx.globalAlpha=.5+.5*u;ctx.strokeStyle=u>=1?'#7fffd4':'#fff';ctx.lineWidth=u>=1?4:2;ctx.beginPath();ctx.arc(x,VH-38,16+(1-u)*14,0,6.283);ctx.stroke();
+   if(u>=1){ctx.fillStyle='#7fffd4';ctx.font=`18px ${FONT}`;ctx.textAlign='center';ctx.fillText('NOW!',x,VH-62)}ctx.restore()}}
+ if(LK.flash){ctx.save();ctx.globalAlpha=Math.min(1,LK.flash.l*2);ctx.font=`22px ${FONT}`;ctx.textAlign='center';ctx.fillStyle='#ffb0b0';ctx.fillText(LK.flash.t+' combo dropped',VW/2,VH-70);ctx.restore()}
+ // practice target, top centre
+ if(PR.on){const r=ROUTES[PR.f][PR.i],k=r.k,n=k.length,x0=VW/2-(n-1)*22,y=118;ctx.save();ctx.fillStyle='rgba(20,16,50,.55)';ctx.beginPath();ctx.roundRect?ctx.roundRect(VW/2-n*22-110,y-48,n*44+220,86,14):ctx.rect(VW/2-n*22-110,y-48,n*44+220,86);ctx.fill();
+  ctx.font=`22px ${FONT}`;ctx.textAlign='center';ctx.fillStyle=r.ult?'#ffe14d':'#fff';ctx.fillText('PRACTICE · '+r.nm.replace(/!+$/,'')+(PR.clears?'  ✓×'+PR.clears:''),VW/2,y-22);
+  for(let i=0;i<n;i++){const st=PR.fail>0&&i>=PR.prog-1&&i<PR.prog?'off':i<PR.prog?'hit':i===PR.prog?'next':'todo';const pulse=st==='next'?1+.12*Math.sin(now*10):1;chip(k[i],x0+i*44,y+14,15*pulse,st==='todo'?'todo':st)}
+  ctx.font=`15px ${FONT}`;ctx.fillStyle=PR.done>0?'#7fffd4':PR.fail>0?'#ffb0b0':'#cfd8ff';
+  ctx.fillText(PR.done>0?'CLEARED! again?':PR.fail>0?'dropped – start again from the first button':'first 3 = opener · then press on the green ring / chime',VW/2,y+56);ctx.restore()}
+ for(const c of R9.confetti){if(!c.hud)continue;ctx.save();ctx.globalAlpha=Math.min(1,c.l*1.5);ctx.fillStyle=c.c;ctx.translate(c.x,c.y+camY);ctx.rotate(c.l*9);ctx.fillRect(-5,-2.5,10,5);ctx.restore()}}
+const _drawFx9=drawFx;drawFx=function(){_drawFx9();r9DrawWorld()};
+const _drawCombo9=drawCombo;drawCombo=function(){_drawCombo9();r9DrawHUD()};
+// ---- the COMBO LIST / practice panel in the ? menu (built from ROUTES so it always matches the game) ----
+(function buildList(){const el=document.getElementById('clist');if(!el)return;const F=[['🐱 KITTY (Paddy)','#ffe08a'],['🥷 NEON NINJA','#c9a7ff'],['⚔️ SAMURAI','#ff6b6b']];
+ const ch=k=>`<span class="ck" style="background:${KEYCOL[k]}">${k}</span>`;
+ let h='<h3>🎯 COMBO LIST &amp; PRACTICE</h3><p class="tip"><b>How it works:</b> land 3 timed hits of <b>Claw</b> (C C C) or <b>Tail</b> (T T T) to <b>open</b> a combo. Then press <b>Claw</b>, <b>Tail</b>, <b>Meow</b> or <b>Blink</b> on the beat – when the ring around Paddy turns green and you hear the chime – to chain a new move. Too early and the combo drops. Each button does something different (Blink = teleport slash, Meow = shockwave, Tail = spin, Claw = pounce) and pressing the same one twice gives a bigger version. Keep Claw going to 4 and 5 first, then add the others. Keys: C = Claw (X/J) · T = Tail (T/L) · M = Meow (C/K) · B = Blink (N/Ctrl). Tap ▶ to practise one – the buttons light up as you get them.</p><div class="tabs">';
+ F.forEach((f,i)=>h+=`<button class="tab" data-tab="${i}" style="border-bottom:3px solid ${f[1]}">${f[0]}</button>`);h+='</div>';
+ F.forEach((f,i)=>{h+=`<table class="ctab" data-f="${i}" style="${i?'display:none':''}">`;ROUTES[i].forEach((r,j)=>{h+=`<tr${r.ult?' class="ult"':''}><td class="seq">${r.k.split('').map(ch).join('')}</td><td><b>${r.ult?'⚡ ULTIMATE · ':''}${r.nm.replace(/!+$/,'')}</b>${r.kj?' '+r.kj:''}<br><span class="tip">${r.tip}</span></td><td><button data-prac="${i}:${j}">▶ Practise</button></td></tr>`});h+='</table>'});
+ el.innerHTML=h;
+ el.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();el.querySelectorAll('.ctab').forEach(t=>t.style.display=t.dataset.f===b.dataset.tab?'':'none')}));
+ el.querySelectorAll('[data-prac]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();const [f,j]=b.dataset.prac.split(':').map(Number);if(typeof ov==='function')ov(false);else document.body.classList.remove('ov');practice(f,j)}));
+ const pc=document.getElementById('pclose');if(pc)pc.addEventListener('pointerdown',e=>{e.preventDefault();pracStop()})})();
+
 // start loading last, once everything above is defined
 drawLoading();loadSprites(0);

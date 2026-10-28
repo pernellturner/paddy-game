@@ -3,7 +3,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"><link rel="icon" href="assets/s1_05.png"><title>Paddy – move test</title>
 <style>
 @font-face{font-family:'Bangers';src:url(fonts/Bangers.woff2) format('woff2');font-display:block}
-@font-face{font-family:'Kanji';src:url(fonts/Kanji.woff2) format('woff2');font-display:block}
+@font-face{font-family:'Kanji';src:url(fonts/Kanji.woff2?v=9) format('woff2');font-display:block}
 html,body{margin:0;height:100%;overflow:hidden;background:#87c6f0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;font-family:system-ui,sans-serif}
 canvas{display:block;width:100vw;height:100vh;height:100dvh}
 #ui{position:fixed;inset:0;pointer-events:none}
@@ -35,9 +35,14 @@ body.ov #moves{display:block}
 #moves th{color:#9fd8ff}#moves button{font:600 14px system-ui;margin:3px;padding:6px 10px;border-radius:8px;border:0;background:#ffe14d;color:#222}
 #mclose{position:absolute;right:10px;top:8px;font-size:18px!important}.tip{opacity:.7}
 #rot{display:flex}}
+#clist h3{margin:6px 0 4px;font:24px Bangers,Impact,sans-serif;letter-spacing:1px;color:#7fffd4}
+#clist .tabs{display:flex;gap:6px;margin:6px 0}#clist .tab{background:#2d3d63!important;color:#fff!important;flex:1}
+#clist table{margin-bottom:10px}#clist .seq{white-space:nowrap}#clist tr.ult td{background:#ffe14d22}
+.ck{display:inline-block;width:22px;height:22px;line-height:22px;border-radius:50%;text-align:center;color:#fff;font:15px Bangers,Impact,sans-serif;margin:1px;border:2px solid #fff8}
+#pclose{display:none}body.prac #pclose{display:flex}
 </style></head><body>
 <canvas id="c"></canvas>
-<div style="position:absolute;opacity:0;font-family:Bangers">.</div><div style="position:absolute;opacity:0;font-family:Kanji">斬侍風桜必殺一閃返し</div><div id="lbl">idle</div>
+<div style="position:absolute;opacity:0;font-family:Bangers">.</div><div style="position:absolute;opacity:0;font-family:Kanji">斬侍風桜必殺一閃返し気月</div><div id="lbl">idle</div>
 <div id="hint">press ? for moves</div>
 <div id="ui">
  <div class="b" data-k="left"  style="left:calc(16px + env(safe-area-inset-left));bottom:24px">◀</div>
@@ -51,9 +56,11 @@ body.ov #moves{display:block}
  <div class="b s" data-k="blink" style="right:calc(236px + env(safe-area-inset-right));bottom:44px">Blink</div>
  <div class="b s t" data-k="morph" style="right:calc(64px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🥷</div>
  <div class="b s t" id="mute" style="right:calc(120px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🔊</div>
- <div class="b s t" id="qbtn" style="right:calc(8px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">?</div>
+ <div class="b s" id="pclose" style="left:calc(12px + env(safe-area-inset-left));top:96px;width:auto;height:30px;border-radius:15px;padding:0 12px;font-size:13px">✕ stop practice</div>
+<div class="b s t" id="qbtn" style="right:calc(8px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">?</div>
 </div>
 <div id="moves"><div class="box"><button id="mclose">✕</button><h2>Paddy's moves</h2>
+<div id="clist"></div>
 <table>
 <tr><th>Move</th><th>Keyboard</th><th>iPhone</th></tr>
 <tr><td>Walk</td><td>← → / A D</td><td>hold ◀ ▶</td></tr>
@@ -138,7 +145,7 @@ body.ov #moves{display:block}
 <p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
 <p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p></div></div>
 <div id="rot">🔄 Turn your phone sideways to play with Paddy</div>
-<script src="game.js?v=8b"></script>
+<script src="game.js?v=9a"></script>
 <script>
 const ov=v=>{document.body.classList.toggle('ov',v);for(const k in K)K[k]=0;document.querySelectorAll('.b.on').forEach(b=>b.classList.remove('on'))};
 document.getElementById('qbtn').addEventListener('pointerdown',e=>{e.preventDefault();ov(true)});
