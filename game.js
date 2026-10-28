@@ -286,7 +286,8 @@ function update(dt){
  if(now-errShown>3)lbl.textContent=(p.ninja?'🥷 NEON NINJA · ':p.sam?'⚔️ SAMURAI · ':'')+nm.replace(/^[nsr]_/,'')+(p.wall?' (wall)':'')+(p.hunt?' · HUNT':'');
 }
 function burst(x,y,fire){shake=10;for(let i=0;i<24;i++){const a=Math.random()*6.28,v=100+Math.random()*300;sparks.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.5,c:i%2?'#fff':fire?'#ff9a2e':'#5cc8ff'})}}
-function drawFrame(f,x,y,face,alpha){const im=f&&IMG[f.f];if(!im)return;ctx.save();if(alpha!=null)ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.scale(face*SC,SC);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}
+function readyFrame(f,dog){if(f&&imgOK(IMG[f.f]))return f;const fb=FR[dog?'r_idle':p.sam?'s_idle':p.ninja?'n_idle':'idle'];const g=fb&&fb.find(q=>imgOK(IMG[q.f]));return g||null}
+function drawFrame(f,x,y,face,alpha){f=readyFrame(f);const im=f&&IMG[f.f];if(!im)return;ctx.save();if(alpha!=null)ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.scale(face*SC,SC);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}
 function draw(){
  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#87c6f0';ctx.fillRect(0,0,cv.width,cv.height);
  const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;
@@ -303,7 +304,7 @@ function draw(){
  drawDummies();
  // shadow
  const hgt=floorAt(p.x)-p.y;ctx.fillStyle='rgba(0,0,0,.18)';ctx.beginPath();ctx.ellipse(p.x,floorAt(p.x)+3,60*Math.max(.4,1-hgt/400),9,0,0,6.28);ctx.fill();
- for(const g of ghosts){const im=g.f&&IMG[g.f.f];if(!im)continue;ctx.save();ctx.globalAlpha=Math.min(1,g.l*(g.blue?2:1.6));if(g.blue)ctx.globalCompositeOperation='lighter';ctx.translate(g.x,g.y);ctx.scale(g.face*SC,SC);ctx.drawImage(im,-g.f.ax,-g.f.ay);ctx.restore()}
+ for(const g of ghosts){const im=g.f&&IMG[g.f.f];if(!imgOK(im))continue;ctx.save();ctx.globalAlpha=Math.min(1,g.l*(g.blue?2:1.6));if(g.blue)ctx.globalCompositeOperation='lighter';ctx.translate(g.x,g.y);ctx.scale(g.face*SC,SC);ctx.drawImage(im,-g.f.ax,-g.f.ay);ctx.restore()}
  // player (a short crossfade from the previous animation)
  if(p.blend>0&&p.prevF)drawFrame(p.prevF,p.prevX,p.prevY,p.prevFace,(p.hunt?.55:1)*p.blend/.1);
  const mu=p.state==='nmorph'?Math.min(1,p.t/(p.mquick?.28:.5)):1;if(mu<1&&p.mfrom)drawFrame(p.mfrom,p.x,p.y,p.face,1-mu*mu*(3-2*mu));
@@ -371,11 +372,27 @@ function loop(t){requestAnimationFrame(loop);let dt=(t-last)/1000;last=t;if(!(dt
   camY=0;slowT=0;Object.assign(p,{rot:0,grab:null,state:'normal',wall:false,vx:0,vy:0,combo:0,blend:0,jc:0,mc:0});if(!isFinite(p.x))p.x=300;if(!isFinite(p.y))p.y=GROUND;shake=0;
   if(now-errShown>3){errShown=now;lbl.textContent='glitch caught – recovered'}}}
 let started=false;addEventListener('pageshow',()=>{last=performance.now()});document.addEventListener('visibilitychange',()=>{last=performance.now();for(const k in K)K[k]=0});
-fetch('assets/frames.json').then(r=>r.json()).then(j=>{F=j;for(const a in A){const [s,idx]=A[a];if(F[s])FR[a]=idx?idx.filter(i=>i<F[s].length).map(i=>F[s][i]):F[s]}
- const names=new Set();Object.values(FR).forEach(a=>a.forEach(f=>names.add(f.f)));
- let n=0;window.SPRITES={total:names.size,loaded:0,failed:[]};
- names.forEach(nm=>{const im=new Image();im.onload=()=>{SPRITES.loaded++;done()};im.onerror=()=>{SPRITES.failed.push(nm);done()};im.src='assets/'+nm+'.png';IMG[nm]=im});
- function done(){if(++n===names.size&&!started){started=true;requestAnimationFrame(loop)}}});
+// ---- sprite loading: robust on slow phones ----
+// small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
+// basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
+const VER='8b',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
+function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
+function drawLoading(){if(started)return;requestAnimationFrame(drawLoading);const S=window.SPRITES,u=S&&S.total?(S.loaded+S.failed.length)/S.total:0;
+ ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#87c6f0';ctx.fillRect(0,0,cv.width,cv.height);const w=cv.width*.4,x=(cv.width-w)/2,y=cv.height*.55,h=Math.max(8,cv.height*.025);
+ ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(x,y,w,h);ctx.fillStyle='#ff8fb1';ctx.fillRect(x,y,w*u,h);ctx.fillStyle='#fff';ctx.font=`${Math.round(h*2.4)}px ${FONT}`;ctx.textAlign='center';
+ ctx.fillText('Loading Paddy… '+Math.round(u*100)+'%',cv.width/2,y-h*1.2)}
+function loadSprites(tries){fetch('assets/frames.json?v='+VER).then(r=>{if(!r.ok)throw new Error('frames.json '+r.status);return r.json()}).then(j=>{F=j;for(const a in A){const [s,idx]=A[a];if(F[s])FR[a]=idx?idx.filter(i=>i<F[s].length).map(i=>F[s][i]):F[s]}
+ const first=[],rest=[],seen=new Set();const add=(a,list)=>(FR[a]||[]).forEach(f=>{if(!seen.has(f.f)){seen.add(f.f);list.push(f.f)}});
+ ESSENTIAL.forEach(a=>add(a,first));Object.keys(FR).forEach(a=>add(a,rest));
+ const queue=first.concat(rest),need=new Set(first);let active=0,needLeft=need.size;window.SPRITES={total:queue.length,loaded:0,failed:[]};
+ const finish=(nm,ok)=>{if(ok)SPRITES.loaded++;else SPRITES.failed.push(nm);if(need.has(nm)&&--needLeft<=0)startGame();active--;pump()};
+ function loadOne(nm){const im=new Image();IMG[nm]=im;let stage=0,done=false,timer;
+  const go=()=>{clearTimeout(timer);timer=setTimeout(fail,stage?15000:12000);im.src='assets/'+nm+(stage?'.png':'.webp')+'?v='+VER};
+  function fail(){if(done)return;if(stage===0){stage=1;go();return}done=true;clearTimeout(timer);console.warn('sprite failed',nm);finish(nm,false)}
+  im.onload=()=>{if(done)return;done=true;clearTimeout(timer);if(im.decode)im.decode().catch(()=>{});finish(nm,true)};im.onerror=fail;go()}
+ function pump(){while(active<6&&queue.length){active++;loadOne(queue.shift())}}
+ pump();setTimeout(startGame,6000)}).catch(e=>{console.error(e);if((tries||0)<4)setTimeout(()=>loadSprites((tries||0)+1),1500);else{lbl.textContent='could not load – please refresh';startGame()}})}
 // ===== COMBO SYSTEM =====
 let hitstop=0;
 const FONT="'Bangers','Luckiest Guy',Impact,'Arial Black',sans-serif";
@@ -933,7 +950,7 @@ function updDog(d,dt){
 function updDummies(dt){for(const d of dummies)updDog(d,dt);
  for(const w of dWaves){w.r+=dt*650;w.l=1-w.r/330;if(!w.hit){const rx=(p.x-w.x)*w.dir;if(rx>-30&&Math.abs(Math.abs(p.x-w.x)-w.r)<45&&p.y>GROUND-80){w.hit=true;dogStrike(w.d,0,'bark')}}}
  for(let i=dWaves.length-1;i>=0;i--)if(dWaves[i].l<=0)dWaves.splice(i,1)}
-function drawDogFrame(f,fs,alpha){const im=f&&IMG[f.f];if(!im)return;ctx.save();if(alpha!=null)ctx.globalAlpha*=alpha;ctx.scale(-fs*SC,SC);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}
+function drawDogFrame(f,fs,alpha){f=readyFrame(f,1);const im=f&&IMG[f.f];if(!im)return;ctx.save();if(alpha!=null)ctx.globalAlpha*=alpha;ctx.scale(-fs*SC,SC);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}
 function drawDummies(){for(const d of dummies){const fr=FR[d.anim]||FR.r_idle;if(!fr)continue;const f=fr[Math.min(d.fi,fr.length-1)],lying=['ko','sit','wag'].includes(d.st),H=lying?110:d.h;
  const hg=Math.max(0,GROUND-d.y);ctx.fillStyle='rgba(0,0,0,.18)';ctx.beginPath();ctx.ellipse(d.x,GROUND+3,62*Math.max(.35,1-hg/500),9,0,0,6.28);ctx.fill();
  const tele=(d.st==='punch'&&d.t<.85)||(d.st==='bite'&&d.t<.55)||(d.st==='bark'&&d.t<.6);
@@ -995,3 +1012,5 @@ function drawKanji(){if(!kanji)return;const k=kanji,t=k.t,inn=1-Math.pow(1-Math.
  const sc=1.6-.6*inn;ctx.globalAlpha=out*Math.min(1,t/.08);ctx.scale(sc,sc);ctx.font=`${S}px Kanji,'Noto Serif CJK JP','Hiragino Mincho ProN','Yu Mincho',serif`;ctx.textAlign='center';ctx.textBaseline='middle';
  ctx.lineJoin='round';ctx.lineWidth=S*.12;ctx.strokeStyle='#fff';ctx.strokeText(k.k,0,-S*.04);ctx.fillStyle='#160606';ctx.fillText(k.k,0,-S*.04);ctx.restore();
  fancy(k.en,k.x,k.y+S*.62,26,-.04,1,out*Math.min(1,Math.max(0,(t-.08)/.12)),'#fff')}
+// start loading last, once everything above is defined
+drawLoading();loadSprites(0);
