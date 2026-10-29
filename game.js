@@ -2458,7 +2458,7 @@ function mMove(kind,lv,keep){const X=mX(),f=p.face,g=mTgt(900),gx=g?g.x:clampX(p
   else{mP({k:'mrib',vx:f*760,y:p.y-110,l:1.8,s:1.8,ph:0,amp:110,kb:'mbig',keep,tick:0,col:'#2fd8e8',col2:'#e6ffff',water:1});mPillar(p.x+f*80,'#2fd8e8',90,.6);mWater(p.x+f*80,GROUND,30)}break;
  case 'gears':{const n=lv===2?8:lv?2:1;for(let k=0;k<n;k++){const a=lv===2?k/n*6.283:0;mP({k:'mgear',vx:lv===2?Math.cos(a)*900:f*900,vy:lv===2?Math.sin(a)*900:(k?-140:0),s:1.2,l:.9,kb:'mtime',keep,tick:0})}break}
  case 'timestop':if(lv===0){M14.slow=3;mClock(p.x,p.y-100,220,.9);say('SLOW FIELD!','#ffe9a0',true)}
-  else if(lv===1){M14.tstop=Math.max(M14.tstop,1.7);M14.hitTS.clear();mClock(VW/2,-camY+300,340,1.7,'#ffd04d');noiseS(.4,300,90,.08);card('TIME STOP!','…the world holds its breath',X.col)}
+  else if(lv===1){M14.tstop=Math.max(M14.tstop,1.7);M14.hitTS.clear();mClock(VW/2,-camY+300,340,1.7,'#ffd04d');noiseS(.4,300,90,.08);if(keep)say('TIME STOP!',X.col,true);else card('TIME STOP!','…the world holds its breath',X.col)}
   else{for(const d of dummies)if(d.alive&&Math.abs(d.x-p.x)<620){for(let k=0;k<3;k++)M14.echo.push({t:.12+k*.12,d,keep});}for(let k=1;k<=5;k++)ghosts.push({x:p.x-f*k*40,y:p.y,f:uFr('h5'),face:f,l:.2+k*.08,blue:1});mClock(p.x,p.y-100,200,.8,'#3fd0c0')}break;
  case 'claws':{const tg=g&&Math.abs(g.x-p.x)<420?g:null;if(lv<2){const sides=lv?[1,-1]:[1];for(const s of sides){const x=tg&&s===1?tg.x:p.x+f*s*150;mClaw(x,p.y-100,f*s,1.2,X.col);for(const d of dummies)if(d.alive&&Math.abs(d.x-x)<130)mHit(d,'mclaw',f*s,keep)}}
   else for(let k=0;k<3;k++)mP({k:'mlion',vx:f*(1000+k*150),x:p.x-f*k*40,y:GROUND,l:.9,s:.9+k*.1,kb:'mclaw',keep,tick:0});break}
