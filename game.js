@@ -273,7 +273,7 @@ function update(dt){
  const fr=FR[p.anim]||FR.idle,a=A[p.anim]||A.idle;
  let fps=a[2];if(p.anim==='stalk')fps*=Math.min(1,Math.abs(p.vx)/80);if(p.anim==='climb'&&p.vy>=0)fps=0;
  if(p.state!=='ledge')p.ft+=dt*fps;p.fi=a[3]?Math.floor(p.ft)%fr.length:Math.min(fr.length-1,Math.floor(p.ft));
- {const nf=fr[p.fi];if(p.lastF&&nf!==p.lastF&&p.lastA===p.anim&&!(p.blend>0)){p.fPrev=p.lastF;p.fB=.045}p.lastF=nf;p.lastA=p.anim;p.fB=(p.fB||0)-dt}
+ {const nf=fr[p.fi];if(p.lastF&&nf!==p.lastF&&p.lastA===p.anim&&!(p.blend>0)){p.fPrev=p.lastF;p.fB=p.uf>=7&&/_run$/.test(p.anim)?.07:.045}p.lastF=nf;p.lastA=p.anim;p.fB=(p.fB||0)-dt}
  if(p.anim==='jump'&&p.vy>-200)p.fi=fr.length-1;
  if(p.anim==='pounce')p.fi=p.vy<0?0:1;
  for(const w of waves){w.r+=dt*(w.big?900:600);w.l-=dt*2.2}for(let i=waves.length-1;i>=0;i--)if(waves[i].l<=0)waves.splice(i,1);
@@ -297,6 +297,8 @@ function update(dt){
 function burst(x,y,fire){shake=10;for(let i=0;i<24;i++){const a=Math.random()*6.28,v=100+Math.random()*300;sparks.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.5,c:i%2?'#fff':fire?'#ff9a2e':'#5cc8ff'})}}
 function readyFrame(f,dog){if(f&&imgOK(IMG[f.f]))return f;const fb=FR[dog?'r_idle':fa('idle')];let g=fb&&fb.find(q=>imgOK(IMG[q.f]));if(!g&&!dog){const b=FR.idle;g=b&&b.find(q=>imgOK(IMG[q.f]))}return g||null}
 function drawFrame(f,x,y,face,alpha){f=readyFrame(f);const im=f&&IMG[f.f];if(!im)return;ctx.save();if(alpha!=null)ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.scale(face*SC,SC);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}
+// Mythic runs: a soft step bounce + forward lean on top of the run frames (eases in/out, so no snap)
+function mRunBob(){const on=p.uf>=7&&p.ground&&!p.hunt&&/_run$/.test(p.anim||'');const dt=Math.min(.05,Math.max(0,now-(p.rbT||now)));p.rbT=now;p.rbA=(p.rbA||0)+((on?1:0)-(p.rbA||0))*Math.min(1,dt*12);p.rbPh=(p.rbPh||0)+dt*12.6;const a=p.rbA;if(a<.01)return{y:0,r:0};return{y:a*Math.abs(Math.sin(p.rbPh))*8,r:a*p.face*(.045+.015*Math.sin(p.rbPh*2))}}
 function draw(){
  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#87c6f0';ctx.fillRect(0,0,cv.width,cv.height);
  const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;
@@ -315,7 +317,7 @@ function draw(){
  if(p.blend>0&&p.prevF)drawFrame(p.prevF,p.prevX,p.prevY,p.prevFace,(p.hunt?.55:1)*p.blend/.1);
  const mu=p.state==='nmorph'?Math.min(1,p.t/(p.mquick?.28:.5)):1;if(mu<1&&p.mfrom)drawFrame(p.mfrom,p.x,p.y,p.face,1-mu*mu*(3-2*mu));
  const sq=r11Sq();
- ctx.save();ctx.translate(p.x,p.y-(p.rot?60:0));ctx.rotate(p.rot||0);ctx.scale(2-sq,sq);ctx.translate(-p.x,-p.y+(p.rot?60:0));if(p.inv>0&&Math.floor(now*20)%2)ctx.globalAlpha=.45;
+ const rbo=mRunBob();ctx.save();ctx.translate(p.x,p.y-(p.rot?60:0)-rbo.y);ctx.rotate((p.rot||0)+rbo.r);ctx.scale(2-sq,sq);ctx.translate(-p.x,-p.y+(p.rot?60:0));if(p.inv>0&&p.inv<2.5&&!p.grab&&!CINE.includes(p.state)&&!/fin|ult|storm|blink|roll|iai|morph/.test(p.state||'')&&Math.floor(now*20)%2)ctx.globalAlpha=.45;
  if(p.fB>0&&p.fPrev&&mu>=1&&!p.hunt)drawFrame(p.fPrev,p.x+(p.wall?40*p.wall:p.state==='wallrun'?14*p.face:0),p.y,p.face,.32*p.fB/.045);
  drawFrame((FR[p.anim]||FR.idle)[p.fi],p.x+(p.wall?40*p.wall:p.state==='wallrun'?14*p.face:0),p.y,p.face,mu<1?mu*mu*(3-2*mu):p.hunt?.55:(p.blend>0?1-.5*p.blend/.1:null));ctx.restore();
  for(const f of puffs){ctx.globalAlpha=Math.max(0,f.l)*(f.dark?.8:1);ctx.fillStyle=f.dark?'#3a2d4f':'#fff';ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,6.28);ctx.fill()}ctx.globalAlpha=1;
@@ -382,7 +384,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='14a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='14b',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -901,12 +903,15 @@ function sStrFx(fx){
 // ---- forms: Paddy -> Neon Ninja -> Samurai ----
 function setForm(f,force){if(p.state==='nmorph'&&p.t<.18){p.morphQ=f+1;return}if(['eclipse','finishhim','sfinal','knfinal','pifinal','respawn','bunny','ledge','lkult'].includes(p.state))return;
  const cur=FORM();if(f===cur)f=0;if(f===cur){p.morphWait=null;return}
+ if(f>=3&&force&&!formReady(f)&&typeof loadForm==='function')loadForm(['','','','kn','pi'][f],true);
  if(f>=3&&!force&&!formReady(f)){requestForm(f);return}if(f<3)p.morphWait=null;
- const from=(FR[p.anim]||FR.idle)[p.fi];p.ninja=f===1;p.sam=f===2;p.xf=f>=3?f:0;p.xcombo=0;p.xair=0;p.rot=0;p.hunt=false;huntBtn&&huntBtn.classList.remove('lit');p.wall=false;p.combo=0;p.ncombo=0;p.scombo=0;p.rot=0;p.scyc=null;
+ formReset();const from=(FR[p.anim]||FR.idle)[p.fi];p.ninja=f===1;p.sam=f===2;p.xf=f>=3?f:0;p.xcombo=0;p.xair=0;p.rot=0;p.hunt=false;huntBtn&&huntBtn.classList.remove('lit');p.wall=false;p.combo=0;p.ncombo=0;p.scombo=0;p.rot=0;p.scyc=null;
  const L=[['idle','back to Paddy','#ffe08a',['#ffe08a','#fff']],['n_idle','NEON NINJA!',NV,[NV,NC,'#fff']],['s_draw','SAMURAI PADDY!',SR,[SR,SG,SP,'#fff']],['kn_power','KNIGHT PADDY!',KG,[KG,KBL,'#fff']],['pi_victory','PIRATE PADDY!',PT,[PT,PG,'#fff']]][f];
  act('nmorph',L[0],{say:L[1],c:L[2]});p.mfrom=from;p.blend=0;p.vx*=.3;
  waves.push({x:p.x,y:p.y,r:10,l:1,big:true});puffShadow(p.x,p.y);spark(p.x,p.y-70,26,L[3],380);shake=8;
  if(f===2){kanjiFx('侍','SAMURAI','#c8102e');petals(p.x,p.y-80,24,1)}if(f===3){crest(p.x,p.y-150,.9);clang()}if(f===4){splash(p.x,GROUND,30,1);parrot('AHOY!');coinBurst(p.x,p.y-100,8);splashS()}morphStrike()}
+// a form switch starts every chain fresh: no half-finished link, tail count or buffered token carries over
+function formReset(){p.utn=0;p.utT=0;p.ut=null;p.ucT=0;p.lk=null;p.lunged=false;LK.on=false;LK.seq='';LK.n=0;LK.buf=null;LK.dead=false;LK.op=null;LK.beat=false;if(typeof lastTokT!=='undefined')lastTokT=-9}
 function cycleForm(){setForm(p.morphWait?(p.morphWait.f+1)%5:(FORM()+1)%5)}
 // ---- stun (bark) ----
 function stunMe(dir){p.state='stun';p.t=0;acted=true;setAnim(fa('hurt'),true);p.vx=dir*170;say('WOOF! (dizzy)','#ffe0a0')}
@@ -2264,11 +2269,12 @@ const _opener13=openerNow;openerNow=function(){if(p.uf){const S=p.state,X=UFm();
 const _liveSeq13=liveSeq;liveSeq=function(){if(!LK.on&&p.uf&&/^u[1-7]$/.test(p.state))return 'C'.repeat(p.ucombo);return _liveSeq13()};
 const _cue13=cueInfo;cueInfo=function(){if(p.uf&&/^u[3-7]$/.test(p.state)&&p.ucombo>=3&&!p.miss&&p.state!=='lk')return{H:UFm().H};return _cue13()};
 // ---- switching into / out of a legend form ----
-function ufReady(u){const q=UPRE[u];return ['_idle','_run','_jump','_combo_a'].every(s=>(F[q+s]||[]).length&&F[q+s].every(fr=>imgOK(IMG[fr.f])))}
+function ufReady(u){const q=UPRE[u];return ['_idle','_run','_rise','_fall','_h1'].every(s=>(FR[q+s]||[]).length&&FR[q+s].every(fr=>imgOK(IMG[fr.f])))}
 function ufSet(u,force){const X=UF[u];if(!X)return;if(!force&&!UNL.ok(u)){say('🔒 '+X.nm+': '+UNLK[u].txt,'#ffe08a',true);return}
  if(['eclipse','finishhim','sfinal','knfinal','pifinal','respawn','bunny','ledge','lkult','ufin'].includes(p.state))return;
- if(!force&&!ufReady(u)){if(typeof loadForm==='function')loadForm(X.pre,true);if(!p.morphWait||p.morphWait.f!==4+u){p.morphWait={f:4+u,t:now};say('SUMMONING '+X.nm+'…',X.col)}return}
- p.morphWait=null;const from=(FR[p.anim]||FR.idle)[p.fi];p.uf=u;p.xf=0;p.ninja=false;p.sam=false;p.ucombo=0;p.uair=0;p.xcombo=0;p.combo=0;p.ncombo=0;p.scombo=0;p.rot=0;p.wall=false;p.hunt=false;huntBtn&&huntBtn.classList.remove('lit');p.pbEx=0;U.clone=0;
+ if(!ufReady(u)&&typeof loadForm==='function')loadForm(X.pre,true); // forced switches (practice, try-all) still fetch the costume
+ if((!force||PR.on)&&!ufReady(u)){if(!p.morphWait||p.morphWait.f!==4+u){p.morphWait={f:4+u,t:now};say('SUMMONING '+X.nm+'…',X.col)}return}
+ p.morphWait=null;formReset();const from=(FR[p.anim]||FR.idle)[p.fi];p.uf=u;p.xf=0;p.ninja=false;p.sam=false;p.ucombo=0;p.uair=0;p.xcombo=0;p.combo=0;p.ncombo=0;p.scombo=0;p.rot=0;p.wall=false;p.hunt=false;huntBtn&&huntBtn.classList.remove('lit');p.pbEx=0;U.clone=0;
  act('nmorph',uA('victory'),{say:X.nm+'!',c:X.col});p.mfrom=from;p.blend=0;p.vx*=.3;waves.push({x:p.x,y:p.y,r:10,l:1,big:true});puffShadow(p.x,p.y);spark(p.x,p.y-70,30,[X.col,X.col2,'#fff'],420);shake=10;
  for(let i=0;i<3;i++)R9.rings.push({x:p.x,y:p.y-90,r:20+i*30,vr:900,l:1,col:i%2?X.col2:X.col,w:10,f:4+u,face:0});
  if(u===6)batPuff(p.x,p.y-80,20);if(u===5)U.moonT=1;if(u===2||u===3)U.pillars.push({x:p.x,l:.6,col:X.col,w:90});if(u===1){muzzle(p.x+60,p.y-90,1.4);bang()}
@@ -2369,14 +2375,14 @@ const MBAD={mst:{jump:[4]},mph:{jump:[4],combo_b:[4],ult:[3]},mtc:{jump:[0,4],ul
 function MA(pre){const bad=MBAD[pre]||{},ok=(sh,ix)=>ix.filter(i=>!(bad[sh]||[]).includes(i)),
  pick=(sh,ix,...alt)=>{let r=ok(sh,ix);if(r.length)return [sh,r];for(const [s2,i2] of alt){r=ok(s2,i2);if(r.length)return [s2,r]}return ['idle',[0]]};
  const m={},S=(k,v,fps,loop)=>m[k]=[v[0],v[1],fps||1,loop||0];
- S('idle',['idle',[0,1,2,3,4,5,4,3,2,1]],7,1);S('run',['run',null],12,1);
+ S('idle',['idle',[0,1,2,3,4,5,4,3,2,1]],7,1);S('run',[({mst:1,mde:1,mfm:1,mmc:1,mch:1})[pre]?'run_v2':'run',null],12,1);
  S('rise',pick('jump',[1,2],['jump',[3]]),9);S('apex',pick('jump',[3],['jump',[2]]));S('fall',pick('jump',[3],['jump',[2]]));S('land',pick('jump',[5]));S('hurt',pick('jump',[0],['jump',[1]]));S('victory',pick('ult',[5]));
  S('h1',pick('combo_a',[0,1,2]),18);S('h2',pick('combo_a',[3,4,5]),18);S('h3',pick('combo_b',[0,1,2]),18);S('h4',pick('combo_b',[3,4,5]),16);
  S('h5',pick('combo_c',[0,1,2]),18);S('h6',pick('combo_c',[3,4,5]),16);S('h7',pick('special',[2,3,4,5]),16);
- S('launch',pick('ult',[1,2]),12);S('air1',pick('combo_a',[2,3]),14);S('air2',pick('combo_c',[4,5],['combo_c',[1,2]]),14);S('dive',pick('ult',[3],['ult',[2]]));
+ S('launch',pick('ult',[1,2]),12);S('air1',pick('combo_a',[2,3]),14);S('air2',pick('combo_c',[4,5],['combo_c',[1,2]]),14);S('dive',({mde:1,mph:1,mtc:1,mfm:1})[pre]?['dive',[2,3]]:pick('ult',[3],['ult',[2]]));
  S('tail',pick('special',[0,1,2]),16);S('tail2',pick('special',[2,3,4,5]),16);S('meowc',pick('ult',[0]));S('meow',pick('special',[3,4,5]),14);S('meow2',pick('combo_c',[4,5]),12);
  S('blink',pick('combo_c',[0,1]),14);
- S('ultA',pick('ult',[0]));S('ultB',pick('ult',[1]));S('ultC',pick('ult',[2]));S('ultD',pick('ult',[3],['ult',[2]]));S('ultE',pick('ult',[4],['combo_b',[4]],['special',[5]]));S('ultF',pick('ult',[5]));
+ S('ultA',pick('ult',[0]));S('ultB',pick('ult',[1]));S('ultC',pick('ult',[2]));S('ultD',({mde:1,mph:1,mtc:1,mfm:1})[pre]?['dive',[3,4]]:pick('ult',[3],['ult',[2]]));S('ultE',pick('ult',[4],['combo_b',[4]],['special',[5]]));S('ultF',pick('ult',[5]));
  UA(pre,m)}
 const MPRE=['mst','mde','mph','mfm','mmc','mtc','mch','mbk'];MPRE.forEach(MA);UPRE.push(...MPRE);
 const MC=(a,k,lunge,ht,nm)=>({a,k,lunge,ht,nm});
@@ -2619,7 +2625,10 @@ function r14Pre(dt){
  if(M14.slow>0){M14.slow-=dt;for(const d of dummies)if(d.alive){d.vx*=Math.pow(.2,dt);d.cool=Math.max(d.cool||0,.4)}}
  const wasTS=M14.tstop>0;if(M14.tstop>0){M14.tstop-=dt;for(const d of dummies)if(d.alive){d.vx=0;d.vy=0;d.cool=Math.max(d.cool||0,.3)}}
  if(wasTS&&M14.tstop<=0){const L=[...M14.hitTS].filter(d=>d.alive);M14.hitTS.clear();if(L.length&&p.state!=='lkult'){say('…AND TIME RESUMES!','#ffe9a0',true);for(const d of L){d.hp=Math.max(2,d.hp);hitDummy(d,'mresume',Math.sign(d.x-p.x)||p.face);d.vy=-1000;spark(d.x,d.y-100,20,['#ffd04d','#3fd0c0','#fff'],420)}shake=Math.max(shake,16)}}
- if(MY(p.uf)){for(const d of dummies)if(d.y<GROUND-1500)d.vy=Math.max(d.vy,200);if(p.y<GROUND-1600&&p.state!=='lkult'&&p.state!=='ufin')p.vy=Math.max(p.vy,300)}
+ {const cin=CINE.includes(p.state)||/ult|fin/.test(p.state||'');for(const d of dummies){if(d.y<GROUND-1500)d.vy=Math.max(d.vy,200);else if(!cin&&d.y<GROUND-800){if(d.vy<0)d.vy*=Math.pow(.0005,dt);if(d.y<GROUND-950){d.y+=(GROUND-950-d.y)*Math.min(1,dt*5);d.vy=Math.max(d.vy,0)}}}
+  // soft ceiling for Paddy too (endless air-mash climbing), never during ultimates/finishers
+  if(!cin&&p.y<GROUND-1100){p.y+=(GROUND-1100-p.y)*Math.min(1,dt*5);p.vy=Math.max(p.vy,40)}}
+ if(MY(p.uf)){if(p.y<GROUND-1600&&p.state!=='lkult'&&p.state!=='ufin')p.vy=Math.max(p.vy,300)}
  for(const d of dummies){if(d.mfz>0){d.mfz-=dt;d.vx*=Math.pow(.001,dt);if(d.y<GROUND-4)d.vy=Math.min(d.vy,120)}}
  for(const e of M14.echo){e.t-=dt;if(e.t<=0&&!e.done){e.done=1;const d=e.d&&e.d.alive?e.d:uNear(340);if(d){ghosts.push({x:d.x-p.face*90,y:p.y,f:uFr('h'+(1+Math.floor(Math.random()*7))),face:p.face,l:.35,blue:1});mHit(d,'mtime',Math.sign(d.x-p.x)||p.face,e.keep);mClock(d.x,d.y-120,50,.3)}}}M14.echo=M14.echo.filter(e=>!e.done);
  if(M14.bliz){const b=M14.bliz;b.l-=dt;b.tk-=dt;for(let k=0;k<4;k++)sparks.push({x:b.x+(Math.random()-.5)*520,y:GROUND-300+Math.random()*280,vx:-300-Math.random()*200,vy:80+Math.random()*120,l:.5,c:Math.random()<.6?'#fff':'#bfefff'});
