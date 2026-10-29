@@ -295,7 +295,7 @@ function update(dt){
  shake*=.85; // input buffer: an unused press stays live for ~0.15s so moves chain; any new action consumes it
  for(const k in P)if(acted||INSTANT.includes(k)||now-(BUF[k]??-9)>.15)delete P[k];acted=false;
  const nm={manner:p.anim,claw:p.anim.replace(/^claw(\d)/,'claw $1/3')}[p.state]||(p.state==='normal'?p.anim:p.state);
- if(now-errShown>3)lbl.textContent=(p.uf?UF[p.uf].ico+' '+UF[p.uf].nm+' · ':p.xf===3?'🛡️ KNIGHT · ':p.xf===4?'⚓ PIRATE · ':p.ninja?'🥷 NEON NINJA · ':p.sam?'⚔️ SAMURAI · ':'')+nm.replace(/^([nsr]|kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk)_/,'')+(p.wall?' (wall)':'')+(p.hunt?' · HUNT':'');
+ if(now-errShown>3)lbl.textContent=(p.uf?UF[p.uf].ico+' '+UF[p.uf].nm+' · ':p.xf===3?'🛡️ KNIGHT · ':p.xf===4?'⚓ PIRATE · ':p.ninja?'🥷 NEON NINJA · ':p.sam?'⚔️ SAMURAI · ':'')+nm.replace(/^([nsr]|kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/,'')+(p.wall?' (wall)':'')+(p.hunt?' · HUNT':'');
 }
 function burst(x,y,fire){shake=10;for(let i=0;i<24;i++){const a=Math.random()*6.28,v=100+Math.random()*300;sparks.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.5,c:i%2?'#fff':fire?'#ff9a2e':'#5cc8ff'})}}
 function readyFrame(f,dog){if(f&&imgOK(IMG[f.f]))return f;const fb=FR[dog?'r_idle':fa('idle')];let g=fb&&fb.find(q=>imgOK(IMG[q.f]));if(!g&&!dog){const b=FR.idle;g=b&&b.find(q=>imgOK(IMG[q.f]))}return g||null}
@@ -343,7 +343,7 @@ function drawHUD(){const sx=0;ctx.setTransform(scale,0,0,scale,offX,offY);
 }
 function drawFx(){nDrawFx();r8DrawFx();
  // claw slash trails: bright curved crescents
- for(const sl of slashes){if(sl.d>0)continue;ctx.save();ctx.translate(sl.x,sl.y);ctx.scale(sl.face,1);ctx.globalCompositeOperation='lighter';
+ for(const sl of slashes){if(sl.d>0)continue;ctx.save();ctx.translate(sl.x,sl.y);ctx.scale(sl.face,1);ctx.globalCompositeOperation='lighter';if(window.SLST&&SLST(sl)){ctx.restore();continue}
   const prog=1-sl.l,lv=sl.lvl||0,a1=sl.a0,a2=sl.a0+sl.sweep*Math.min(1,prog*2.2+.3),lo=Math.min(a1,a2),hi=Math.max(a1,a2);ctx.lineCap='round';
   if(lv>=4){ctx.globalAlpha=Math.max(0,sl.l)*.28;ctx.strokeStyle=sl.col;ctx.lineWidth=(16+lv*3.5)*sl.l+2;ctx.beginPath();ctx.arc(0,0,sl.r+5,lo,hi);ctx.stroke()}
   for(let k=0;k<3;k++){ctx.globalAlpha=Math.max(0,sl.l)*(1-k*.3);ctx.strokeStyle=k?sl.col:(sl.fire?'#fff3c0':'#fff');ctx.lineWidth=(sl.kind==='big'?16:11)*(1+lv*.08)*(1-k*.3)*sl.l+1;
@@ -387,8 +387,8 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='20a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
-const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk)_/.test(String((A[a]||[''])[0]));
+const VER='20b',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
 function drawLoading(){if(started)return;requestAnimationFrame(drawLoading);const S=window.SPRITES,u=S&&S.total?(S.loaded+S.failed.length)/S.total:0;
@@ -2713,10 +2713,10 @@ window.UFTABS.push(...UF.slice(7).map(x=>[x.ico+' '+x.nm.replace(/ PADDY$/,'').s
 #mythic .bar{height:7px;background:#ffffff22;border-radius:4px;overflow:hidden;margin-top:3px}#mythic .bar i{display:block;height:100%;background:linear-gradient(90deg,#7fe8ff,#ffe14d)}#mythic .lg button{margin-left:auto;white-space:nowrap}#mythic .stat{font-size:13px;color:#cfd8ff}
 #tiers{background:#151a30;border:2px solid #ffffff44;border-radius:12px;padding:6px 10px;margin:6px 0 10px}#tiers .tr{display:flex;gap:8px;align-items:center;padding:3px 0;border-bottom:1px solid #ffffff14;font-size:14px}#tiers .tn{font:18px Bangers,Impact,sans-serif;letter-spacing:1px;min-width:118px}
 #tiers .asc{background:linear-gradient(90deg,#3a2a00,#1a1040);border-radius:8px;padding:5px 6px;margin-top:4px}#tiers .ascimg{position:relative;width:84px;height:112px;flex:none;border-radius:8px;overflow:hidden;border:2px solid #ffe9a0;box-shadow:0 0 16px #ffd76a88}#tiers .ascimg img{width:100%;height:100%;object-fit:cover;filter:brightness(.5) saturate(.7) blur(1.5px)}#tiers .ascimg b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;text-shadow:0 0 10px #000}`;document.head.appendChild(st)})();
-function tiersHTML(){const nL=[1,2,3,4,5,6].filter(u=>UNL.has(u)).length,nM=[7,8,9,10,11,12,13,14].filter(u=>UNL.has(u)).length;
+function tiersHTML(){const nL=[1,2,3,4,5,6].filter(u=>UNL.has(u)).length,nM=UF.slice(7).filter((x,i)=>UNL.has(i+7)).length;
  const row=(c,n,t)=>`<div class="tr"><span class="tn" style="color:${c}">${n}</span><span>${t}</span></div>`;
  return `<div id="tiers"><h3>🐾 FORM TIERS</h3>`+row('#ffe08a','🐱 ALLEY CAT','Kitty · Neon Ninja <span class="tip">(start)</span>')+row('#ff9a6b','🗡️ PROWLER','Samurai · Knight · Pirate')+
-  row('#ffe14d','🏆 LEGEND',UF.slice(1,7).map(x=>x.ico).join(' ')+` <span class="tip">${nL}/6 unlocked</span>`)+row('#7fe8ff','🌌 MYTHIC',UF.slice(7).map(x=>x.ico).join(' ')+` <span class="tip">${nM}/8 unlocked</span>`)+
+  row('#ffe14d','🏆 LEGEND',UF.slice(1,7).map(x=>x.ico).join(' ')+` <span class="tip">${nL}/6 unlocked</span>`)+row('#7fe8ff','🌌 MYTHIC',UF.slice(7).map(x=>x.ico).join(' ')+` <span class="tip">${nM}/${UF.length-7} unlocked</span>`)+
   `<div class="tr asc"><div class="ascimg"><img src="assets/ascended_lock.webp?v=${VER}" loading="lazy" alt="Ascended Paddy (locked)"><b>🔒</b></div><div><span class="tn" style="color:#fff3b0">✴️ ASCENDED</span><br><b>???</b> – the one God form, radiant beyond the Mythics. <span class="tip">Unlocks by beating the SURVIVAL TOWER (coming soon).</span></div></div></div>`}
 function mythicHTML(){const d=UNL.d;let h=`<div id="mythic"><h3>🌌 MYTHIC · the strongest forms</h3><div class="stat">EXP ${d.exp} · Big Bruno K.O.s ${d.ko} · Ultimates ${d.ult} · Stealth takedowns ${d.tkd}</div>`;
  for(let u=7;u<UF.length;u++){const X=UF[u],own=UNL.has(u),c=UNLK[u],pr=Math.round(UNL.prog(u)*100),ul=ROUTES[4+u].find(r=>r.ult);

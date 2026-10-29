@@ -13,6 +13,9 @@ def load(path):
     d=np.sqrt(((im-bg)**2).sum(2))
     mag=((r-g>60)&(b-g>15)&(r>110)&(r>b+0))|(d<48)
     pinkfx=(r>g+25)&(b>g+8)&(g>110)&(r>b)
+    if os.environ.get('NOMAG'):
+        gr=(g>r+40)&(g>b+20)   # green-screen sheets (red/pink effects allowed)
+        mag=(d<60)|gr; pinkfx=np.zeros_like(mag)
     fg=nd.binary_opening(~(mag|pinkfx),iterations=2)
     return im,fg
 def rows_of(fg,R):
