@@ -2,7 +2,7 @@
 (function(){
 const V=(typeof VER!=='undefined'?VER:'1');
 const FONTS="'Bangers','Luckiest Guy',Impact,'Arial Black',sans-serif";
-const SRC=n=>'assets/story/'+n+'.webp?v='+V;
+const SRC=n=>'assets/story/'+n+'.webp?v='+V+'p2';
 // panels: image, caption, Ken Burns focus (fx,fy) and zoom from->to, pan direction
 const INTRO=[
  {img:'p1_asleep',cap:'Stanmore Bay. Early morning. Paddy is curled up in the car, fast asleep… zzz.',fx:.72,fy:.62,z0:1.22,z1:1.04},
@@ -126,8 +126,8 @@ addEventListener('keydown',e=>{if(S.mode==='off'||document.body.classList.contai
  if(S.mode==='title'){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();document.getElementById('splay').click()}return}
  e.preventDefault();e.stopImmediatePropagation();if(e.key==='Escape')close();else if(S.mode==='end')close();else next()},true);
 // ---- title layout: Paddy's whole face stays visible; logo + buttons go in the clear sky/sea space beside (or above/below) him ----
-const PAD={x0:.50,x1:.95,y0:.12,y1:.82}; // Paddy's box inside key_art (fractions)
-const TOPT=z=>W>=H?{fx:.70,fy:.10,ax:.74,ay:0,visH:.78,visW:1,right:1,z}:{fx:.70,fy:.45,ax:.5,visW:.6,visH:1,cy:.5,z};
+const PAD={x0:.59,x1:.94,y0:.16,y1:.76}; // Paddy's box inside key_art (fractions)
+const TOPT=z=>W>=H?{fx:.77,fy:.10,ax:.74,ay:0,visH:.78,visW:1,right:1,z}:{fx:.76,fy:.45,ax:.5,visW:.6,visH:1,cy:.5,z};
 function layout(r){const bt=root.querySelector('#sbtns'),port=W<H;if(!r)r={x:0,y:0,dw:W,dh:H};
  const px0=r.x+PAD.x0*r.dw,py0=r.y+PAD.y0*r.dh,py1=r.y+PAD.y1*r.dh,t=SA.t+Math.max(8,H*.03),b=H-SA.b-Math.max(8,H*.03);
  let cx,cw,top,bot;
