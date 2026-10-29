@@ -81,8 +81,8 @@ const _pre=r9Pre;r9Pre=function(dt){fill();_pre(dt);
 // ---------- drawing ----------
 function bolt(x0,y0,x1,y1,w,seg){const pts=[[x0,y0]],n=seg||9;for(let k=1;k<n;k++){const t=k/n;pts.push([x0+(x1-x0)*t+(Math.random()-.5)*26*w,y0+(y1-y0)*t+(Math.random()-.5)*34*w])}pts.push([x1,y1]);
  for(const [lw,c,al] of [[16*w,'#8a5cff',.3],[7*w,COL2,.85],[2.6*w,'#fff',1]]){ctx.globalAlpha=al;ctx.strokeStyle=c;ctx.lineWidth=lw;ctx.beginPath();pts.forEach((q,i)=>i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]));ctx.stroke()}}
-function saber(s,a){ctx.save();ctx.rotate(a);const L=62*s;for(const [lw,c,al] of [[22*s,COL,.28],[10*s,'#ff4a5a',.9],[3.5*s,'#fff',1]]){ctx.globalAlpha=al;ctx.strokeStyle=c;ctx.lineWidth=lw;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-L,0);ctx.lineTo(L,0);ctx.stroke()}
- ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.fillStyle='#222';ctx.fillRect(-14*s,-4*s,28*s,8*s);ctx.restore()}
+function saber(s,a){ctx.save();ctx.rotate(a);const L=62*s;for(const [lw,c,al] of [[22*s,COL,.28],[10*s,'#ff4a5a',.9],[3.5*s,'#fff',1]]){ctx.globalAlpha=al;ctx.strokeStyle=c;ctx.lineWidth=lw;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(12*s,0);ctx.lineTo(12*s+L*1.5,0);ctx.stroke()}
+ ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.fillStyle='#222';ctx.fillRect(-16*s,-4.5*s,30*s,9*s);ctx.fillStyle='#c9a0ff';ctx.fillRect(-4*s,-5*s,4*s,10*s);ctx.restore()} // ONE blade, one hilt (v20g)
 const _draw=drawFx;drawFx=function(){_draw();ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineCap='round';ctx.lineJoin='round';
  for(const r of DS.rings){ctx.globalAlpha=Math.min(1,r.l*3)*.7;ctx.strokeStyle=r.col;ctx.lineWidth=6;const R=r.r*(1.3-r.l);ctx.beginPath();ctx.ellipse(r.x,r.y,R,R*.8,0,0,6.283);ctx.stroke()}
  const P0=paw();
