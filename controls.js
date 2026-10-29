@@ -10,9 +10,13 @@ const ui=document.getElementById('ui');
 const BTN=()=>[...document.querySelectorAll('#ui .b[data-k]')].filter(b=>b.offsetWidth>0);
 const PAD=['left','right','down'];
 // ---------- layout: big buttons sized to the screen, clear of the edges and the notch ----------
+// ---------- button settings (size / see-through), saved on this device ----------
+const SET=window.BSET={d:{sz:'s',op:'m'},load(){try{Object.assign(this.d,JSON.parse(localStorage.getItem('paddyBtns')||'{}'))}catch(_){}},save(){try{localStorage.setItem('paddyBtns',JSON.stringify(this.d))}catch(_){}},
+ k(){return {s:.74,m:.87,l:1}[this.d.sz]||.74},o(){return {l:.28,m:.45,h:.75}[this.d.op]||.45}};SET.load();
 let SA={t:0,r:0,b:0,l:0};const probe=document.createElement('div');probe.style.cssText='position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';document.body.appendChild(probe);
 function layout(){const cs=getComputedStyle(probe);SA={t:parseFloat(cs.paddingTop)||0,r:parseFloat(cs.paddingRight)||0,b:parseFloat(cs.paddingBottom)||0,l:parseFloat(cs.paddingLeft)||0};
- const W=innerWidth,H=innerHeight,S=Math.round(Math.max(56,Math.min(86,H*.205,W*.085))),ml=Math.max(18,SA.l+10),mr=Math.max(18,SA.r+10),mb=Math.max(12,SA.b+6),mt=Math.max(6,SA.t+4);
+ const W=innerWidth,H=innerHeight,SZ=SET.k(),S=Math.round(Math.max(56,Math.min(86,H*.205,W*.085))*SZ),ml=Math.max(8,SA.l+4),mr=Math.max(8,SA.r+4),mb=Math.max(6,SA.b+2),mt=Math.max(4,SA.t+2);
+ document.documentElement.style.setProperty('--bo',SET.o());
  const put=(k,o)=>{const b=document.querySelector(`#ui .b[data-k="${k}"]`)||document.getElementById(k);if(!b)return;const z=Math.round(S*o.s);Object.assign(b.style,{width:z+'px',height:z+'px',fontSize:Math.round(Math.max(13,z*.24))+'px',left:o.l!=null?Math.round(o.l)+'px':'auto',right:o.r!=null?Math.round(o.r)+'px':'auto',bottom:o.b!=null?Math.round(o.b)+'px':'auto',top:o.t!=null?Math.round(o.t)+'px':'auto'})};
  // buttons are placed by their CENTRES (in units of S) so circles never touch, whatever the screen size
  const place=(k,d,cx,cy,side)=>{const b=document.querySelector(`#ui .b[data-k="${k}"]`);if(!b)return;const z=Math.round(S*d),o={s:d,b:mb+S*cy-z/2};if(side<0)o.l=ml+S*cx-z/2;else o.r=mr+S*cx-z/2;put(k,o)};
@@ -20,8 +24,8 @@ function layout(){const cs=getComputedStyle(probe);SA={t:parseFloat(cs.paddingTo
  place('jump',1.2,.62,.92,1);place('attack',1.1,1.95,.6,1);place('special',.95,1.95,1.78,1);
  place('tail',.85,3.02,1.45,1);place('hunt',.8,3.06,.42,1);place('blink',.85,4.02,.95,1);
  // top row (small): morph · mute · ?
- const tz=Math.max(40,Math.min(50,H*.13)),tb=(id,i)=>{const b=document.querySelector(id);if(!b)return;Object.assign(b.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',right:Math.round(mr-8+i*(tz+8))+'px',top:mt+'px',bottom:'auto',left:'auto'})};
- tb('#qbtn',0);tb('#ui .b[data-k=morph]',1);tb('#mute',2);
+ const tz=Math.round(Math.max(34,Math.min(50,H*.13)*Math.min(1,SZ+.15))),tb=(id,i)=>{const b=document.querySelector(id);if(!b)return;Object.assign(b.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',right:Math.round(mr-8+i*(tz+8))+'px',top:mt+'px',bottom:'auto',left:'auto'})};
+ tb('#qbtn',0);tb('#ui .b[data-k=morph]',1);tb('#mute',2);tb('#gear',3);
  const pc=document.getElementById('pclose');if(pc){pc.style.top=(mt+tz+8)+'px';pc.style.left=ml+'px'}
  rects=null}
 let rects=null;function getRects(){if(rects)return rects;rects=BTN().map(b=>{const r=b.getBoundingClientRect();return {b,k:b.dataset.k,x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2}});return rects}
@@ -32,13 +36,13 @@ function kDown(k){KC[k]=(KC[k]||0)+1;if(KC[k]===1){touchMode=true;press(k)}mark(
 function kUp(k){if(!KC[k])return;KC[k]--;if(KC[k]<=0){KC[k]=0;release(k);mark(k,false)}}
 function mark(k,on){document.querySelectorAll(`#ui .b[data-k="${k}"]`).forEach(b=>b.classList.toggle('on',on))}
 function padKey(x,y){const R=getRects().filter(q=>PAD.includes(q.k));let best=null,bd=1e9;for(const q of R){const d=Math.hypot(x-q.x,y-q.y)/(q.k==='down'?.85:1);if(d<bd){bd=d;best=q}}return best?best.k:null}
-function inPad(x,y){const R=getRects().filter(q=>PAD.includes(q.k));if(!R.length)return false;const x0=Math.min(...R.map(q=>q.x-q.r))-26,x1=Math.max(...R.map(q=>q.x+q.r))+22,y0=Math.min(...R.map(q=>q.y-q.r))-26;return x>=0&&x<=x1&&y>=y0&&x>=x0-30}
-function actKey(x,y){let best=null,bd=1e9;for(const q of getRects()){if(PAD.includes(q.k))continue;const d=Math.hypot(x-q.x,y-q.y),lim=q.r+Math.min(16,q.r*.3);if(d<lim&&d/q.r<bd){bd=d/q.r;best=q}}return best?best.k:null}
-const passive=e=>!!(e.target&&e.target.closest&&e.target.closest('#moves,#fpick .scroll'));
+function inPad(x,y){const R=getRects().filter(q=>PAD.includes(q.k));if(!R.length)return false;const x0=Math.min(...R.map(q=>q.x-q.r))-34,x1=Math.max(...R.map(q=>q.x+q.r))+30,y0=Math.min(...R.map(q=>q.y-q.r))-34;return x>=0&&x<=x1&&y>=y0&&x>=x0-30}
+function actKey(x,y){let best=null,bd=1e9;for(const q of getRects()){if(PAD.includes(q.k))continue;const d=Math.hypot(x-q.x,y-q.y),lim=q.r+Math.max(18,q.r*.45);if(d<lim&&d/q.r<bd){bd=d/q.r;best=q}}return best?best.k:null}
+const passive=e=>!!(e.target&&e.target.closest&&e.target.closest('#moves,#fpick .scroll,#sett .scroll'));
 const story=()=>document.body.classList.contains('story');
-const ovOpen=()=>document.body.classList.contains('ov')||document.body.classList.contains('fp');
+const ovOpen=()=>['ov','fp','st'].some(c=>document.body.classList.contains(c));
 function sync(e){const live=new Set([...e.touches].map(t=>t.identifier));for(const [id,s] of T)if(!live.has(id)){if(s.k)kUp(s.k);T.delete(id)}}
-function onStart(e){if(passive(e))return;const tapEl=e.target.closest&&e.target.closest('button,#qbtn,#mute,#pclose,.tap');
+function onStart(e){if(passive(e))return;const tapEl=e.target.closest&&e.target.closest('button,#qbtn,#mute,#pclose,#gear,.tap');
  if(tapEl&&!tapEl.matches('.b[data-k]')){e.preventDefault();for(const t of e.changedTouches)T.set(t.identifier,{tap:tapEl,x:t.clientX,y:t.clientY});return}
  if(story()||ovOpen()){if(e.cancelable)e.preventDefault();return}
  e.preventDefault();rects=null;
@@ -48,7 +52,7 @@ function onStart(e){if(passive(e))return;const tapEl=e.target.closest&&e.target.
 function onMove(e){if(passive(e))return;if(e.cancelable)e.preventDefault();
  for(const t of e.changedTouches){const s=T.get(t.identifier);if(!s||!s.pad)continue;const k=padKey(t.clientX,t.clientY);if(k&&k!==s.k){if(s.k)kUp(s.k);s.k=k;kDown(k)}}}
 function onEnd(e){for(const t of e.changedTouches){const s=T.get(t.identifier);if(!s)continue;T.delete(t.identifier);
-  if(s.tap){const el=document.elementFromPoint(t.clientX,t.clientY);if(e.type==='touchend'&&el&&(el===s.tap||s.tap.contains(el))&&Math.hypot(t.clientX-s.x,t.clientY-s.y)<30){if(!['qbtn','mute','pclose'].includes(s.tap.id))s.tap.click()}continue}
+  if(s.tap){const el=document.elementFromPoint(t.clientX,t.clientY);if(e.type==='touchend'&&el&&(el===s.tap||s.tap.contains(el))&&Math.hypot(t.clientX-s.x,t.clientY-s.y)<30){if(!['qbtn','mute','pclose','gear'].includes(s.tap.id))s.tap.click()}continue}
   if(s.k)kUp(s.k)}
  sync(e);if(!passive(e)&&e.cancelable)e.preventDefault()}
 document.addEventListener('touchstart',onStart,{passive:false});document.addEventListener('touchmove',onMove,{passive:false});
@@ -74,11 +78,25 @@ body.train #trbar{display:flex}body.train #lbl{display:none!important}
 #fpick{position:fixed;inset:0;z-index:6;display:none;background:#0b0820ee;color:#fff;font:14px system-ui}
 body.fp #fpick{display:block}
 #fpick .scroll{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:max(10px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 20px max(16px,env(safe-area-inset-left))}
-#fpick h2{margin:2px 0 6px;font:26px Bangers,Impact,sans-serif;letter-spacing:1px;color:#ffe14d}
-#fpick .tier{margin:8px 0 2px;font:18px Bangers,Impact,sans-serif;letter-spacing:1px}
-#fpick .grid{display:flex;flex-wrap:wrap;gap:8px}
-#fpick .f{min-width:118px;min-height:54px;flex:1 1 118px;max-width:200px;border-radius:14px;border:3px solid #fff4;background:#26355e;color:#fff;font:600 15px system-ui;display:flex;align-items:center;gap:8px;padding:6px 10px;cursor:pointer}
-#fpick .f .i{font-size:26px}#fpick .f.cur{border-color:#ffe14d;background:#4a3d16}
+#fpick h2{margin:0 0 4px;padding-right:110px;font:22px Bangers,Impact,sans-serif;letter-spacing:1px;color:#ffe14d}
+#fpick .trow{display:flex;align-items:center;gap:8px;margin:5px 0}
+#fpick .tier{flex:0 0 100px;font:15px Bangers,Impact,sans-serif;letter-spacing:1px;line-height:1.1}
+#fpick .grid{flex:1;display:flex;flex-wrap:wrap;gap:6px}
+#fpick .f{min-width:92px;min-height:42px;flex:1 1 92px;max-width:170px;border-radius:12px;border:3px solid #fff4;background:#26355e;color:#fff;font:600 13px system-ui;display:flex;align-items:center;gap:5px;padding:3px 5px;cursor:pointer;line-height:1.1;text-align:left;font-size:12px}#fpick .f .i{font-size:18px!important}
+#fpick .f .i{font-size:20px}#fpick .f.cur{border-color:#ffe14d;background:#4a3d16}
+@media (max-width:760px){#fpick .trow{display:block}#fpick .tier{margin:6px 0 3px}}
+#ui .b{opacity:var(--bo,.45);transition:opacity .1s}#ui .b.on{opacity:1}#ui .b.t,#ui #pclose{opacity:max(var(--bo,.45),.6)}
+html.pan,html.pan body{touch-action:pan-y}
+#sett{position:fixed;inset:0;z-index:8;display:none;background:#0b0820ee;color:#fff;font:15px system-ui}
+body.st #sett{display:block}
+#sett .scroll{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:max(10px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 20px max(16px,env(safe-area-inset-left))}
+#sett h2{margin:0 0 6px;font:24px Bangers,Impact,sans-serif;letter-spacing:1px;color:#ffe14d}
+#sett .row{display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap}#sett .lab{flex:0 0 150px;font:17px Bangers,Impact,sans-serif;letter-spacing:1px;color:#9fe8ff}
+#sett .opt{min-width:96px;min-height:44px;border-radius:999px;border:3px solid #fff4;background:#26355e;color:#fff;font:600 15px system-ui;cursor:pointer}
+#sett .opt.cur{border-color:#ffe14d;background:#4a3d16}
+#sett .tipbox{margin-top:10px;background:#ffffff14;border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.4;max-width:640px}
+#sett .x{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));font:22px Bangers,Impact,sans-serif;background:#c03a3a;color:#fff;border:0;border-radius:999px;padding:6px 16px;z-index:9}
+#gear{font-size:18px}
 #fpick .x{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));font:22px Bangers,Impact,sans-serif;background:#c03a3a;color:#fff;border:0;border-radius:999px;padding:6px 16px;z-index:7}`;
 document.head.appendChild(css);
 const bar=document.createElement('div');bar.id='trbar';bar.innerHTML='<span class="nm">🥋 TRAINING ROOM</span><button class="tap pri" id="tforms">🔄 FORMS</button><button class="tap" id="tmoves">📜 MOVES</button><button class="tap" id="texit">✕ EXIT</button>';document.body.appendChild(bar);
@@ -86,8 +104,8 @@ const fp=document.createElement('div');fp.id='fpick';document.body.appendChild(f
 function forms(){const base=[['🐱','KITTY'],['🥷','NEON NINJA'],['⚔️','SAMURAI'],['🛡️','KNIGHT'],['⚓','PIRATE']].map((x,i)=>({f:i,ico:x[0],nm:x[1],tier:i<2?0:1}));
  const ext=[];for(let u=1;u<UF.length;u++)ext.push({f:4+u,ico:UF[u].ico,nm:UF[u].nm,tier:u<=6?2:3});return base.concat(ext)}
 const TIERS=[['🐱 ALLEY CAT','#ffe08a'],['🗡️ PROWLER','#ff9a6b'],['⭐ LEGEND','#9fe8ff'],['🐉 MYTHIC','#ff7ce0']];
-function buildPicker(){const L=forms(),cur=FORM();let h='<div class="scroll"><h2>🔄 PICK A FORM — practise any of them</h2>';
- TIERS.forEach((t,i)=>{h+=`<div class="tier" style="color:${t[1]}">${t[0]}</div><div class="grid">`+L.filter(x=>x.tier===i).map(x=>`<button class="f tap${x.f===cur?' cur':''}" data-f="${x.f}"><span class="i">${x.ico}</span>${x.nm}</button>`).join('')+'</div>'});
+function buildPicker(){const L=forms(),cur=FORM();let h='<div class="scroll"><h2>🔄 PICK A FORM</h2>';
+ TIERS.forEach((t,i)=>{h+=`<div class="trow"><div class="tier" style="color:${t[1]}">${t[0]}</div><div class="grid">`+L.filter(x=>x.tier===i).map(x=>`<button class="f tap${x.f===cur?' cur':''}" data-f="${x.f}"><span class="i">${x.ico}</span>${x.nm}</button>`).join('')+'</div></div>'});
  h+='</div><button class="x tap" id="fpx">✕ CLOSE</button>';fp.innerHTML=h;
  fp.querySelectorAll('[data-f]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();pick(+b.dataset.f)}));fp.querySelector('#fpx').addEventListener('click',e=>{e.preventDefault();closePicker()})}
 function openPicker(){reset();buildPicker();document.body.classList.add('fp')}
@@ -116,6 +134,26 @@ document.getElementById('tmoves').addEventListener('click',e=>{e.preventDefault(
 document.getElementById('texit').addEventListener('click',e=>{e.preventDefault();trainClose()});
 addEventListener('keydown',e=>{if(document.body.classList.contains('fp')&&e.key==='Escape')closePicker()});
 (function(){const h=document.querySelector('#moves .box h2');if(!h)return;const b=document.createElement('button');b.id='mtrain';b.textContent='🥋 TRAINING ROOM — try every form';b.style.cssText='display:block;margin:6px 0 8px;font:18px Bangers,Impact,sans-serif;letter-spacing:1px;color:#fff;background:linear-gradient(#7af0a0,#1aa35a);border:0;border-radius:999px;padding:8px 18px;min-height:44px;cursor:pointer';b.addEventListener('click',e=>{e.preventDefault();if(typeof ov==='function')ov(false);document.body.classList.remove('story');if(window.STORY&&STORY.mode!=='off'&&window.STORYPAUSE){window.STORYPAUSE=false;STORY.mode='off'}trainOpen()});h.after(b)})();
+// ======================= SETTINGS (button size / see-through / fullscreen tip) =======================
+const sett=document.createElement('div');sett.id='sett';document.body.appendChild(sett);
+const STAND=()=>!!(navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches));
+function buildSett(){const o=(k,v,t)=>`<button class="opt tap${SET.d[k]===v?' cur':''}" data-k="${k}" data-v="${v}">${t}</button>`;
+ sett.innerHTML=`<div class="scroll"><h2>⚙ SETTINGS</h2>
+ <div class="row"><span class="lab">BUTTON SIZE</span>${o('sz','s','Small')}${o('sz','m','Medium')}${o('sz','l','Large')}</div>
+ <div class="row"><span class="lab">BUTTON LOOK</span>${o('op','l','See-through')}${o('op','m','Medium')}${o('op','h','Solid')}</div>
+ <div class="tipbox">📱 <b>Play fullscreen on iPhone:</b> in Safari tap <b>Share ⬆</b> → <b>Add to Home Screen</b>, then open Paddy from the new icon — no Safari bars.${STAND()?' <b>✅ You are already fullscreen.</b>':''}<br>The buttons still work if you touch just outside them.</div>
+ </div><button class="x tap" id="stx">✕ CLOSE</button>`;
+ sett.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();SET.d[b.dataset.k]=b.dataset.v;SET.save();layout();buildSett()}));
+ sett.querySelector('#stx').addEventListener('click',e=>{e.preventDefault();closeSett()})}
+function openSett(){reset();buildSett();document.body.classList.add('st')}
+function closeSett(){document.body.classList.remove('st');reset();layout()}
+window.SETTINGS={open:openSett,close:closeSett};
+(function(){const ui=document.getElementById('ui');if(!ui||document.getElementById('gear'))return;const g=document.createElement('div');g.className='b s t';g.id='gear';g.textContent='⚙';ui.appendChild(g);
+ g.addEventListener('pointerdown',e=>{e.preventDefault();openSett()});g.addEventListener('touchend',e=>{e.preventDefault();openSett()})})();
+addEventListener('keydown',e=>{if(document.body.classList.contains('st')&&e.key==='Escape')closeSett()});
+// let iOS pan the menus: the page itself is touch-action:none, the open menu switches that to pan-y
+new MutationObserver(()=>{const b=document.body.classList;document.documentElement.classList.toggle('pan',b.contains('ov')||b.contains('fp')||b.contains('st'))}).observe(document.body,{attributes:true,attributeFilter:['class']});
+layout();
 window.TRAIN={moves:openMoves,open:trainOpen,close:trainClose,picker:openPicker,pick,forms,TR};
 if(/[?&]train/.test(location.search)){const go=()=>{if(typeof started!=='undefined'&&started&&window.ENW)trainOpen();else setTimeout(go,300)};go()}
 })();

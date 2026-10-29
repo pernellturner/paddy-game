@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes"><link rel="icon" href="assets/s1_05.png"><title>Paddy's Way Home</title>
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Paddy"><meta name="theme-color" content="#1a0f2e"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icon-180.png"><link rel="icon" href="assets/s1_05.png"><title>Paddy's Way Home</title>
 <style>
 @font-face{font-family:'Bangers';src:url(fonts/Bangers.woff2) format('woff2');font-display:block}
 @font-face{font-family:'Kanji';src:url(fonts/Kanji.woff2?v=9) format('woff2');font-display:block}
@@ -189,7 +189,7 @@ body.ov #moves{display:block}
 <p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
 <p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p></div></div>
 <div id="rot">🔄 Turn your phone sideways to play with Paddy</div>
-<script src="game.js?v=19a"></script>
+<script src="game.js?v=20a"></script>
 <script src="smooth.js?v=19a"></script>
 <script>
 const ov=v=>{document.body.classList.toggle('ov',v);if(window.CTRL)CTRL.reset();for(const k in K)K[k]=0;document.querySelectorAll('.b.on').forEach(b=>b.classList.remove('on'))};
@@ -201,6 +201,6 @@ const mb=document.getElementById('mute');const ms=()=>mb.textContent=muted?'🔇
 addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.classList.contains('ov'))}else if(e.key==='Escape')ov(false)});
 lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 </script>
-<script src="controls.js?v=18b"></script>
+<script src="controls.js?v=20a"></script>
 <script src="en.js?v=16b"></script>
-<script src="story.js?v=18a"></script></body></html>
+<script src="story.js?v=20a"></script></body></html>

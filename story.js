@@ -27,6 +27,8 @@ body.story #story{display:block}body.story #ui,body.story #lbl,body.story #hint{
 .sbtn.big.prac{font-size:calc(var(--fp,34px)*.78);padding:.3em 1em;background:linear-gradient(#7af0a0,#1aa35a);box-shadow:0 .18em 0 #0b6a35,0 .4em .9em #0006;text-shadow:0 2px 0 #0b5a2c}
 #sprobe{position:absolute;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 #story.intro #sbtns{opacity:0;pointer-events:none}
+#stip{font:600 clamp(11px,3.2vh,14px) system-ui;color:#fff;background:#0007;border-radius:999px;padding:.3em .9em;text-align:center;display:none;max-width:92vw}
+body.touchy:not(.standalone) #stip{display:block}
 .sbtn{font:var(--fa,20px) ${FONTS};white-space:nowrap;letter-spacing:1.5px;color:#fff;border:0;border-radius:999px;padding:.35em 1.1em;cursor:pointer;
  background:linear-gradient(#ffcf4a,#ff8a1a);box-shadow:0 .18em 0 #b4500a,0 .4em .9em #0006;text-shadow:0 2px 0 #9a3c00;-webkit-tap-highlight-color:transparent}
 .sbtn.big{font-size:var(--fp,34px);padding:.25em 1.4em;animation:sbob 1.6s ease-in-out infinite}
@@ -39,7 +41,7 @@ body.story #story{display:block}body.story #ui,body.story #lbl,body.story #hint{
 @media (max-height:460px){#lbl{display:none!important}}`;
 document.head.appendChild(css);
 const root=document.createElement('div');root.id='story';
-root.innerHTML='<canvas></canvas><div id="sbtns"><div class="row"><button class="sbtn big" id="splay">▶ PLAY</button><button class="sbtn big prac" id="sprac">🥋 PRACTICE</button></div><div class="row"><button class="sbtn alt" id="sstory">📖 STORY</button><button class="sbtn alt" id="scombo">☰ COMBO LIST</button></div></div><button id="sskip">SKIP ⏭</button><div id="sprobe"></div>';
+root.innerHTML='<canvas></canvas><div id="sbtns"><div class="row"><button class="sbtn big" id="splay">▶ PLAY</button><button class="sbtn big prac" id="sprac">🥋 PRACTICE</button></div><div class="row"><button class="sbtn alt" id="sstory">📖 STORY</button><button class="sbtn alt" id="scombo">☰ COMBO LIST</button><button class="sbtn alt" id="ssett">⚙ SETTINGS</button></div><div id="stip">📱 Tip: in Safari tap Share ⬆ → <b>Add to Home Screen</b> to play fullscreen (no Safari bars)</div></div><button id="sskip">SKIP ⏭</button><div id="sprobe"></div>';
 document.body.appendChild(root);
 const sc=root.querySelector('canvas'),g=sc.getContext('2d');
 let W=0,H=0,DPR=1,logoC=null,SA={t:0,r:0,b:0,l:0},L=null,FC={};
@@ -121,6 +123,8 @@ function toGame(){try{localStorage.setItem('paddyIntroSeen','1')}catch(e){}
 document.getElementById('splay').addEventListener('click',e=>{e.preventDefault();let seen=0;try{seen=localStorage.getItem('paddyIntroSeen')}catch(_){}if(!seen)S.intro(toGame);else{close();toGame()}});
 document.getElementById('sprac').addEventListener('click',e=>{e.preventDefault();close();if(window.TRAIN)TRAIN.open()});
 document.getElementById('sstory').addEventListener('click',e=>{e.preventDefault();S.intro(toGame)});
+document.getElementById('ssett').addEventListener('click',e=>{e.preventDefault();if(window.SETTINGS)SETTINGS.open()});
+(function(){const st=!!(navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches));document.body.classList.toggle('standalone',st);if(('ontouchstart' in window)||navigator.maxTouchPoints>0)document.body.classList.add('touchy')})();
 document.getElementById('scombo').addEventListener('click',e=>{e.preventDefault();if(typeof ov==='function')ov(true);else document.body.classList.add('ov')});
 document.getElementById('sskip').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(S.mode==='seq'||S.mode==='end')close()});
 sc.addEventListener('pointerdown',e=>{e.preventDefault();if(S.mode==='seq')next();else if(S.mode==='end')close()});
