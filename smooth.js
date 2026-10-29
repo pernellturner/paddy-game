@@ -29,6 +29,13 @@ SM(2,'s',{hurt:[4],victory:[5]});
 SM(3,'kn',{hurt:[4],victory:[4,0,0,[1,2,3]]});
 SM(4,'pi',{hurt:[4],victory:[4,0,0,[1,2,3]]});
 [['mst',[1,2,3]],['mde',[1,2,3]],['mph'],['mfm'],['mmc'],['mtc'],['mch'],['mbk']].forEach(([q,vi],i)=>SM(11+i,q,{hurt:[4],victory:vi?[4,0,0,vi]:[5]}));
+// ---------- Prowlers: their single-frame moves now have 3-4 drawn frames (hold poses end on the held frame) ----------
+SM(2,'s',{airB:[14,0,0,[0,1,2]],airC:[14],airD:[14,0,0,[0,1,2]],dive:[12,0,0,[0,1,2]],stance:[10],dash:[14],after:[8],calm:[6],
+ block:[12],parry:[14],riposte:[14],kneel:[8],power:[10],super:[14]});
+SM(3,'kn',{airA:[14],airB:[14],airC:[14],airD:[14,0,0,[0,1,2]],dive:[12,0,0,[0,1,2]],leap:[12,0,0,[0,1,3]],slam:[12],guard:[12],parry:[14],counter:[14],
+ kneel:[8],power:[10],shout:[12],rushA:[12,0,'kn_m_rush',[0,1,2]],rush:[12,1,'kn_m_rush',[1,2,3,2]],calm:[6,0,'kn_m_kneel',[0,1,2]]});
+SM(4,'pi',{h2:[14,0,0,[0,1,2]],h3:[14],h4:[13],h6:[14],twirl:[14],launch:[13],airA:[14],airB:[14],airC:[14],airD:[14],dive:[12,0,0,[0,1,2]],
+ aim:[10],cannon:[12],roll:[16,1,'pi_m_rollx'],rollout:[12],calm:[6],swing:[8]});
 SM(5,'gs',LEG({launch:[12,0,0,[0,1,2]]}));
 SM(6,'lp',LEG({h1:[15,0,0,[0,1,2]],h6:[13],launch:[12,0,0,[0,1,2]],air2:[14,0,0,[1,2,3]],blink:[14]}));
 SM(7,'pb',LEG({h1:[15,0,0,[0,1,2]],h7:[12,0,0,[0,1,2]],spin:[16,1]}));
