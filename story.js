@@ -95,7 +95,7 @@ function finish(){if(S.mode!=='seq')return;if(S.end&&S.mode!=='end'){S.mode='end
 function close(){const d=S.done;S.mode='off';root.classList.remove('intro');pauseGame(false);if(typeof last!=='undefined')last=performance.now();if(d)d()}
 S.cutscene=(name,done)=>{if(CUTS[name])play(CUTS[name],done)};S.intro=done=>play(INTRO,done,'WORLD 1 · SILVERDALE');S.title=startTitle;
 function toGame(){try{localStorage.setItem('paddyIntroSeen','1')}catch(e){}
- if(typeof card==='function')setTimeout(()=>{try{card('🌏 WORLD 1 · SILVERDALE','Find your way home, Paddy!','#ffd84a')}catch(e){}},300)}
+ setTimeout(()=>{try{if(window.ENW)ENW.start(0);else if(typeof card==='function')card('🌏 WORLD 1 · SILVERDALE','Find your way home, Paddy!','#ffd84a')}catch(e){}},300)}
 document.getElementById('splay').addEventListener('click',e=>{e.preventDefault();let seen=0;try{seen=localStorage.getItem('paddyIntroSeen')}catch(_){}if(!seen)S.intro(toGame);else{close();toGame()}});
 document.getElementById('sstory').addEventListener('click',e=>{e.preventDefault();S.intro(toGame)});
 document.getElementById('scombo').addEventListener('click',e=>{e.preventDefault();if(typeof ov==='function')ov(true);else document.body.classList.add('ov')});
