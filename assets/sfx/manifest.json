@@ -1,0 +1,842 @@
+{
+ "game": "Paddy's Way Home",
+ "format": "mp3 mono 44.1kHz 96kbps, silence-trimmed, peak-normalised (combo ticks/stingers escalate in level by tier)",
+ "source": "ElevenLabs Sound Effects v2 + ElevenLabs v3 TTS (voice: Tyler - Arena Announcer)",
+ "sounds": [
+  {
+   "key": "beast_roar",
+   "file": "beast_roar.mp3",
+   "duration": 1.332,
+   "category": "combat",
+   "description": "Mighty beast roar, big cat lion-like roar, powerful but cartoony, kid friendly game",
+   "peak_db": -1.4,
+   "mean_db": -11.5,
+   "bytes": 16344
+  },
+  {
+   "key": "blade_boomerang",
+   "file": "blade_boomerang.mp3",
+   "duration": 1.515,
+   "category": "combat",
+   "description": "Thrown spinning energy blade boomerang, whirring whoosh flying away and returning, sci-fi video game",
+   "peak_db": -1.6,
+   "mean_db": -18.7,
+   "bytes": 18538
+  },
+  {
+   "key": "blade_slash",
+   "file": "blade_slash.mp3",
+   "duration": 0.627,
+   "category": "combat",
+   "description": "Sharp sword blade slash, metallic shing swish through air, action game",
+   "peak_db": -0.3,
+   "mean_db": -14.7,
+   "bytes": 7880
+  },
+  {
+   "key": "bruno_bark",
+   "file": "bruno_bark.mp3",
+   "duration": 0.914,
+   "category": "boss",
+   "description": "Big Rottweiler deep loud bark, boss dog, powerful 'WOOF'",
+   "peak_db": -1.4,
+   "mean_db": -15.8,
+   "bytes": 11328
+  },
+  {
+   "key": "bruno_growl",
+   "file": "bruno_growl.mp3",
+   "duration": 1.515,
+   "category": "boss",
+   "description": "Big Rottweiler deep menacing growl, boss dog rumble, cartoon not too scary",
+   "peak_db": -1.4,
+   "mean_db": -8.9,
+   "bytes": 18538
+  },
+  {
+   "key": "bruno_ko",
+   "file": "bruno_ko.mp3",
+   "duration": 1.802,
+   "category": "boss",
+   "description": "Cartoon boss dog defeated, big dizzy whimper and heavy thud falling down, kid friendly",
+   "peak_db": -1.5,
+   "mean_db": -12.4,
+   "bytes": 21986
+  },
+  {
+   "key": "bruno_punch",
+   "file": "bruno_punch.mp3",
+   "duration": 0.627,
+   "category": "boss",
+   "description": "Heavy cartoon boss punch impact, big meaty thump whack, video game",
+   "peak_db": -1.3,
+   "mean_db": -14.8,
+   "bytes": 7880
+  },
+  {
+   "key": "cannon",
+   "file": "cannon.mp3",
+   "duration": 1.228,
+   "category": "combat",
+   "description": "Cartoon cannon boom, deep fun boom with a whoosh, kid friendly video game",
+   "peak_db": -1.4,
+   "mean_db": -14.9,
+   "bytes": 15090
+  },
+  {
+   "key": "cat_hiss",
+   "file": "cat_hiss.mp3",
+   "duration": 0.705,
+   "category": "enemy",
+   "description": "Angry cat hiss, short sharp hissing, video game enemy",
+   "peak_db": -1.3,
+   "mean_db": -10.8,
+   "bytes": 8821
+  },
+  {
+   "key": "claw_heavy",
+   "file": "claw_heavy.mp3",
+   "duration": 0.836,
+   "category": "combat",
+   "description": "Heavy powerful claw slash, big whoosh with a meaty impact thump, cartoon action game",
+   "peak_db": -1.4,
+   "mean_db": -15.5,
+   "bytes": 10388
+  },
+  {
+   "key": "claw_swipe_1",
+   "file": "claw_swipe_1.mp3",
+   "duration": 0.444,
+   "category": "combat",
+   "description": "Quick light cat claw swipe whoosh with a small scratch, fast, cartoon fighting game",
+   "peak_db": -1.6,
+   "mean_db": -17.0,
+   "bytes": 5686
+  },
+  {
+   "key": "claw_swipe_2",
+   "file": "claw_swipe_2.mp3",
+   "duration": 0.522,
+   "category": "combat",
+   "description": "Fast light claw slash swish, short air cut with a tiny scrape, video game combat",
+   "peak_db": -1.2,
+   "mean_db": -12.9,
+   "bytes": 6626
+  },
+  {
+   "key": "claw_swipe_3",
+   "file": "claw_swipe_3.mp3",
+   "duration": 0.522,
+   "category": "combat",
+   "description": "Snappy light claw swipe, crisp swish and quick scratch hit, arcade combat",
+   "peak_db": -1.4,
+   "mean_db": -15.5,
+   "bytes": 6626
+  },
+  {
+   "key": "coin",
+   "file": "coin.mp3",
+   "duration": 0.522,
+   "category": "paddy",
+   "description": "Bright cartoon coin collect ding, sparkly two-note chime pickup, retro platformer",
+   "peak_db": -1.9,
+   "mean_db": -21.8,
+   "bytes": 6626
+  },
+  {
+   "key": "combo_stinger_10",
+   "file": "combo_stinger_10.mp3",
+   "duration": 0.993,
+   "category": "combo",
+   "description": "Combo milestone stinger, bright rising arpeggio with sparkle whoosh, energetic video game",
+   "combo_threshold": 10,
+   "peak_db": -7.3,
+   "mean_db": -19.9,
+   "bytes": 12269
+  },
+  {
+   "key": "combo_stinger_100",
+   "file": "combo_stinger_100.mp3",
+   "duration": 3.03,
+   "category": "combo",
+   "description": "Insane legendary combo stinger, massive epic orchestral choir hit with electric power surge, fireworks and sparkle explosion, triumphant, kid friendly video game",
+   "combo_threshold": 100,
+   "peak_db": -1.0,
+   "mean_db": -15.7,
+   "bytes": 36719
+  },
+  {
+   "key": "combo_stinger_20",
+   "file": "combo_stinger_20.mp3",
+   "duration": 1.515,
+   "category": "combo",
+   "description": "Exciting combo milestone stinger, powerful rising synth swell with cymbal sparkle, video game",
+   "combo_threshold": 20,
+   "peak_db": -1.8,
+   "mean_db": -18.5,
+   "bytes": 18538
+  },
+  {
+   "key": "combo_stinger_35",
+   "file": "combo_stinger_35.mp3",
+   "duration": 1.567,
+   "category": "combo",
+   "description": "Very exciting combo stinger, heroic brass hit with rising whoosh and sparkles, video game",
+   "combo_threshold": 35,
+   "peak_db": -2.3,
+   "mean_db": -17.0,
+   "bytes": 19165
+  },
+  {
+   "key": "combo_stinger_5",
+   "file": "combo_stinger_5.mp3",
+   "duration": 1.045,
+   "category": "combo",
+   "description": "Short cheerful combo milestone stinger, quick rising three-note chime, video game",
+   "combo_threshold": 5,
+   "peak_db": -4.6,
+   "mean_db": -21.4,
+   "bytes": 12896
+  },
+  {
+   "key": "combo_stinger_50",
+   "file": "combo_stinger_50.mp3",
+   "duration": 2.038,
+   "category": "combo",
+   "description": "Epic combo stinger, huge orchestral hit with electric energy surge and sparkle explosion, video game, kid friendly",
+   "combo_threshold": 50,
+   "peak_db": -1.0,
+   "mean_db": -15.7,
+   "bytes": 24808
+  },
+  {
+   "key": "combo_tick_1",
+   "file": "combo_tick_1.mp3",
+   "duration": 0.157,
+   "category": "combo",
+   "description": "Soft tiny hit counter tick, quiet low click blip, video game UI",
+   "tier": 1,
+   "use": "hits 1-4",
+   "peak_db": -8.8,
+   "mean_db": -27.6,
+   "bytes": 2238
+  },
+  {
+   "key": "combo_tick_2",
+   "file": "combo_tick_2.mp3",
+   "duration": 0.522,
+   "category": "combo",
+   "description": "Hit counter tick, brighter click blip, slightly higher pitch, video game combo",
+   "tier": 2,
+   "use": "hits 5-9",
+   "peak_db": -13.0,
+   "mean_db": -24.5,
+   "bytes": 6626
+  },
+  {
+   "key": "combo_tick_3",
+   "file": "combo_tick_3.mp3",
+   "duration": 0.522,
+   "category": "combo",
+   "description": "Hit counter tick, punchy higher pitched blip with sparkle, video game combo",
+   "tier": 3,
+   "use": "hits 10-19",
+   "peak_db": -5.7,
+   "mean_db": -21.5,
+   "bytes": 6626
+  },
+  {
+   "key": "combo_tick_4",
+   "file": "combo_tick_4.mp3",
+   "duration": 0.522,
+   "category": "combo",
+   "description": "Intense hit counter tick, bright high zappy blip with shimmer, energetic video game combo",
+   "tier": 4,
+   "use": "hits 20-34",
+   "peak_db": -0.8,
+   "mean_db": -19.5,
+   "bytes": 6626
+  },
+  {
+   "key": "combo_tick_5",
+   "file": "combo_tick_5.mp3",
+   "duration": 0.522,
+   "category": "combo",
+   "description": "Very intense hit counter tick, loud high pitched electric zing blip with sparkle burst, arcade combo",
+   "tier": 5,
+   "use": "hits 35-49",
+   "peak_db": -2.7,
+   "mean_db": -15.8,
+   "bytes": 6626
+  },
+  {
+   "key": "combo_tick_6",
+   "file": "combo_tick_6.mp3",
+   "duration": 0.627,
+   "category": "combo",
+   "description": "Insane epic hit counter tick, extremely bright high pitched electric power zing with sparkle explosion, arcade combo",
+   "tier": 6,
+   "use": "hits 50+",
+   "peak_db": -0.6,
+   "mean_db": -15.1,
+   "bytes": 7880
+  },
+  {
+   "key": "crab_click",
+   "file": "crab_click.mp3",
+   "duration": 0.575,
+   "category": "enemy",
+   "description": "Crab pincers clicking, quick snapping clacks",
+   "peak_db": -1.8,
+   "mean_db": -31.9,
+   "bytes": 7253
+  },
+  {
+   "key": "dark_force_hum",
+   "file": "dark_force_hum.mp3",
+   "duration": 2.038,
+   "category": "combat",
+   "description": "Dark force energy hum, deep pulsing mysterious power aura drone, video game",
+   "peak_db": -1.5,
+   "mean_db": -15.0,
+   "bytes": 24808
+  },
+  {
+   "key": "dog_bark",
+   "file": "dog_bark.mp3",
+   "duration": 0.444,
+   "category": "enemy",
+   "description": "Small dog single cartoon bark, 'woof', video game enemy",
+   "peak_db": -1.1,
+   "mean_db": -13.0,
+   "bytes": 5686
+  },
+  {
+   "key": "dog_yelp",
+   "file": "dog_yelp.mp3",
+   "duration": 0.627,
+   "category": "enemy",
+   "description": "Cartoon dog yelp, short 'yip' when bonked, kid friendly",
+   "peak_db": -1.4,
+   "mean_db": -12.9,
+   "bytes": 7880
+  },
+  {
+   "key": "enemy_hit_poof",
+   "file": "enemy_hit_poof.mp3",
+   "duration": 0.627,
+   "category": "enemy",
+   "description": "Cartoon enemy defeated poof, soft puff of smoke with a pop, kid friendly video game",
+   "peak_db": -1.4,
+   "mean_db": -15.7,
+   "bytes": 7880
+  },
+  {
+   "key": "fire_whoosh",
+   "file": "fire_whoosh.mp3",
+   "duration": 1.045,
+   "category": "combat",
+   "description": "Fireball whoosh, burst of flame roaring past, video game fire spell",
+   "peak_db": -1.5,
+   "mean_db": -16.3,
+   "bytes": 12896
+  },
+  {
+   "key": "force_lightning",
+   "file": "force_lightning.mp3",
+   "duration": 1.332,
+   "category": "combat",
+   "description": "Force lightning crackle, continuous electric arcs buzzing and crackling from hands, video game",
+   "peak_db": -1.3,
+   "mean_db": -17.3,
+   "bytes": 16344
+  },
+  {
+   "key": "force_push",
+   "file": "force_push.mp3",
+   "duration": 0.914,
+   "category": "combat",
+   "description": "Force push shockwave, powerful air blast whoomp with a bass thump, video game",
+   "peak_db": -1.5,
+   "mean_db": -13.2,
+   "bytes": 11328
+  },
+  {
+   "key": "form_transform",
+   "file": "form_transform.mp3",
+   "duration": 1.332,
+   "category": "paddy",
+   "description": "Magical transformation whoosh, swirling sparkle shimmer rising then a bright pop, cartoon superhero form change",
+   "peak_db": -1.0,
+   "mean_db": -19.4,
+   "bytes": 16344
+  },
+  {
+   "key": "goose_honk",
+   "file": "goose_honk.mp3",
+   "duration": 0.392,
+   "category": "enemy",
+   "description": "Angry goose honk, loud single honk",
+   "peak_db": -1.4,
+   "mean_db": -11.5,
+   "bytes": 5059
+  },
+  {
+   "key": "ground_slam",
+   "file": "ground_slam.mp3",
+   "duration": 1.228,
+   "category": "combat",
+   "description": "Ground slam, heavy cartoon body slam impact boom with rumbling earth crack, video game",
+   "peak_db": -1.4,
+   "mean_db": -13.9,
+   "bytes": 15090
+  },
+  {
+   "key": "gun_pop",
+   "file": "gun_pop.mp3",
+   "duration": 0.34,
+   "category": "combat",
+   "description": "Cartoony toy blaster gunshot pop, bouncy pew pop, kid friendly, not realistic",
+   "peak_db": -1.2,
+   "mean_db": -20.2,
+   "bytes": 4432
+  },
+  {
+   "key": "hedgehog_huff",
+   "file": "hedgehog_huff.mp3",
+   "duration": 0.549,
+   "category": "enemy",
+   "description": "Hedgehog huffing and snuffling, small grumpy puffing snorts",
+   "peak_db": -1.5,
+   "mean_db": -21.8,
+   "bytes": 6940
+  },
+  {
+   "key": "ice_crack",
+   "file": "ice_crack.mp3",
+   "duration": 0.914,
+   "category": "combat",
+   "description": "Ice spell freezing crackle and crystal crack shatter, sparkly, video game",
+   "peak_db": -1.6,
+   "mean_db": -20.8,
+   "bytes": 11328
+  },
+  {
+   "key": "juggle_hit_1",
+   "file": "juggle_hit_1.mp3",
+   "duration": 0.444,
+   "category": "combat",
+   "description": "Quick punchy air combo hit, short smack pop, fighting game juggle",
+   "peak_db": -1.4,
+   "mean_db": -21.8,
+   "bytes": 5686
+  },
+  {
+   "key": "juggle_hit_2",
+   "file": "juggle_hit_2.mp3",
+   "duration": 0.522,
+   "category": "combat",
+   "description": "Snappy cartoon combo hit, light thwack with a tiny sparkle, fighting game",
+   "peak_db": -1.5,
+   "mean_db": -19.3,
+   "bytes": 6626
+  },
+  {
+   "key": "launcher_uppercut",
+   "file": "launcher_uppercut.mp3",
+   "duration": 0.731,
+   "category": "combat",
+   "description": "Launcher uppercut, rising whoosh punch with an impact pop launching enemy into the air, fighting game",
+   "peak_db": -1.1,
+   "mean_db": -14.8,
+   "bytes": 9134
+  },
+  {
+   "key": "lightning",
+   "file": "lightning.mp3",
+   "duration": 1.228,
+   "category": "combat",
+   "description": "Magic lightning bolt strike, electric zap crackle and thunder crack, video game spell",
+   "peak_db": -1.1,
+   "mean_db": -12.5,
+   "bytes": 15090
+  },
+  {
+   "key": "magpie_warble",
+   "file": "magpie_warble.mp3",
+   "duration": 0.993,
+   "category": "enemy",
+   "description": "Australian magpie warbling call, fluty melodic gurgle song",
+   "peak_db": -1.2,
+   "mean_db": -15.3,
+   "bytes": 12269
+  },
+  {
+   "key": "mecha_laser",
+   "file": "mecha_laser.mp3",
+   "duration": 0.914,
+   "category": "combat",
+   "description": "Sci-fi mecha laser beam blast, charging zap and pew beam, video game",
+   "peak_db": -0.4,
+   "mean_db": -14.1,
+   "bytes": 11328
+  },
+  {
+   "key": "mecha_servo",
+   "file": "mecha_servo.mp3",
+   "duration": 0.836,
+   "category": "combat",
+   "description": "Robot mecha servo motor movement, mechanical whirr and clunk, video game",
+   "peak_db": -1.1,
+   "mean_db": -16.8,
+   "bytes": 10388
+  },
+  {
+   "key": "moon_ding",
+   "file": "moon_ding.mp3",
+   "duration": 1.228,
+   "category": "moon",
+   "description": "Tiny faraway twinkle ding, small distant sparkle chime, cute",
+   "peak_db": -8.5,
+   "mean_db": -27.9,
+   "bytes": 15090
+  },
+  {
+   "key": "moon_rocket_launch",
+   "file": "moon_rocket_launch.mp3",
+   "duration": 2.952,
+   "category": "moon",
+   "description": "Cartoon rocket launch whoosh rising up into space, roaring engine fading into the distance, kid friendly",
+   "peak_db": -1.4,
+   "mean_db": -17.2,
+   "bytes": 35779
+  },
+  {
+   "key": "paddy_dash",
+   "file": "paddy_dash.mp3",
+   "duration": 0.627,
+   "category": "paddy",
+   "description": "Fast cartoon dash swoosh, quick air whoosh with a zip, energetic, clean",
+   "peak_db": -1.3,
+   "mean_db": -20.4,
+   "bytes": 7880
+  },
+  {
+   "key": "paddy_double_jump",
+   "file": "paddy_double_jump.mp3",
+   "duration": 0.731,
+   "category": "paddy",
+   "description": "Cartoon platformer double jump, higher pitched sparkly airy spin whoosh with a tiny chime, cute, no music",
+   "peak_db": -1.3,
+   "mean_db": -18.5,
+   "bytes": 9134
+  },
+  {
+   "key": "paddy_footstep",
+   "file": "paddy_footstep.mp3",
+   "duration": 0.34,
+   "category": "paddy",
+   "description": "Single soft cat paw footstep on grass, tiny light pat, quiet, clean",
+   "peak_db": -6.4,
+   "mean_db": -30.7,
+   "bytes": 4432
+  },
+  {
+   "key": "paddy_hurt_meow",
+   "file": "paddy_hurt_meow.mp3",
+   "duration": 0.731,
+   "category": "paddy",
+   "description": "Cute fluffy cat short hurt meow, surprised 'mrrp ow' yelp, cartoonish, not scary",
+   "peak_db": -1.5,
+   "mean_db": -16.6,
+   "bytes": 9134
+  },
+  {
+   "key": "paddy_jump",
+   "file": "paddy_jump.mp3",
+   "duration": 0.627,
+   "category": "paddy",
+   "description": "Cute cartoon platformer jump sound, quick bouncy rising boing whoosh, playful, clean, no music",
+   "peak_db": -1.6,
+   "mean_db": -19.3,
+   "bytes": 7880
+  },
+  {
+   "key": "paddy_ko",
+   "file": "paddy_ko.mp3",
+   "duration": 1.646,
+   "category": "paddy",
+   "description": "Cartoon cat knocked out, sad descending slide whistle and dizzy little meow, kid friendly game over",
+   "peak_db": -1.1,
+   "mean_db": -10.8,
+   "bytes": 20106
+  },
+  {
+   "key": "paddy_land",
+   "file": "paddy_land.mp3",
+   "duration": 0.522,
+   "category": "paddy",
+   "description": "Soft cartoon cat landing thud on grass, light padded paws, short, cute",
+   "peak_db": -6.5,
+   "mean_db": -19.8,
+   "bytes": 6626
+  },
+  {
+   "key": "paddy_meow_attack",
+   "file": "paddy_meow_attack.mp3",
+   "duration": 0.731,
+   "category": "paddy",
+   "description": "Cute sharp cat meow attack shout, playful 'mew!' battle cry, cartoon",
+   "peak_db": -1.5,
+   "mean_db": -13.8,
+   "bytes": 9134
+  },
+  {
+   "key": "paddy_meow_roar",
+   "file": "paddy_meow_roar.mp3",
+   "duration": 1.515,
+   "category": "paddy",
+   "description": "Fluffy cat giant powerful meow roar, big echoing heroic mighty meow with a whoosh, cartoon, kid friendly",
+   "peak_db": -1.4,
+   "mean_db": -12.8,
+   "bytes": 18538
+  },
+  {
+   "key": "paddy_victory",
+   "file": "paddy_victory.mp3",
+   "duration": 2.508,
+   "category": "paddy",
+   "description": "Happy cartoon victory fanfare jingle with a cheerful cat meow at the end, bright, kid friendly game level complete",
+   "peak_db": -1.2,
+   "mean_db": -16.5,
+   "bytes": 30450
+  },
+  {
+   "key": "paddy_wall_cling",
+   "file": "paddy_wall_cling.mp3",
+   "duration": 0.627,
+   "category": "paddy",
+   "description": "Cartoon cat claws gripping and scratching a wooden wall, short scritch slide, cute",
+   "peak_db": -1.5,
+   "mean_db": -18.3,
+   "bytes": 7880
+  },
+  {
+   "key": "possum_hiss",
+   "file": "possum_hiss.mp3",
+   "duration": 0.836,
+   "category": "enemy",
+   "description": "Brushtail possum angry hiss and screechy growl, short, cartoon",
+   "peak_db": -1.0,
+   "mean_db": -10.2,
+   "bytes": 10388
+  },
+  {
+   "key": "power_up",
+   "file": "power_up.mp3",
+   "duration": 1.228,
+   "category": "paddy",
+   "description": "Cartoon power-up pickup, rising magical arpeggio chime with sparkles, platformer",
+   "peak_db": -1.4,
+   "mean_db": -16.2,
+   "bytes": 15090
+  },
+  {
+   "key": "pukeko_squawk",
+   "file": "pukeko_squawk.mp3",
+   "duration": 0.836,
+   "category": "enemy",
+   "description": "Pukeko swamphen loud harsh squawk screech call, New Zealand bird",
+   "peak_db": -1.4,
+   "mean_db": -15.2,
+   "bytes": 10388
+  },
+  {
+   "key": "seagull_squawk",
+   "file": "seagull_squawk.mp3",
+   "duration": 0.836,
+   "category": "enemy",
+   "description": "Seagull squawk, loud cheeky gull call, beach",
+   "peak_db": -1.5,
+   "mean_db": -15.0,
+   "bytes": 10388
+  },
+  {
+   "key": "sword_clang",
+   "file": "sword_clang.mp3",
+   "duration": 0.731,
+   "category": "combat",
+   "description": "Sword clang parry, bright metal on metal ring clash with a sparkle, video game block",
+   "peak_db": -1.0,
+   "mean_db": -22.0,
+   "bytes": 9134
+  },
+  {
+   "key": "tail_whip",
+   "file": "tail_whip.mp3",
+   "duration": 0.261,
+   "category": "combat",
+   "description": "Cartoon fluffy tail whip, fast whoosh crack with a soft thwack, game combat",
+   "peak_db": -1.4,
+   "mean_db": -11.3,
+   "bytes": 3492
+  },
+  {
+   "key": "time_stop",
+   "file": "time_stop.mp3",
+   "duration": 1.567,
+   "category": "combat",
+   "description": "Time stop warp effect, reverse whoosh with a deep clock tick and wobbly warped freeze, magical, video game",
+   "peak_db": -1.4,
+   "mean_db": -13.8,
+   "bytes": 19165
+  },
+  {
+   "key": "ui_back",
+   "file": "ui_back.mp3",
+   "duration": 0.522,
+   "category": "ui",
+   "description": "UI back cancel, soft descending two-note blip, game menu",
+   "peak_db": -6.5,
+   "mean_db": -20.1,
+   "bytes": 6626
+  },
+  {
+   "key": "ui_pause",
+   "file": "ui_pause.mp3",
+   "duration": 0.627,
+   "category": "ui",
+   "description": "Game pause sound, soft gentle whoosh down with a chime, menu",
+   "peak_db": -6.4,
+   "mean_db": -24.7,
+   "bytes": 7880
+  },
+  {
+   "key": "ui_select",
+   "file": "ui_select.mp3",
+   "duration": 0.522,
+   "category": "ui",
+   "description": "UI confirm select, bright happy two-note chime, game menu",
+   "peak_db": -6.4,
+   "mean_db": -18.2,
+   "bytes": 6626
+  },
+  {
+   "key": "ui_tap",
+   "file": "ui_tap.mp3",
+   "duration": 0.522,
+   "category": "ui",
+   "description": "Soft UI menu tap click, gentle bubbly pop, mobile game",
+   "peak_db": -6.5,
+   "mean_db": -24.0,
+   "bytes": 6626
+  },
+  {
+   "key": "ult_charge",
+   "file": "ult_charge.mp3",
+   "duration": 2.508,
+   "category": "combat",
+   "description": "Ultimate attack charge-up, rising energy hum building with sparkles and power swelling, epic video game",
+   "peak_db": -1.3,
+   "mean_db": -11.7,
+   "bytes": 30450
+  },
+  {
+   "key": "ult_explosion",
+   "file": "ult_explosion.mp3",
+   "duration": 2.508,
+   "category": "combat",
+   "description": "Epic ultimate attack explosion, huge magical blast boom with sparkly shimmering aftermath, kid friendly video game",
+   "peak_db": -1.4,
+   "mean_db": -14.8,
+   "bytes": 30450
+  },
+  {
+   "key": "vo_awesome",
+   "file": "vo_awesome.mp3",
+   "duration": 0.993,
+   "category": "voice",
+   "description": "Announcer callout 'Awesome!' (energetic arena announcer voice, ElevenLabs TTS)",
+   "combo_threshold": 20,
+   "peak_db": -1.2,
+   "mean_db": -12.0,
+   "bytes": 12269
+  },
+  {
+   "key": "vo_godlike",
+   "file": "vo_godlike.mp3",
+   "duration": 3.788,
+   "category": "voice",
+   "description": "Announcer callout 'GODLIKE PURR-FECTION!' (energetic arena announcer voice, ElevenLabs TTS)",
+   "combo_threshold": 100,
+   "peak_db": -0.9,
+   "mean_db": -9.2,
+   "bytes": 45810
+  },
+  {
+   "key": "vo_great",
+   "file": "vo_great.mp3",
+   "duration": 0.366,
+   "category": "voice",
+   "description": "Announcer callout 'Great!' (energetic arena announcer voice, ElevenLabs TTS)",
+   "combo_threshold": 10,
+   "peak_db": -1.3,
+   "mean_db": -13.6,
+   "bytes": 4746
+  },
+  {
+   "key": "vo_insane",
+   "file": "vo_insane.mp3",
+   "duration": 1.437,
+   "category": "voice",
+   "description": "Announcer callout 'INSANE!' (energetic arena announcer voice, ElevenLabs TTS)",
+   "combo_threshold": 50,
+   "peak_db": -1.3,
+   "mean_db": -13.4,
+   "bytes": 17598
+  },
+  {
+   "key": "vo_nice",
+   "file": "vo_nice.mp3",
+   "duration": 1.411,
+   "category": "voice",
+   "description": "Announcer callout 'Nice!' (energetic arena announcer voice, ElevenLabs TTS)",
+   "combo_threshold": 5,
+   "peak_db": -1.4,
+   "mean_db": -22.8,
+   "bytes": 17284
+  },
+  {
+   "key": "vo_purrfect",
+   "file": "vo_purrfect.mp3",
+   "duration": 1.802,
+   "category": "voice",
+   "description": "Announcer callout 'Purrfect!' (energetic arena announcer voice, ElevenLabs TTS)",
+   "combo_threshold": 35,
+   "peak_db": -1.4,
+   "mean_db": -11.7,
+   "bytes": 21986
+  },
+  {
+   "key": "vo_unstoppable",
+   "file": "vo_unstoppable.mp3",
+   "duration": 1.881,
+   "category": "voice",
+   "description": "Announcer callout 'UNSTOPPABLE!' (energetic arena announcer voice, ElevenLabs TTS)",
+   "combo_threshold": 75,
+   "peak_db": -1.2,
+   "mean_db": -12.2,
+   "bytes": 22927
+  },
+  {
+   "key": "water_wave",
+   "file": "water_wave.mp3",
+   "duration": 1.228,
+   "category": "combat",
+   "description": "Water splash wave attack, big surging whoosh and splash, video game water spell",
+   "peak_db": -1.0,
+   "mean_db": -17.6,
+   "bytes": 15090
+  }
+ ]
+}

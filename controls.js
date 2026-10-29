@@ -15,7 +15,7 @@ const SET=window.BSET={d:{sz:'s',op:'m'},load(){try{Object.assign(this.d,JSON.pa
  k(){return {s:.74,m:.87,l:1}[this.d.sz]||.74},o(){return {l:.28,m:.45,h:.75}[this.d.op]||.45}};SET.load();
 let SA={t:0,r:0,b:0,l:0};const probe=document.createElement('div');probe.style.cssText='position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';document.body.appendChild(probe);
 function layout(){const cs=getComputedStyle(probe);SA={t:parseFloat(cs.paddingTop)||0,r:parseFloat(cs.paddingRight)||0,b:parseFloat(cs.paddingBottom)||0,l:parseFloat(cs.paddingLeft)||0};
- const W=innerWidth,H=innerHeight,SZ=SET.k(),S=Math.round(Math.max(56,Math.min(86,H*.205,W*.085))*SZ),ml=Math.max(8,SA.l+4),mr=Math.max(8,SA.r+4),mb=Math.max(6,SA.b+2),mt=Math.max(4,SA.t+2);
+ const W=innerWidth,H=innerHeight,SZ=SET.k(),S=Math.round(Math.max(56,Math.min(86,H*.205,W*.085))*SZ),ml=Math.max(10,SA.l+4),mr=Math.max(10,SA.r+4),mb=Math.max(6,SA.b+2),mt=Math.max(4,SA.t+2);
  document.documentElement.style.setProperty('--bo',SET.o());
  const put=(k,o)=>{const b=document.querySelector(`#ui .b[data-k="${k}"]`)||document.getElementById(k);if(!b)return;const z=Math.round(S*o.s);Object.assign(b.style,{width:z+'px',height:z+'px',fontSize:Math.round(Math.max(13,z*.24))+'px',left:o.l!=null?Math.round(o.l)+'px':'auto',right:o.r!=null?Math.round(o.r)+'px':'auto',bottom:o.b!=null?Math.round(o.b)+'px':'auto',top:o.t!=null?Math.round(o.t)+'px':'auto'})};
  // buttons are placed by their CENTRES (in units of S) so circles never touch, whatever the screen size
@@ -24,8 +24,8 @@ function layout(){const cs=getComputedStyle(probe);SA={t:parseFloat(cs.paddingTo
  place('jump',1.2,.62,.92,1);place('attack',1.1,1.95,.6,1);place('special',.95,1.95,1.78,1);
  place('tail',.85,3.02,1.45,1);place('hunt',.8,3.06,.42,1);place('blink',.85,4.02,.95,1);
  // top row (small): morph · mute · ?
- const tz=Math.round(Math.max(34,Math.min(50,H*.13)*Math.min(1,SZ+.15))),tb=(id,i)=>{const b=document.querySelector(id);if(!b)return;Object.assign(b.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',right:Math.round(mr-8+i*(tz+8))+'px',top:mt+'px',bottom:'auto',left:'auto'})};
- tb('#qbtn',0);tb('#ui .b[data-k=morph]',1);tb('#mute',2);tb('#gear',3);
+ const tz=Math.round(Math.max(34,Math.min(50,H*.13)*Math.min(1,SZ+.15))),tb=(id,i)=>{const b=document.querySelector(id);if(!b)return;Object.assign(b.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',right:Math.round(mr+i*(tz+12))+'px',top:mt+'px',bottom:'auto',left:'auto'})};
+ tb('#qbtn',0);tb('#ui .b[data-k=morph]',1);tb('#mute',2);{const g=document.getElementById('gear');if(g)Object.assign(g.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',left:ml+'px',top:mt+'px',right:'auto',bottom:'auto'})}
  const pc=document.getElementById('pclose');if(pc){pc.style.top=(mt+tz+8)+'px';pc.style.left=ml+'px'}
  rects=null}
 let rects=null;function getRects(){if(rects)return rects;rects=BTN().map(b=>{const r=b.getBoundingClientRect();return {b,k:b.dataset.k,x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2}});return rects}
@@ -141,9 +141,13 @@ function buildSett(){const o=(k,v,t)=>`<button class="opt tap${SET.d[k]===v?' cu
  sett.innerHTML=`<div class="scroll"><h2>⚙ SETTINGS</h2>
  <div class="row"><span class="lab">BUTTON SIZE</span>${o('sz','s','Small')}${o('sz','m','Medium')}${o('sz','l','Large')}</div>
  <div class="row"><span class="lab">BUTTON LOOK</span>${o('op','l','See-through')}${o('op','m','Medium')}${o('op','h','Solid')}</div>
+ <div class="row"><span class="lab">SOUND</span><button class="opt tap${(typeof muted!=='undefined'&&muted)?'':' cur'}" data-snd="on">🔊 On</button><button class="opt tap${(typeof muted!=='undefined'&&muted)?' cur':''}" data-snd="off">🔇 Off</button></div>
+ <div class="row"><span class="lab">VOLUME</span>${[[.25,'Quiet'],[.5,'Medium'],[.8,'Loud'],[1,'Max']].map(([v,t])=>`<button class="opt tap${window.SND&&Math.abs(SND.vol-v)<.01?' cur':''}" data-vol="${v}">${t}</button>`).join('')}</div>
  <div class="tipbox">📱 <b>Play fullscreen on iPhone:</b> in Safari tap <b>Share ⬆</b> → <b>Add to Home Screen</b>, then open Paddy from the new icon — no Safari bars.${STAND()?' <b>✅ You are already fullscreen.</b>':''}<br>The buttons still work if you touch just outside them.</div>
  </div><button class="x tap" id="stx">✕ CLOSE</button>`;
- sett.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();SET.d[b.dataset.k]=b.dataset.v;SET.save();layout();buildSett()}));
+ sett.querySelectorAll('.opt[data-k]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();SET.d[b.dataset.k]=b.dataset.v;SET.save();layout();buildSett()}));
+ sett.querySelectorAll('[data-snd]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();try{muted=b.dataset.snd==='off';localStorage.setItem('paddyMute',muted?'1':'0');const mb=document.getElementById('mute');if(mb)mb.textContent=muted?'🔇':'🔊'}catch(_){}buildSett();if(window.SND)SND.play('ui_select')}));
+ sett.querySelectorAll('[data-vol]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();if(window.SND){SND.setVol(+b.dataset.vol);SND.play('ui_select')}buildSett()}));
  sett.querySelector('#stx').addEventListener('click',e=>{e.preventDefault();closeSett()})}
 function openSett(){reset();buildSett();document.body.classList.add('st')}
 function closeSett(){document.body.classList.remove('st');reset();layout()}

@@ -53,10 +53,16 @@ const ROLE={street:'dogs & cats',park:'magpies & possums',farm:'farm birds & sne
 // ---------- anims (registered lazily, so nothing extra downloads until a world needs it) ----------
 const ANIMS=id=>({idle:[`en_${id}_move`,[0,1],2.6,1],walk:[`en_${id}_move`,[2,3,4,5],9,1],wind:[`en_${id}_act`,[0],1,0],atk:[`en_${id}_act`,[1,2],9,0],
  hold:[`en_${id}_act`,[2],1,0],hurt:[`en_${id}_act`,[3],1,0],air:[`en_${id}_act`,[4],1,0],ko:[`en_${id}_act`,[5],1,0],dead:[`en_${id}_act`,[0],1,0],roll:[`en_${id}_act`,[1,2],7,1]});
+// v20: 4-frame in-betweens (en_<id>_m_idle/wind/atk/hurt/air/ko) replace the 1-2 frame poses when present
+const MBADX={hedgehog:{hurt:[2,3]}};
+const ANIMS2=id=>{const a=ANIMS(id),m=k=>F[`en_${id}_m_${k}`],D=E[id]||{},bad=MBADX[id]||{};if(!m('idle'))return a;
+ const set=(k,src,fps,loop,idx)=>{if(m(src))a[k]=[`en_${id}_m_${src}`,idx||bad[src]||null,fps,loop]};
+ set('idle','idle',5,1);set('wind','wind',Math.max(5,Math.min(16,3.6/(D.wind||.5))),0);set('atk','atk',12,0);set('hold','atk',1,0,[3]);
+ set('hurt','hurt',9,0);set('air','air',8,1);set('ko','ko',4.5,0);if(id==='hedgehog')set('roll','atk',10,1);return a};
 const ready=new Set();
-function need(ids){const names=[];for(const id of ids){if(ready.has(id)||!F[`en_${id}_move`])continue;ready.add(id);const an=KIDS[id]?{ride:[`en_${id}_move`,null,9,1]}:ANIMS(id);
+function need(ids){const names=[];for(const id of ids){if(ready.has(id)||!F[`en_${id}_move`])continue;ready.add(id);const an=KIDS[id]?{ride:[`en_${id}_move`,null,9,1]}:ANIMS2(id);
   for(const k in an){const nm=`en_${id}_${k}`,[s,idx]=an[k];A[nm]=an[k];FR[nm]=idx?idx.filter(i=>i<F[s].length).map(i=>F[s][i]):F[s]}
-  for(const s of ['move','act'])(F[`en_${id}_${s}`]||[]).forEach(f=>names.push(f.f))}
+  for(const s of ['move','act','m_idle','m_wind','m_atk','m_hurt','m_air','m_ko'])(F[`en_${id}_${s}`]||[]).forEach(f=>names.push(f.f))}
  if(names.length&&window.queueFrames)queueFrames(names,true)}
 function loaded(id){const fr=FR[`en_${id}_${KIDS[id]?'ride':'idle'}`];return !!(fr&&fr.every(f=>imgOK(IMG[f.f])))}
 // ---------- spawning ----------
@@ -71,7 +77,7 @@ function spawn(id,x,o){const D=E[id];if(!D)return null;need([id]);o=o||{};const 
 // ---------- AI ----------
 const shots=[],poofs=[],kids=[];
 const dA=(d,k)=>{const nm=`en_${d.cr}_${k}`;if(d.anim!==nm){const cf=(FR[d.anim]||[])[d.fi];if(cf&&String(d.anim).startsWith('en_')){d.prevF=cf;d.prevFs=d.fs;d.blend=.1}d.anim=nm;d.ft=0;d.fi=0}};
-const cS=(d,st,k)=>{if(d.st!==st){d.st=st;d.t=0;d.done=0}if(k)dA(d,k)};
+const cS=(d,st,k)=>{if(d.st!==st){d.st=st;d.t=0;d.done=0;if(window.SND&&(st==='wind'||st==='ko'||st==='air'))SND.critter(d.cr,st)}if(k)dA(d,k)};
 function stepA(d,dt){const a=A[d.anim],fr=FR[d.anim];if(!a||!fr)return;d.ft+=dt*a[2];d.fi=a[3]?Math.floor(d.ft)%fr.length:Math.min(fr.length-1,Math.floor(d.ft))}
 function busy(){let n=0;for(const q of dummies)if(q.cr&&q.alive&&(q.st==='wind'||q.st==='atk'))n++;return n}
 function strike(d,dmg,kind){const D=d.D;if(dogStrike(d,dmg,kind||'bite')){if(p.state==='hurt'){say(D.ouch||'BONK!','#ff9a9a');if(D.kb)p.vx*=D.kb}return true}return false}

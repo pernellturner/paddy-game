@@ -1,0 +1,74 @@
+// ===================== SOUND EFFECTS (ElevenLabs set, assets/sfx) =====================
+// WebAudio, unlocked on the first tap/key (iOS), small files preloaded after that, big ones fetched in idle time or on first use.
+// Hooks: hits (per-form swipe/element + combo ticks/stingers/announcer), moves (act), form change, hurt/KO, critters, moon launch.
+(function(){
+const DIR='assets/sfx/',V='?v=1';
+const SM=new Set();// keys known to exist (from manifest)
+let M=[],ac=null,master=null,unlocked=false;const BUF={},LOADING={},LAST={};
+const S=window.SND={on:true,vol:.8,ready:false};
+try{const v=localStorage.getItem('paddySfxVol');if(v!=null)S.vol=Math.max(0,Math.min(1,+v));}catch(_){}
+function ctx(){if(!ac){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;ac=new AC();master=ac.createGain();master.gain.value=S.vol;master.connect(ac.destination)}return ac}
+function unlock(){const c=ctx();if(!c)return;if(c.state!=='running')c.resume();if(!unlocked){unlocked=true;try{const b=c.createBuffer(1,1,22050),s=c.createBufferSource();s.buffer=b;s.connect(c.destination);s.start(0)}catch(_){}preload()}}
+['touchstart','touchend','pointerdown','keydown','click'].forEach(e=>addEventListener(e,unlock,{capture:true,passive:true}));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ac&&unlocked)ac.resume()});
+function load(k){if(BUF[k]||LOADING[k]||!SM.has(k))return LOADING[k];const c=ctx();if(!c)return;
+ LOADING[k]=fetch(DIR+k+'.mp3'+V).then(r=>r.arrayBuffer()).then(a=>new Promise((ok,no)=>c.decodeAudioData(a,ok,no))).then(b=>{BUF[k]=b;return b}).catch(()=>{});return LOADING[k]}
+function preload(){if(!M.length)return;const small=M.filter(m=>m.bytes<=13000&&m.category!=='voice').map(m=>m.key),big=M.filter(m=>!small.includes(m.key)).map(m=>m.key);
+ let i=0;const step=()=>{const k=small[i++];if(!k){setTimeout(()=>idleBig(big),4000);return}Promise.resolve(load(k)).then(()=>setTimeout(step,15))};step()}
+function idleBig(list){let i=0;const step=()=>{const k=list[i++];if(!k)return;Promise.resolve(load(k)).then(()=>setTimeout(step,120))};(window.requestIdleCallback||setTimeout)(step)}
+fetch(DIR+'manifest.json'+V).then(r=>r.json()).then(m=>{M=m.sounds||[];M.forEach(x=>SM.add(x.key));S.ready=true;if(unlocked)preload()}).catch(()=>{});
+const isMuted=()=>{try{return typeof muted!=='undefined'&&muted}catch(_){return false}};
+// play(key,{v:volume 0-1, r:playbackRate, gap:min seconds between repeats})
+S.play=function(k,o){o=o||{};if(!S.on||isMuted()||!SM.has(k))return;const c=ctx();if(!c||!unlocked)return;
+ const t=c.currentTime,g=o.gap??.05;if(LAST[k]&&t-LAST[k]<g)return;LAST[k]=t;
+ const go=b=>{if(!b)return;try{const s=c.createBufferSource(),gn=c.createGain();s.buffer=b;s.playbackRate.value=o.r||1;gn.gain.value=o.v??1;s.connect(gn);gn.connect(master);s.start(0)}catch(_){}};
+ if(BUF[k])go(BUF[k]);else{const pr=load(k);if(pr&&!o.noLate)pr.then(b=>{if(c.currentTime-t<.25)go(b)})}};
+S.setVol=v=>{S.vol=Math.max(0,Math.min(1,v));if(master)master.gain.value=S.vol;try{localStorage.setItem('paddySfxVol',String(S.vol))}catch(_){}};
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+// ---------- per-form sound palette ----------
+// FORM(): 0 Kitty 1 Ninja 2 Samurai 3 Knight 4 Pirate 5 Gunslinger 6 Light 7 Power Blade 8 Crimson 9 Reaper 10 Shade 11 Storm 12 Dragon 13 Phoenix 14 Frost 15 Mecha 16 Tide 17 Chrono 18 Beast 19+ Dark Side
+const SWIPE=['claw_swipe_1','claw_swipe_2','claw_swipe_3'];
+const PAL={0:{hit:SWIPE},1:{hit:SWIPE,r:1.15},2:{hit:['blade_slash'],r:1},3:{hit:['blade_slash','sword_clang'],r:.9},4:{hit:['blade_slash'],r:1.05},
+ 5:{hit:['gun_pop']},6:{hit:['blade_slash'],r:1.2},7:{hit:['blade_slash'],r:.85,el:'lightning'},8:{hit:['blade_slash'],r:1.1},9:{hit:['blade_slash'],r:.8},10:{hit:SWIPE,r:1.25},
+ 11:{hit:['claw_heavy'],el:'lightning'},12:{hit:['blade_slash'],el:'fire_whoosh'},13:{hit:SWIPE,el:'fire_whoosh'},14:{hit:['blade_slash'],el:'ice_crack'},15:{hit:['mecha_servo'],el:'mecha_laser'},
+ 16:{hit:['blade_slash'],el:'water_wave'},17:{hit:SWIPE,el:'time_stop'},18:{hit:SWIPE,el:'beast_roar'},19:{hit:['blade_slash'],r:.8,el:'force_lightning'}};
+const fNow=()=>{try{return FORM()}catch(_){return 0}};
+// move-keyed specials (KB names) -> sound
+const MOVE=[[/^(mbolt|nstorm)/,'lightning'],[/^mfire/,'fire_whoosh'],[/^mice/,'ice_crack'],[/^mrocket/,'mecha_laser'],[/^mwater|^uwave/,'water_wave'],[/^mtime/,'time_stop'],[/^mroar/,'beast_roar'],
+ [/^mdragon/,'fire_whoosh'],[/^(ucannon|picannon|pcannon|cannon)/,'cannon'],[/^(ushot|ubig)/,'gun_pop'],[/^upush/,'force_push'],[/^(uquake|uslam|slam|hardland|ubuster)/,'ground_slam'],
+ [/^(ulaunch|uppercut|uupper|slaunch|launch|knlaunch)/,'launcher_uppercut'],[/tail/,'tail_whip'],[/^(ufinal|mbig|mresume)/,'ult_explosion'],[/^dforce|^dlight/,'force_lightning'],[/^dpush/,'force_push'],[/^dblade/,'blade_boomerang']];
+// ---------- combo ticks / stingers / announcer (manifest thresholds) ----------
+const TIER=n=>n>=50?6:n>=35?5:n>=20?4:n>=10?3:n>=5?2:1;
+const STING={5:'combo_stinger_5',10:'combo_stinger_10',20:'combo_stinger_20',35:'combo_stinger_35',50:'combo_stinger_50',100:'combo_stinger_100'};
+const VO={5:'vo_nice',10:'vo_great',20:'vo_awesome',35:'vo_purrfect',50:'vo_insane',75:'vo_unstoppable',100:'vo_godlike'};
+function comboSound(n){S.play('combo_tick_'+TIER(n),{v:.55,gap:.03});if(STING[n])S.play(STING[n],{v:.8});if(VO[n])setTimeout(()=>S.play(VO[n],{v:1}),STING[n]?220:0)}
+S.combo=comboSound;
+function hitSound(d,move){const f=fNow(),P=PAL[f]||PAL[0],mv=String(move||'');let special=null;for(const [re,k] of MOVE)if(re.test(mv)){special=k;break}
+ if(special)S.play(special,{v:.9,gap:.09});else S.play(rnd(P.hit),{v:.75,r:(P.r||1)*(.95+Math.random()*.1),gap:.04});
+ const air=d&&d.y<(typeof GROUND!=='undefined'?GROUND-25:9e9);if(air)S.play(rnd(['juggle_hit_1','juggle_hit_2']),{v:.6,gap:.06});
+ if(d&&!d.cr&&Math.random()<.35)S.play('dog_yelp',{v:.6,gap:.5})}
+// ---------- hook the game ----------
+function hook(){if(typeof hitDummy!=='function'||typeof act!=='function'){setTimeout(hook,200);return}
+ const _hd=hitDummy;hitDummy=function(d,move,dir){const n0=C.n;const r=_hd.apply(this,arguments);try{hitSound(d,move);if(C.n>n0)comboSound(C.n)}catch(_){}return r};
+ const _act=act;act=function(state,anim,o){try{actSound(state)}catch(_){}return _act.apply(this,arguments)};
+ if(typeof setForm==='function'){const _sf=setForm;setForm=function(f){const f0=fNow(),r=_sf.apply(this,arguments);if(fNow()!==f0)S.play('form_transform',{v:.7,gap:.3});return r}}
+ if(typeof loseLife==='function'){const _ll=loseLife;loseLife=function(){S.play('paddy_ko');return _ll.apply(this,arguments)}}
+ if(typeof victory==='function'){const _v=victory;victory=function(){S.play('paddy_victory',{v:.8,gap:2});return _v.apply(this,arguments)}}
+ // the old synth meow/boom stay as a fallback until the samples are in
+ if(typeof meowSound==='function'){const _m=meowSound;meowSound=function(pw){if(BUF.paddy_meow_attack&&unlocked&&!isMuted()){S.play(pw>.6?'paddy_meow_roar':'paddy_meow_attack',{gap:.15});return}return _m.apply(this,arguments)}}
+ if(typeof boom==='function'){const _b=boom;boom=function(){if(BUF.ult_explosion&&unlocked&&!isMuted()){S.play('ult_explosion',{v:.85,gap:.3});return}return _b.apply(this,arguments)}}}
+const ACT={jump:'paddy_jump',djump:'paddy_double_jump',dash:'paddy_dash',ndash:'paddy_dash',wingdash:'paddy_dash',dashstrike:'paddy_dash',hurt:'paddy_hurt_meow',land:null,hardland:'paddy_land',
+ wallrun:'paddy_wall_cling',ledge:'paddy_wall_cling',hiss:'cat_hiss',tailwhip:'tail_whip',utail:'tail_whip',kntail:'tail_whip',pitail:'tail_whip',lkult:'ult_charge',
+ picannon:'cannon',piroll:'paddy_dash',ublink:'paddy_dash',nstep:'paddy_dash',slide:'paddy_dash',superleap:'paddy_double_jump',victory:null,ulaunch:'launcher_uppercut',uppercut:'launcher_uppercut',slaunch:'launcher_uppercut',
+ knshout:'paddy_meow_roar',umeow:null,nstorm:'lightning',nthrow:'blade_boomerang',knrush:'paddy_dash',sparry:'sword_clang',knriposte:'sword_clang',sriposte:'sword_clang'};
+function actSound(st){const k=ACT[st];if(k)S.play(k,{v:.75,gap:.12})}
+// jumps go through press(), not act(): watch p.vy / p.jumps
+let pj=0,pg=true;setInterval(()=>{try{if(typeof p==='undefined')return;if(p.jumps>pj&&p.vy<-200)S.play(p.jumps>1?'paddy_double_jump':'paddy_jump',{v:.6,gap:.12});if(!pg&&p.ground&&p.state!=='hardland')S.play('paddy_land',{v:.45,gap:.25});pj=p.jumps;pg=p.ground}catch(_){}},33);
+// ---------- critters ----------
+const CR={sausage:'dog_bark',chihuahua:'dog_bark',bulldog:'bruno_bark',husky:'dog_bark',labrador:'dog_bark',poodle:'dog_bark',alleytom:'cat_hiss',persian:'cat_hiss',siamese:'cat_hiss',tabby:'cat_hiss',
+ seagull:'seagull_squawk',magpie:'magpie_warble',pukeko:'pukeko_squawk',hedgehog:'hedgehog_huff',possum:'possum_hiss',goose:'goose_honk',rooster:'pukeko_squawk',crab:'crab_click',rat:'cat_hiss',ferret:'hedgehog_huff',wasp:'mecha_servo',eel:'lightning',weta:'crab_click'};
+S.critter=function(id,st){if(st==='ko'){S.play('enemy_hit_poof',{v:.8,gap:.08});return}if(st==='air'){S.play('dog_yelp',{v:.45,r:1.3,gap:.3});return}
+ const k=CR[id];if(k)S.play(k,{v:.6,r:id==='chihuahua'?1.35:id==='rat'?1.6:1,gap:.4})};
+S.moon=function(){S.play('moon_rocket_launch',{v:.9,gap:1});setTimeout(()=>S.play('moon_ding',{v:1,gap:1}),2600)};
+hook();
+})();
