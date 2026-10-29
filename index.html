@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes"><link rel="icon" href="assets/s1_05.png"><title>Paddy – move test</title>
+<meta name="apple-mobile-web-app-capable" content="yes"><link rel="icon" href="assets/s1_05.png"><title>Paddy's Way Home</title>
 <style>
 @font-face{font-family:'Bangers';src:url(fonts/Bangers.woff2) format('woff2');font-display:block}
 @font-face{font-family:'Kanji';src:url(fonts/Kanji.woff2?v=9) format('woff2');font-display:block}
@@ -189,7 +189,7 @@ body.ov #moves{display:block}
 <p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
 <p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p></div></div>
 <div id="rot">🔄 Turn your phone sideways to play with Paddy</div>
-<script src="game.js?v=14c"></script>
+<script src="game.js?v=15a"></script>
 <script>
 const ov=v=>{document.body.classList.toggle('ov',v);for(const k in K)K[k]=0;document.querySelectorAll('.b.on').forEach(b=>b.classList.remove('on'))};
 document.getElementById('qbtn').addEventListener('pointerdown',e=>{e.preventDefault();ov(true)});
@@ -199,4 +199,5 @@ document.querySelectorAll('[data-try]').forEach(b=>b.addEventListener('click',e=
 const mb=document.getElementById('mute');const ms=()=>mb.textContent=muted?'🔇':'🔊';ms();mb.addEventListener('pointerdown',e=>{e.preventDefault();muted=!muted;localStorage.setItem('paddyMute',muted?'1':'0');ms();if(!muted)meowSound(0)});
 addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.classList.contains('ov'))}else if(e.key==='Escape')ov(false)});
 lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
-</script></body></html>
+</script>
+<script src="story.js?v=15a"></script></body></html>
