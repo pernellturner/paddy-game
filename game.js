@@ -2249,7 +2249,7 @@ const UNL={d:null,saveT:0,
  prog(u){const c=UNLK[u];return Math.min(1,this.d[c.k]/c.n)},
  bump(k,n){this.d[k]+=n||1;if(k==='ko')this.d.exp+=25;this.check();if(!(this.saveT>0))this.saveT=1},
  check(){for(let u=1;u<=6;u++)if(!this.has(u)&&this.d[UNLK[u].k]>=UNLK[u].n){this.d.got.push(u);this.save();const X=UF[u];
-  setTimeout(()=>{card('LEGEND UNLOCKED!',X.ico+' '+X.nm+' · press the 🔄 form button or open ? → LEGENDS',X.col);for(let i=0;i<40;i++){const a=Math.random()*6.283,v=200+Math.random()*400;R9.confetti.push({x:VW/2,y:-camY+150,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:2,c:[X.col,X.col2,'#fff'][i%3],heart:0})}beat(1568,.06);setTimeout(()=>beat(2093,.06),120)},400);
+  let _tr=0;const _show=()=>{if(_tr++<16&&((Array.isArray(CINE)?CINE.includes(p.state):CINE.has(p.state))||p.state==='lkult'||(p.ult&&p.state==='lkult'))){setTimeout(_show,500);return}card('LEGEND UNLOCKED!',X.ico+' '+X.nm+' · press the 🔄 form button or open ? → LEGENDS',X.col);for(let i=0;i<40;i++){const a=Math.random()*6.283,v=200+Math.random()*400;R9.confetti.push({x:VW/2,y:-camY+150,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:2,c:[X.col,X.col2,'#fff'][i%3],heart:0})}beat(1568,.06);setTimeout(()=>beat(2093,.06),120)};setTimeout(_show,400);
   if(typeof buildList==='function')buildList()}}};
 UNL.load();
 const _addHit13=addHit;addHit=function(m){_addHit13(m);UNL.d.exp++;if(UNL.d.exp%50===0)UNL.check();if(!(UNL.saveT>0))UNL.saveT=1};
