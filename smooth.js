@@ -20,9 +20,15 @@ SM(0,'',{idle:[5,1,'idle_test_1',[0,1,2,3,4,5]],hurt:[5,0,'hurt',[0,1,2,3,5]],da
  airswipe:[14,0,'kt_m_airswipe'],airspin:[16,1,'airspin'],leapspin:[18,1,'airspin'],dive:[8,1,'divebomb',[0,1]],diveclaw:[12,0,'kt_m_diveclaw'],pounce:[12,0,'pounce'],stalk:[6,1,'stalk']});
 // ---------- Legends ----------
 const LEG=(o)=>Object.assign({h1:[16],h2:[16],h3:[15],h4:[15],h5:[15],h6:[15],h7:[13],launch:[13],air1:[16],air2:[15],dive:[12],
- tail:[15],tail2:[15],meowc:[8,1],meow:[12],meow2:[12],blink:[14],hurt:[8],victory:[5]},o||{});
+ tail:[15],tail2:[15],meowc:[8,1],meow:[12],meow2:[12],blink:[14],hurt:[4],victory:[5]},o||{});
 SM(10,'sh',LEG({h4:[12,0,0,[0,1,2]],launch:[12,0,0,[0,1,2]]}));
 SM(9,'sr',LEG());
+// ---------- hurt (4 frames over 1s = same hit-stun as before) + victory for every other form ----------
+SM(1,'n',{hurt:[4],dive:[14,0,'n_m_ndive',[0,1,2]]});
+SM(2,'s',{hurt:[4],victory:[5]});
+SM(3,'kn',{hurt:[4],victory:[4,0,0,[1,2,3]]});
+SM(4,'pi',{hurt:[4],victory:[4,0,0,[1,2,3]]});
+[['mst',[1,2,3]],['mde',[1,2,3]],['mph'],['mfm'],['mmc'],['mtc'],['mch'],['mbk']].forEach(([q,vi],i)=>SM(11+i,q,{hurt:[4],victory:vi?[4,0,0,vi]:[5]}));
 SM(5,'gs',LEG({launch:[12,0,0,[0,1,2]]}));
 SM(6,'lp',LEG({h1:[15,0,0,[0,1,2]],h6:[13],launch:[12,0,0,[0,1,2]],air2:[14,0,0,[1,2,3]],blink:[14]}));
 SM(7,'pb',LEG({h1:[15,0,0,[0,1,2]],h7:[12,0,0,[0,1,2]],spin:[16,1]}));
