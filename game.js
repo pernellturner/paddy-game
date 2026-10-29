@@ -287,7 +287,8 @@ function update(dt){
  if(bubble){bubble.l-=dt;if(bubble.l<=0)bubble=null}
  for(const sl of slashes){if(sl.d>0){sl.d-=dt;continue}sl.l-=dt*(sl.sp||4)}for(let i=slashes.length-1;i>=0;i--)if(slashes[i].l<=0)slashes.splice(i,1);
  for(const s of sparks){s.x+=s.vx*dt;s.y+=s.vy*dt;s.vy+=400*dt;s.l-=dt}
- for(let i=sparks.length-1;i>=0;i--)if(sparks[i].l<=0)sparks.splice(i,1);
+ for(let i=sparks.length-1;i>=0;i--)if(sparks[i].l<=0)sparks.splice(i,1);if(sparks.length>380)sparks.splice(0,sparks.length-380);if(ghosts.length>36)ghosts.splice(0,ghosts.length-36);if(puffs.length>140)puffs.splice(0,puffs.length-140); // phone budget during big ultimates
+
  meleeHits(dt);updDummies(dt);
  shake*=.85; // input buffer: an unused press stays live for ~0.15s so moves chain; any new action consumes it
  for(const k in P)if(acted||INSTANT.includes(k)||now-(BUF[k]??-9)>.15)delete P[k];acted=false;
@@ -1507,7 +1508,7 @@ function xState(S,dt,end,dir){const X=XFm();if(!X){p.state='normal';return}const
  default:p.state='normal'}}
 // ---- forms 3 & 4 load only when they're needed ----
 const XPRE=[null,null,null,'kn','pi'];
-function formReady(f){const q=XPRE[f];if(!q)return true;return ['_idle','_run','_rise','_h1',f===3?'_power':'_victory'].every(s=>(FR[q+s]||[]).length&&FR[q+s].every(fr=>imgOK(IMG[fr.f])))}
+function formReady(f){if(f>=5)return ufReady(f-4);const q=XPRE[f];if(!q)return true;return formFramesIn(q)}
 function requestForm(f){if(typeof loadForm==='function')loadForm(XPRE[f],true);if(!p.morphWait||p.morphWait.f!==f){p.morphWait={f,t:now};say(f===3?'SUITING UP…':'HOISTING THE SAILS…',f===3?KG:PT)}}
 // ---- the LINK moves (after a C C C / T T T opener) for Knight and Pirate ----
 function xLkStart(L){const f=FORM(),fl=LKF[f],rep=LK.n>0&&LK.seq.slice(-1)===L;
@@ -2269,17 +2270,19 @@ const _opener13=openerNow;openerNow=function(){if(p.uf){const S=p.state,X=UFm();
 const _liveSeq13=liveSeq;liveSeq=function(){if(!LK.on&&p.uf&&/^u[1-7]$/.test(p.state))return 'C'.repeat(p.ucombo);return _liveSeq13()};
 const _cue13=cueInfo;cueInfo=function(){if(p.uf&&/^u[3-7]$/.test(p.state)&&p.ucombo>=3&&!p.miss&&p.state!=='lk')return{H:UFm().H};return _cue13()};
 // ---- switching into / out of a legend form ----
-function ufReady(u){const q=UPRE[u];return ['_idle','_run','_rise','_fall','_h1'].every(s=>(FR[q+s]||[]).length&&FR[q+s].every(fr=>imgOK(IMG[fr.f])))}
+// a form is ready only when ALL its frames are in, so the first combo after a switch never shows stand-in frames
+function formFramesIn(q){const ks=Object.keys(FR).filter(a=>a.startsWith(q+'_'));return ks.length>0&&ks.every(a=>FR[a].every(fr=>imgOK(IMG[fr.f])))}
+function ufReady(u){return formFramesIn(UPRE[u])}
 function ufSet(u,force){const X=UF[u];if(!X)return;if(!force&&!UNL.ok(u)){say('🔒 '+X.nm+': '+UNLK[u].txt,'#ffe08a',true);return}
  if(['eclipse','finishhim','sfinal','knfinal','pifinal','respawn','bunny','ledge','lkult','ufin'].includes(p.state))return;
  if(!ufReady(u)&&typeof loadForm==='function')loadForm(X.pre,true); // forced switches (practice, try-all) still fetch the costume
- if((!force||PR.on)&&!ufReady(u)){if(!p.morphWait||p.morphWait.f!==4+u){p.morphWait={f:4+u,t:now};say('SUMMONING '+X.nm+'…',X.col)}return}
+ if(force!==true&&!ufReady(u)){if(!p.morphWait||p.morphWait.f!==4+u){p.morphWait={f:4+u,t:now};say('SUMMONING '+X.nm+'…',X.col)}return}
  p.morphWait=null;formReset();const from=(FR[p.anim]||FR.idle)[p.fi];p.uf=u;p.xf=0;p.ninja=false;p.sam=false;p.ucombo=0;p.uair=0;p.xcombo=0;p.combo=0;p.ncombo=0;p.scombo=0;p.rot=0;p.wall=false;p.hunt=false;huntBtn&&huntBtn.classList.remove('lit');p.pbEx=0;U.clone=0;
  act('nmorph',uA('victory'),{say:X.nm+'!',c:X.col});p.mfrom=from;p.blend=0;p.vx*=.3;waves.push({x:p.x,y:p.y,r:10,l:1,big:true});puffShadow(p.x,p.y);spark(p.x,p.y-70,30,[X.col,X.col2,'#fff'],420);shake=10;
  for(let i=0;i<3;i++)R9.rings.push({x:p.x,y:p.y-90,r:20+i*30,vr:900,l:1,col:i%2?X.col2:X.col,w:10,f:4+u,face:0});
  if(u===6)batPuff(p.x,p.y-80,20);if(u===5)U.moonT=1;if(u===2||u===3)U.pillars.push({x:p.x,l:.6,col:X.col,w:90});if(u===1){muzzle(p.x+60,p.y-90,1.4);bang()}
  card(X.ico+' '+X.nm,X.tier||'LEGEND FORM',X.col)}
-const _setForm13=setForm;setForm=function(f,force){if(f>=5)return ufSet(f-4,force||PR.on);
+const _setForm13=setForm;setForm=function(f,force){if(f>=5)return ufSet(f-4,force||(PR.on?'pr':false));
  if(p.uf){if(['respawn','bunny','ledge','lkult','ufin'].includes(p.state))return;const from=(FR[p.anim]||FR.idle)[p.fi];p.uf=0;U.clone=0;
   if(f===0){act('nmorph','idle',{say:'back to Paddy',c:'#ffe08a'});p.mfrom=from;p.blend=0;waves.push({x:p.x,y:p.y,r:10,l:1,big:true});puffShadow(p.x,p.y);spark(p.x,p.y-70,20,['#ffe08a','#fff'],320);return}}
  return _setForm13(f,force)};
