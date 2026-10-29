@@ -1,0 +1,5 @@
+jump bad: mst4 mph4 mtc4,5 mbk4
+combo_b bad: mph4 mch5 mbk5
+combo_c bad: mde3 mfm3
+ult (1-indexed): mde 4,5 plain; mph 4 plain; mtc 4 plain. mfm 4,5 partial (ok). 
+special: mch has separate clock-ring blobs; mmc separate rockets.
