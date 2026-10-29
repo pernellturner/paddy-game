@@ -151,7 +151,7 @@ function updKids(dt){for(const k of kids){k.t+=dt;if(k.warn>0){k.warn-=dt;contin
 function drawKids(){for(const k of kids){if(k.warn>0){const x=k.dir>0?LW+40:WALL_X-40,a=.5+.5*Math.sin(now*18);fancy(k.dir>0?'⚠ ▶':'◀ ⚠',x,GROUND-70,30,0,1,a,'#ffe14d');continue}
   const fr=FR[`en_${k.id}_ride`];if(!fr)continue;const f=fr[Math.floor(k.ft)%fr.length],im=IMG[f.f];if(!imgOK(im))continue;
   ctx.fillStyle='rgba(0,0,0,.16)';ctx.beginPath();ctx.ellipse(k.x,GROUND+3,46,9,0,0,6.28);ctx.fill();
-  ctx.save();ctx.translate(k.x,GROUND+4);ctx.scale(k.dir*ESC,ESC);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}}
+  ctx.save();ctx.translate(k.x,GROUND+4);ctx.scale(k.dir*ESC*.78,ESC*.78);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}}
 // ---------- projectiles + poofs ----------
 function updShots(dt){for(const s of shots){s.l-=dt;s.x+=s.vx*dt;s.rot+=dt*8*s.face;if(s.k==='ball'){s.vy+=1500*dt;s.y+=s.vy*dt;if(s.y>GROUND-s.r){s.y=GROUND-s.r;s.vy*=-.5}}
   if(s.k!=='ball'){if(s.k!=='hairball')s.r+=dt*90;if(!s.hit&&Math.abs(p.x-s.x)<s.r+25&&p.y>s.y-40&&p.y-110<s.y+s.r){s.hit=1;strike(s.d,s.d.D.dmg,'bite');if(s.k==='hairball')s.l=0}}}
@@ -209,7 +209,8 @@ const _upd=updDog;updDog=function(d,dt){if(d.benched)return;if(d.cr)return updCr
 const _hit=dogHit;dogHit=function(d,move,air){if(d.cr)return critterHit(d,move,air);return _hit(d,move,air)};
 const _ko=startKO;startKO=function(d){if(d.cr)return critterKO(d);return _ko(d)};
 const _ud=updDummies;updDummies=function(dt){_ud(dt);sweep();updWorld(dt);updKids(dt);updShots(dt)};
-const _dd=drawDummies;drawDummies=function(){const all=dummies.slice(),keep=all.filter(d=>!d.cr&&!d.benched);dummies.length=0;dummies.push(...keep);try{_dd()}finally{dummies.length=0;dummies.push(...all)}drawKids();drawCritters();drawShots()};
+const _dd=drawDummies;drawDummies=function(){const all=dummies.slice(),keep=all.filter(d=>!d.cr&&!d.benched);dummies.length=0;dummies.push(...keep);try{_dd()}finally{dummies.length=0;dummies.push(...all)}drawCritters();drawShots()};
+const _fx=drawFx;drawFx=function(){_fx();drawKids()};
 const _hud=r12HUD;r12HUD=function(){const b=bruno();if(W.on||(b&&b.benched))return drawWorldHUD();return _hud()};
 const _tk=r12Takedown;r12Takedown=function(){if(W.on||dummies.some(d=>d.cr))return false;return _tk()};
 // Combo List: world picker
