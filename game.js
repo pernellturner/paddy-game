@@ -3,9 +3,10 @@ const cv=document.getElementById('c'),ctx=cv.getContext('2d'),lbl=document.getEl
 const VW=960,VH=540,GROUND=470,WALL_X=880,WT=230,SC=0.8; // world units
 let F={},IMG={},FR={};
 let scale=1,offX=0,offY=0;
-function resize(){const d=Math.min(devicePixelRatio||1,2);cv.width=innerWidth*d;cv.height=innerHeight*d;
+function vpSize(){const r=cv.getBoundingClientRect(),vv=window.visualViewport;let w=Math.max(r.width,innerWidth,document.documentElement.clientWidth),h=Math.max(r.height,innerHeight,document.documentElement.clientHeight,vv?vv.height:0);return [Math.round(w),Math.round(h)]}
+function resize(){const d=Math.min(devicePixelRatio||1,2),[w,h]=vpSize();cv.style.width=w+'px';cv.style.height=h+'px';if(cv.width!==Math.round(w*d)||cv.height!==Math.round(h*d)){cv.width=Math.round(w*d);cv.height=Math.round(h*d)}
  scale=Math.min(cv.width/VW,cv.height/VH);offX=(cv.width-VW*scale)/2;offY=(cv.height-VH*scale)/2;}
-addEventListener('resize',resize);resize();
+addEventListener('resize',resize);addEventListener('orientationchange',()=>{resize();setTimeout(resize,350)});if(window.visualViewport)visualViewport.addEventListener('resize',resize);setInterval(()=>{const [w,h]=vpSize(),d=Math.min(devicePixelRatio||1,2);if(Math.abs(cv.width-w*d)>2||Math.abs(cv.height-h*d)>2)resize()},400);resize();
 ['gesturestart','dblclick','contextmenu'].forEach(e=>document.addEventListener(e,ev=>ev.preventDefault()));
 document.addEventListener('touchmove',e=>{if(!e.target.closest('#moves,#fpick .scroll,#sett .scroll'))e.preventDefault()},{passive:false});
 // ---------- animations: name:[sheet, frame indices (null = all), fps, loop] ----------
@@ -99,7 +100,7 @@ function bunnyKick(){C.atk++;popNum(8,'#ff4fa3');act('bunny','pclunge',{say:'GRA
  cineGo(1.45,.2,'#ff4fa3');slowT=.2;flashT=.12;shake=8;for(let i=1;i<4;i++)ghosts.push({x:p.x-p.face*i*40,y:p.y,f:FR.pclunge[0],face:p.face,l:.08+i*.03,blue:1})}
 // ---- BLINK BARGE (blink during a dash) ----
 function blinkBarge(){act('barge','barge',{say:'BLINK BARGE!',c:'#c9a7ff'});p.vx=p.face*950;p.inv=.5;shake=8;C.atk++}
-let camY=0;
+let camY=0,camX=0;
 function finisher(){act('finisher','finisher',{say:'FINISHER!',c:'#c9a7ff'});p.vx=0;p.combo=0;shake=8;waves.push({x:p.x,y:p.y-40,r:10,l:1,big:true})}
 function dashStrike(){act('dashstrike','dashstrike',{say:'DASH STRIKE!',c:'#ff9fd0'});p.vx=p.face*1150;if(!p.ground)p.vy=-120;shake=9;
  for(let i=0;i<14;i++)sparks.push({x:p.x+p.face*80,y:p.y-60+(Math.random()-.5)*60,vx:p.face*(300+Math.random()*400),vy:(Math.random()-.5)*200,l:.4,c:i%2?'#fff':'#ffb0e0'})}
@@ -307,8 +308,10 @@ function draw(){
  const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;
  // camera follows Paddy upward (juggles, super leaps), eased
  const jd=!p.ground&&dummies.find(d=>d.alive&&d.y<GROUND-120&&Math.abs(d.x-p.x)<520),fy=jd?Math.max(p.y-270,Math.min(p.y,jd.y-140)):p.y; // Big Bruno is tall: keep his whole body in shot during juggles
- const camT=Math.max(0,(p.xf||p.uf||p.sam?300:225)-fy+(fy<GROUND-250?Math.max(0,Math.min(300,-p.vy*.26)):0));camY+=(camT-camY)*Math.min(1,(1/60)*(Math.abs(camT-camY)>150?18:camT>camY?11:7));if(!isFinite(camY))camY=0;
- ctx.setTransform(scale,0,0,scale,offX+sx*scale,offY+(sy+camY)*scale);
+ const camT=Math.max(0,(p.xf||p.uf||p.sam?300:225)-fy+(fy<GROUND-250?Math.max(0,Math.min(300,-p.vy*.26)):0));const airC=!p.ground&&(jd||p.y<GROUND-150)&&!cine.on,camT2=airC?Math.max(0,380-p.y):camT; // aerial combos: keep Paddy centred (v20g)
+ camY+=(camT2-camY)*Math.min(1,(1/60)*(Math.abs(camT2-camY)>150?18:camT2>camY?11:7));if(!isFinite(camY))camY=0;
+ const camTX=airC?Math.max(-120,Math.min(120,VW/2-p.x)):0;camX+=(camTX-camX)*Math.min(1,(1/60)*(airC?7:4));if(!isFinite(camX)||Math.abs(camX)<.05)camX=airC?camX||0:0;
+ ctx.setTransform(scale,0,0,scale,offX+(sx+camX)*scale,offY+(sy+camY)*scale);
  r12Sky();cineXform();
  r12Arena();
  if(cine.dim>.01){ctx.fillStyle=`rgba(22,8,48,${cine.dim})`;ctx.fillRect(-2000,-camY-500,VW+4000,VH+1000)}
@@ -336,7 +339,7 @@ function draw(){
  drawFx();
  drawHUD()}
 function drawHUD(){const sx=0;ctx.setTransform(scale,0,0,scale,offX,offY);
- if(hitNum){const a=1-hitNum.l,pop=a<.15?.4+a/.15*.9:1.3-Math.min(.3,(a-.15));fancy(String(hitNum.n),zX(p.x+p.face*40),zY(p.y-150)+camY-a*30,74,-.1*p.face,pop,Math.min(1,hitNum.l*2),hitNum.col)}
+ if(hitNum){const a=1-hitNum.l,pop=a<.15?.4+a/.15*.9:1.3-Math.min(.3,(a-.15));fancy(String(hitNum.n),zX(p.x+p.face*40)+camX,zY(p.y-150)+camY-a*30,74,-.1*p.face,pop,Math.min(1,hitNum.l*2),hitNum.col)}
  if(flashT>0){ctx.fillStyle=`rgba(255,250,236,${Math.min(.36,flashT*1.8)})`;ctx.fillRect(-500,-500,VW+1000,VH+1000)}
  r12HUD();drawCineHUD();drawKanji();drawTexts();drawCombo();drawLives();r12Over();
  ctx.globalAlpha=1;ctx.textAlign='left';
@@ -381,13 +384,13 @@ let last=0,errShown=0;
 function loop(t){requestAnimationFrame(loop);if(window.STORYPAUSE){last=t;return}let dt=(t-last)/1000;last=t;if(!(dt>0))dt=0;dt=Math.min(.033,dt);hitstop=Math.min(Math.max(hitstop,0),.3);
  slowT-=dt;TS=slowT>0?.3:1;try{if(hitstop>0){hitstop-=dt;shake*=.9}else{update(dt*TS);updCombo(dt*TS)}draw()}
  catch(e){console.error(e);try{localStorage.setItem('paddyLastError',String(e&&e.stack||e))}catch(_){}
-  camY=0;slowT=0;Object.assign(p,{rot:0,grab:null,state:'normal',wall:false,vx:0,vy:0,combo:0,blend:0,jc:0,mc:0});if(!isFinite(p.x))p.x=300;if(!isFinite(p.y))p.y=GROUND;shake=0;
+  camY=0;camX=0;slowT=0;Object.assign(p,{rot:0,grab:null,state:'normal',wall:false,vx:0,vy:0,combo:0,blend:0,jc:0,mc:0});if(!isFinite(p.x))p.x=300;if(!isFinite(p.y))p.y=GROUND;shake=0;
   if(now-errShown>3){errShown=now;lbl.textContent='glitch caught – recovered'}}}
 let started=false;addEventListener('pageshow',()=>{last=performance.now()});document.addEventListener('visibilitychange',()=>{last=performance.now();for(const k in K)K[k]=0;if(window.CTRL)CTRL.reset()});
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='20e',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='20g',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
