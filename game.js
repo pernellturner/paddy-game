@@ -3,10 +3,10 @@ const cv=document.getElementById('c'),ctx=cv.getContext('2d'),lbl=document.getEl
 const VW=960,VH=540,GROUND=470,WALL_X=880,WT=230,SC=0.8; // world units
 let F={},IMG={},FR={};
 let scale=1,offX=0,offY=0;
-function vpSize(){const r=cv.getBoundingClientRect(),vv=window.visualViewport;let w=Math.max(r.width,innerWidth,document.documentElement.clientWidth),h=Math.max(r.height,innerHeight,document.documentElement.clientHeight,vv?vv.height:0);return [Math.round(w),Math.round(h)]}
+function vpSize(){const vv=window.visualViewport,de=document.documentElement;let w=innerWidth||de.clientWidth,h=innerHeight||de.clientHeight;if(vv&&vv.scale<1.05&&vv.width>50&&vv.height>50){w=Math.min(w,vv.width)||vv.width;h=vv.height}return [Math.round(w),Math.round(h)]}
 function resize(){const d=Math.min(devicePixelRatio||1,2),[w,h]=vpSize();cv.style.width=w+'px';cv.style.height=h+'px';if(cv.width!==Math.round(w*d)||cv.height!==Math.round(h*d)){cv.width=Math.round(w*d);cv.height=Math.round(h*d)}
  scale=Math.min(cv.width/VW,cv.height/VH);offX=(cv.width-VW*scale)/2;offY=(cv.height-VH*scale)/2;}
-addEventListener('resize',resize);addEventListener('orientationchange',()=>{resize();setTimeout(resize,350)});if(window.visualViewport)visualViewport.addEventListener('resize',resize);setInterval(()=>{const [w,h]=vpSize(),d=Math.min(devicePixelRatio||1,2);if(Math.abs(cv.width-w*d)>2||Math.abs(cv.height-h*d)>2)resize()},400);resize();
+addEventListener('resize',resize);addEventListener('orientationchange',()=>{resize();setTimeout(resize,350);setTimeout(resize,900)});addEventListener('pageshow',resize);addEventListener('scroll',()=>{if(scrollX||scrollY)scrollTo(0,0);resize()},{passive:true});document.addEventListener('touchend',()=>setTimeout(resize,60),{passive:true});if(window.visualViewport){visualViewport.addEventListener('resize',resize);visualViewport.addEventListener('scroll',resize)}setInterval(()=>{const [w,h]=vpSize(),d=Math.min(devicePixelRatio||1,2);if(Math.abs(cv.width-w*d)>2||Math.abs(cv.height-h*d)>2)resize()},400);resize();
 ['gesturestart','dblclick','contextmenu'].forEach(e=>document.addEventListener(e,ev=>ev.preventDefault()));
 document.addEventListener('touchmove',e=>{if(!e.target.closest('#moves,#fpick .scroll,#sett .scroll'))e.preventDefault()},{passive:false});
 // ---------- animations: name:[sheet, frame indices (null = all), fps, loop] ----------
@@ -390,7 +390,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='20h',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='20j',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}

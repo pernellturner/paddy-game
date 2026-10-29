@@ -6,11 +6,26 @@ const DIR='assets/sfx/',V='?v=1';
 const SM=new Set();// keys known to exist (from manifest)
 let M=[],ac=null,master=null,unlocked=false;const BUF={},LOADING={},LAST={};
 const S=window.SND={on:true,vol:.8,ready:false};
-try{const v=localStorage.getItem('paddySfxVol');if(v!=null)S.vol=Math.max(0,Math.min(1,+v));}catch(_){}
-function ctx(){if(!ac){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;ac=new AC();master=ac.createGain();master.gain.value=S.vol;master.connect(ac.destination)}return ac}
-function unlock(){const c=ctx();if(!c)return;if(c.state!=='running')c.resume();if(!unlocked){unlocked=true;try{const b=c.createBuffer(1,1,22050),s=c.createBufferSource();s.buffer=b;s.connect(c.destination);s.start(0)}catch(_){}preload()}}
-['touchstart','touchend','pointerdown','keydown','click'].forEach(e=>addEventListener(e,unlock,{capture:true,passive:true}));
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ac&&unlocked)ac.resume()});
+try{const v=localStorage.getItem('paddySfxVol');if(v!=null&&isFinite(+v))S.vol=Math.max(0,Math.min(1,+v));
+ // v21: sound defaults ON - clear an old saved mute / zero volume once
+ if(localStorage.getItem('paddySnd21')!=='1'){localStorage.setItem('paddySnd21','1');if(S.vol<.05)S.vol=.8;localStorage.setItem('paddySfxVol',String(S.vol));localStorage.setItem('paddyMute','0');try{muted=false}catch(_){}}}catch(_){}
+function ctx(){if(!ac){const ACx=window.AudioContext||window.webkitAudioContext;if(!ACx)return null;ac=new ACx();master=ac.createGain();master.gain.value=S.vol;master.connect(ac.destination);
+ try{if(typeof AC!=='undefined'&&!AC)AC=ac}catch(_){} }return ac}// share one context with the game's synth sounds
+// iPhone silent switch: Web Audio is muted by the ring/silent switch unless the page's audio session is 'playback'.
+// iOS 17+: navigator.audioSession; older iOS: a silent looping <audio> element switches the session to playback.
+let SIL=null;function silentAudio(){try{if(navigator.audioSession&&navigator.audioSession.type!=='playback')navigator.audioSession.type='playback'}catch(_){}
+ try{if(!SIL){SIL=document.createElement('audio');SIL.src=DIR+'silence.mp3'+V;SIL.loop=true;SIL.preload='auto';SIL.setAttribute('playsinline','');SIL.setAttribute('webkit-playsinline','');SIL.setAttribute('x-webkit-airplay','deny')}
+ if(SIL.paused&&!document.hidden){const pr=SIL.play();if(pr&&pr.catch)pr.catch(()=>{})}}catch(_){}}
+// iOS only counts touchEND / pointerup / click as a user gesture, so keep retrying on every gesture until the context really runs
+function kick(c){try{const b=c.createBuffer(1,1,22050),s=c.createBufferSource();s.buffer=b;s.connect(c.destination);s.start(0)}catch(_){}}
+function unlock(){const c=ctx();if(!c)return;silentAudio();
+ if(c.state!=='running'){kick(c);try{const pr=c.resume();if(pr&&pr.then)pr.then(()=>{if(c.state==='running')ok()}).catch(()=>{})}catch(_){}}
+ try{if(typeof AC!=='undefined'&&AC&&AC!==c&&AC.state!=='running')AC.resume()}catch(_){}
+ if(c.state==='running')ok()}
+function ok(){if(!unlocked){unlocked=true;S.unlocked=true;preload()}}
+['touchend','pointerup','click','keydown','touchstart','pointerdown'].forEach(e=>addEventListener(e,unlock,{capture:true,passive:true}));
+document.addEventListener('visibilitychange',()=>{if(document.hidden){try{SIL&&SIL.pause()}catch(_){}}else if(ac&&unlocked){ac.resume();silentAudio()}});
+addEventListener('pageshow',()=>{if(ac&&unlocked)ac.resume()});
 function load(k){if(BUF[k]||LOADING[k]||!SM.has(k))return LOADING[k];const c=ctx();if(!c)return;
  LOADING[k]=fetch(DIR+k+'.mp3'+V).then(r=>r.arrayBuffer()).then(a=>new Promise((ok,no)=>c.decodeAudioData(a,ok,no))).then(b=>{BUF[k]=b;return b}).catch(()=>{});return LOADING[k]}
 function preload(){if(!M.length)return;const small=M.filter(m=>m.bytes<=13000&&m.category!=='voice').map(m=>m.key),big=M.filter(m=>!small.includes(m.key)).map(m=>m.key);
@@ -19,10 +34,11 @@ function idleBig(list){let i=0;const step=()=>{const k=list[i++];if(!k)return;Pr
 fetch(DIR+'manifest.json'+V).then(r=>r.json()).then(m=>{M=m.sounds||[];M.forEach(x=>SM.add(x.key));S.ready=true;if(unlocked)preload()}).catch(()=>{});
 const isMuted=()=>{try{return typeof muted!=='undefined'&&muted}catch(_){return false}};
 // play(key,{v:volume 0-1, r:playbackRate, gap:min seconds between repeats})
-S.play=function(k,o){o=o||{};if(!S.on||isMuted()||!SM.has(k))return;const c=ctx();if(!c||!unlocked)return;
+S.play=function(k,o){o=o||{};if(!S.on||isMuted()||!SM.has(k))return;const c=ctx();if(!c)return;if(c.state!=='running'){try{c.resume()}catch(_){}if(!unlocked)return}
  const t=c.currentTime,g=o.gap??.05;if(LAST[k]&&t-LAST[k]<g)return;LAST[k]=t;
  const go=b=>{if(!b)return;try{const s=c.createBufferSource(),gn=c.createGain();s.buffer=b;s.playbackRate.value=o.r||1;gn.gain.value=o.v??1;s.connect(gn);gn.connect(master);s.start(0)}catch(_){}};
  if(BUF[k])go(BUF[k]);else{const pr=load(k);if(pr&&!o.noLate)pr.then(b=>{if(c.currentTime-t<.25)go(b)})}};
+S.dbg=()=>({state:ac&&ac.state,unlocked,bufs:Object.keys(BUF).length,known:SM.size,vol:S.vol,on:S.on,muted:isMuted(),sil:!!SIL&&!SIL.paused,silErr:SIL&&SIL.error&&SIL.error.code,shared:(()=>{try{return AC===ac}catch(_){return 'n/a'}})()});
 S.setVol=v=>{S.vol=Math.max(0,Math.min(1,v));if(master)master.gain.value=S.vol;try{localStorage.setItem('paddySfxVol',String(S.vol))}catch(_){}};
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 // ---------- per-form sound palette ----------
