@@ -310,7 +310,7 @@ function draw(){
  const jd=!p.ground&&dummies.find(d=>d.alive&&d.y<GROUND-120&&Math.abs(d.x-p.x)<520),fy=jd?Math.max(p.y-270,Math.min(p.y,jd.y-140)):p.y; // Big Bruno is tall: keep his whole body in shot during juggles
  const camT=Math.max(0,(p.xf||p.uf||p.sam?300:225)-fy+(fy<GROUND-250?Math.max(0,Math.min(300,-p.vy*.26)):0));const airC=!p.ground&&(jd||p.y<GROUND-150)&&!cine.on,camT2=airC?Math.max(0,380-p.y):camT; // aerial combos: keep Paddy centred (v20g)
  camY+=(camT2-camY)*Math.min(1,(1/60)*(Math.abs(camT2-camY)>150?18:camT2>camY?11:7));if(!isFinite(camY))camY=0;
- const camTX=airC?Math.max(-120,Math.min(120,VW/2-p.x)):0;camX+=(camTX-camX)*Math.min(1,(1/60)*(airC?7:4));if(!isFinite(camX)||Math.abs(camX)<.05)camX=airC?camX||0:0;
+ const camTX=airC?Math.max(-70,Math.min(70,(VW/2-p.x)*.5)):0;camX+=(camTX-camX)*Math.min(1,(1/60)*(airC?7:4));if(!isFinite(camX)||Math.abs(camX)<.05)camX=airC?camX||0:0;
  ctx.setTransform(scale,0,0,scale,offX+(sx+camX)*scale,offY+(sy+camY)*scale);
  r12Sky();cineXform();
  r12Arena();
@@ -390,7 +390,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='20g',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='20h',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}

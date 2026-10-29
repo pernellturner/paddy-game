@@ -35,15 +35,15 @@ const ring=(x,y,big,c)=>R9.rings.push({x,y,r:18,vr:big?1250:850,l:.8,col:c||COL,
 const chain=()=>{if(typeof CHN==='undefined')return;CHN.n=(now-CHN.t<2.2&&CHN.n>0)?CHN.n+1:1;CHN.t=now;if(CHN.n>1){CHN.show=1.6;CHN.best=Math.max(CHN.best||0,CHN.n)}};
 const snd=(k,v)=>{try{SND.play(k,{v:v||.8,gap:.1})}catch(_){}};
 function go(st,nm){fill();act(st,'mds_'+st,{say:nm,c:COL2});Z.t=0;Z.n=0;C.atk=(C.atk||0)+1;extend();chain();if(typeof M14!=='undefined')M14.dark=Math.max(M14.dark||0,.7)}
-function trig(){const air=!p.ground;
+function trig(){const air=!p.ground,UP=K.up||(K.jump&&(p.ground||p.state==='jcharge')); // ▲ – or hold JUMP on touch screens
  if(P.tail){
-  if(K.up){const g=near(700)[0];if(g){delete P.tail;delete P.jump;Z.tg=g;go('fzchoke','FORCE CHOKE SLAM!');snd('force_push');return}}
+  if(UP){const g=near(700)[0];if(g){delete P.tail;delete P.jump;Z.tg=g;go('fzchoke','FORCE CHOKE SLAM!');snd('force_push');return}}
   if(K.down&&air){const L=near(760);if(L.length){delete P.tail;Z.L=L.slice(0,4);go('fzrip','FORCE RIP!');snd('force_lightning',.6);return}}
   if(K.down&&!air){delete P.tail;Z.L=near(680).slice(0,5);Z.ball={x:clampX0(p.x+p.face*210),y:GROUND-190,a:0};go('fzvort','FORCE VORTEX!');snd('force_push');return}
   if(air){const g=near(520,airb)[0];if(g){delete P.tail;Z.tg=g;go('fzpj','PUSH JUGGLE!');snd('force_push',.7);return}}}
- if(P.special&&K.up){delete P.special;delete P.jump;go('fzthrow','SABER THROW!');return}
+ if(P.special&&UP){delete P.special;delete P.jump;go('fzthrow','SABER THROW!');return}
  if(P.blink){
-  if(K.up){delete P.blink;delete P.jump;go('fzchain','LIGHTNING CHAIN!');Z.L=[];Z.segs=[];snd('force_lightning');return}
+  if(UP){delete P.blink;delete P.jump;go('fzchain','LIGHTNING CHAIN!');Z.L=[];Z.segs=[];snd('force_lightning');return}
   if(K.down&&!air){delete P.blink;go('fzwall','FORCE WALL CRUSH!');Z.wallX=null;return}}}
 const clampX0=x=>Math.max(LW+60,Math.min(WALL_X-60,x));
 function end(){p.state='normal';p.t=0;setAnim(p.ground?uA('idle'):uA('fall'),true)}
@@ -110,9 +110,9 @@ const _fx=drawFx;drawFx=function(){_fx();if(!Z.segs.length&&!Z.ball&&Z.wallX===n
 const _bl=buildList;buildList=function(){_bl();const el=document.getElementById('clist');if(!el)return;const h3=el.querySelector('h3');if(!h3)return;
  h3.insertAdjacentHTML('afterend',`<div id="fzlist" style="background:linear-gradient(135deg,#2a0610,#14061e);border:2px solid #ff3040;border-radius:12px;padding:6px 10px;margin:6px 0 10px;box-shadow:0 0 16px #ff304055">
  <h3 style="color:#ff6070;margin:2px 0">🌑 DARK SIDE · FORCE COMBOS</h3>
- <p class="tip" style="margin:3px 0"><b>FORCE CHOKE SLAM</b> – <b>▲+TAIL</b>: lift him up… and slam! · <b>FORCE VORTEX</b> – <b>▼+TAIL</b>: pull the crowd into a spinning ball, then burst</p>
- <p class="tip" style="margin:3px 0"><b>SABER THROW → PULL BACK</b> – <b>▲+MEOW</b>: the saber drags enemies back to you · <b>FORCE WALL CRUSH</b> – <b>▼+BLINK</b>: an invisible wall shoves them into the side wall</p>
- <p class="tip" style="margin:3px 0"><b>PUSH JUGGLE</b> – <b>TAIL</b> in the air near a launched enemy (keep tapping!) · <b>LIGHTNING CHAIN</b> – <b>▲+BLINK</b>: lightning jumps enemy to enemy · <b>FORCE RIP</b> – <b>▼+TAIL</b> in the air: rip them out of the sky and fling one to the MOON 🌙</p>
+ <p class="tip" style="margin:3px 0"><b>FORCE CHOKE SLAM</b> – <b>▲(or hold JUMP)+TAIL</b>: lift him up… and slam! · <b>FORCE VORTEX</b> – <b>▼+TAIL</b>: pull the crowd into a spinning ball, then burst</p>
+ <p class="tip" style="margin:3px 0"><b>SABER THROW → PULL BACK</b> – <b>▲(or hold JUMP)+MEOW</b>: the saber drags enemies back to you · <b>FORCE WALL CRUSH</b> – <b>▼+BLINK</b>: an invisible wall shoves them into the side wall</p>
+ <p class="tip" style="margin:3px 0"><b>PUSH JUGGLE</b> – <b>TAIL</b> in the air near a launched enemy (keep tapping!) · <b>LIGHTNING CHAIN</b> – <b>▲(or hold JUMP)+BLINK</b>: lightning jumps enemy to enemy · <b>FORCE RIP</b> – <b>▼+TAIL</b> in the air: rip them out of the sky and fling one to the MOON 🌙</p>
  <p class="tip" style="margin:3px 0">Every force combo chains – mix them with saber hits for a big <b>CHAIN</b>. Mythic forms wear <b>SUPER ARMOUR</b>: hits barely scratch them and never knock them over.</p></div>`)};
 buildList();
 window.FORCE20G=true;})();
