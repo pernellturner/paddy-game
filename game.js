@@ -34,12 +34,14 @@ const map={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowDow
  Space:'jump',ArrowUp:'up',KeyW:'up',KeyX:'attack',KeyJ:'attack',KeyC:'special',KeyK:'special',KeyQ:'hunt',KeyV:'hunt',
  ShiftLeft:'run',ShiftRight:'run',KeyT:'tail',KeyL:'tail',KeyZ:'zoomies',KeyE:'hiss',KeyR:'swat',KeyF:'finisher',KeyH:'hurtTest',KeyY:'victory',KeyN:'blink',KeyM:'morph',Digit3:'formN',Digit4:'formS',Digit5:'formK',Digit6:'formP',ControlLeft:'blink',ControlRight:'blink'};
 let touchMode=false;
-function press(k){if(k==='up'){press('jump');K.up=1;return}if(!K[k]){P[k]=1;BUF[k]=now;tapDir(k)}K[k]=1}
+let lastLR='';
+function press(k){if(k==='up'){press('jump');K.up=1;return}if(k==='left'||k==='right')lastLR=k;if(!K[k]){P[k]=1;BUF[k]=now;tapDir(k)}K[k]=1}
 function release(k){if(k==='up'){K.up=0;K.jump=0;return}K[k]=0}
 addEventListener('keydown',e=>{const k=map[e.code];if(!k||document.body.classList.contains('ov'))return;e.preventDefault();if(e.repeat)return;touchMode=false;press(k)});
 addEventListener('keyup',e=>{const k=map[e.code];if(k)release(k)});
 document.querySelectorAll('.b[data-k]').forEach(b=>{const k=b.dataset.k;
- const on=e=>{e.preventDefault();touchMode=e.pointerType!=='mouse';press(k);b.classList.add('on')},off=e=>{e.preventDefault();release(k);b.classList.remove('on')};
+ // touch is handled by controls.js (multi-touch, slide between buttons, never sticks); these are for mouse/pen only
+ const on=e=>{if(e.pointerType==='touch')return;e.preventDefault();touchMode=false;press(k);b.classList.add('on')},off=e=>{if(e.pointerType==='touch')return;e.preventDefault();release(k);b.classList.remove('on')};
  b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('pointerleave',off);});
 // ---------- player ----------
 const p={x:300,y:GROUND,vx:0,vy:0,face:1,ground:true,state:'normal',t:0,anim:'idle',fi:0,ft:0,combo:0,queued:false,cool:0,wall:false,jumps:0,dashCool:0,airDash:false,hunt:false,lastDash:-9,airSpin:false,airSwipe:false,
@@ -114,7 +116,7 @@ const anyInput=()=>Object.keys(P).length>0||K.left||K.right||K.down||K.jump;
 const huntBtn=document.querySelector('[data-k=hunt]');
 function update(dt){
  now+=dt;p.t+=dt;p.cool-=dt;p.dashCool-=dt;p.wj-=dt;p.dj-=dt;p.startT-=dt;
- const dir=(K.right?1:0)-(K.left?1:0);p.holdT=dir?p.holdT+dt:0;
+ const dir=K.right&&K.left?(lastLR==='left'?-1:1):(K.right?1:0)-(K.left?1:0); // both held (thumb rolled across): newest wins, never a dead stopp.holdT=dir?p.holdT+dt:0;
  if(P.morph)cycleForm();if(P.formN)setForm(1);if(P.formS)setForm(2);if(P.formK)setForm(3);if(P.formP)setForm(4);nUpdate(dt);r6Update(dt);r8Update(dt);r9Pre(dt);
  p.blend-=dt;
  for(const f of puffs){f.x+=f.vx*dt;f.y+=f.vy*dt;f.r+=dt*30;f.l-=dt}for(let i=puffs.length-1;i>=0;i--)if(puffs[i].l<=0)puffs.splice(i,1);
@@ -381,7 +383,7 @@ function loop(t){requestAnimationFrame(loop);if(window.STORYPAUSE){last=t;return
  catch(e){console.error(e);try{localStorage.setItem('paddyLastError',String(e&&e.stack||e))}catch(_){}
   camY=0;slowT=0;Object.assign(p,{rot:0,grab:null,state:'normal',wall:false,vx:0,vy:0,combo:0,blend:0,jc:0,mc:0});if(!isFinite(p.x))p.x=300;if(!isFinite(p.y))p.y=GROUND;shake=0;
   if(now-errShown>3){errShown=now;lbl.textContent='glitch caught – recovered'}}}
-let started=false;addEventListener('pageshow',()=>{last=performance.now()});document.addEventListener('visibilitychange',()=>{last=performance.now();for(const k in K)K[k]=0});
+let started=false;addEventListener('pageshow',()=>{last=performance.now()});document.addEventListener('visibilitychange',()=>{last=performance.now();for(const k in K)K[k]=0;if(window.CTRL)CTRL.reset()});
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
