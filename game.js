@@ -387,7 +387,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='20b',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='20c',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -1097,7 +1097,7 @@ function lkSay(t,c){say(t,c,true)}
 // ---- one LINK move ----
 function lkStart(L){if(FORM()>=3)return xLkStart(L);const f=FORM(),fl=LKF[f],rep=LK.n>0&&LK.seq.slice(-1)===L;
  LK.seq+=L;LK.n++;LK.buf=null;LK.beat=false;LK.on=true;lastTokT=-9;LK.lastSeq=LK.seq;LK.lastT=now;
- const route=ROUTES[f].find(r=>r.k===LK.seq);pracCheck(LK.seq);
+ const route=window.findRoute?findRoute(f):ROUTES[f].find(r=>r.k===LK.seq);pracCheck(LK.seq);
  if(route&&route.ult){ultStart(f,route);return}
  const mv=fl[rep?L+L:L],tg=lkTarget();
  act('lk',mv.a);p.lk={L,rep,route,tg,nm:mv.nm};p.rot=0;p.vx=0;C.atk++;extend();
@@ -1515,7 +1515,7 @@ function requestForm(f){if(typeof loadForm==='function')loadForm(XPRE[f],true);i
 // ---- the LINK moves (after a C C C / T T T opener) for Knight and Pirate ----
 function xLkStart(L){const f=FORM(),fl=LKF[f],rep=LK.n>0&&LK.seq.slice(-1)===L;
  LK.seq+=L;LK.n++;LK.buf=null;LK.beat=false;LK.on=true;lastTokT=-9;LK.lastSeq=LK.seq;LK.lastT=now;p.xcombo=0;
- const route=ROUTES[f].find(r=>r.k===LK.seq);pracCheck(LK.seq);
+ const route=window.findRoute?findRoute(f):ROUTES[f].find(r=>r.k===LK.seq);pracCheck(LK.seq);
  if(route&&route.ult){xUltStart(f,route);return}
  const mv=fl[rep?L+L:L],tg=lkTarget();act('lk',mv.a);p.lk={L,rep,route,tg,nm:mv.nm,x0:p.x,y0:p.y,ex:null};p.rot=0;p.vx=0;C.atk++;extend();
  if(!route)lkSay(mv.nm,L==='C'?fl.col2:fl.col);popNum(LK.seq.length,fl.col);beat(520+LK.n*70,.04);
@@ -2158,7 +2158,7 @@ function ulkHit(kb,dir,range){const g=p.lk&&p.lk.tg&&p.lk.tg.alive?p.lk.tg:null;
  g.hp=Math.max(2,g.hp);NAMES[kb]=p.lk.nm||'LINK!';hitDummy(g,kb,dir||p.face);if(KB[kb])g.vy=Math.max(g.vy,KB[kb][1]);if(g.y<GROUND-420)g.vy=Math.max(g.vy,-200);return true}
 function ufLkStart(L){const f=FORM(),fl=LKF[f],rep=LK.n>0&&LK.seq.slice(-1)===L;
  LK.seq+=L;LK.n++;LK.buf=null;LK.beat=false;LK.on=true;lastTokT=-9;LK.lastSeq=LK.seq;LK.lastT=now;
- const route=ROUTES[f].find(r=>r.k===LK.seq);pracCheck(LK.seq);if(route&&route.ult){ultStart(f,route);return}
+ const route=window.findRoute?findRoute(f):ROUTES[f].find(r=>r.k===LK.seq);pracCheck(LK.seq);if(route&&route.ult){ultStart(f,route);return}
  const mv=fl[rep?L+L:L],tg=lkTarget();act('lk',uA(mv.a));p.lk={L,rep,route,tg,nm:mv.nm,ty:LKT[p.uf][L]};p.rot=0;p.vx=0;C.atk++;extend();
  if(!route)lkSay(mv.nm,L==='C'?fl.col2:fl.col);popNum(LK.seq.length,fl.col);beat(520+LK.n*70,.04);
  const ty=p.lk.ty;if(ty==='tele'){lkBlink(tg,f,false);if(p.uf===6)batPuff(p.x,p.y-80,10)}
