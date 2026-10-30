@@ -6,7 +6,7 @@
 (function(){
 if(typeof UF==='undefined'||typeof MC==='undefined')return;
 // his sprite sheets are cut by src/cut_skb.py; until they are in, the form stays hidden (?skbtest previews the moves with stand-in sprites)
-const SPRITES_IN=false;if(!SPRITES_IN&&!/[?&]skbtest/.test(location.search))return;
+const SPRITES_IN=true;if(!SPRITES_IN&&!/[?&]skbtest/.test(location.search))return;
 const U=16,PRE='skb',COL='#2fe0d0',COL2='#eafffb',LEAF=['#7bd66b','#a9e86b','#4fbf6a'];
 if(UF.length!==U){console.warn('skybreaker: unexpected UF length',UF.length);}
 UF.push({pre:PRE,nm:'SKYBREAKER',ico:'🌪️',el:'wind',col:COL,col2:COL2,spd:640,H:.3,H0:.26,minT:.1,W:.14,E:.38,tier:'LEGEND FORM',legend:1,
