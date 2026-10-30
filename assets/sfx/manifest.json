@@ -2373,6 +2373,158 @@
    "category": "vo_form",
    "description": "Announcer (Maverick): Phantom... Parade! (ElevenLabs, v24)",
    "bytes": 27116
+  },
+  {
+   "key": "gf_aura",
+   "file": "gf_aura.mp3",
+   "duration": 2.52,
+   "category": "form",
+   "description": "Golden Fury power-up aura roar (ElevenLabs, v25)",
+   "bytes": 30572
+  },
+  {
+   "key": "gf_scream",
+   "file": "gf_scream.mp3",
+   "duration": 1.8,
+   "category": "form",
+   "description": "Golden Fury power-up scream / roar (ElevenLabs, v25)",
+   "bytes": 21932
+  },
+  {
+   "key": "gf_boom",
+   "file": "gf_boom.mp3",
+   "duration": 2.232,
+   "category": "form",
+   "description": "Golden Fury level-up release boom (ElevenLabs, v25)",
+   "bytes": 27116
+  },
+  {
+   "key": "gf_crack",
+   "file": "gf_crack.mp3",
+   "duration": 1.632,
+   "category": "form",
+   "description": "Golden Fury ground crack / lava smash (ElevenLabs, v25)",
+   "bytes": 19916
+  },
+  {
+   "key": "gf_beam",
+   "file": "gf_beam.mp3",
+   "duration": 2.52,
+   "category": "form",
+   "description": "Golden Fury energy beam (ElevenLabs, v25)",
+   "bytes": 30572
+  },
+  {
+   "key": "gf_barrage",
+   "file": "gf_barrage.mp3",
+   "duration": 1.32,
+   "category": "form",
+   "description": "Golden Fury rapid fist barrage (ElevenLabs, v25)",
+   "bytes": 16172
+  },
+  {
+   "key": "gf_judgement",
+   "file": "gf_judgement.mp3",
+   "duration": 4.032,
+   "category": "form",
+   "description": "Fury God Divine Judgement (ElevenLabs, v25)",
+   "bytes": 48716
+  },
+  {
+   "key": "vo_gf_rise",
+   "file": "vo_gf_rise.mp3",
+   "duration": 1.872,
+   "category": "vo_form",
+   "description": "Announcer (Atlas): Fury rising! (v25)",
+   "bytes": 22796
+  },
+  {
+   "key": "vo_gf_awaken",
+   "file": "vo_gf_awaken.mp3",
+   "duration": 2.832,
+   "category": "vo_form",
+   "description": "Announcer (Atlas): The true power awakens! (v25)",
+   "bytes": 34316
+  },
+  {
+   "key": "vo_gf_god",
+   "file": "vo_gf_god.mp3",
+   "duration": 3.72,
+   "category": "vo_form",
+   "description": "Announcer (Atlas): Behold... the Fury God! (v25)",
+   "bytes": 44972
+  },
+  {
+   "key": "gf_swing1",
+   "file": "gf_swing1.mp3",
+   "duration": 0.418,
+   "category": "form",
+   "description": "Golden Fury swing (reuses beast_swing1, v25)",
+   "bytes": 5373
+  },
+  {
+   "key": "gf_swing2",
+   "file": "gf_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Golden Fury swing (reuses beast_swing2, v25)",
+   "bytes": 7880
+  },
+  {
+   "key": "gf_hit",
+   "file": "gf_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Golden Fury hit (reuses beast_hit, v25)",
+   "bytes": 6626
+  },
+  {
+   "key": "gf_heavy",
+   "file": "gf_heavy.mp3",
+   "duration": 1.632,
+   "category": "form",
+   "description": "Golden Fury heavy (gf_crack, v25)",
+   "bytes": 19916
+  },
+  {
+   "key": "gf_special",
+   "file": "gf_special.mp3",
+   "duration": 2.52,
+   "category": "form",
+   "description": "Golden Fury special (gf_beam, v25)",
+   "bytes": 30572
+  },
+  {
+   "key": "gf_finisher",
+   "file": "gf_finisher.mp3",
+   "duration": 2.232,
+   "category": "form",
+   "description": "Golden Fury finisher (gf_boom, v25)",
+   "bytes": 27116
+  },
+  {
+   "key": "gf_quake",
+   "file": "gf_quake.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Golden Fury quake (reuses beast_quake, v25)",
+   "bytes": 12896
+  },
+  {
+   "key": "vo_f22_a",
+   "file": "vo_f22_a.mp3",
+   "duration": 2.832,
+   "category": "vo_form",
+   "description": "Announcer (Atlas): The true power awakens! (v25)",
+   "bytes": 34316
+  },
+  {
+   "key": "vo_f22_b",
+   "file": "vo_f22_b.mp3",
+   "duration": 3.72,
+   "category": "vo_form",
+   "description": "Announcer (Atlas): Behold... the Fury God! (v25)",
+   "bytes": 44972
   }
  ]
 }

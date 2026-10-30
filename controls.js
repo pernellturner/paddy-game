@@ -22,7 +22,7 @@ function layout(){const cs=getComputedStyle(probe);SA={t:parseFloat(cs.paddingTo
  const place=(k,d,cx,cy,side)=>{const b=document.querySelector(`#ui .b[data-k="${k}"]`);if(!b)return;const z=Math.round(S*d),o={s:d,b:mb+S*cy-z/2};if(side<0)o.l=ml+S*cx-z/2;else o.r=mr+S*cx-z/2;put(k,o)};
  place('left',1.1,.55,.72,-1);place('right',1.1,1.85,.72,-1);place('down',.88,1.2,1.85,-1);
  place('jump',1.2,.62,.92,1);place('attack',1.1,1.95,.6,1);place('special',.95,1.95,1.78,1);
- place('tail',.85,3.02,1.45,1);place('hunt',.8,3.06,.42,1);place('blink',.85,4.02,.95,1);
+ place('tail',.85,3.02,1.45,1);place('hunt',.8,3.06,.42,1);place('blink',.85,4.02,.95,1);place('gpow',.85,4.06,2.02,1);
  // top row (small): morph · mute · ?
  const tz=Math.round(Math.max(34,Math.min(50,H*.13)*Math.min(1,SZ+.15))),tb=(id,i)=>{const b=document.querySelector(id);if(!b)return;Object.assign(b.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',right:Math.round(mr+i*(tz+12))+'px',top:mt+'px',bottom:'auto',left:'auto'})};
  tb('#qbtn',0);tb('#ui .b[data-k=morph]',1);tb('#mute',2);{const g=document.getElementById('gear');if(g)Object.assign(g.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',left:ml+'px',top:mt+'px',right:'auto',bottom:'auto'})}
@@ -102,8 +102,8 @@ document.head.appendChild(css);
 const bar=document.createElement('div');bar.id='trbar';bar.innerHTML='<span class="nm">🥋 TRAINING ROOM</span><button class="tap pri" id="tforms">🔄 FORMS</button><button class="tap" id="tmoves">📜 MOVES</button><button class="tap" id="texit">✕ EXIT</button>';document.body.appendChild(bar);
 const fp=document.createElement('div');fp.id='fpick';document.body.appendChild(fp);
 function forms(){const base=[['🐱','KITTY'],['🥷','NEON NINJA'],['⚔️','SAMURAI'],['🛡️','KNIGHT'],['⚓','PIRATE']].map((x,i)=>({f:i,ico:x[0],nm:x[1],tier:i<2?0:1}));
- const ext=[];for(let u=1;u<UF.length;u++)ext.push({f:4+u,ico:UF[u].ico,nm:UF[u].nm,tier:(u<=6||UF[u].legend)?2:3});return base.concat(ext)}
-const TIERS=[['🐱 ALLEY CAT','#ffe08a'],['🗡️ PROWLER','#ff9a6b'],['⭐ LEGEND','#9fe8ff'],['🐉 MYTHIC','#ff7ce0']];
+ const ext=[];for(let u=1;u<UF.length;u++)ext.push({f:4+u,ico:UF[u].ico,nm:UF[u].nm,tier:UF[u].god?4:(u<=6||UF[u].legend)?2:3});return base.concat(ext)}
+const TIERS=[['🐱 ALLEY CAT','#ffe08a'],['🗡️ PROWLER','#ff9a6b'],['⭐ LEGEND','#9fe8ff'],['🐉 MYTHIC','#ff7ce0'],['🌟 GOD','#ffd23a']];
 function buildPicker(){const L=forms(),cur=FORM();let h='<div class="scroll"><h2>🔄 PICK A FORM</h2>';
  TIERS.forEach((t,i)=>{h+=`<div class="trow"><div class="tier" style="color:${t[1]}">${t[0]}</div><div class="grid">`+L.filter(x=>x.tier===i).map(x=>`<button class="f tap${x.f===cur?' cur':''}" data-f="${x.f}"><span class="i">${x.ico}</span>${x.nm}</button>`).join('')+'</div></div>'});
  h+='</div><button class="x tap" id="fpx">✕ CLOSE</button>';fp.innerHTML=h;

@@ -390,7 +390,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='24a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='25a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -2624,7 +2624,7 @@ const _chk14=UNL.check;UNL.check=function(){_chk14.call(this);for(let u=7;u<UF.l
 // ---- switching / cycling / keys ----
 const _cycle14=cycleForm;cycleForm=function(){if(p.morphWait&&p.morphWait.f<5)return _cycle14();const L=[0,1,2,3,4];for(let u=1;u<UF.length;u++)if(UNL.ok(u))L.push(4+u);
  const cur=p.morphWait?p.morphWait.f:FORM(),i=L.indexOf(cur),nx=L[(i+1)%L.length];if(nx===0&&FORM()!==0)setForm(0);else if(nx!==FORM())setForm(nx)};
-function mythCycle(){const L=[];for(let u=7;u<UF.length;u++)if(UNL.ok(u)&&!UF[u].legend)L.push(4+u);if(!L.length){say('🔒 No Mythic forms yet – open ? → MYTHIC','#ffe08a',true);return}const i=L.indexOf(FORM());setForm(L[(i+1)%L.length])}
+function mythCycle(){const L=[];for(let u=7;u<UF.length;u++)if(UNL.ok(u)&&!UF[u].legend&&!UF[u].god)L.push(4+u);if(!L.length){say('🔒 No Mythic forms yet – open ? → MYTHIC','#ffe08a',true);return}const i=L.indexOf(FORM());setForm(L[(i+1)%L.length])}
 Object.assign(map,{Numpad1:'uf7',Numpad2:'uf8',Numpad3:'uf9',Numpad4:'uf10',Numpad5:'uf11',Numpad6:'uf12',Numpad7:'uf13',Numpad8:'uf14',KeyP:'mcyc'});INSTANT.push('uf7','uf8','uf9','uf10','uf11','uf12','uf13','uf14','mcyc');
 FCOL.push(...UF.slice(7).map(x=>x.col));FNAME.push(...UF.slice(7).map(x=>x.nm.replace(/ PADDY$/,'')+' PADDY'));
 for(const k in TKA)TKA[k].push(...MPRE.map(q=>q+'_'+({leap:'rise',bonk:'dive',drop:'dive',trip:'tail'}[k]||'rise')));
@@ -2718,13 +2718,13 @@ window.UFTABS.push(...UF.slice(7).map(x=>[x.ico+' '+x.nm.replace(/ PADDY$/,'').s
 #mythic .bar{height:7px;background:#ffffff22;border-radius:4px;overflow:hidden;margin-top:3px}#mythic .bar i{display:block;height:100%;background:linear-gradient(90deg,#7fe8ff,#ffe14d)}#mythic .lg button{margin-left:auto;white-space:nowrap}#mythic .stat{font-size:13px;color:#cfd8ff}
 #tiers{background:#151a30;border:2px solid #ffffff44;border-radius:12px;padding:6px 10px;margin:6px 0 10px}#tiers .tr{display:flex;gap:8px;align-items:center;padding:3px 0;border-bottom:1px solid #ffffff14;font-size:14px}#tiers .tn{font:18px Bangers,Impact,sans-serif;letter-spacing:1px;min-width:118px}
 #tiers .asc{background:linear-gradient(90deg,#3a2a00,#1a1040);border-radius:8px;padding:5px 6px;margin-top:4px}#tiers .ascimg{position:relative;width:84px;height:112px;flex:none;border-radius:8px;overflow:hidden;border:2px solid #ffe9a0;box-shadow:0 0 16px #ffd76a88}#tiers .ascimg img{width:100%;height:100%;object-fit:cover;filter:brightness(.5) saturate(.7) blur(1.5px)}#tiers .ascimg b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;text-shadow:0 0 10px #000}`;document.head.appendChild(st)})();
-function tiersHTML(){const LGU=[1,2,3,4,5,6].concat(UF.map((x,i)=>x&&x.legend?i:0).filter(Boolean)),MYU=UF.map((x,i)=>i>=7&&x&&!x.legend?i:0).filter(Boolean),nL=LGU.filter(u=>UNL.has(u)).length,nM=MYU.filter(u=>UNL.has(u)).length;
+function tiersHTML(){const LGU=[1,2,3,4,5,6].concat(UF.map((x,i)=>x&&x.legend?i:0).filter(Boolean)),MYU=UF.map((x,i)=>i>=7&&x&&!x.legend&&!x.god?i:0).filter(Boolean),nL=LGU.filter(u=>UNL.has(u)).length,nM=MYU.filter(u=>UNL.has(u)).length;
  const row=(c,n,t)=>`<div class="tr"><span class="tn" style="color:${c}">${n}</span><span>${t}</span></div>`;
  return `<div id="tiers"><h3>🐾 FORM TIERS</h3>`+row('#ffe08a','🐱 ALLEY CAT','Kitty · Neon Ninja <span class="tip">(start)</span>')+row('#ff9a6b','🗡️ PROWLER','Samurai · Knight · Pirate')+
   row('#ffe14d','🏆 LEGEND',LGU.map(u=>UF[u].ico).join(' ')+` <span class="tip">${nL}/${LGU.length} unlocked</span>`)+row('#7fe8ff','🌌 MYTHIC',MYU.map(u=>UF[u].ico).join(' ')+` <span class="tip">${nM}/${MYU.length} unlocked</span>`)+
-  `<div class="tr asc"><div class="ascimg"><img src="assets/ascended_lock.webp?v=${VER}" loading="lazy" alt="Ascended Paddy (locked)"><b>🔒</b></div><div><span class="tn" style="color:#fff3b0">✴️ ASCENDED</span><br><b>???</b> – the one God form, radiant beyond the Mythics. <span class="tip">Unlocks by beating the SURVIVAL TOWER (coming soon).</span></div></div></div>`}
+  `<div class="tr asc"><div class="ascimg"><img src="assets/ascended_lock.webp?v=${VER}" loading="lazy" alt="Ascended Paddy (locked)"></div><div><span class="tn" style="color:#ffd23a">🌟 GOD</span><br><b>GOLDEN FURY</b> – the one God form, the true Paddy. ⚡ POWER UP (G) climbs Fury 1 → 2 → 3 → 4 → FURY GOD. <span class="tip">Unlocked for testing · awakens in the story finale.</span></div></div></div>`}
 function mythicHTML(){const d=UNL.d;let h=`<div id="mythic"><h3>🌌 MYTHIC · the strongest forms</h3><div class="stat">EXP ${d.exp} · Big Bruno K.O.s ${d.ko} · Ultimates ${d.ult} · Stealth takedowns ${d.tkd}</div>`;
- for(let u=7;u<UF.length;u++){if(UF[u].legend)continue;const X=UF[u],own=UNL.has(u),c=UNLK[u],pr=Math.round(UNL.prog(u)*100),ul=ROUTES[4+u].find(r=>r.ult);
+ for(let u=7;u<UF.length;u++){if(UF[u].legend||UF[u].god)continue;const X=UF[u],own=UNL.has(u),c=UNLK[u],pr=Math.round(UNL.prog(u)*100),ul=ROUTES[4+u].find(r=>r.ult);
   h+=`<div class="lg${own?'':' lock'}"><span class="ic">${own?X.ico:'🔒'}</span><div><span class="nm" style="color:${X.col}">${X.nm}</span> ${own?'<b style="color:#7fffd4">UNLOCKED</b>':''}<br><span class="tip">${own?'⚡ '+ul.nm+': '+ul.k.split('').join(' '):'🔒 '+c.txt+' ('+Math.min(d[c.k],c.n)+'/'+c.n+')'}</span>${own?'':`<div class="bar"><i style="width:${pr}%"></i></div>`}</div>
   <button data-mf="${u}">${UNL.ok(u)?'▶ Play':'🔒'}</button></div>`}
  h+=`<p class="tip" style="margin:6px 0 0"><button id="trymyth">${d.tryMyth?'✅ Mythic try-all ON (tap to turn off)':'🔓 Try all Mythics now'}</button> plays every Mythic before unlocking it (practice). Keys: numpad 1-8 pick a Mythic · P cycles Mythics · M / 🔄 cycles every unlocked form. Each has its own tab in the Combo List below.</p></div>`;return h}

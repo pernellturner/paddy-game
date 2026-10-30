@@ -2,7 +2,7 @@
 // WebAudio, unlocked on the first tap/key (iOS), small files preloaded after that, big ones fetched in idle time or on first use.
 // Hooks: hits (per-form swipe/element + combo ticks/stingers/announcer), moves (act), form change, hurt/KO, critters, moon launch.
 (function(){
-const DIR='assets/sfx/',V='?v=24';
+const DIR='assets/sfx/',V='?v=25';
 const SM=new Set();// keys known to exist (from manifest)
 let M=[],ac=null,master=null,unlocked=false;const BUF={},LOADING={},LAST={};
 const S=window.SND={on:true,vol:.8,ready:false};

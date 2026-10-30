@@ -5,7 +5,7 @@
 (function(){
 if(typeof p==='undefined'||typeof drawFx!=='function')return;
 const LEN=[.6,1,2,3];
-const tierOf=f=>f<=1?0:f<=4?1:(f<=10||f===20||f===21)?2:3;
+const tierOf=f=>f===22?3:f<=1?0:f<=4?1:(f<=10||f===20||f===21)?2:3;
 const BASE=[['#ffe08a','#ffffff','PADDY'],[typeof NV!=='undefined'?NV:'#a66bff',typeof NC!=='undefined'?NC:'#45e0ff','NEON NINJA'],[typeof SR!=='undefined'?SR:'#c8102e','#ffd6dc','SAMURAI'],[typeof KG!=='undefined'?KG:'#ffd34d','#cfe3ff','KNIGHT'],[typeof PT!=='undefined'?PT:'#2a9df4','#ffe14d','PIRATE']];
 const info=f=>{if(f>=5){const X=UF[f-4]||{};return {col:X.col||'#fff',col2:X.col2||'#fff',nm:X.nm||'',ico:X.ico||'',el:X.el||'',tier:X.tier||(f>=11&&f!==20?'MYTHIC FORM':'LEGEND FORM')}}const b=BASE[f]||BASE[0];return {col:b[0],col2:b[1],nm:b[2],ico:'',el:'',tier:f<=1?'ALLEY CAT':'PROWLER'}};
 const snd=(k,v,g)=>{try{SND.play(k,{v:v==null?1:v,gap:g||.05})}catch(_){}};

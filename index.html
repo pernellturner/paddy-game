@@ -40,7 +40,8 @@ body.ov #moves{display:block}
 #clist table{margin-bottom:10px}#clist .seq{white-space:nowrap}#clist tr.ult td{background:#ffe14d22}
 .ck{display:inline-block;width:22px;height:22px;line-height:22px;border-radius:50%;text-align:center;color:#fff;font:15px Bangers,Impact,sans-serif;margin:1px;border:2px solid #fff8}
 #pclose{display:none}body.prac #pclose{display:flex}
-</style></head><body>
+</style><style>#ui .b.gpow{background:radial-gradient(circle,#fff3b0 0%,#ffd23a 55%,#c98a00 100%);color:#3a2400;font-weight:800;box-shadow:0 0 14px #ffd23acc;line-height:1}#ui .b.gpow small{display:block;font-size:.5em;letter-spacing:.5px}#ui .b.gpow.max{filter:saturate(.4) brightness(1.2)}</style>
+</head><body>
 <canvas id="c"></canvas>
 <div style="position:absolute;opacity:0;font-family:Bangers">.</div><div style="position:absolute;opacity:0;font-family:Kanji">斬侍風桜必殺一閃返し気月</div><div id="lbl">idle</div>
 <div id="hint">press ? for moves</div>
@@ -53,6 +54,7 @@ body.ov #moves{display:block}
  <div class="b" data-k="special" style="right:calc(100px + env(safe-area-inset-right));bottom:100px">Meow</div>
  <div class="b s" data-k="hunt" style="right:calc(176px + env(safe-area-inset-right));bottom:44px">Hunt</div>
  <div class="b s" data-k="tail" style="right:calc(176px + env(safe-area-inset-right));bottom:108px">Tail</div>
+ <div class="b s gpow" data-k="gpow" style="display:none;right:calc(236px + env(safe-area-inset-right));bottom:108px">⚡<small>POWER</small></div>
  <div class="b s" data-k="blink" style="right:calc(236px + env(safe-area-inset-right));bottom:44px">Blink</div>
  <div class="b s t" data-k="morph" style="right:calc(64px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🥷</div>
  <div class="b s t" id="mute" style="right:calc(120px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🔊</div>
@@ -70,6 +72,8 @@ body.ov #moves{display:block}
 <tr><td>Lands on his feet (flip)</td><td>fall from high up</td><td>fall from high up</td></tr>
 <tr><td>Hard landing</td><td>end of a dive bomb</td><td>same</td></tr>
 <tr><td>Crouch / Slide</td><td>↓ (while running = slide)</td><td>▼ (while running = slide)</td></tr>
+<tr><td>🌟 GOLDEN FURY: ⚡ POWER UP (Fury 1 → God)</td><td>G</td><td>⚡ POWER button</td></tr>
+<tr><td>🌟 Fly / air juggle (Golden Fury)</td><td>Jump in the air = fly (hold to rise, ↓ sink) · Claw = air combo · ↓+Claw = SPIKE · Tail = smash HIGHER · Blink = chase · Meow = SKY SHATTER</td><td>same buttons (▼ + Claw = spike)</td></tr>
 <tr><td>Dash</td><td>double-tap ← or →</td><td>double-tap ◀ or ▶</td></tr>
 <tr><td>Winged dash</td><td>dash after a double jump</td><td>same</td></tr>
 <tr><td>Wall climb / Ledge grab (brick walls on BOTH sides of the arena)</td><td>hold ← or → at a wall, climb to the top</td><td>hold ◀ or ▶ at a wall</td></tr>
@@ -189,7 +193,7 @@ body.ov #moves{display:block}
 <p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
 <p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p></div></div>
 <div id="rot">🔄 Turn your phone sideways to play with Paddy</div>
-<script src="game.js?v=24a"></script>
+<script src="game.js?v=25a"></script>
 <script src="smooth.js?v=19a"></script>
 <script src="darkside.js?v=20g"></script>
 <script src="poses.js?v=20d"></script>
@@ -202,9 +206,10 @@ body.ov #moves{display:block}
 <script src="crimson.js?v=20i"></script>
 <script src="finishers.js?v=20h"></script>
 <script src="swords.js?v=22a"></script>
-<script src="skybreaker.js?v=24a"></script>
-<script src="neonwraith.js?v=24a"></script>
-<script src="transform.js?v=24a"></script>
+<script src="skybreaker.js?v=25a"></script>
+<script src="neonwraith.js?v=25a"></script>
+<script src="goldenfury.js?v=25a"></script>
+<script src="transform.js?v=25a"></script>
 <script>
 const ov=v=>{document.body.classList.toggle('ov',v);if(window.CTRL)CTRL.reset();for(const k in K)K[k]=0;document.querySelectorAll('.b.on').forEach(b=>b.classList.remove('on'))};
 document.getElementById('qbtn').addEventListener('pointerdown',e=>{e.preventDefault();ov(true)});
@@ -215,8 +220,8 @@ const mb=document.getElementById('mute');const ms=()=>mb.textContent=muted?'🔇
 addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.classList.contains('ov'))}else if(e.key==='Escape')ov(false)});
 lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 </script>
-<script src="controls.js?v=24a"></script>
+<script src="controls.js?v=25a"></script>
 <script src="en.js?v=20a"></script>
 <script src="story.js?v=20a"></script>
-<script src="sfx.js?v=24a"></script>
-<script src="formfx.js?v=24a"></script></body></html>
+<script src="sfx.js?v=25a"></script>
+<script src="formfx.js?v=25a"></script></body></html>
