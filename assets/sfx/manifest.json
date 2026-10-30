@@ -2317,6 +2317,62 @@
    "category": "vo_form",
    "description": "Announcer (Maverick): Time to unleash! (ElevenLabs, v23)",
    "bytes": 16657
+  },
+  {
+   "key": "nwr_swing1",
+   "file": "nwr_swing1.mp3",
+   "duration": 0.84,
+   "category": "form",
+   "description": "Neon Wraith synthwave swipe whoosh (ElevenLabs, v24)",
+   "bytes": 10412
+  },
+  {
+   "key": "nwr_swing2",
+   "file": "nwr_swing2.mp3",
+   "duration": 1.032,
+   "category": "form",
+   "description": "Neon Wraith clone whoosh-whoosh doppler (ElevenLabs, v24)",
+   "bytes": 12716
+  },
+  {
+   "key": "nwr_hit",
+   "file": "nwr_hit.mp3",
+   "duration": 0.72,
+   "category": "form",
+   "description": "Neon Wraith synth zap hit (ElevenLabs, v24)",
+   "bytes": 8972
+  },
+  {
+   "key": "nwr_heavy",
+   "file": "nwr_heavy.mp3",
+   "duration": 1.224,
+   "category": "form",
+   "description": "Neon Wraith Echo Pounce bass-drop impact (ElevenLabs, v24)",
+   "bytes": 15020
+  },
+  {
+   "key": "nwr_special",
+   "file": "nwr_special.mp3",
+   "duration": 0.72,
+   "category": "form",
+   "description": "Neon Wraith Flicker Step teleport blip (ElevenLabs, v24)",
+   "bytes": 8972
+  },
+  {
+   "key": "nwr_finisher",
+   "file": "nwr_finisher.mp3",
+   "duration": 3.024,
+   "category": "form",
+   "description": "Phantom Parade: whooshes, time-stop, neon boom (ElevenLabs, v24)",
+   "bytes": 36620
+  },
+  {
+   "key": "vo_f21_a",
+   "file": "vo_f21_a.mp3",
+   "duration": 2.232,
+   "category": "vo_form",
+   "description": "Announcer (Maverick): Phantom... Parade! (ElevenLabs, v24)",
+   "bytes": 27116
   }
  ]
 }
