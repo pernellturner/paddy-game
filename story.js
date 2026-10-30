@@ -10,8 +10,11 @@ const INTRO=[
  {img:'p3_shop',cap:'Silverdale! Everyone pops into the shops… and Paddy keeps on dreaming.',fx:.3,fy:.4,z0:1.18,z1:1.02},
  {img:'p4_wakes',cap:'Paddy wakes up. Where am I?! He hops out to have a little look around.',fx:.6,fy:.4,z0:1.02,z1:1.25},
  {img:'p5_gone',cap:'But when he comes back… the car is GONE.',fx:.3,fy:.55,z0:1.0,z1:1.28,slow:1},
+ {img:'pA_empty',cap:'Back home… Paddy\'s blanket is EMPTY. "Mum… where\'s Paddy?!"',fx:.75,fy:.55,z0:1.02,z1:1.22},
+ {img:'pB_calling',cap:'"PADDY! Here, puss puss!" As the sun sets, the family checks every hedge and garden. But no Paddy.',fx:.35,fy:.45,z0:1.2,z1:1.04,px:.05},
  {img:'p6_posters',cap:'Savannah and Hallie search every street with their posters. "We\'ll find you, Paddy!"',fx:.4,fy:.5,z0:1.2,z1:1.04},
- {img:'p7_determined',cap:'Paddy fluffs up his whiskers. Home is out there somewhere… time to find the way back!',fx:.55,fy:.45,z0:1.3,z1:1.0,hero:1}];
+ {img:'p7_determined',cap:'Paddy fluffs up his whiskers. Home is out there somewhere… time to find the way back!',fx:.55,fy:.45,z0:1.3,z1:1.0},
+ {img:'p8_awakens',cap:'The beast awakens. "NOTHING stops me getting home to Savannah and Hallie!"',fx:.5,fy:.45,z0:1.25,z1:1.0,hero:1,slow:1}];
 const CUTS={
  girls:[{img:'c1_girls_search',cap:'Meanwhile… Savannah and Hallie follow a trail of tiny paw prints. "He\'s close – I can feel it!"',fx:.5,fy:.6,z0:1.2,z1:1.02}],
  reunion:[{img:'c2_reunion',cap:'Stanmore Bay. Home at last! Paddy leaps into Hallie\'s arms – the whole family together again.',fx:.55,fy:.45,z0:1.25,z1:1.02,hero:1}]};
