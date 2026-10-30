@@ -22,7 +22,7 @@ function layout(){const cs=getComputedStyle(probe);SA={t:parseFloat(cs.paddingTo
  const place=(k,d,cx,cy,side)=>{const b=document.querySelector(`#ui .b[data-k="${k}"]`);if(!b)return;const z=Math.round(S*d),o={s:d,b:mb+S*cy-z/2};if(side<0)o.l=ml+S*cx-z/2;else o.r=mr+S*cx-z/2;put(k,o)};
  place('left',1.1,.55,.72,-1);place('right',1.1,1.85,.72,-1);place('down',.88,1.2,1.85,-1);
  place('jump',1.2,.62,.92,1);place('attack',1.1,1.95,.6,1);place('special',.95,1.95,1.78,1);
- place('tail',.85,3.02,1.45,1);place('hunt',.8,3.06,.42,1);place('blink',.85,4.02,.95,1);place('gpow',.85,4.06,2.02,1);
+ place('tail',.85,3.02,1.45,1);place('hunt',.8,3.06,.42,1);place('blink',.85,4.02,.95,1);place('gpow',.85,4.06,2.02,1);place('guard',.8,3.0,2.5,1);
  // top row (small): morph · mute · ?
  const tz=Math.round(Math.max(34,Math.min(50,H*.13)*Math.min(1,SZ+.15))),tb=(id,i)=>{const b=document.querySelector(id);if(!b)return;Object.assign(b.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',right:Math.round(mr+i*(tz+12))+'px',top:mt+'px',bottom:'auto',left:'auto'})};
  tb('#qbtn',0);tb('#ui .b[data-k=morph]',1);tb('#mute',2);{const g=document.getElementById('gear');if(g)Object.assign(g.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',left:ml+'px',top:mt+'px',right:'auto',bottom:'auto'})}

@@ -55,6 +55,7 @@ body.ov #moves{display:block}
  <div class="b s" data-k="hunt" style="right:calc(176px + env(safe-area-inset-right));bottom:44px">Hunt</div>
  <div class="b s" data-k="tail" style="right:calc(176px + env(safe-area-inset-right));bottom:108px">Tail</div>
  <div class="b s gpow" data-k="gpow" style="display:none;right:calc(236px + env(safe-area-inset-right));bottom:108px">⚡<small>POWER</small></div>
+ <div class="b s" data-k="guard" style="right:calc(176px + env(safe-area-inset-right));bottom:172px">🛡</div>
  <div class="b s" data-k="blink" style="right:calc(236px + env(safe-area-inset-right));bottom:44px">Blink</div>
  <div class="b s t" data-k="morph" style="right:calc(64px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🥷</div>
  <div class="b s t" id="mute" style="right:calc(120px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🔊</div>
@@ -79,7 +80,12 @@ body.ov #moves{display:block}
 <tr><td>Wall climb / Ledge grab (brick walls on BOTH sides of the arena)</td><td>hold ← or → at a wall, climb to the top</td><td>hold ◀ or ▶ at a wall</td></tr>
 <tr><td>Wall jump</td><td>Jump, or the opposite arrow, while on the wall</td><td>Jump, or the opposite arrow, on the wall</td></tr>
 <tr><td>WALL KICK &amp; MANTLE (Samurai, Knight, Pirate)</td><td>Jump while touching a wall in the air · hold toward the wall near the top to pull yourself up</td><td>same with Jump / ◀ ▶</td></tr>
-<tr><td>Claw combo (3 hits): Left Paw → Right Paw → Triple Claw (overhead)</td><td>X / J ×3</td><td>Claw ×3</td></tr>
+<tr><td>Claw combo (3 hits): LEFT JAB → RIGHT JAB → POWER PUNCH (knocks them flying)</td><td>X / J ×3</td><td>Claw ×3</td></tr>
+<tr><td><b>Turn mid-combo</b> (keeps the same combo and the next hit, onto enemies behind you)</td><td>tap the other arrow during the combo</td><td>tap the other ◀ / ▶ during the combo</td></tr>
+<tr><td><b>SKY SWIPE</b> (upward combo hit for birds and anything above)</td><td>hold ↑ / W during a combo (X in the air with ↑ too)</td><td>hold Jump + Claw during a combo</td></tr>
+<tr><td><b>DODGE</b> (quick dash, can't be hit, afterimage)</td><td>tap B (or O) · with ←/→ to pick the way</td><td>tap 🛡 (with ◀/▶ to pick the way)</td></tr>
+<tr><td><b>BLOCK</b> (takes much less damage, the enemy bounces off)</td><td>hold B</td><td>hold 🛡</td></tr>
+<tr><td><b>COUNTER!</b> (slow-mo strike back)</td><td>block or dodge right as a hit is about to land</td><td>tap / press 🛡 right as a hit lands</td></tr>
 <tr><td>Claw combo → PERFECT extension up to 8: Low Sweep → Spin Swipe → Rising Claw → Double Claw X → Hammer Paws (each swipe bigger &amp; brighter)</td><td>after the 3rd swipe, press X again just as each swipe lands (ring turns green)</td><td>same timing on Claw</td></tr>
 <tr><td><b>BUNNY KICK BARRAGE</b> (perfect 8th hit: slow-mo zoom, grab, kick flurry, sky launch)</td><td>keep the perfect timing through hit 7 → 8</td><td>same on Claw</td></tr>
 <tr><td>Finisher</td><td>F (also during a claw combo)</td><td>—</td></tr>
@@ -88,7 +94,7 @@ body.ov #moves{display:block}
 <tr><td>Dash strike</td><td>claw during / right after a dash</td><td>same</td></tr>
 <tr><td>Uppercut</td><td>hold ↑ / W + X</td><td>hold Jump + Claw</td></tr>
 <tr><td>Air swipe</td><td>X in the air</td><td>Claw in the air</td></tr>
-<tr><td>Air spin</td><td>X after a double jump</td><td>Claw after a double jump</td></tr>
+<tr><td>Cartwheel Claw (air spin)</td><td>X after a double jump</td><td>Claw after a double jump</td></tr>
 <tr><td>Dive bomb</td><td>↓ in the air</td><td>▼ in the air</td></tr>
 <tr><td>Dive claw</td><td>↓ + ←/→ in the air (or X while diving)</td><td>▼ + ◀/▶ in the air</td></tr>
 <tr><td>Hunt mode / Stalk (every form)</td><td>Q / V</td><td>Hunt</td></tr>
@@ -193,7 +199,7 @@ body.ov #moves{display:block}
 <p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
 <p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p></div></div>
 <div id="rot">🔄 Turn your phone sideways to play with Paddy</div>
-<script src="game.js?v=26a"></script>
+<script src="game.js?v=29a"></script>
 <script src="smooth.js?v=19a"></script>
 <script src="darkside.js?v=20g"></script>
 <script src="poses.js?v=20d"></script>
@@ -220,10 +226,11 @@ const mb=document.getElementById('mute');const ms=()=>mb.textContent=muted?'🔇
 addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.classList.contains('ov'))}else if(e.key==='Escape')ov(false)});
 lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 </script>
-<script src="controls.js?v=25a"></script>
+<script src="controls.js?v=29a"></script>
 <script src="en.js?v=20a"></script>
 <script src="story.js?v=28a"></script>
 <script src="sfx.js?v=26a"></script>
 <script src="formfx.js?v=25a"></script>
 <script src="routefx26.js?v=26a"></script>
-<script src="combo26.js?v=26a"></script></body></html>
+<script src="combo26.js?v=26a"></script>
+<script src="kitty29.js?v=29a"></script></body></html>
