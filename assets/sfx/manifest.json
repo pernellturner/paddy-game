@@ -837,6 +837,1342 @@
    "peak_db": -1.0,
    "mean_db": -17.6,
    "bytes": 15090
+  },
+  {
+   "key": "beast_finisher",
+   "file": "beast_finisher.mp3",
+   "duration": 2.038,
+   "category": "form",
+   "description": "Spirit beast charge finisher, mighty lion roar with stampede and huge impact, kid friendly video game, no voice, no music",
+   "bytes": 24808
+  },
+  {
+   "key": "beast_heavy",
+   "file": "beast_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Lion roar, short powerful roar, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "beast_hit",
+   "file": "beast_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Beast hit, meaty heavy thump, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "beast_quake",
+   "file": "beast_quake.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Beast slam, massive sub-bass ground pound with rocks breaking, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "beast_special",
+   "file": "beast_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Stampede charge, thundering paws running, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "beast_swing1",
+   "file": "beast_swing1.mp3",
+   "duration": 0.418,
+   "category": "form",
+   "description": "Beast claw swipe, heavy feral whoosh, kid friendly video game, no voice, no music",
+   "bytes": 5373
+  },
+  {
+   "key": "beast_swing2",
+   "file": "beast_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Beast pounce, powerful rush and thud, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "chrono_finisher",
+   "file": "chrono_finisher.mp3",
+   "duration": 1.802,
+   "category": "form",
+   "description": "Time rewind finisher, ticking clocks rewinding fast with whoosh reversal and huge clock bell bong, kid friendly video game, no voice, no music",
+   "bytes": 21986
+  },
+  {
+   "key": "chrono_heavy",
+   "file": "chrono_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Time freeze, sudden stop with a deep bong and reverse swell, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "chrono_hit",
+   "file": "chrono_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Time hit, glassy tick impact, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "chrono_quake",
+   "file": "chrono_quake.mp3",
+   "duration": 1.646,
+   "category": "form",
+   "description": "Time shatter, massive sub-bass boom with glass-like clock shattering, kid friendly video game, no voice, no music",
+   "bytes": 20106
+  },
+  {
+   "key": "chrono_special",
+   "file": "chrono_special.mp3",
+   "duration": 0.993,
+   "category": "form",
+   "description": "Clock gears turning and winding fast, kid friendly video game, no voice, no music",
+   "bytes": 12269
+  },
+  {
+   "key": "chrono_swing1",
+   "file": "chrono_swing1.mp3",
+   "duration": 0.444,
+   "category": "form",
+   "description": "Time slash, quick reverse whoosh with a tick, kid friendly video game, no voice, no music",
+   "bytes": 5686
+  },
+  {
+   "key": "chrono_swing2",
+   "file": "chrono_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Clock hand swing, ticking whoosh, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "crimson_finisher",
+   "file": "crimson_finisher.mp3",
+   "duration": 1.802,
+   "category": "form",
+   "description": "Crimson finisher, giant sword wave slicing the sky, huge ripping whoosh and deep booming crash, kid friendly video game, no voice, no music",
+   "bytes": 21986
+  },
+  {
+   "key": "crimson_heavy",
+   "file": "crimson_heavy.mp3",
+   "duration": 0.705,
+   "category": "form",
+   "description": "Heavy sword stinger thrust, piercing rush whoosh and metal impact, kid friendly video game, no voice, no music",
+   "bytes": 8821
+  },
+  {
+   "key": "crimson_hit",
+   "file": "crimson_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Sword cutting hit, sharp slicing impact with metallic ring, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "crimson_special",
+   "file": "crimson_special.mp3",
+   "duration": 0.967,
+   "category": "form",
+   "description": "Sword spinning throw, whirring blade circling through the air, kid friendly video game, no voice, no music",
+   "bytes": 11955
+  },
+  {
+   "key": "crimson_swing1",
+   "file": "crimson_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Crimson sword slash, ultra sharp fast steel whoosh with a ring, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "crimson_swing2",
+   "file": "crimson_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Sword combo flurry, three rapid steel slices, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "dark_choke",
+   "file": "dark_choke.mp3",
+   "duration": 1.515,
+   "category": "form",
+   "description": "Force lift, rising low rumble with tense crackling energy hum, kid friendly video game, no voice, no music",
+   "bytes": 18538
+  },
+  {
+   "key": "dark_clash",
+   "file": "dark_clash.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Two energy laser swords clashing, sizzling electric crack and buzz, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "dark_finisher",
+   "file": "dark_finisher.mp3",
+   "duration": 2.508,
+   "category": "form",
+   "description": "Force implosion, everything sucked inward with a deep rumble then a colossal sub-bass shockwave boom, kid friendly video game, no voice, no music",
+   "bytes": 30450
+  },
+  {
+   "key": "dark_force",
+   "file": "dark_force.mp3",
+   "duration": 1.515,
+   "category": "form",
+   "description": "Deep force rumble, low sub-bass pressure wave with air distortion, kid friendly video game, no voice, no music",
+   "bytes": 18538
+  },
+  {
+   "key": "dark_hum",
+   "file": "dark_hum.mp3",
+   "duration": 1.515,
+   "category": "form",
+   "description": "Red laser sword hum, low steady electric buzz, sci-fi energy blade idle, kid friendly video game, no voice, no music",
+   "bytes": 18538
+  },
+  {
+   "key": "dark_quake",
+   "file": "dark_quake.mp3",
+   "duration": 1.646,
+   "category": "form",
+   "description": "Earth shattering dark energy slam, massive sub-bass boom with crumbling destruction, kid friendly video game, no voice, no music",
+   "bytes": 20106
+  },
+  {
+   "key": "dark_swing1",
+   "file": "dark_swing1.mp3",
+   "duration": 0.731,
+   "category": "form",
+   "description": "Energy laser sword swing, deep humming whoosh with electric buzz doppler, kid friendly video game, no voice, no music",
+   "bytes": 9134
+  },
+  {
+   "key": "dark_swing2",
+   "file": "dark_swing2.mp3",
+   "duration": 0.914,
+   "category": "form",
+   "description": "Slow heavy energy sword swing, deep menacing hum sweep with crackle, kid friendly video game, no voice, no music",
+   "bytes": 11328
+  },
+  {
+   "key": "dark_throw",
+   "file": "dark_throw.mp3",
+   "duration": 0.758,
+   "category": "form",
+   "description": "Spinning energy sword thrown, whirling buzzing hum flying away and back, kid friendly video game, no voice, no music",
+   "bytes": 9448
+  },
+  {
+   "key": "dragon_finisher",
+   "file": "dragon_finisher.mp3",
+   "duration": 1.646,
+   "category": "form",
+   "description": "Dragon spirit roar finisher, gigantic dragon roar with roaring fire storm, kid friendly video game, no voice, no music",
+   "bytes": 20106
+  },
+  {
+   "key": "dragon_heavy",
+   "file": "dragon_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Dragon fire breath, roaring flame jet, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "dragon_hit",
+   "file": "dragon_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Dragon strike, meaty impact with flame burst, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "dragon_quake",
+   "file": "dragon_quake.mp3",
+   "duration": 1.646,
+   "category": "form",
+   "description": "Colossal dragon stomp, earth shaking sub-bass boom and rock crumbling, kid friendly video game, no voice, no music",
+   "bytes": 20106
+  },
+  {
+   "key": "dragon_special",
+   "file": "dragon_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Dragon wings beating, huge powerful wing flaps, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "dragon_swing1",
+   "file": "dragon_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Dragon claw swipe, heavy whoosh with ember crackle, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "dragon_swing2",
+   "file": "dragon_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Dragon tail sweep, heavy wind rush, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "frost_finisher",
+   "file": "frost_finisher.mp3",
+   "duration": 2.038,
+   "category": "form",
+   "description": "Frost finisher, everything freezing solid then giant ice shattering into thousands of shards, kid friendly video game, no voice, no music",
+   "bytes": 24808
+  },
+  {
+   "key": "frost_heavy",
+   "file": "frost_heavy.mp3",
+   "duration": 0.679,
+   "category": "form",
+   "description": "Ice spike eruption, crunching ice burst, kid friendly video game, no voice, no music",
+   "bytes": 8507
+  },
+  {
+   "key": "frost_hit",
+   "file": "frost_hit.mp3",
+   "duration": 0.313,
+   "category": "form",
+   "description": "Ice hit, sharp ice crack, kid friendly video game, no voice, no music",
+   "bytes": 4119
+  },
+  {
+   "key": "frost_quake",
+   "file": "frost_quake.mp3",
+   "duration": 1.646,
+   "category": "form",
+   "description": "Glacier collapse, massive sub-bass ice crack boom and avalanche crumble, kid friendly video game, no voice, no music",
+   "bytes": 20106
+  },
+  {
+   "key": "frost_special",
+   "file": "frost_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Blizzard gust, freezing wind howl with ice tinkles, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "frost_swing1",
+   "file": "frost_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Ice blade swing, cold crystalline whoosh, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "frost_swing2",
+   "file": "frost_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Frost slash, icy shimmer swish, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "gunsling_finisher",
+   "file": "gunsling_finisher.mp3",
+   "duration": 2.038,
+   "category": "form",
+   "description": "Gunslinger finale, rapid gunfire volley ending with a big cannon boom and a shell casing tinkle, kid friendly video game, no voice, no music",
+   "bytes": 24808
+  },
+  {
+   "key": "gunsling_heavy",
+   "file": "gunsling_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Shotgun cartoon blast with shell pump clack, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "gunsling_hit",
+   "file": "gunsling_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Bullet ricochet ping off metal, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "gunsling_special",
+   "file": "gunsling_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Revolver rapid fan fire, six quick shots and a spin, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "gunsling_swing1",
+   "file": "gunsling_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Revolver hammer cock and quick twirl spin, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "gunsling_swing2",
+   "file": "gunsling_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Two cartoon revolver shots, fast bang bang, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "knight_finisher",
+   "file": "knight_finisher.mp3",
+   "duration": 1.515,
+   "category": "form",
+   "description": "Knight holy finishing blow, huge sword slam into stone with a ringing bell clang, kid friendly video game, no voice, no music",
+   "bytes": 18538
+  },
+  {
+   "key": "knight_heavy",
+   "file": "knight_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Heavy plate armour stomp and shield bash thud, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "knight_hit",
+   "file": "knight_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Broadsword hitting a steel shield, heavy dull clang, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "knight_special",
+   "file": "knight_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Knight shield charge, clanking armour run and big metal impact, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "knight_swing1",
+   "file": "knight_swing1.mp3",
+   "duration": 0.418,
+   "category": "form",
+   "description": "Heavy broadsword swing, thick slow whoosh with armour clank, kid friendly video game, no voice, no music",
+   "bytes": 5373
+  },
+  {
+   "key": "knight_swing2",
+   "file": "knight_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Knight armour clatter with a massive sword cleave whoosh, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "light_finisher",
+   "file": "light_finisher.mp3",
+   "duration": 1.855,
+   "category": "form",
+   "description": "Divine finisher, cascading church bells and a radiant shimmering burst, kid friendly video game, no voice, no music",
+   "bytes": 22613
+  },
+  {
+   "key": "light_heavy",
+   "file": "light_heavy.mp3",
+   "duration": 0.679,
+   "category": "form",
+   "description": "Heavenly harp glissando and light burst, kid friendly video game, no voice, no music",
+   "bytes": 8507
+  },
+  {
+   "key": "light_hit",
+   "file": "light_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Bright holy impact, crystal chime ding with sparkle, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "light_special",
+   "file": "light_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Holy light beam charge hum rising to a bell strike, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "light_swing1",
+   "file": "light_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Holy light swish with a soft chime, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "light_swing2",
+   "file": "light_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Radiant blade swing with shimmering bell chime, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "mecha_finisher",
+   "file": "mecha_finisher.mp3",
+   "duration": 1.463,
+   "category": "form",
+   "description": "Giant mech arm finisher, huge hydraulic wind-up and colossal metal punch boom, kid friendly video game, no voice, no music",
+   "bytes": 17911
+  },
+  {
+   "key": "mecha_heavy",
+   "file": "mecha_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Laser cannon blast, sci-fi laser zap boom, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "mecha_hit",
+   "file": "mecha_hit.mp3",
+   "duration": 0.47,
+   "category": "form",
+   "description": "Metal robot punch impact, heavy clank, kid friendly video game, no voice, no music",
+   "bytes": 5999
+  },
+  {
+   "key": "mecha_quake",
+   "file": "mecha_quake.mp3",
+   "duration": 1.646,
+   "category": "form",
+   "description": "Mech ground pound, massive sub-bass metal slam with debris, kid friendly video game, no voice, no music",
+   "bytes": 20106
+  },
+  {
+   "key": "mecha_special",
+   "file": "mecha_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Mech rocket boosters igniting, jet thrust roar, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "mecha_swing1",
+   "file": "mecha_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Robot arm swing, servo whir and whoosh, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "mecha_swing2",
+   "file": "mecha_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Mech punch, hydraulic piston hiss and whoosh, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "ninja_finisher",
+   "file": "ninja_finisher.mp3",
+   "duration": 1.855,
+   "category": "form",
+   "description": "Ninja flurry finisher, rapid many tiny blade swishes ending in a sharp shing, kid friendly video game, no voice, no music",
+   "bytes": 22613
+  },
+  {
+   "key": "ninja_heavy",
+   "file": "ninja_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Smoke bomb poof with a sharp kunai shing, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "ninja_hit",
+   "file": "ninja_hit.mp3",
+   "duration": 0.157,
+   "category": "form",
+   "description": "Light quick blade tick hit with a soft thwack, kid friendly video game, no voice, no music",
+   "bytes": 2238
+  },
+  {
+   "key": "ninja_special",
+   "file": "ninja_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Ninja vanish teleport, quick airy puff and whoosh, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "ninja_swing1",
+   "file": "ninja_swing1.mp3",
+   "duration": 0.47,
+   "category": "form",
+   "description": "Fast ninja blade swish, thin quick air whip, kid friendly video game, no voice, no music",
+   "bytes": 5999
+  },
+  {
+   "key": "ninja_swing2",
+   "file": "ninja_swing2.mp3",
+   "duration": 0.444,
+   "category": "form",
+   "description": "Double ninja star whirr spin whoosh, kid friendly video game, no voice, no music",
+   "bytes": 5686
+  },
+  {
+   "key": "phoenix_finisher",
+   "file": "phoenix_finisher.mp3",
+   "duration": 2.038,
+   "category": "form",
+   "description": "Phoenix firebird finisher, huge blazing firestorm roar with a bright bird cry and explosion, kid friendly video game, no voice, no music",
+   "bytes": 24808
+  },
+  {
+   "key": "phoenix_heavy",
+   "file": "phoenix_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Fireball explosion, punchy fiery boom, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "phoenix_hit",
+   "file": "phoenix_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Fire hit, flame burst impact, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "phoenix_quake",
+   "file": "phoenix_quake.mp3",
+   "duration": 1.646,
+   "category": "form",
+   "description": "Inferno blast, massive sub-bass fire explosion with crackling destruction, kid friendly video game, no voice, no music",
+   "bytes": 20106
+  },
+  {
+   "key": "phoenix_special",
+   "file": "phoenix_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Phoenix wings ignite, rising roaring flame whoosh, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "phoenix_swing1",
+   "file": "phoenix_swing1.mp3",
+   "duration": 0.392,
+   "category": "form",
+   "description": "Flaming claw swipe, fire whoosh, kid friendly video game, no voice, no music",
+   "bytes": 5059
+  },
+  {
+   "key": "phoenix_swing2",
+   "file": "phoenix_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Fire wing slash, blazing whoosh, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "pirate_finisher",
+   "file": "pirate_finisher.mp3",
+   "duration": 1.829,
+   "category": "form",
+   "description": "Pirate broadside finisher, rolling volley of cannon booms and splashes, kid friendly video game, no voice, no music",
+   "bytes": 22300
+  },
+  {
+   "key": "pirate_heavy",
+   "file": "pirate_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Flintlock pistol cartoon bang with a puff, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "pirate_hit",
+   "file": "pirate_hit.mp3",
+   "duration": 0.34,
+   "category": "form",
+   "description": "Cutlass clash on wood, steel chop thunk, kid friendly video game, no voice, no music",
+   "bytes": 4432
+  },
+  {
+   "key": "pirate_special",
+   "file": "pirate_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Ship cannon boom, deep thump and whistle of cannonball, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "pirate_swing1",
+   "file": "pirate_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Cutlass swish, quick rough steel slash, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "pirate_swing2",
+   "file": "pirate_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Pirate cutlass double slash with a jingle of coins, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "powerblade_finisher",
+   "file": "powerblade_finisher.mp3",
+   "duration": 1.541,
+   "category": "form",
+   "description": "Power blade finisher, enormous energy slash release with booming shockwave and crackle, kid friendly video game, no voice, no music",
+   "bytes": 18852
+  },
+  {
+   "key": "powerblade_heavy",
+   "file": "powerblade_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Energy blade overhead slam into ground, deep boom with crackle, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "powerblade_hit",
+   "file": "powerblade_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Power blade impact, heavy energy crack and thud, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "powerblade_special",
+   "file": "powerblade_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Power blade charge-up, rising electric hum whine, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "powerblade_swing1",
+   "file": "powerblade_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Energy greatsword swing, deep humming whoosh, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "powerblade_swing2",
+   "file": "powerblade_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Massive power blade cleave, roaring air rip with electric hum, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "reaper_finisher",
+   "file": "reaper_finisher.mp3",
+   "duration": 2.038,
+   "category": "form",
+   "description": "Reaper finisher, huge scythe sweep with deep hollow gong and swirling wind, kid friendly video game, no voice, no music",
+   "bytes": 24808
+  },
+  {
+   "key": "reaper_heavy",
+   "file": "reaper_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Spectral ghostly whoosh, cold airy rush, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "reaper_hit",
+   "file": "reaper_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Scythe hook strike, curved blade thunk with a chime, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "reaper_special",
+   "file": "reaper_special.mp3",
+   "duration": 0.94,
+   "category": "form",
+   "description": "Ghost chains rattling with a hollow whoosh, kid friendly video game, no voice, no music",
+   "bytes": 11642
+  },
+  {
+   "key": "reaper_swing1",
+   "file": "reaper_swing1.mp3",
+   "duration": 0.444,
+   "category": "form",
+   "description": "Scythe swing, wide eerie whoosh with metallic scrape, kid friendly video game, no voice, no music",
+   "bytes": 5686
+  },
+  {
+   "key": "reaper_swing2",
+   "file": "reaper_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Scythe spin, whirling ghostly whoosh, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "samurai_finisher",
+   "file": "samurai_finisher.mp3",
+   "duration": 2.038,
+   "category": "form",
+   "description": "Samurai finishing strike, long ringing steel slice then a slow sheath click and deep taiko drum hit, kid friendly video game, no voice, no music",
+   "bytes": 24808
+  },
+  {
+   "key": "samurai_heavy",
+   "file": "samurai_heavy.mp3",
+   "duration": 0.679,
+   "category": "form",
+   "description": "Iaido quick draw, sheath click then blinding fast steel slash, kid friendly video game, no voice, no music",
+   "bytes": 8507
+  },
+  {
+   "key": "samurai_hit",
+   "file": "samurai_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Katana strike on armour, crisp bright metal tink, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "samurai_special",
+   "file": "samurai_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Samurai sword spin, rising whirling steel whoosh, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "samurai_swing1",
+   "file": "samurai_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Katana unsheathing slash, clean razor steel shing, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "samurai_swing2",
+   "file": "samurai_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Heavy katana diagonal slice, deep whoosh with ringing steel, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "shadow_finisher",
+   "file": "shadow_finisher.mp3",
+   "duration": 1.855,
+   "category": "form",
+   "description": "Shadow finisher, swirling dark wind vortex collapsing into a deep thud, kid friendly video game, no voice, no music",
+   "bytes": 22613
+  },
+  {
+   "key": "shadow_heavy",
+   "file": "shadow_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Shadow clone burst, layered whooshes, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "shadow_hit",
+   "file": "shadow_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Shadow strike, muffled punchy impact with dark whoosh, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "shadow_special",
+   "file": "shadow_special.mp3",
+   "duration": 0.758,
+   "category": "form",
+   "description": "Shadow teleport, reverse whoosh in and pop, kid friendly video game, no voice, no music",
+   "bytes": 9448
+  },
+  {
+   "key": "shadow_swing1",
+   "file": "shadow_swing1.mp3",
+   "duration": 0.496,
+   "category": "form",
+   "description": "Shadow whoosh, dark soft air swish, kid friendly video game, no voice, no music",
+   "bytes": 6313
+  },
+  {
+   "key": "shadow_swing2",
+   "file": "shadow_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Shadow dash, fast dark swoosh with a muffled thump, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "storm_finisher",
+   "file": "storm_finisher.mp3",
+   "duration": 1.567,
+   "category": "form",
+   "description": "Lightning dragon finisher, enormous thunder roar with crackling electric discharge and deep rolling thunder, kid friendly video game, no voice, no music",
+   "bytes": 19165
+  },
+  {
+   "key": "storm_heavy",
+   "file": "storm_heavy.mp3",
+   "duration": 0.784,
+   "category": "form",
+   "description": "Thunderclap impact, huge crack of thunder, kid friendly video game, no voice, no music",
+   "bytes": 9761
+  },
+  {
+   "key": "storm_hit",
+   "file": "storm_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Electric hit, sharp zap crack, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "storm_quake",
+   "file": "storm_quake.mp3",
+   "duration": 1.646,
+   "category": "form",
+   "description": "Earth shattering thunder strike, massive sub-bass boom with crackling destruction, kid friendly video game, no voice, no music",
+   "bytes": 20106
+  },
+  {
+   "key": "storm_special",
+   "file": "storm_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Lightning storm summon, rumbling thunder and crackling bolts, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "storm_swing1",
+   "file": "storm_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Lightning fist swing, electric crackle whoosh, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "storm_swing2",
+   "file": "storm_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Thunder claw slash, sizzling zap and air rip, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "tide_finisher",
+   "file": "tide_finisher.mp3",
+   "duration": 2.038,
+   "category": "form",
+   "description": "Tidal wave finisher, giant ocean wave rising and crashing down with roaring water, kid friendly video game, no voice, no music",
+   "bytes": 24808
+  },
+  {
+   "key": "tide_heavy",
+   "file": "tide_heavy.mp3",
+   "duration": 0.836,
+   "category": "form",
+   "description": "Geyser burst, rushing water eruption, kid friendly video game, no voice, no music",
+   "bytes": 10388
+  },
+  {
+   "key": "tide_hit",
+   "file": "tide_hit.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Water hit, big splash slap, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "tide_quake",
+   "file": "tide_quake.mp3",
+   "duration": 1.646,
+   "category": "form",
+   "description": "Tsunami impact, massive sub-bass water crash boom, kid friendly video game, no voice, no music",
+   "bytes": 20106
+  },
+  {
+   "key": "tide_special",
+   "file": "tide_special.mp3",
+   "duration": 1.045,
+   "category": "form",
+   "description": "Whirlpool swirl, churning water vortex, kid friendly video game, no voice, no music",
+   "bytes": 12896
+  },
+  {
+   "key": "tide_swing1",
+   "file": "tide_swing1.mp3",
+   "duration": 0.522,
+   "category": "form",
+   "description": "Water whip swing, splashy whoosh, kid friendly video game, no voice, no music",
+   "bytes": 6626
+  },
+  {
+   "key": "tide_swing2",
+   "file": "tide_swing2.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Water blade slash, wet swish, kid friendly video game, no voice, no music",
+   "bytes": 7880
+  },
+  {
+   "key": "vo_f0_a",
+   "file": "vo_f0_a.mp3",
+   "duration": 0.993,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 10232
+  },
+  {
+   "key": "vo_f10_a",
+   "file": "vo_f10_a.mp3",
+   "duration": 1.176,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 12060
+  },
+  {
+   "key": "vo_f10_b",
+   "file": "vo_f10_b.mp3",
+   "duration": 1.515,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 15456
+  },
+  {
+   "key": "vo_f11_a",
+   "file": "vo_f11_a.mp3",
+   "duration": 1.75,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 17807
+  },
+  {
+   "key": "vo_f11_b",
+   "file": "vo_f11_b.mp3",
+   "duration": 1.463,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 14934
+  },
+  {
+   "key": "vo_f12_a",
+   "file": "vo_f12_a.mp3",
+   "duration": 1.384,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 14150
+  },
+  {
+   "key": "vo_f12_b",
+   "file": "vo_f12_b.mp3",
+   "duration": 1.254,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 12844
+  },
+  {
+   "key": "vo_f13_a",
+   "file": "vo_f13_a.mp3",
+   "duration": 1.28,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 13105
+  },
+  {
+   "key": "vo_f13_b",
+   "file": "vo_f13_b.mp3",
+   "duration": 1.097,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 11277
+  },
+  {
+   "key": "vo_f14_a",
+   "file": "vo_f14_a.mp3",
+   "duration": 0.993,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 10232
+  },
+  {
+   "key": "vo_f14_b",
+   "file": "vo_f14_b.mp3",
+   "duration": 1.123,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 11538
+  },
+  {
+   "key": "vo_f15_a",
+   "file": "vo_f15_a.mp3",
+   "duration": 1.332,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 13628
+  },
+  {
+   "key": "vo_f15_b",
+   "file": "vo_f15_b.mp3",
+   "duration": 1.071,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 11015
+  },
+  {
+   "key": "vo_f16_a",
+   "file": "vo_f16_a.mp3",
+   "duration": 1.045,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 10754
+  },
+  {
+   "key": "vo_f16_b",
+   "file": "vo_f16_b.mp3",
+   "duration": 1.019,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 10493
+  },
+  {
+   "key": "vo_f17_a",
+   "file": "vo_f17_a.mp3",
+   "duration": 1.332,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 13628
+  },
+  {
+   "key": "vo_f17_b",
+   "file": "vo_f17_b.mp3",
+   "duration": 2.299,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 23293
+  },
+  {
+   "key": "vo_f18_a",
+   "file": "vo_f18_a.mp3",
+   "duration": 1.384,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 14150
+  },
+  {
+   "key": "vo_f18_b",
+   "file": "vo_f18_b.mp3",
+   "duration": 1.698,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 17285
+  },
+  {
+   "key": "vo_f19_a",
+   "file": "vo_f19_a.mp3",
+   "duration": 2.9,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 29301
+  },
+  {
+   "key": "vo_f19_b",
+   "file": "vo_f19_b.mp3",
+   "duration": 3.918,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 39489
+  },
+  {
+   "key": "vo_f19_c",
+   "file": "vo_f19_c.mp3",
+   "duration": 2.612,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 26428
+  },
+  {
+   "key": "vo_f19_d",
+   "file": "vo_f19_d.mp3",
+   "duration": 3.03,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 30607
+  },
+  {
+   "key": "vo_f1_a",
+   "file": "vo_f1_a.mp3",
+   "duration": 0.81,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 8403
+  },
+  {
+   "key": "vo_f1_b",
+   "file": "vo_f1_b.mp3",
+   "duration": 0.94,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 9709
+  },
+  {
+   "key": "vo_f2_a",
+   "file": "vo_f2_a.mp3",
+   "duration": 0.836,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 8664
+  },
+  {
+   "key": "vo_f2_b",
+   "file": "vo_f2_b.mp3",
+   "duration": 1.123,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 11538
+  },
+  {
+   "key": "vo_f3_a",
+   "file": "vo_f3_a.mp3",
+   "duration": 0.731,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 7620
+  },
+  {
+   "key": "vo_f3_b",
+   "file": "vo_f3_b.mp3",
+   "duration": 1.019,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 10493
+  },
+  {
+   "key": "vo_f4_a",
+   "file": "vo_f4_a.mp3",
+   "duration": 1.071,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 11015
+  },
+  {
+   "key": "vo_f4_b",
+   "file": "vo_f4_b.mp3",
+   "duration": 0.993,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 10232
+  },
+  {
+   "key": "vo_f5_a",
+   "file": "vo_f5_a.mp3",
+   "duration": 1.123,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 11538
+  },
+  {
+   "key": "vo_f5_b",
+   "file": "vo_f5_b.mp3",
+   "duration": 1.045,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 10754
+  },
+  {
+   "key": "vo_f6_a",
+   "file": "vo_f6_a.mp3",
+   "duration": 0.94,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 9709
+  },
+  {
+   "key": "vo_f6_b",
+   "file": "vo_f6_b.mp3",
+   "duration": 0.993,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 10232
+  },
+  {
+   "key": "vo_f7_a",
+   "file": "vo_f7_a.mp3",
+   "duration": 1.384,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 14150
+  },
+  {
+   "key": "vo_f7_b",
+   "file": "vo_f7_b.mp3",
+   "duration": 1.254,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 12844
+  },
+  {
+   "key": "vo_f8_a",
+   "file": "vo_f8_a.mp3",
+   "duration": 1.515,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 15456
+  },
+  {
+   "key": "vo_f8_b",
+   "file": "vo_f8_b.mp3",
+   "duration": 1.62,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 16501
+  },
+  {
+   "key": "vo_f9_a",
+   "file": "vo_f9_a.mp3",
+   "duration": 1.28,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 13105
+  },
+  {
+   "key": "vo_f9_b",
+   "file": "vo_f9_b.mp3",
+   "duration": 1.254,
+   "category": "vo_form",
+   "description": "announcer line",
+   "bytes": 12844
+  },
+  {
+   "key": "silence",
+   "file": "silence.mp3",
+   "duration": 1,
+   "category": "util",
+   "description": "silent loop for iOS audio session",
+   "bytes": 4510
   }
  ]
 }

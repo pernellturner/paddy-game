@@ -304,10 +304,10 @@ function drawFrame(f,x,y,face,alpha){f=readyFrame(f);const im=f&&IMG[f.f];if(!im
 // Mythic runs: a soft step bounce + forward lean on top of the run frames (eases in/out, so no snap)
 function mRunBob(){const on=p.uf>=7&&p.ground&&!p.hunt&&/_run$/.test(p.anim||'');const dt=Math.min(.05,Math.max(0,now-(p.rbT||now)));p.rbT=now;p.rbA=(p.rbA||0)+((on?1:0)-(p.rbA||0))*Math.min(1,dt*12);p.rbPh=(p.rbPh||0)+dt*12.6;const a=p.rbA;if(a<.01)return{y:0,r:0};return{y:a*Math.abs(Math.sin(p.rbPh))*8,r:a*p.face*(.045+.015*Math.sin(p.rbPh*2))}}
 function draw(){
- ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#87c6f0';ctx.fillRect(0,0,cv.width,cv.height);
+ ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=cine.z<.999?'#120c1c':'#87c6f0';ctx.fillRect(0,0,cv.width,cv.height);
  const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;
  // camera follows Paddy upward (juggles, super leaps), eased
- const jd=!p.ground&&dummies.find(d=>d.alive&&d.y<GROUND-120&&Math.abs(d.x-p.x)<520),fy=jd?Math.max(p.y-270,Math.min(p.y,jd.y-140)):p.y; // Big Bruno is tall: keep his whole body in shot during juggles
+ const jd=!p.ground&&dummies.find(d=>d.alive&&d.y<GROUND-120&&Math.abs(d.x-p.x)<520),fy=jd?Math.max(p.y-150,Math.min(p.y,jd.y-140)):p.y; // Big Bruno is tall: keep his whole body in shot during juggles
  const camT=Math.max(0,(p.xf||p.uf||p.sam?300:225)-fy+(fy<GROUND-250?Math.max(0,Math.min(300,-p.vy*.26)):0));const airC=!p.ground&&(jd||p.y<GROUND-150)&&!cine.on,camT2=airC?Math.max(0,380-p.y):camT; // aerial combos: keep Paddy centred (v20g)
  camY+=(camT2-camY)*Math.min(1,(1/60)*(Math.abs(camT2-camY)>150?18:camT2>camY?11:7));if(!isFinite(camY))camY=0;
  const camTX=airC?Math.max(-70,Math.min(70,(VW/2-p.x)*.5)):0;camX+=(camTX-camX)*Math.min(1,(1/60)*(airC?7:4));if(!isFinite(camX)||Math.abs(camX)<.05)camX=airC?camX||0:0;
@@ -390,7 +390,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='20j',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='22a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -596,11 +596,11 @@ const CINE=['bunny','eclipse','finishhim'];
 const LIFT=['airswipe','airspin','nair','nstep','tailwhip','tail3','morphstrike','pc7','pc8'];
 const HYPE=[[500,'HIGHER!'],[1200,'SKY HIGH!'],[2200,'ABOVE THE CLOUDS!'],[3500,'SUNSET SOARING!'],[5200,'STRATOSPHERE!'],[7500,'OUTER SPACE!!'],[10500,'TO THE MOON!!!'],[15000,'INTERGALACTIC!!!!']];
 const cine={z:1,tz:1,fx:0,fy:0,bars:0,tb:0,dim:0,tdim:0,card:null,pillar:null,hype:null,altA:0,on:false,tx:0,ty:0};
-function cineGo(z,dim){cine.tz=z;cine.tb=1;cine.tdim=dim}
+function cineGo(z,dim){if(z>=1.2)z=Math.max(.72,1-(z-1)*.65);/* v22: big moves ZOOM OUT around Paddy */cine.tz=z;cine.tb=1;cine.tdim=dim}
 function card(title,sub,col){cine.card={t:0,title,sub,col}}
 function zX(x){return cine.on?cine.tx+(x-cine.fx)*cine.z:x}
 function zY(y){return cine.on?cine.ty+(y-cine.fy)*cine.z:y}
-function cineXform(){cine.on=cine.z>1.002;if(!cine.on)return;const a=Math.min(1,(cine.z-1)*2.2);cine.tx=cine.fx+(VW/2-cine.fx)*a;cine.ty=cine.fy+(VH*.55-camY-cine.fy)*a;
+function cineXform(){cine.on=Math.abs(cine.z-1)>.002;if(!cine.on)return;const a=Math.min(1,Math.abs(cine.z-1)*(cine.z<1?4:2.2));cine.tx=cine.fx+(VW/2-cine.fx)*a;cine.ty=cine.fy+(VH*.55-camY-cine.fy)*a;
  ctx.translate(cine.tx,cine.ty);ctx.scale(cine.z,cine.z);ctx.translate(-cine.fx,-cine.fy)}
 // altitude sky: blue -> sunset -> dusk -> deep blue -> space
 const hx=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
@@ -703,8 +703,9 @@ function strFire(s){const nin=p.ninja,sam=p.sam,nm=sam&&s.sn?s.sn:nin&&s.nn?s.nn
  else if(fx==='clones'){p.clones={t:0,k:0,n:0,pos:[[-150,-10],[150,-10],[0,-180]]};for(const q of p.clones.pos){ghosts.push({x:p.x+q[0],y:p.y+q[1],f:FR.n_throw[1],face:p.face,l:1.4,blue:1});puffShadow(p.x+q[0],p.y+q[1])}}}
 function r6Update(dt){
  if(!CINE.includes(p.state)){cine.tz=1;cine.tb=0;cine.tdim=0}
+ if(window.ZOOMOUT>0){window.ZOOMOUT-=dt;cine.tz=Math.min(cine.tz>=1?.74:cine.tz,.74);cine.tb=Math.max(cine.tb,.6)} // v22 finisher zoom-out
  cine.z+=(cine.tz-cine.z)*Math.min(1,dt*5);cine.bars+=(cine.tb-cine.bars)*Math.min(1,dt*7);cine.dim+=(cine.tdim-cine.dim)*Math.min(1,dt*5);
- const g=CINE.includes(p.state)&&p.grab&&p.grab.alive?p.grab:null,fx=g?(p.x+g.x)/2:p.x,fy=g?(p.y+g.y)/2-90:p.y-105;
+ const g=CINE.includes(p.state)&&p.grab&&p.grab.alive?p.grab:null,fx=g?p.x+(g.x-p.x)*.25:p.x,fy=g?p.y-105+(Math.max(g.y-90,p.y-260)-(p.y-105))*.25:p.y-105; // v22: Paddy always the focus
  if(cine.z<1.01&&cine.tz===1){cine.fx=fx;cine.fy=fy}else{cine.fx+=(fx-cine.fx)*Math.min(1,dt*6);cine.fy+=(fy-cine.fy)*Math.min(1,dt*6)}
  if(cine.card){cine.card.t+=dt;if(cine.card.t>2.4)cine.card=null}
  if(cine.pillar){cine.pillar.l-=dt;if(cine.pillar.l<=0)cine.pillar=null}
@@ -1746,7 +1747,7 @@ function r12Sky(){const h=Math.max(0,camY),u=Math.min(1,h/2600);ctx.save();ctx.s
  ctx.fillStyle='#fff';for(let i=0;i<70;i++){const x=(i*97.31)%VW,y=((i*61.7+h*.05)%VH+VH)%VH,tw=.5+.5*Math.sin(now*2.5+i);ctx.globalAlpha=(.25+.6*u)*tw;ctx.fillRect(x,y,1+i%2,1+i%2)}
  ctx.restore()}
 function r12Arena(){
- ctx.fillStyle='#120c1c';ctx.fillRect(-700,AIY-40,700,VH+700);ctx.fillRect(VW,AIY-40,700,VH+700);ctx.fillStyle='#17111d';ctx.fillRect(-700,AIY+VH-2,VW+1400,600);
+ ctx.fillStyle='#120c1c';ctx.fillRect(-2000,AIY-40,2000,VH+1200);ctx.fillRect(VW,AIY-40,2000,VH+1200);ctx.fillStyle='#17111d';ctx.fillRect(-2000,AIY+VH-2,VW+4000,1200);
  {const g=ctx.createLinearGradient(0,AIY-4200,0,AIY+2);g.addColorStop(0,'rgba(1,1,8,0)');g.addColorStop(.55,'#030a2a');g.addColorStop(1,'#041140');ctx.fillStyle=g;ctx.fillRect(-700,AIY-4200,VW+1400,4204)} // night sky continues above the backdrop, fading into space
  if(imgOK(ARENA)){ctx.drawImage(ARENA,0,AIY,VW,VH);const k=VW/ARENA.naturalWidth;{const g=ctx.createLinearGradient(0,AIY,0,AIY+40);g.addColorStop(0,'#041140');g.addColorStop(1,'rgba(4,17,64,0)');ctx.fillStyle=g;ctx.fillRect(0,AIY,VW,40)}
   {const g=ctx.createLinearGradient(0,AIY-260,0,AIY+30);g.addColorStop(0,'rgba(22,14,26,0)');g.addColorStop(1,'#22161f');ctx.fillStyle=g;ctx.fillRect(0,AIY-260,96,290);ctx.fillRect(858,AIY-260,102,290)} // buildings keep going up

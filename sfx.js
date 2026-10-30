@@ -28,7 +28,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){try{SIL&&S
 addEventListener('pageshow',()=>{if(ac&&unlocked)ac.resume()});
 function load(k){if(BUF[k]||LOADING[k]||!SM.has(k))return LOADING[k];const c=ctx();if(!c)return;
  LOADING[k]=fetch(DIR+k+'.mp3'+V).then(r=>r.arrayBuffer()).then(a=>new Promise((ok,no)=>c.decodeAudioData(a,ok,no))).then(b=>{BUF[k]=b;return b}).catch(()=>{});return LOADING[k]}
-function preload(){if(!M.length)return;const small=M.filter(m=>m.bytes<=13000&&m.category!=='voice').map(m=>m.key),big=M.filter(m=>!small.includes(m.key)).map(m=>m.key);
+function preload(){if(!M.length)return;const LZ=['form','vo_form'];M=M.filter(m=>!LZ.includes(m.category)).concat(M.filter(m=>LZ.includes(m.category)).map(m=>Object.assign({},m,{skip:1})));const small=M.filter(m=>!m.skip&&m.bytes<=13000&&m.category!=='voice').map(m=>m.key),big=M.filter(m=>!m.skip&&!small.includes(m.key)).map(m=>m.key);
  let i=0;const step=()=>{const k=small[i++];if(!k){setTimeout(()=>idleBig(big),4000);return}Promise.resolve(load(k)).then(()=>setTimeout(step,15))};step()}
 function idleBig(list){let i=0;const step=()=>{const k=list[i++];if(!k)return;Promise.resolve(load(k)).then(()=>setTimeout(step,120))};(window.requestIdleCallback||setTimeout)(step)}
 fetch(DIR+'manifest.json'+V).then(r=>r.json()).then(m=>{M=m.sounds||[];M.forEach(x=>SM.add(x.key));S.ready=true;if(unlocked)preload()}).catch(()=>{});
@@ -39,6 +39,7 @@ S.play=function(k,o){o=o||{};if(!S.on||isMuted()||!SM.has(k))return;const c=ctx(
  const go=b=>{if(!b)return;try{const s=c.createBufferSource(),gn=c.createGain();s.buffer=b;s.playbackRate.value=o.r||1;gn.gain.value=o.v??1;s.connect(gn);gn.connect(master);s.start(0)}catch(_){}};
  if(BUF[k])go(BUF[k]);else{const pr=load(k);if(pr&&!o.noLate)pr.then(b=>{if(c.currentTime-t<.25)go(b)})}};
 S.dbg=()=>({state:ac&&ac.state,unlocked,bufs:Object.keys(BUF).length,known:SM.size,vol:S.vol,on:S.on,muted:isMuted(),sil:!!SIL&&!SIL.paused,silErr:SIL&&SIL.error&&SIL.error.code,shared:(()=>{try{return AC===ac}catch(_){return 'n/a'}})()});
+S.load=k=>load(k);S.has=k=>SM.has(k);S.ac=()=>ctx();S.out=()=>master;S.isMuted=isMuted;
 S.setVol=v=>{S.vol=Math.max(0,Math.min(1,v));if(master)master.gain.value=S.vol;try{localStorage.setItem('paddySfxVol',String(S.vol))}catch(_){}};
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 // ---------- per-form sound palette ----------
