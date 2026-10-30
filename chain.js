@@ -26,43 +26,78 @@ CINE.push('moonl');
 const busy=()=>CINE.includes(p.state)||['lkult','ufin','nmorph','respawn','ledge','bunny'].includes(p.state)||MOON.on;
 const juggled=r=>dummies.filter(d=>d.alive&&!d.benched&&d.y<GROUND-90&&Math.abs(d.x-p.x)<(r||430)).sort((a,b)=>Math.abs(a.x-p.x)-Math.abs(b.x-p.x))[0]||null;
 function upA(){const L=[p.uf?UF[p.uf].pre+'_launch':null,p.xf===3?'kn_launch':null,p.xf===4?'pi_launch':null,p.sam?'s_launch':null,p.ninja?'n_rise5':null,'uppercut','jump'];return L.find(a=>a&&FR[a])||'idle'}
-function moonStart(g){LAD.on=false;MOON.on=true;MOON.t=0;MOON.d=g;MOON.landed=false;MOON.x0=g.x;p.state='moonl';p.t=0;setAnim(upA(),true);p.vx=0;p.vy=-200;p.inv=Math.max(p.inv,5);
- LK.on=false;LK.seq='';LK.n=0;LK.buf=null;g.hp=Math.max(2,g.hp);C.atk++;hitDummy(g,'moon',p.face);g.vx=0;g.vy=-1800;
- card('🌙 MOON LAUNCHER!','to the moon and back!','#bfe6ff');slowT=Math.max(slowT,.15);flashT=Math.max(flashT,.12);shake=Math.max(shake,16);
- if(window.SND&&SND.moon)SND.moon();for(let i=0;i<30;i++)sparks.push({x:g.x+(Math.random()-.5)*50,y:g.y-40,vx:(Math.random()-.5)*300,vy:200+Math.random()*400,l:.6,c:['#ffe14d','#ff9a2e','#fff'][i%3]})}
+// v26 EPIC MOON HIT: build-up (time slows, aura gathers, camera pushes in) → huge uppercut impact frame (white flash, shockwaves, the screen cracks)
+// → follow-cam up through the clouds, the atmosphere and the stars (generated/bg26/skystrip.jpg) → SLAM into the moon (generated/bg26/moon.jpg): dust plume, cartoon dent, dizzy stars.
+const BG26=window.BG26||(window.BG26={});for(const [k,f] of [['moon','moon'],['sky','skystrip'],['city','city']])if(!BG26[k]){const im=new Image();im.src='assets/bg26/'+f+'.webp?v=26a';BG26[k]=im}
+const MT={HIT:.6,UP:.85,LAND:2.95,END:4.7};
+function chargeA(){const L=[p.uf?UF[p.uf].pre+'_charge':null,p.uf?UF[p.uf].pre+'_meowc':null,p.xf===3?'kn_charge':null,p.sam?'s_stance':null,'crouch'];return L.find(a=>a&&FR[a])||upA()}
+function moonStart(g){LAD.on=false;MOON.on=true;MOON.t=0;MOON.d=g;MOON.landed=false;MOON.hit=false;MOON.x0=g.x;MOON.gy=g.y;p.state='moonl';p.t=0;setAnim(chargeA(),true);p.vx=0;p.vy=0;p.inv=Math.max(p.inv,6);
+ LK.on=false;LK.seq='';LK.n=0;LK.buf=null;g.hp=Math.max(2,g.hp);g.vx=0;g.vy=0;g.cool=Math.max(g.cool||0,2);
+ slowT=Math.max(slowT,.5);window.XCAM={z:1.3,b:.85,d:.45};MOON.cam=1;if(window.SND&&SND.play)try{SND.play('gf_aura',{v:.7,gap:.2})}catch(_){}}
 window.moonStart=moonStart;
-function moonTick(dt){const g=MOON.d,t=MOON.t+=dt;for(const k in P)delete P[k];p.vx=0;if(!p.ground)p.vy=Math.min(p.vy,250);
- if(g){g.vx=0;g.fl=.6;g.cool=Math.max(g.cool||0,.5);if(t<.45){g.y-=2400*dt;g.vy=0;if(Math.random()<.9)sparks.push({x:g.x+(Math.random()-.5)*30,y:g.y+10,vx:(Math.random()-.5)*80,vy:300,l:.5,c:Math.random()<.5?'#ff9a2e':'#ffe14d'})}
-  else{g.y=GROUND-1450;g.vy=0}
-  if(t>=2.6&&!MOON.landed){MOON.landed=true;g.hp=Math.max(1,g.hp-3);NAMES.moonland='MOON LANDING!';say('MOON LANDING!','#fff',true)}}
- if(t>=4.2){MOON.on=false;p.state='normal';if(g&&g.alive){g.x=clampX(MOON.x0);g.y=GROUND-1300;g.vy=300;g.fl=0}MOON.d=null;say('…and he\'s back!','#bfe6ff',true)}}
-// overlay: the camera "follows" him up through the sky into space, then the moon landing with a flag + star twinkles
-function moonDraw(){const t=MOON.t;if(t<.4)return;const g=MOON.d;ctx.save();ctx.setTransform(scale,0,0,scale,offX,offY);ctx.beginPath();ctx.rect(0,0,VW,VH);ctx.clip();
- const fin=t>3.8?Math.max(0,1-(t-3.8)/.4):1,fi=Math.min(1,(t-.4)/.15)*fin;ctx.globalAlpha=fi;
- const u=Math.min(1,(t-.4)/1.8),top=mixC('#2a3f8f','#03040c',u),bot=mixC('#7a6ad8','#0e1236',u);const gr=ctx.createLinearGradient(0,0,0,VH);gr.addColorStop(0,top);gr.addColorStop(1,bot);ctx.fillStyle=gr;ctx.fillRect(-10,-10,VW+20,VH+20);
- const sp=t<2.4?(t-.4)*(t-.4)*900:0;ctx.fillStyle='#fff';for(const s of MOON.stars){const y=((s.y*VH+sp*s.s*.5)%VH+VH)%VH;ctx.globalAlpha=fi*Math.min(1,u*1.6+.2)*(.6+.4*Math.sin(now*4+s.tw));
-  if(t<2.4&&s.s>1.6){ctx.fillRect(s.x*VW,y-s.s*6,s.s,s.s*12)}else ctx.fillRect(s.x*VW,y,s.s,s.s)}
- ctx.globalAlpha=fi;
- if(t<1.1){const k=(t-.4)/.7;ctx.fillStyle='#1a1530';ctx.beginPath();ctx.moveTo(0,VH);for(let i=0;i<=12;i++){const x=i/12*VW,h=40+((i*53)%5)*18;ctx.lineTo(x,VH-h+k*VH*1.2);ctx.lineTo(x+VW/12,VH-h+k*VH*1.2)}ctx.lineTo(VW,VH);ctx.fill()}
- if(t<2.4){ctx.save();ctx.translate(VW*.84,VH*.16);ctx.globalAlpha=fi*.9;ctx.fillStyle='#f4f1e0';ctx.beginPath();ctx.arc(0,0,26+u*40,0,6.283);ctx.fill();ctx.restore()}
- // moon surface rises in
- const mr=t<2.2?0:Math.min(1,(t-2.2)/.35),my=VH+200-mr*330;if(mr>0){ctx.fillStyle='#d9d4c0';ctx.beginPath();ctx.ellipse(VW/2,my+520,VW*.9,560,0,0,6.283);ctx.fill();ctx.fillStyle='#bdb6a0';
-  for(const [dx,dy,r] of [[-.3,40,40],[.12,22,26],[.32,60,34],[-.08,90,22],[.42,20,16],[-.42,70,18]]){ctx.beginPath();ctx.ellipse(VW/2+dx*VW,my+dy,r*1.6,r*.5,0,0,6.283);ctx.fill()}
-  ctx.fillStyle='#4b6cff';ctx.beginPath();ctx.arc(VW*.15,VH*.2,30,0,6.283);ctx.fill();ctx.fillStyle='#3fd38a';ctx.beginPath();ctx.arc(VW*.15-8,VH*.2-6,13,0,6.283);ctx.arc(VW*.15+10,VH*.2+8,9,0,6.283);ctx.fill()}
- // the enemy: flies up the middle spinning, then drops onto the moon
- if(g){let ex=VW/2,ey,rot;if(t<2.4){ey=VH*.95-Math.min(1,(t-.4)/.6)*VH*.45+Math.sin(t*6)*8;rot=t*7}else{const k=Math.min(1,(t-2.4)/.2);ey=VH*.3+k*(my-VH*.3-6);rot=(1-k)*t*7}
-  if(t>=2.6){const b=Math.max(0,1-(t-2.6)*4);ey-=Math.abs(Math.sin((t-2.6)*14))*20*b;rot=0}
-  if(t<2.4)for(let k=0;k<6;k++){ctx.globalAlpha=fi*(.6-k*.09);ctx.fillStyle=k%2?'#ffe14d':'#ff9a2e';ctx.beginPath();ctx.arc(ex+(Math.random()-.5)*14,ey+20+k*16,10-k,0,6.283);ctx.fill()}
-  ctx.globalAlpha=fi;const fr=FR[g.anim]||FR.r_idle,f=fr&&fr[Math.min(g.fi||0,fr.length-1)],im=f&&IMG[f.f];
-  ctx.save();ctx.translate(ex,ey);ctx.rotate(rot);const s=Math.min(.55,120/Math.max(80,(f&&f.h)||150));if(im&&imgOK(im)){ctx.scale(s,s);ctx.drawImage(im,-f.w/2,-f.h)}else{ctx.fillStyle='#c98a4a';ctx.beginPath();ctx.arc(0,-40,40,0,6.283);ctx.fill()}ctx.restore();
-  if(t>=2.6){const k=Math.min(1,(t-2.6)/.25);// puff + flag + twinkles
-   for(let i=0;i<8;i++){ctx.globalAlpha=fi*Math.max(0,.6-(t-2.6));ctx.fillStyle='#eee8d0';ctx.beginPath();ctx.arc(ex+(i-3.5)*22*(1+(t-2.6)*2),my-4,14,0,6.283);ctx.fill()}
-   ctx.globalAlpha=fi;const fx=ex+95,fy=my-6;ctx.strokeStyle='#ddd';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx,fy-90*k);ctx.stroke();
-   if(k>=1){const w=Math.sin(now*8)*4;ctx.fillStyle='#ffb03a';ctx.beginPath();ctx.moveTo(fx,fy-90);ctx.quadraticCurveTo(fx+30,fy-96+w,fx+60,fy-88);ctx.lineTo(fx+60,fy-56);ctx.quadraticCurveTo(fx+30,fy-64+w,fx,fy-58);ctx.closePath();ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='22px sans-serif';ctx.textAlign='center';ctx.fillText('🐾',fx+30,fy-64)}
-   for(let i=0;i<6;i++){const tt=(t-2.7-i*.12);if(tt<0)continue;const a=Math.max(0,1-tt*1.4),sx=ex+[-120,140,-60,90,-160,40][i],sy=my-[120,150,190,90,60,210][i],R=(8+i%3*5)*(.5+Math.sin(tt*9)*.5+.5);
-    ctx.globalAlpha=fi*a;ctx.fillStyle=i%2?'#ffe14d':'#fff';ctx.beginPath();ctx.moveTo(sx,sy-R*2);ctx.lineTo(sx+R*.4,sy-R*.4);ctx.lineTo(sx+R*2,sy);ctx.lineTo(sx+R*.4,sy+R*.4);ctx.lineTo(sx,sy+R*2);ctx.lineTo(sx-R*.4,sy+R*.4);ctx.lineTo(sx-R*2,sy);ctx.lineTo(sx-R*.4,sy-R*.4);ctx.closePath();ctx.fill()}
-   ctx.globalAlpha=fi;fancy('TO THE MOON!',VW/2,VH*.2,46,-.05,1,fi,'#ffe14d')}}
+function moonHit(g){MOON.hit=true;setAnim(upA(),true);C.atk++;hitDummy(g,'moon',p.face);g.vx=0;g.vy=-2400;
+ card('🌙 MOON LAUNCHER!','to the moon and back!','#bfe6ff');flashT=Math.max(flashT,.06);shake=Math.max(shake,28);hitstop=Math.max(hitstop,.12);MOON.imp=0;
+ for(let i=0;i<3;i++)R9.rings.push({x:g.x,y:g.y-70,r:20+i*30,vr:1500+i*250,l:.7,col:i%2?'#bfe6ff':'#fff',w:14-i*3,f:0,face:0});
+ if(window.SND&&SND.moon)SND.moon();for(let i=0;i<30;i++)sparks.push({x:g.x+(Math.random()-.5)*50,y:g.y-40,vx:(Math.random()-.5)*300,vy:200+Math.random()*400,l:.6,c:['#ffe14d','#ff9a2e','#fff'][i%3]})}
+function moonTick(dt){const g=MOON.d,t=MOON.t+=dt;for(const k in P)delete P[k];p.vx=0;
+ if(t<MT.UP){p.vy=0;p.hang=.3}else if(!p.ground)p.vy=Math.min(p.vy,250);
+ if(t<MT.HIT){// gather: sparks spiral into Paddy, the enemy hangs in the air
+  window.XCAM={z:1.3+t*.25,b:.85,d:.45};for(let i=0;i<2;i++){const a=Math.random()*6.283,r=150+Math.random()*80;sparks.push({x:p.x+Math.cos(a)*r,y:p.y-100+Math.sin(a)*r,vx:-Math.cos(a)*480,vy:-Math.sin(a)*480,l:.3,c:Math.random()<.5?'#bfe6ff':'#fff'})}shake=Math.max(shake,2+t*6)}
+ else if(!MOON.hit&&g){moonHit(g);window.XCAM={z:.9,b:.6,d:.1}}
+ if(MOON.imp!=null)MOON.imp+=dt;
+ if(t>MT.UP&&MOON.cam){window.XCAM=null;MOON.cam=0}
+ if(g){g.vx=0;g.fl=.6;g.cool=Math.max(g.cool||0,.5);if(t<MT.HIT){g.vy=0;g.y=MOON.gy+Math.sin(t*40)*2}else if(t<MT.UP){g.y-=2600*dt;g.vy=0}else{g.y=GROUND-1450;g.vy=0}
+  if(t>=MT.LAND&&!MOON.landed){MOON.landed=true;g.hp=Math.max(1,g.hp-3);NAMES.moonland='MOON LANDING!';say('MOON LANDING!','#fff',true);try{SND.play('gf_crack',{v:1,gap:.2});SND.play('gf_boom',{v:.7,gap:.2})}catch(_){}}}
+ if(t>=MT.END){MOON.on=false;p.state='normal';if(MOON.cam){window.XCAM=null;MOON.cam=0}if(g&&g.alive){g.x=clampX(MOON.x0);g.y=GROUND-1300;g.vy=300;g.fl=0}MOON.d=null;say('…and he\'s back!','#bfe6ff',true)}}
+function cover(im,x,y,w,h){if(im&&im.complete&&im.naturalWidth){ctx.drawImage(im,x,y,w,h);return true}return false}
+function mstar(x,y,r,col){ctx.fillStyle=col;ctx.beginPath();for(let i=0;i<10;i++){const a=i/10*6.283-Math.PI/2,rr=i%2?r*.45:r;ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr)}ctx.closePath();ctx.fill()}
+function enemyImg(g,ex,ey,rot,s,sx,sy){const fr=FR[g.anim]||FR.r_idle,f=fr&&fr[Math.min(g.fi||0,fr.length-1)],im=f&&IMG[f.f];ctx.save();ctx.translate(ex,ey);ctx.rotate(rot);ctx.scale(s*(sx||1),s*(sy||1));
+ if(im&&imgOK(im))ctx.drawImage(im,-f.w/2,-f.h/2);else{ctx.fillStyle='#c98a4a';ctx.beginPath();ctx.arc(0,0,40,0,6.283);ctx.fill()}ctx.restore()}
+function moonDraw(){const t=MOON.t,g=MOON.d;ctx.save();ctx.setTransform(scale,0,0,scale,offX,offY);ctx.beginPath();ctx.rect(0,0,VW,VH);ctx.clip();
+ // build-up: dark vignette + speed lines rushing in
+ if(t<MT.HIT){const k=t/MT.HIT;const gr=ctx.createRadialGradient(VW/2,VH/2,VH*.25,VW/2,VH/2,VW*.7);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,`rgba(5,10,40,${.55*k})`);ctx.fillStyle=gr;ctx.fillRect(0,0,VW,VH);
+  ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=2;for(let i=0;i<26;i++){const a=i/26*6.283+i,r0=VW*.75-((now*900+i*67)%(VW*.4));ctx.globalAlpha=.5*k;ctx.beginPath();ctx.moveTo(VW/2+Math.cos(a)*r0,VH/2+Math.sin(a)*r0);ctx.lineTo(VW/2+Math.cos(a)*(r0+60),VH/2+Math.sin(a)*(r0+60));ctx.stroke()}ctx.globalAlpha=1}
+ const it=MOON.imp;
+ // follow-cam: up through the clouds, the atmosphere and the stars
+ if(t>=MT.UP&&t<MT.LAND+.05){const u=Math.min(1,(t-MT.UP)/(MT.LAND-MT.UP-.15)),e=u*u*(3-2*u),fi=Math.min(1,(t-MT.UP)/.12);ctx.globalAlpha=fi;
+  const sky=BG26.sky,sw=VW,shh=sw*1280/720,y0=-(shh-VH)*(1-e);if(!cover(sky,0,y0,sw,shh)){ctx.fillStyle=mixC('#4aa8ff','#05061a',e);ctx.fillRect(0,0,VW,VH)}
+  // clouds whoosh past at the start, star streaks near the top
+  if(u<.45)for(let i=0;i<5;i++){const cx=((i*233)%VW),cy=((now*1600+i*190)%(VH+300))-150;ctx.globalAlpha=fi*.85*(1-u/.45);ctx.fillStyle='#fff';for(const [dx,dy,r] of [[0,0,46],[40,10,36],[-38,12,32],[10,-20,30]]){ctx.beginPath();ctx.arc(cx+dx,cy+dy,r,0,6.283);ctx.fill()}}
+  ctx.globalAlpha=fi*.7;ctx.strokeStyle='#fff';ctx.lineWidth=2;for(let i=0;i<22;i++){const x=(i*97)%VW,y=((now*2200+i*131)%(VH+200))-100;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+40+u*80);ctx.stroke()}
+  if(g){const ex=VW/2+Math.sin(t*5)*14,ey=VH*.5+Math.sin(t*9)*6;for(let k=0;k<7;k++){ctx.globalAlpha=fi*(.7-k*.09);ctx.fillStyle=k%2?'#ffe14d':'#ff9a2e';ctx.beginPath();ctx.arc(ex+(Math.random()-.5)*16,ey+50+k*18,13-k,0,6.283);ctx.fill()}
+   ctx.globalAlpha=fi;enemyImg(g,ex,ey,t*8,.55)}
+  if(u<.3){ctx.globalAlpha=fi*(1-u/.3);fancy('TO THE MOON!',VW/2,VH*.2,52,-.05,1,fi*(1-u/.3),'#ffe14d')}ctx.globalAlpha=1}
+ // the moon: they slam into the surface – dent, dust plume, rocks, dizzy stars, a paw flag
+ if(t>=MT.LAND-.15){const fin=t>MT.END-.4?Math.max(0,1-(t-(MT.END-.4))/.4):1,fi=Math.min(1,(t-(MT.LAND-.15))/.12)*fin,lt=t-MT.LAND;ctx.globalAlpha=fi;
+  const zz=1+Math.max(0,lt)*.03,mw=VW*zz,mh=mw*720/1280,sh=lt>0&&lt<.4?(Math.random()-.5)*18*(1-lt/.4):0;ctx.translate((VW-mw)/2+sh,(VH-mh)*.8+sh*.5);
+  if(!cover(BG26.moon,0,0,mw,mh)){ctx.fillStyle='#05061a';ctx.fillRect(0,0,mw,mh);ctx.fillStyle='#cfcab8';ctx.fillRect(0,mh*.55,mw,mh*.45)}
+  const ix=mw*.5,iy=mh*.74;
+  if(lt>=0){// the cartoon dent
+   const R=Math.min(1,lt/.08);ctx.fillStyle='rgba(60,58,70,.75)';ctx.beginPath();ctx.ellipse(ix,iy+6,120*R,26*R,0,0,6.283);ctx.fill();ctx.fillStyle='rgba(30,28,40,.7)';ctx.beginPath();ctx.ellipse(ix,iy+8,86*R,16*R,0,0,6.283);ctx.fill();
+   ctx.strokeStyle='#f2efe4';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(ix,iy+2,126*R,30*R,0,Math.PI*1.05,Math.PI*1.95);ctx.stroke();
+   ctx.strokeStyle='#3a3842';ctx.lineWidth=3;for(let i=0;i<8;i++){const a=(i/8)*Math.PI+.1,x1=ix+Math.cos(a)*130,y1=iy+6+Math.sin(a)*24*0+(i%2?10:-4);ctx.beginPath();ctx.moveTo(ix+Math.cos(a)*120*R,iy+8);ctx.lineTo(x1+(i<4?-1:1)*30*R,y1+12);ctx.stroke()}}
+  if(g){let ex=ix,ey,rot=0,sx=1,sy=1;if(lt<0){const k=1+lt/.15;ey=-80+k*(iy+80);rot=t*10;for(let i=0;i<5;i++){ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(ex-40+i*20,ey-60);ctx.lineTo(ex-40+i*20,ey-200);ctx.stroke()}}
+   else{ey=iy-30;const b=lt<.5?0:Math.max(0,1-(lt-.5)*3);ey-=Math.abs(Math.sin((lt-.5)*12))*30*b;sx=lt<.15?1.3:1;sy=lt<.15?.7:1}
+   enemyImg(g,ex,ey,rot,.7,sx,sy)}
+  if(lt>=0){// dust plume + rocks + shock ring
+   const u=Math.min(1,lt/1.4);for(let i=0;i<14;i++){const a=Math.PI+i/13*Math.PI,r=40+u*170;ctx.globalAlpha=fi*.85*(1-u);ctx.fillStyle=i%2?'#ece6d2':'#cfc8b2';ctx.beginPath();ctx.arc(ix+Math.cos(a)*r*1.4,iy+Math.sin(a)*r*.75-u*40,20+u*30,0,6.283);ctx.fill()}
+   ctx.globalAlpha=fi*Math.max(0,1-lt/.6);ctx.strokeStyle='#fff';ctx.lineWidth=6;ctx.beginPath();ctx.ellipse(ix,iy+4,60+lt*900,12+lt*120,0,0,6.283);ctx.stroke();
+   for(let i=0;i<10;i++){const a=-Math.PI*(.1+.8*(i/9)),v=260+((i*53)%5)*60,x=ix+Math.cos(a)*v*lt,y=iy+Math.sin(a)*v*lt+260*lt*lt;if(y>iy+40)continue;ctx.globalAlpha=fi;ctx.fillStyle='#9a958a';ctx.beginPath();ctx.arc(x,y,5+i%3*3,0,6.283);ctx.fill()}
+   ctx.globalAlpha=fi;if(lt>.35){for(let i=0;i<3;i++){const a=now*5+i*2.094;mstar(ix+Math.cos(a)*50,iy-110+Math.sin(a)*12,12,'#ffe14d')}}
+   if(lt>.6){const k=Math.min(1,(lt-.6)/.25),fx=ix+150,fy=iy;ctx.strokeStyle='#ddd';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx,fy-90*k);ctx.stroke();
+    if(k>=1){const w=Math.sin(now*8)*4;ctx.fillStyle='#ffb03a';ctx.beginPath();ctx.moveTo(fx,fy-90);ctx.quadraticCurveTo(fx+30,fy-96+w,fx+60,fy-88);ctx.lineTo(fx+60,fy-56);ctx.quadraticCurveTo(fx+30,fy-64+w,fx,fy-58);ctx.closePath();ctx.fill();
+     ctx.fillStyle='#fff';ctx.font='22px sans-serif';ctx.textAlign='center';ctx.fillText('🐾',fx+30,fy-64)}}
+   if(lt<1.3){const pop=lt<.1?lt/.1*1.2:1.2-Math.min(.2,(lt-.1)),bx=ix-200,by=iy-150;ctx.save();ctx.globalAlpha=fi;ctx.translate(bx,by);ctx.rotate(-.12);ctx.scale(pop,pop);ctx.fillStyle='#ffe14d';ctx.strokeStyle='#3a5ad0';ctx.lineWidth=5;ctx.beginPath();
+    for(let i=0;i<20;i++){const a=i/20*6.283,rr=i%2?36:58;ctx.lineTo(Math.cos(a)*rr*1.35,Math.sin(a)*rr)}ctx.closePath();ctx.fill();ctx.stroke();ctx.font='32px Bangers, Impact, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#3a5ad0';ctx.fillText('THUD!',0,2);ctx.restore()}}
+  ctx.setTransform(scale,0,0,scale,offX,offY);ctx.globalAlpha=1}
+ // impact frame on the uppercut: white flash → ink lines → shockwave rings → the screen cracks
+ if(it!=null&&it<1.1){ctx.save();const cx=VW/2,cy=VH*.42;
+  if(it<.07){ctx.fillStyle='#fff';ctx.fillRect(0,0,VW,VH)}else if(it<.17){ctx.globalAlpha=.92;ctx.fillStyle='#fff';ctx.fillRect(0,0,VW,VH);ctx.strokeStyle='#111';ctx.lineWidth=3;for(let i=0;i<44;i++){const a=i/44*6.283,r1=70+(i%3)*24;ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1);ctx.lineTo(cx+Math.cos(a)*VW,cy+Math.sin(a)*VW);ctx.stroke()}}
+  const a=Math.min(1,(1.1-it)/.4);ctx.globalAlpha=a*.9;ctx.strokeStyle='#fff';for(let k=0;k<3;k++){ctx.lineWidth=10-k*3;ctx.beginPath();ctx.arc(cx,cy,it*1100+k*80,0,6.283);ctx.stroke()}
+  ctx.globalAlpha=a;ctx.strokeStyle='rgba(255,255,255,.95)';ctx.lineWidth=2.5;let s=13;const rnd=()=>{s=(s*9301+49297)%233280;return s/233280};
+  for(let i=0;i<12;i++){let an=i/12*6.283+rnd()*.4,x=cx,y=cy;ctx.beginPath();ctx.moveTo(x,y);for(let j=0;j<5;j++){an+=(rnd()-.5)*.6;const L=30+rnd()*80;x+=Math.cos(an)*L;y+=Math.sin(an)*L;ctx.lineTo(x,y)}ctx.stroke()}
+  ctx.strokeStyle='rgba(20,20,40,.5)';ctx.lineWidth=1.2;for(let k=1;k<=2;k++){ctx.beginPath();for(let i=0;i<=12;i++){const an=i/12*6.283,r=40+k*50+rnd()*20;i?ctx.lineTo(cx+Math.cos(an)*r,cy+Math.sin(an)*r):ctx.moveTo(cx+Math.cos(an)*r,cy+Math.sin(an)*r)}ctx.stroke()}
+  if(it<.6){ctx.globalAlpha=1;fancy('MOON UPPERCUT!!',VW/2,VH*.18,54,-.06,1+Math.max(0,.3-it),1,'#bfe6ff')}ctx.restore()}
  ctx.restore()}
 function mixC(a,b,u){const pa=parseInt(a.slice(1),16),pb=parseInt(b.slice(1),16),c=k=>Math.round(((pa>>k)&255)*(1-u)+((pb>>k)&255)*u);return `rgb(${c(16)},${c(8)},${c(0)})`}
 // ---------- 3. SHADOW LADDER (Shade): launch him, then BLINK in time again and again ----------
@@ -90,7 +125,7 @@ const _pre=r9Pre;r9Pre=function(dt){
  if(MOON.on){moonTick(dt);_pre(dt);return}
  if(LAD.on&&p.state==='shadowfin'){ladTick(dt);if(MOON.on){_pre(dt);return}}else if(LAD.on)ladEnd();
  _pre(dt);
- if(MOON.on&&MOON.d){const g=MOON.d;if(MOON.t>=.45){g.y=GROUND-1450;g.vy=0}}
+ if(MOON.on&&MOON.d){const g=MOON.d;if(MOON.t>=MT.UP){g.y=GROUND-1450;g.vy=0}}
  if(LAD.on&&p.state==='shadowfin'){p.vy=0}};
 // triggers run first thing in the frame, before any form reads the Meow / Blink press
 const _nu=nUpdate;nUpdate=function(dt){

@@ -42,7 +42,7 @@ const NW={hist:[],cl:[],rib:[],rings:[],echo:[],flick:0,pp:null,freeze:0,pounce:
 const snd=(k,v,g)=>{try{SND.play(k,{v:v||.8,gap:g||.05})}catch(_){}};
 const spark=(x,y,n,v)=>{for(let i=0;i<(n||8);i++){const a=Math.random()*6.283,s=(v||260)*(.4+Math.random());sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-60,l:.45+Math.random()*.3,c:i%2?COL:COL2})}};
 const ring=(x,y,r,l,col,vr)=>{NW.rings.push({x,y,r:r||24,vr:vr||900,l:l||.5,l0:l||.5,col:col||COL})};
-const curFr=()=>{try{const a=FR[p.anim]||FR.idle;return a&&a[Math.min(a.length-1,p.fi|0)]}catch(_){return null}};
+const curFr=()=>{try{const a=FR[p.anim]||FR[fa('idle')];return a&&a[Math.min(a.length-1,p.fi|0)]}catch(_){return null}};
 // a neon clone: a tinted copy of a pose that can swipe once at a target after a delay
 function clone(x,y,f,face,col,l,o){NW.cl.push(Object.assign({x,y,f,face,col:col||COL,l:l||.5,l0:l||.5},o||{}))}
 function frOf(k,i){const a=FR[uA(k)];return a?a[Math.min(a.length-1,i||0)]:curFr()}

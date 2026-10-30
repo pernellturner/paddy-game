@@ -6,10 +6,10 @@
 (function(){
 const SW={2:{c:'#eaf6ff',c2:'#6fc3ff',r:120,d:.13,ln:.32},3:{c:'#fff1b8',c2:'#ffb020',r:134,d:.16,ln:.36},4:{c:'#f4f4f4',c2:'#ff9a3c',r:112,d:.12,ln:.3},
  7:{c:'#8ff8ff',c2:'#2a9dff',r:132,d:.14,ln:.36},8:{c:'#ff3a52',c2:'#ffd060',r:128,d:.11,ln:.34},19:{c:'#ff1e2e',c2:'#ff8a8a',r:142,d:.2,ln:.55,dark:1}};
-const fNow=()=>{try{return Math.min(19,FORM()|0)}catch(_){return 0}};
+const fNow=()=>{try{return FORM()|0}catch(_){return 0}}; // v26: no Math.min(19) – Skybreaker, Neon Wraith and Golden Fury were getting Dark Side's red saber arcs + see-through afterimages
 const NOSW=new Set(['normal','land','hurt','jump','djump','dash','ndash','wallrun','ledge','slide','victory','stop','zoomies','wiggle','superleap','hardland','stun','ko','respawn','sit','hiss','meow','idle','fall','lk','grab','tkd','story','jcharge']);
 const TR=[],IMP=[],CAPE=[];let sig='',alt=0,DSP=0,ghT=0;
-const curF=()=>{const fr=FR[p.anim]||FR.idle;return fr&&fr[Math.min(p.fi|0,fr.length-1)]};
+const curF=()=>{const fr=FR[p.anim]||FR[fa('idle')];return fr&&fr[Math.min(p.fi|0,fr.length-1)]};
 function kindOf(n){n=n.toLowerCase();if(/launch|upper|hightime|rise|xup|_up/.test(n))return'up';if(/dive|helm|slam|smash|drop|down|stomp|breaker/.test(n))return'down';
  if(/stab|sting|thrust|lunge|drive|pierce/.test(n))return'thrust';if(/spin|prop|round|dance|whirl|vortex|rave|tail/.test(n))return'spin';return (alt++%2)?'back':'diag'}
 const ANG={diag:[-2.3,.75],back:[.55,-2.05],up:[1.0,-2.4],down:[-2.2,1.15],spin:[-3.1,3.3]};

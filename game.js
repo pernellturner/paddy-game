@@ -323,7 +323,7 @@ function draw(){
  if(p.blend>0&&p.prevF)drawFrame(p.prevF,p.prevX,p.prevY,p.prevFace,(p.hunt?.55:1)*p.blend/.1);
  const mu=p.state==='nmorph'?Math.min(1,p.t/(p.mquick?.28:.5)):1;if(mu<1&&p.mfrom)drawFrame(p.mfrom,p.x,p.y,p.face,1-mu*mu*(3-2*mu));
  const sq=r11Sq();
- const rbo=mRunBob();ctx.save();ctx.translate(p.x,p.y-(p.rot?60:0)-rbo.y);ctx.rotate((p.rot||0)+rbo.r);ctx.scale(2-sq,sq);ctx.translate(-p.x,-p.y+(p.rot?60:0));if(p.inv>0&&p.inv<2.5&&!p.grab&&!CINE.includes(p.state)&&!/fin|ult|storm|blink|roll|iai|morph/.test(p.state||'')&&Math.floor(now*20)%2)ctx.globalAlpha=.45;
+ const rbo=mRunBob();ctx.save();ctx.translate(p.x,p.y-(p.rot?60:0)-rbo.y);ctx.rotate((p.rot||0)+rbo.r);ctx.scale(2-sq,sq);ctx.translate(-p.x,-p.y+(p.rot?60:0));if(p.inv>0&&p.inv<2.5&&!p.noFlick&&!p.grab&&!CINE.includes(p.state)&&!/fin|ult|storm|blink|roll|iai|morph/.test(p.state||'')&&Math.floor(now*20)%2)ctx.globalAlpha=.45;
  if(p.fB>0&&p.fPrev&&mu>=1&&!p.hunt)drawFrame(p.fPrev,p.x+(p.wall?40*p.wall:p.state==='wallrun'?14*p.face:0),p.y,p.face,.32*p.fB/.045);
  drawFrame((FR[p.anim]||FR.idle)[p.fi],p.x+(p.wall?40*p.wall:p.state==='wallrun'?14*p.face:0),p.y,p.face,mu<1?mu*mu*(3-2*mu):p.hunt?.55:(p.blend>0?1-.5*p.blend/.1:null));ctx.restore();
  for(const f of puffs){ctx.globalAlpha=Math.max(0,f.l)*(f.dark?.8:1);ctx.fillStyle=f.dark?'#3a2d4f':'#fff';ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,6.28);ctx.fill()}ctx.globalAlpha=1;
@@ -390,7 +390,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='25a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='26a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
