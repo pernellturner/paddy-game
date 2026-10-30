@@ -49,8 +49,13 @@ document.body.appendChild(root);
 const sc=root.querySelector('canvas'),g=sc.getContext('2d');
 let W=0,H=0,DPR=1,logoC=null,SA={t:0,r:0,b:0,l:0},L=null,FC={};
 function insets(){const cs=getComputedStyle(root.querySelector('#sprobe'));SA={t:parseFloat(cs.paddingTop)||0,r:parseFloat(cs.paddingRight)||0,b:parseFloat(cs.paddingBottom)||0,l:parseFloat(cs.paddingLeft)||0}}
-function fit(){DPR=Math.min(2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;sc.width=Math.round(W*DPR);sc.height=Math.round(H*DPR);logoC=null;insets();L=null;FC={}}
-addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,250));fit();
+// size from the same viewport reading as the game canvas (iOS reports innerWidth/innerHeight late after a rotation or
+// toolbar change, often with no further 'resize'), and keep re-checking so the title never stays stretched/half-drawn
+function vp(){if(typeof vpSize==='function')return vpSize();return [innerWidth||document.documentElement.clientWidth,innerHeight||document.documentElement.clientHeight]}
+function fit(force){const d=Math.min(2,window.devicePixelRatio||1),[w,h]=vp();if(!force&&w===W&&h===H&&d===DPR)return;DPR=d;W=w;H=h;sc.width=Math.round(W*DPR);sc.height=Math.round(H*DPR);logoC=null;insets();L=null;FC={}}
+const refit=()=>fit();addEventListener('resize',refit);addEventListener('pageshow',refit);addEventListener('orientationchange',()=>{refit();setTimeout(refit,250);setTimeout(refit,600);setTimeout(refit,1000)});
+if(window.visualViewport)visualViewport.addEventListener('resize',refit);setInterval(()=>{if(window.STORY&&STORY.mode!=='off')refit()},400);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{L=null;logoC=null});fit(true);
 // ---- state ----
 const S={mode:'off',t:0,seq:null,i:0,pt:0,chars:0,done:null,fade:0,end:null};
 window.STORY=S;
