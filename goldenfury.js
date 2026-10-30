@@ -258,7 +258,7 @@ const _pre=r9Pre;r9Pre=function(dt){
  if(f!==FF&&GF.lastF===FF){applyLevel(1);GF.lv=1;GF.fly=0;GF.pu=null;GF.ss=null;GF.fin=null;GF.beam=null;GF.dim=0;if(GF.cam){window.XCAM=null;GF.cam=0}showBtn(false);for(const d of dummies)d.gfGone=0}
  GF.lastF=f;
  // v26 ghost fix: Golden Fury's own protection frames no longer make Paddy blink see-through (the 'ghost Paddy')
- if(f===FF){GF.iv=Math.max(0,GF.iv-dt);if(GF.iv>0)p.inv=Math.max(p.inv||0,Math.min(GF.iv,.3));p.noFlick=GF.iv>0&&p.state!=='hurt'}else p.noFlick=0;
+ if(f===FF){GF.iv=Math.max(0,GF.iv-dt);if(GF.iv>0)p.inv=Math.max(p.inv||0,Math.min(GF.iv,.3));p.noFlick=1}else p.noFlick=0;
  // inputs (before the link/combo handlers see them)
  if(f===FF&&typeof P!=='undefined'){
   if(P.gpow){delete P.gpow;tryPower()}
