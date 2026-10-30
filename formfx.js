@@ -3,9 +3,9 @@
 // Sets are lazy-loaded when the form becomes active. Announcer lines play on finishers. Music loops crossfade per form.
 (function(){
 const S=window.SND;if(!S||!S.play)return;
-const PRE={1:'ninja',2:'samurai',3:'knight',4:'pirate',5:'gunsling',6:'light',7:'powerblade',8:'crimson',9:'reaper',10:'shadow',11:'storm',12:'dragon',13:'phoenix',14:'frost',15:'mecha',16:'tide',17:'chrono',18:'beast',19:'dark'};
-const fNow=()=>{try{return Math.min(19,FORM()|0)}catch(_){return 0}};
-const MYF=f=>f>=11;
+const PRE={1:'ninja',2:'samurai',3:'knight',4:'pirate',5:'gunsling',6:'light',7:'powerblade',8:'crimson',9:'reaper',10:'shadow',11:'storm',12:'dragon',13:'phoenix',14:'frost',15:'mecha',16:'tide',17:'chrono',18:'beast',19:'dark',20:'sky'};
+const fNow=()=>{try{return Math.min(20,FORM()|0)}catch(_){return 0}};
+const MYF=f=>f>=11&&f!==20;
 function K(f,slot){const pre=PRE[f];if(!pre)return null;
  if(f===19){const m={swing1:'dark_swing1',swing2:'dark_swing2',hit:'dark_clash',heavy:'dark_force',special:'dark_force',finisher:'dark_finisher',quake:'dark_quake',throw:'dark_throw',choke:'dark_choke',hum:'dark_hum'};const k=m[slot];return k&&S.has(k)?k:null}
  const k=pre+'_'+slot;return S.has(k)?k:null}
@@ -39,7 +39,7 @@ function hookFin(){if(!window.FIN||!FIN.go){setTimeout(hookFin,300);return}
 hookFin();
 ['ufFinal','ufUltStart'].forEach(n=>{const go=()=>{if(typeof window[n]!=='function'){setTimeout(go,300);return}const o=window[n];window[n]=function(){S.announce();window.ZOOMOUT=Math.max(window.ZOOMOUT||0,1.6);return o.apply(this,arguments)}};go()});
 // ---------- music ----------
-const TRACK={0:'kitty',1:'stealth',2:'samurai',3:'knight',4:'pirate',5:'western',6:'holy',7:'blade',8:'blade',9:'stealth',10:'stealth',11:'storm',12:'primal',13:'elemental',14:'elemental',15:'storm',16:'elemental',17:'chrono',18:'primal',19:'dark'};
+const TRACK={0:'kitty',1:'stealth',2:'samurai',3:'knight',4:'pirate',5:'western',6:'holy',7:'blade',8:'blade',9:'stealth',10:'stealth',11:'storm',12:'primal',13:'elemental',14:'elemental',15:'storm',16:'elemental',17:'chrono',18:'primal',19:'dark',20:'blade'};
 const MV=.34,XF=1.6;const MB={},ML={};
 const MUS=window.MUS={cur:null,target:null,bus:null,duckT:0,
  want(f){this.target=TRACK[f]||'kitty';this.tick()},

@@ -102,7 +102,7 @@ document.head.appendChild(css);
 const bar=document.createElement('div');bar.id='trbar';bar.innerHTML='<span class="nm">🥋 TRAINING ROOM</span><button class="tap pri" id="tforms">🔄 FORMS</button><button class="tap" id="tmoves">📜 MOVES</button><button class="tap" id="texit">✕ EXIT</button>';document.body.appendChild(bar);
 const fp=document.createElement('div');fp.id='fpick';document.body.appendChild(fp);
 function forms(){const base=[['🐱','KITTY'],['🥷','NEON NINJA'],['⚔️','SAMURAI'],['🛡️','KNIGHT'],['⚓','PIRATE']].map((x,i)=>({f:i,ico:x[0],nm:x[1],tier:i<2?0:1}));
- const ext=[];for(let u=1;u<UF.length;u++)ext.push({f:4+u,ico:UF[u].ico,nm:UF[u].nm,tier:u<=6?2:3});return base.concat(ext)}
+ const ext=[];for(let u=1;u<UF.length;u++)ext.push({f:4+u,ico:UF[u].ico,nm:UF[u].nm,tier:(u<=6||UF[u].legend)?2:3});return base.concat(ext)}
 const TIERS=[['🐱 ALLEY CAT','#ffe08a'],['🗡️ PROWLER','#ff9a6b'],['⭐ LEGEND','#9fe8ff'],['🐉 MYTHIC','#ff7ce0']];
 function buildPicker(){const L=forms(),cur=FORM();let h='<div class="scroll"><h2>🔄 PICK A FORM</h2>';
  TIERS.forEach((t,i)=>{h+=`<div class="trow"><div class="tier" style="color:${t[1]}">${t[0]}</div><div class="grid">`+L.filter(x=>x.tier===i).map(x=>`<button class="f tap${x.f===cur?' cur':''}" data-f="${x.f}"><span class="i">${x.ico}</span>${x.nm}</button>`).join('')+'</div></div>'});

@@ -2173,6 +2173,150 @@
    "category": "util",
    "description": "silent loop for iOS audio session",
    "bytes": 4510
+  },
+  {
+   "key": "sky_swing1",
+   "file": "sky_swing1.mp3",
+   "duration": 0.366,
+   "category": "form",
+   "description": "Skybreaker fast wind whoosh swing (ElevenLabs, v23)",
+   "bytes": 4746
+  },
+  {
+   "key": "sky_swing2",
+   "file": "sky_swing2.mp3",
+   "duration": 0.366,
+   "category": "form",
+   "description": "Skybreaker double supersonic swish (ElevenLabs, v23)",
+   "bytes": 4746
+  },
+  {
+   "key": "sky_hit",
+   "file": "sky_hit.mp3",
+   "duration": 0.627,
+   "category": "form",
+   "description": "Skybreaker wind impact hit (ElevenLabs, v23)",
+   "bytes": 7880
+  },
+  {
+   "key": "sky_heavy",
+   "file": "sky_heavy.mp3",
+   "duration": 1.228,
+   "category": "form",
+   "description": "Skybreaker Boom Pounce shockwave landing (ElevenLabs, v23)",
+   "bytes": 15090
+  },
+  {
+   "key": "sky_special",
+   "file": "sky_special.mp3",
+   "duration": 1.646,
+   "category": "form",
+   "description": "Skybreaker Cyclone Spin tornado (ElevenLabs, v23)",
+   "bytes": 20106
+  },
+  {
+   "key": "sky_finisher",
+   "file": "sky_finisher.mp3",
+   "duration": 2.508,
+   "category": "form",
+   "description": "Skybreaker Sound Barrier Break sonic boom (ElevenLabs, v23)",
+   "bytes": 30450
+  },
+  {
+   "key": "tf_charge_2",
+   "file": "tf_charge_2.mp3",
+   "duration": 1.045,
+   "category": "transform",
+   "description": "Prowler transformation power-up charge (ElevenLabs, v23)",
+   "bytes": 12896
+  },
+  {
+   "key": "tf_charge_3",
+   "file": "tf_charge_3.mp3",
+   "duration": 1.802,
+   "category": "transform",
+   "description": "Legend transformation energy column charge-up (ElevenLabs, v23)",
+   "bytes": 21986
+  },
+  {
+   "key": "tf_charge_4",
+   "file": "tf_charge_4.mp3",
+   "duration": 2.586,
+   "category": "transform",
+   "description": "Mythic transformation ground-cracking sub-bass build-up (ElevenLabs, v23)",
+   "bytes": 31390
+  },
+  {
+   "key": "tf_boom_3",
+   "file": "tf_boom_3.mp3",
+   "duration": 1.515,
+   "category": "transform",
+   "description": "Legend transformation release burst (ElevenLabs, v23)",
+   "bytes": 18538
+  },
+  {
+   "key": "tf_boom_4",
+   "file": "tf_boom_4.mp3",
+   "duration": 2.508,
+   "category": "transform",
+   "description": "Mythic transformation earth-shattering release boom (ElevenLabs, v23)",
+   "bytes": 30450
+  },
+  {
+   "key": "vo_tf_ready",
+   "file": "vo_tf_ready.mp3",
+   "duration": 1.698,
+   "category": "transform",
+   "description": "Announcer (Maverick): Are you ready for this power? (ElevenLabs, v23)",
+   "bytes": 20733
+  },
+  {
+   "key": "vo_tf_unleash",
+   "file": "vo_tf_unleash.mp3",
+   "duration": 1.358,
+   "category": "transform",
+   "description": "Announcer (Maverick): Time to unleash! (ElevenLabs, v23)",
+   "bytes": 16657
+  },
+  {
+   "key": "vo_tf_awakens",
+   "file": "vo_tf_awakens.mp3",
+   "duration": 1.75,
+   "category": "transform",
+   "description": "Announcer (Maverick): The legend awakens... (ElevenLabs, v23)",
+   "bytes": 21359
+  },
+  {
+   "key": "vo_tf_mythic",
+   "file": "vo_tf_mythic.mp3",
+   "duration": 2.351,
+   "category": "transform",
+   "description": "Announcer (Atlas): Unleash the Mythic power! (ElevenLabs, v23)",
+   "bytes": 28569
+  },
+  {
+   "key": "vo_tf_dark",
+   "file": "vo_tf_dark.mp3",
+   "duration": 2.743,
+   "category": "transform",
+   "description": "Announcer (villain voice): The darkness... awakens. (ElevenLabs, v23)",
+   "bytes": 33271
+  },
+  {
+   "key": "vo_f20_a",
+   "file": "vo_f20_a.mp3",
+   "duration": 2.9,
+   "category": "vo_form",
+   "description": "Announcer (Maverick): Sound barrier... broken! (ElevenLabs, v23)",
+   "bytes": 35152
+  },
+  {
+   "key": "vo_f20_b",
+   "file": "vo_f20_b.mp3",
+   "duration": 1.358,
+   "category": "vo_form",
+   "description": "Announcer (Maverick): Time to unleash! (ElevenLabs, v23)",
+   "bytes": 16657
   }
  ]
 }
