@@ -2525,6 +2525,126 @@
    "category": "vo_form",
    "description": "Announcer (Atlas): Behold... the Fury God! (v25)",
    "bytes": 44972
+  },
+  {
+   "key": "pvo_meow1",
+   "file": "pvo_meow1.mp3",
+   "duration": 0.836,
+   "category": "combat",
+   "description": "v30 Paddy vocal: meow0",
+   "peak_db": -1.0,
+   "mean_db": -13.1,
+   "bytes": 10388
+  },
+  {
+   "key": "pvo_meow2",
+   "file": "pvo_meow2.mp3",
+   "duration": 0.94,
+   "category": "combat",
+   "description": "v30 Paddy vocal: meow1",
+   "peak_db": -1.0,
+   "mean_db": -13.9,
+   "bytes": 11642
+  },
+  {
+   "key": "pvo_meow3",
+   "file": "pvo_meow3.mp3",
+   "duration": 1.045,
+   "category": "combat",
+   "description": "v30 Paddy vocal: meow2",
+   "peak_db": -1.0,
+   "mean_db": -14.0,
+   "bytes": 12896
+  },
+  {
+   "key": "pvo_growl1",
+   "file": "pvo_growl1.mp3",
+   "duration": 0.836,
+   "category": "combat",
+   "description": "v30 Paddy vocal: growl1",
+   "peak_db": -1.0,
+   "mean_db": -13.7,
+   "bytes": 10388
+  },
+  {
+   "key": "pvo_growl2",
+   "file": "pvo_growl2.mp3",
+   "duration": 0.836,
+   "category": "combat",
+   "description": "v30 Paddy vocal: growl0",
+   "peak_db": -1.0,
+   "mean_db": -12.9,
+   "bytes": 10388
+  },
+  {
+   "key": "pvo_grunt1",
+   "file": "pvo_grunt1.mp3",
+   "duration": 0.601,
+   "category": "combat",
+   "description": "v30 Paddy vocal: grunt0",
+   "peak_db": -1.0,
+   "mean_db": -15.8,
+   "bytes": 7567
+  },
+  {
+   "key": "pvo_grunt3",
+   "file": "pvo_grunt3.mp3",
+   "duration": 0.627,
+   "category": "combat",
+   "description": "v30 Paddy vocal: grunt2",
+   "peak_db": -1.0,
+   "mean_db": -12.6,
+   "bytes": 7880
+  },
+  {
+   "key": "hit_small",
+   "file": "hit_small.mp3",
+   "duration": 0.313,
+   "category": "combat",
+   "description": "v30 hit tier: small0",
+   "peak_db": -1.0,
+   "mean_db": -14.7,
+   "bytes": 4119
+  },
+  {
+   "key": "hit_small2",
+   "file": "hit_small2.mp3",
+   "duration": 0.392,
+   "category": "combat",
+   "description": "v30 hit tier: small1",
+   "peak_db": -1.0,
+   "mean_db": -12.0,
+   "bytes": 5059
+  },
+  {
+   "key": "hit_power",
+   "file": "hit_power.mp3",
+   "duration": 0.627,
+   "category": "combat",
+   "description": "v30 hit tier: power0",
+   "peak_db": -1.0,
+   "mean_db": -12.9,
+   "bytes": 7880
+  },
+  {
+   "key": "hit_power2",
+   "file": "hit_power2.mp3",
+   "duration": 0.627,
+   "category": "combat",
+   "description": "v30 hit tier: power1",
+   "peak_db": -1.0,
+   "mean_db": -12.8,
+   "bytes": 7880
+  },
+  {
+   "key": "hit_deadly",
+   "file": "hit_deadly.mp3",
+   "duration": 1.437,
+   "category": "combat",
+   "description": "v30 hit tier: deadly0",
+   "peak_db": -1.0,
+   "mean_db": -11.6,
+   "bytes": 17598
   }
  ]
 }

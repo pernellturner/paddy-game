@@ -51,6 +51,6 @@ const MUS=window.MUS={cur:null,target:null,bus:null,duckT:0,
   this.load(n).then(b=>{this.loading=null;if(!b||this.target!==n||(this.cur&&this.cur.name===n))return;const t=c.currentTime,s=c.createBufferSource(),g=c.createGain();s.buffer=b;s.loop=true;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(1,t+XF);s.connect(g);g.connect(this.bus);s.start(t);
    const o=this.cur;if(o){try{o.g.gain.cancelScheduledValues(t);o.g.gain.setValueAtTime(o.g.gain.value,t);o.g.gain.linearRampToValueAtTime(0,t+XF);o.s.stop(t+XF+.05)}catch(_){}}this.cur={name:n,s,g}})}};
 setInterval(()=>{try{const c=S.ac&&S.ac();if(!c||!MUS.bus&&!S.unlocked)return;if(MUS.target==null)MUS.want(fNow());MUS.tick();if(!MUS.bus)return;
- MUS.duckT=Math.max(0,MUS.duckT-.25);const m=(S.isMuted&&S.isMuted())||!S.on||window.MUSICOFF?0:MV*(MUS.duckT>0?.35:1);MUS.bus.gain.setTargetAtTime(m,c.currentTime,.25)}catch(_){}},250);
+ MUS.duckT=Math.max(0,MUS.duckT-.25);const m=(S.isMuted&&S.isMuted())||!S.on||window.MUSICOFF||window.MUSCUT?0:MV*(MUS.duckT>0?.35:1);MUS.bus.gain.setTargetAtTime(m,c.currentTime,.25)}catch(_){}},250);
 window.FORMFX22=true;
 })();
