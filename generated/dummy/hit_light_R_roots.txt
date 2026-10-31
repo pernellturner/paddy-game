@@ -1,0 +1,6 @@
+# sparring dummy hit_light_R (mirror of hit_light, FACES RIGHT): 12 fps (83 ms), cell 187x445px, baseline y=397 (cell coords), standing base centre x=82 in every cell.
+# frame lift(px: lowest pixel above baseline)
+1 0
+2 0
+3 0
+4 0

@@ -1,0 +1,6 @@
+# sparring dummy recover: 12 fps (83 ms), cell 533x456px, baseline y=408 (cell coords), standing base centre x=129 in every cell.
+# frame lift(px: lowest pixel above baseline)
+1 0
+2 0
+3 0
+4 0

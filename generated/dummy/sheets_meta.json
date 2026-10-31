@@ -1,0 +1,173 @@
+{
+ "idle": {
+  "cell": [
+   174,
+   440
+  ],
+  "baseline": 392,
+  "root_x": 104,
+  "frames": 4
+ },
+ "hit_light": {
+  "cell": [
+   187,
+   445
+  ],
+  "baseline": 397,
+  "root_x": 104,
+  "frames": 4
+ },
+ "hit_heavy": {
+  "cell": [
+   266,
+   467
+  ],
+  "baseline": 419,
+  "root_x": 125,
+  "frames": 6
+ },
+ "launched": {
+  "cell": [
+   352,
+   674
+  ],
+  "baseline": 626,
+  "root_x": 177,
+  "frames": 6
+ },
+ "launched_fall": {
+  "cell": [
+   364,
+   672
+  ],
+  "baseline": 624,
+  "root_x": 176,
+  "frames": 4
+ },
+ "knockdown": {
+  "cell": [
+   490,
+   417
+  ],
+  "baseline": 369,
+  "root_x": 74,
+  "frames": 6
+ },
+ "recover": {
+  "cell": [
+   533,
+   456
+  ],
+  "baseline": 408,
+  "root_x": 129,
+  "frames": 4
+ },
+ "fighter_idle": {
+  "cell": [
+   190,
+   440
+  ],
+  "baseline": 392,
+  "root_x": 105,
+  "frames": 4
+ },
+ "fighter_attack_windup": {
+  "cell": [
+   224,
+   440
+  ],
+  "baseline": 392,
+  "root_x": 89,
+  "frames": 4
+ },
+ "fighter_attack_punch": {
+  "cell": [
+   272,
+   462
+  ],
+  "baseline": 414,
+  "root_x": 202,
+  "frames": 5
+ },
+ "fighter_attack_recover": {
+  "cell": [
+   199,
+   443
+  ],
+  "baseline": 395,
+  "root_x": 104,
+  "frames": 4
+ },
+ "fighter_hit_heavy": {
+  "cell": [
+   286,
+   467
+  ],
+  "baseline": 419,
+  "root_x": 125,
+  "frames": 6
+ },
+ "idle_R": {
+  "cell": [
+   174,
+   440
+  ],
+  "baseline": 392,
+  "root_x": 69,
+  "frames": 4
+ },
+ "hit_light_R": {
+  "cell": [
+   187,
+   445
+  ],
+  "baseline": 397,
+  "root_x": 82,
+  "frames": 4
+ },
+ "hit_heavy_R": {
+  "cell": [
+   266,
+   467
+  ],
+  "baseline": 419,
+  "root_x": 140,
+  "frames": 6
+ },
+ "launched_R": {
+  "cell": [
+   352,
+   674
+  ],
+  "baseline": 626,
+  "root_x": 174,
+  "frames": 6
+ },
+ "launched_fall_R": {
+  "cell": [
+   364,
+   672
+  ],
+  "baseline": 624,
+  "root_x": 187,
+  "frames": 4
+ },
+ "knockdown_R": {
+  "cell": [
+   490,
+   417
+  ],
+  "baseline": 369,
+  "root_x": 415,
+  "frames": 6
+ },
+ "recover_R": {
+  "cell": [
+   533,
+   456
+  ],
+  "baseline": 408,
+  "root_x": 403,
+  "frames": 4
+ }
+}

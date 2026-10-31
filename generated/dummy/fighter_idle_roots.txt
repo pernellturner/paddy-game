@@ -1,0 +1,6 @@
+# sparring dummy fighter_idle: 12 fps (83 ms), cell 190x440px, baseline y=392 (cell coords), standing base centre x=105 in every cell.
+# frame lift(px: lowest pixel above baseline)
+1 0
+2 0
+3 0
+4 0

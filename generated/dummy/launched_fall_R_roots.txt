@@ -1,0 +1,6 @@
+# sparring dummy launched_fall_R (mirror of launched_fall, FACES RIGHT): 12 fps (83 ms), cell 364x672px, baseline y=624 (cell coords), standing base centre x=187 in every cell.
+# frame lift(px: lowest pixel above baseline)
+1 258
+2 241
+3 92
+4 0

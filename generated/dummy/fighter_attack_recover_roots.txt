@@ -1,0 +1,6 @@
+# sparring dummy fighter_attack_recover: 12 fps (83 ms), cell 199x443px, baseline y=395 (cell coords), standing base centre x=104 in every cell.
+# frame lift(px: lowest pixel above baseline)
+1 0
+2 0
+3 0
+4 0

@@ -1,0 +1,8 @@
+# sparring dummy knockdown_R (mirror of knockdown, FACES RIGHT): 12 fps (83 ms), cell 490x417px, baseline y=369 (cell coords), standing base centre x=415 in every cell.
+# frame lift(px: lowest pixel above baseline)
+1 0
+2 0
+3 0
+4 0
+5 14
+6 0
