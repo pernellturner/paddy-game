@@ -1,0 +1,10 @@
+# air3_kabutowari: cell 407x734px, baseline y=684 (cell coords), form scale K=0.4521 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 air_ready 0 230
+2 a3_wind 22 250 SFX:GRUNT
+3 a3_snap 59 170 HIT1
+4 a3_snap 59 170 HIT2
+5 a3_snap 69 90
+6 land 2 0
+7 noto 38 0
+8 ready 39 0

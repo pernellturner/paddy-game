@@ -1,0 +1,7 @@
+# ready: cell 302x436px, baseline y=387 (cell coords), form scale K=0.4521 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 idle_a 0 0
+2 idle_a 0 0
+3 ready 33 0
+4 ready 33 0
+5 ready 33 0

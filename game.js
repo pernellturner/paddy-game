@@ -201,7 +201,7 @@ function update(dt){
  default: if(S==='lk')lkState(dt);else if(S==='lkult')ultState(dt);else if(NST.includes(S))nState(S,dt,end,dir);else if(SST.includes(S))sState(S,dt,end,dir);else if(UST.has(S))ufState(S,dt,end,dir);else if(XST.has(S))xState(S,dt,end,dir);else if(S==='stun'){p.vx*=Math.pow(.05,dt);if(p.t>.45)p.state='normal'}break;
  }
  if(p.state==='normal'){
-  const T=false,N=p.ninja||p.sam||!!p.xf||!!p.uf,running=K.run||(touchMode&&p.holdT>.6)||N,spd=p.hunt?110:p.uf?UF[p.uf].spd:p.xf?XF[p.xf].spd:p.ninja?340:p.sam?430:260*(running?1.6:1),JB=1;
+  const T=false,N=p.ninja||p.sam||!!p.xf||!!p.uf,running=K.run||(touchMode&&p.holdT>.6)||N,spd=p.hunt?110:p.uf?UF[p.uf].spd:p.xf?XF[p.xf].spd:p.ninja?340:p.sam?300:260*(running?1.6:1),JB=1;
   if(K.down&&p.ground&&!p.hunt&&Math.abs(p.vx)>300&&P.down&&!T&&!N){act('slide','slide',{say:'SLIDE!'});}
   else if(K.down&&p.ground&&!p.hunt&&!T&&!N){p.vx*=.7;setAnim('crouch');}
   else{p.vx+=(dir*spd-p.vx)*Math.min(1,dt*(p.xf===3?(p.ground?(dir?5.5:6.5):4):N?(p.ground?(dir?8:10):5):T?(p.ground?(dir?4.5:6):2.5):(p.ground?(dir?7:9):4)));if(dir&&!p.wall)p.face=dir;}
@@ -393,7 +393,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='36a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='37a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -1076,7 +1076,7 @@ const ROUTES=[
   {k:'CCCMBBTT',nm:'PHANTOM CYCLONE!',tip:'screech, phantom cross, cyclone kick juggle'},{k:'TTTCBMCM',nm:'NEON MOONFALL',ult:1,tip:'ULTIMATE: moonlit flip, neon zig-zags, crater dive'}],
  [{k:'CCCB',nm:'PHANTOM IAI!',kj:'一閃',tip:'flash-step straight through him'},{k:'CCCM',nm:'KIAI THUNDER!',kj:'気',tip:'battle-shout shockwave'},
   {k:'CCCTT',nm:'PARRY BREAKER!',fold:'CCCTT',tip:'sheath spin into a guard-breaking slam'},{k:'CCCCCB',nm:'CRESCENT FLASH!',kj:'月',tip:'5 timed cuts, then a moonlit flash-step'},
-  {k:'TTTCCC',nm:'SAKURA CYCLONE!',fold:'TTTCCC',tip:'three guards into a petal whirlwind'},{k:'CCCMBBTT',nm:'SAKURA TEMPEST!',kj:'桜',tip:'kiai, twin flash, tornado sheath juggle'},
+  {k:'TTTCCC',nm:'SAKURA CYCLONE!',fold:'TTTCCC',tip:'three ichimonji sweeps into a petal whirlwind'},{k:'CCCMBBTT',nm:'SAKURA TEMPEST!',kj:'桜',tip:'kiai, twin flash, tornado sheath juggle'},
   {k:'CCCCCMTM',nm:'HEAVEN SPLITTER',ult:1,kj:'必殺',tip:'ULTIMATE: still world, one flash, a cut from the sky'}]];
 const LK={on:false,seq:'',n:0,buf:null,dead:false,beat:false,op:null,miss:0,lastSeq:'',lastT:-9,fail:0,flash:null};
 const R9={rings:[],cracks:[],paws:[],moon:null,beam:null,confetti:[]};
@@ -1720,7 +1720,7 @@ function upgLoad(f,hi){if(!window.queueFrames||!F)return;const names=[];
 function r11Update(dt){
  if(p.lsq>0)p.lsq-=dt;if(p.recT>0)p.recT-=dt;
  // a short settle pose when a ground attack finishes, instead of snapping straight back to idle
- const S=p.state;if(S==='normal'&&r11Prev!=='normal'&&(p.sam||p.xf||p.uf)&&p.ground&&!/^(land|hurt|respawn|victory|nmorph|ledge|wallrun|bunny|lkult)$/.test(r11Prev))p.recT=.24;r11Prev=S;
+ const S=p.state;if(S==='normal'&&r11Prev!=='normal'&&(p.sam||p.xf||p.uf)&&p.ground&&!/^(land|hurt|respawn|victory|nmorph|ledge|wallrun|bunny|lkult|sm|nj|kt)$/.test(r11Prev))p.recT=.24;r11Prev=S;
  if(!window.queueFrames||!F)return;
  const f=FORM();if(f!==upgForm){upgForm=f;if(f>0)upgLoad(f,true)}
  if(!upgBg&&now>6&&SPRITES.loaded+SPRITES.failed.length>=SPRITES.total){upgBg=true;[2,1,3,4].forEach(k=>upgLoad(k,false))}

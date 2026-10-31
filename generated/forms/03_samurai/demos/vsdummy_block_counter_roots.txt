@@ -1,0 +1,12 @@
+# vsdummy_block_counter.gif: canvas 982x448; root x vs frame 1 (px), lift; gNfM = move N frame M; flags as in the sheets
+1 g1f1 ready 0 0
+2 g1f2 block 0 0
+3 g1f3 block 0 0
+4 g1f4 block -14 0
+5 g1f5 block -14 0
+6 g2f2 block -14 0
+7 g2f3 cnt_parry 0 0 SFX:hiss
+8 g2f4 cnt_snap 19 0 HIT1 SFX:hup
+9 g2f5 cnt_snap 19 0 HIT2
+10 g2f6 noto 23 0
+11 g2f7 ready 30 0

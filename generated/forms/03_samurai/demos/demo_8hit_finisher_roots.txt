@@ -1,0 +1,51 @@
+# demo_8hit_finisher.gif: canvas 1002x574; root x vs frame 1 (px), lift; gNfM = move N frame M; flags as in the sheets
+1 g1f1 ready 0 0
+2 g1f2 l1_load -20 0
+3 g1f3 l1_load -7 0 SFX:hup
+4 g1f4 l1_snap 9 0 HIT1
+5 g1f5 l1_snap 9 0 HIT2
+6 g1f6 noto 29 0
+7 g2f2 l5_load 29 0
+8 g2f3 l5_load 43 0 SFX:hup
+9 g2f4 l5_snap 68 0 HIT1
+10 g2f5 l5_snap 68 0 HIT2
+11 g2f6 ready 60 0
+12 g3f2 l2_load 68 0
+13 g3f3 l2_load 78 0 SFX:hup
+14 g3f4 l2_snap 90 0 HIT1
+15 g3f5 l2_snap 90 0 HIT2
+16 g3f6 noto 91 0
+17 g4f2 l3_load 98 0
+18 g4f3 l3_load 113 0 SFX:hup
+19 g4f4 l3_snap 149 0 HIT1
+20 g4f5 l3_snap 149 0 HIT2
+21 g4f6 noto 135 0
+22 g5f2 l1_load 120 0
+23 g5f3 l4_load 153 0 SFX:hup
+24 g5f4 l4_snap 176 0 HIT1
+25 g5f5 l4_snap 176 0 HIT2
+26 g5f6 noto 173 0
+27 g6f2 l1_load 160 0
+28 g6f3 l1_load 173 0 SFX:hup
+29 g6f4 l1_snap 189 0 HIT1
+30 g6f5 l1_snap 189 0 HIT2
+31 g6f6 noto 209 0
+32 g7f2 l1_load 194 0
+33 g7f3 h1_load 218 0
+34 g7f4 h1_load 228 0 SFX:GRUNT
+35 g7f5 h1_imp 278 0 HIT1
+36 g7f6 h1_imp 278 0 HIT2
+37 g7f7 h1_imp 278 0
+38 g7f8 noto 261 0
+39 g8f2 fin_coil 271 0 SFX:HISS
+40 g8f3 fin_coil 271 0
+41 g8f4 bl_dash 454 18
+42 g8f5 a3_wind 542 90 SFX:BIG GRUNT
+43 g8f6 fin_imp 554 0 HIT1
+44 g8f7 fin_imp 554 0 HIT2
+45 g8f8 fin_imp 554 0 HIT3
+46 g8f9 fin_imp 554 0
+47 g8f10 noto 541 0
+48 g8f11 fin_pose 574 0
+49 g8f12 fin_pose 574 0
+50 g8f13 ready 543 0

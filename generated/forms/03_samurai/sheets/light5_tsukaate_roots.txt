@@ -1,0 +1,9 @@
+# light5_tsukaate: cell 372x405px, baseline y=355 (cell coords), form scale K=0.4521 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l5_load -5 0
+3 l5_load 9 0 SFX:hup
+4 l5_snap 34 0 HIT1
+5 l5_snap 34 0 HIT2
+6 ready 26 0
+7 ready 30 0

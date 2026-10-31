@@ -1,0 +1,11 @@
+# heavy1_kesagiri: cell 469x483px, baseline y=434 (cell coords), form scale K=0.4521 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l1_load -20 0
+3 h1_load 4 0
+4 h1_load 14 0 SFX:GRUNT
+5 h1_imp 64 0 HIT1
+6 h1_imp 64 0 HIT2
+7 h1_imp 64 0
+8 noto 47 0
+9 ready 54 0
