@@ -17,7 +17,7 @@ async def main():
   await pg.goto(URL+'?nostory&kitty=1&v='+str(time.time()));await pg.wait_for_function('typeof started!=="undefined"&&started',timeout=30000);await pg.wait_for_timeout(1200)
   check('?kitty=1 = base Paddy in Kitty style',await E("FORM()===0&&KITTY36.on"))
   await pg.wait_for_function("Object.keys(F).filter(k=>k.startsWith('kt_')).every(k=>F[k].every(f=>imgOK(IMG[f.f])))",timeout=30000)
-  r=await E("[Object.keys(F).filter(k=>k.startsWith('kt_')).length,['idle','walk','run','victory'].filter(k=>(FR[k]||[]).some(f=>!/^p\\/kt_/.test(f.f)))]")
+  r=await E("[Object.keys(F).filter(k=>k.startsWith('kt_')&&!k.startsWith('kt_m_')).length,['idle','walk','run','victory'].filter(k=>(FR[k]||[]).some(f=>!/^p\\/kt_/.test(f.f)))]")
   check('21 kt sheets loaded; base idle / walk / run / victory draw kt_* frames while the style is on',r[0]==21 and not r[1],r)
   await E(MON)
   D="dummies.filter(d=>d.alive&&!d.benched)[0]"

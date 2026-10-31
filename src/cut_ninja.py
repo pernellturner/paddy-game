@@ -56,8 +56,9 @@ def residue(rgb,al,green):
     keyish=((g<80)&(r>185)&(b>185)) if not green else ((g>185)&(r<80)&(b<80))
     return int(((al>.3)&keyish).sum())
 frames=json.load(open('assets/frames.json'))
-for k in [k for k in frames if k.startswith(PRE)]: del frames[k]
-for f in glob.glob('assets/p/'+PRE+'*'): os.remove(f)
+for k in [PRE+v for v in KEYS.values() if PRE+v in frames]: del frames[k]   # only this form's own sheets (kt_m_* etc. belong to other code)
+for v in KEYS.values():
+    for f in glob.glob(f'assets/p/{PRE}{v}_[0-9][0-9].*'): os.remove(f)
 AN=json.load(open(SRC+'/anchors.json'))
 report=[]
 for sheet,short in KEYS.items():
