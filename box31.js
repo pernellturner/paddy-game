@@ -18,7 +18,7 @@ SM(0,'',NEW);for(const k in NEW){const v=NEW[k];A[k]=[v[2],v[3],v[0],v[1]];if(wi
 // move kind per anim: jab / hook / body / upper
 const KIND={pc1:'jab',pc2:'hook',pc3:'body',pc4:'jab',pc5:'hook',pc6:'body',pc7:'upper'};
 // fist position at impact (world units, facing right, from the cut frames) - smears end here, impact stars land here
-const FIST={jab:[158,-131],hook:[126,-129],body:[137,-75],upper:[82,-255]};
+const FIST={jab:[126,-105],hook:[100,-104],body:[106,-60],upper:[66,-207]}; // v32: re-measured after the 0.8 rescale
 const NM={1:'LEFT JAB!',2:'RIGHT HOOK!',3:'BODY BLOW!',4:'JAB!',5:'HOOK!',6:'BODY SHOT!',7:'UPPERCUT!'};
 const COL={1:'#ffffff',2:'#bfe8ff',3:'#ffb040',4:'#ffffff',5:'#bfe8ff',6:'#ffb040',7:'#ffe14d'};
 const LUNGE={1:120,2:140,3:200,4:200,5:180,6:200,7:220};
@@ -26,7 +26,7 @@ for(let i=1;i<=7;i++)Object.assign(CLAWS[i],{nm:NM[i],col:COL[i],sp:COL[i],lunge
 Object.assign(NAMES,{pc1:'LEFT JAB!',pc2:'RIGHT HOOK!',pc3:'BODY BLOW!',pc4:'JAB!',pc5:'HOOK!',pc6:'BODY SHOT!',pc7:'UPPERCUT!'});
 // jabs/hooks barely push (so the chain keeps connecting); body blows drive him back a bit; the uppercut pops him up
 Object.assign(KB,{pc1:[70,-60,0,.06],pc2:[110,-90,0,.065],pc3:[300,-180,.1,.1],pc4:[70,-60,0,.06],pc5:[110,-90,0,.065],pc6:[300,-200,.1,.1],pc7:[60,-640,.45,.11]});
-Object.assign(REACH,{pc1:[180,150],pc2:[160,155],pc3:[170,130],pc4:[180,150],pc5:[160,155],pc6:[170,130],pc7:[140,300]});
+Object.assign(REACH,{pc1:[180,150],pc2:[160,155],pc3:[170,130],pc4:[180,150],pc5:[160,155],pc6:[170,130],pc7:[140,300]}); // reach kept as v31 so the string still connects
 // the old claw slash arcs don't belong on punches: base Paddy's claw chain draws its own punch FX
 const _cf=clawFx;clawFx=function(i){if(base()&&p.state==='claw'&&KIND[p.anim])return;return _cf.apply(this,arguments)};
 const _sc=startClaw;startClaw=function(){const n0=(window.K29&&K29.imp.length)||0;_sc.apply(this,arguments);if(!base()||p.state!=='claw')return;
@@ -51,11 +51,11 @@ let asked=false;const _pre=r9Pre;r9Pre=function(dt){try{if(!asked&&window.queueF
 // ---------- smears / motion trails (world space, drawn over Paddy) ----------
 function arc(P0,C,P2,w0,w1,col,al){const N=10;let px=P0[0],py=P0[1];for(let i=1;i<=N;i++){const u=i/N,x=(1-u)*(1-u)*P0[0]+2*(1-u)*u*C[0]+u*u*P2[0],y=(1-u)*(1-u)*P0[1]+2*(1-u)*u*C[1]+u*u*P2[1];
  ctx.globalAlpha=al*Math.min(1,u*1.6);ctx.lineWidth=w0+(w1-w0)*u;ctx.strokeStyle=col;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();px=x;py=y}}
-const PATH={hook:[[-30,-178],[150,-232],[126,-129]],body:[[0,-150],[70,-30],[137,-75]],upper:[[118,-20],[150,-170],[82,-255]]};
+const PATH={hook:[[-24,-142],[120,-186],[100,-104]],body:[[0,-120],[56,-24],[106,-60]],upper:[[94,-16],[120,-136],[66,-207]]};
 const _fx=drawFx;drawFx=function(){_fx();try{if(!base()||p.state!=='claw'||!KIND[p.anim])return;const k=KIND[p.anim],e=window.K29EXT[p.anim]||.08,t=p.t,
   a=t<e-.07?0:t<e?(t-(e-.07))/.07:Math.max(0,1-(t-e)/.12);if(a<=.02)return;
  ctx.save();ctx.translate(p.x,p.y);ctx.scale(p.face,1);ctx.globalCompositeOperation='lighter';ctx.lineCap='round';
- if(k==='jab'){const f=FIST.jab;for(let i=0;i<3;i++){const yy=f[1]+(i-1)*9,x0=30+i*12;ctx.globalAlpha=a*(i===1?.9:.5);ctx.strokeStyle='#fff';ctx.lineWidth=i===1?7:3;ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(f[0]-6,yy);ctx.stroke()}}
+ if(k==='jab'){const f=FIST.jab;for(let i=0;i<3;i++){const yy=f[1]+(i-1)*8,x0=24+i*10;ctx.globalAlpha=a*(i===1?.9:.5);ctx.strokeStyle='#fff';ctx.lineWidth=i===1?7:3;ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(f[0]-6,yy);ctx.stroke()}}
  else{const P=PATH[k],c1=k==='upper'?'#ffe14d':k==='body'?'#ffb040':'#9fdcff',W=k==='upper'?30:k==='hook'?26:24;
   // grow the arc in as the punch fires so the curve reads as the path of the paw
   const g=Math.min(1,t/e);const P2=[P[0][0]+(P[2][0]-P[0][0])*g,P[0][1]+(P[2][1]-P[0][1])*g],C=[P[0][0]+(P[1][0]-P[0][0])*Math.min(1,g*1.4),P[0][1]+(P[1][1]-P[0][1])*Math.min(1,g*1.4)];

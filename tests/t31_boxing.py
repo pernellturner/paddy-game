@@ -1,6 +1,6 @@
 import asyncio,time,os
 from playwright.async_api import async_playwright
-OUT='/workspace/rev31/';os.makedirs(OUT,exist_ok=True)
+OUT='/workspace/rev32/';os.makedirs(OUT,exist_ok=True)
 async def main():
  async with async_playwright() as pw:
   br=await pw.chromium.launch(executable_path='/usr/bin/google-chrome',args=['--no-sandbox'])

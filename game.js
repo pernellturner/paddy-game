@@ -11,7 +11,7 @@ addEventListener('resize',resize);addEventListener('orientationchange',()=>{resi
 document.addEventListener('touchmove',e=>{if(!e.target.closest('#moves,#fpick .scroll,#sett .scroll'))e.preventDefault()},{passive:false});
 // ---------- animations: name:[sheet, frame indices (null = all), fps, loop] ----------
 const A={ // name:[sheet, frames (null=all), fps, loop]. o_* = original first-version sprites
- idle:['o_idle',null,3,1],walk:['o_walk',null,11,1],run:['o_run',null,12,1],
+ idle:['idle_test_1',[0,1,4,1],4,1],walk:['o_walk',null,11,1],run:['o_run',null,12,1],
  start:['startstop',[0,1,2],16,0],stop:['startstop',[3,4,5],9,0],
  jump:['o_jump',null,8,0],fall:['o_fall',null,6,0],land:['o_land',null,10,0],djump:['doublejump',null,14,0],
  hardland:['hardland',[0,1,2],9,0],crouch:['o_crouch',null,1,0],slide:['slide',null,10,1],
@@ -274,7 +274,7 @@ function update(dt){
  if(p.x<LW-35)p.x=LW-35;if(p.x>WALL_X+45)p.x=WALL_X+45; // stay fully on screen on either wall top
  // anim frames
  const fr=FR[p.anim]||FR.idle,a=A[p.anim]||A.idle;
- let fps=a[2];if(p.anim==='stalk')fps*=Math.min(1,Math.abs(p.vx)/80);if(p.anim==='climb'&&p.vy>=0)fps=0;
+ let fps=a[2];if(p.anim==='walk'||p.anim==='run')fps*=Math.max(.5,Math.min(1.35,Math.abs(p.vx)/(p.anim==='run'?400:195)));if(p.anim==='stalk')fps*=Math.min(1,Math.abs(p.vx)/80);if(p.anim==='climb'&&p.vy>=0)fps=0;
  if(p.state!=='ledge')p.ft+=dt*fps;p.fi=a[3]?Math.floor(p.ft)%fr.length:Math.min(fr.length-1,Math.floor(p.ft));
  {const nf=fr[p.fi];if(p.lastF&&nf!==p.lastF&&p.lastA===p.anim&&!(p.blend>0)){p.fPrev=p.lastF;p.fB=p.uf>=7&&/_run$/.test(p.anim)?.07:.045}p.lastF=nf;p.lastA=p.anim;p.fB=(p.fB||0)-dt}
  if(p.anim==='jump'&&p.vy>-200)p.fi=fr.length-1;
@@ -302,7 +302,10 @@ function burst(x,y,fire){shake=10;for(let i=0;i<24;i++){const a=Math.random()*6.
 function readyFrame(f,dog){if(f&&imgOK(IMG[f.f]))return f;const fb=FR[dog?'r_idle':fa('idle')];let g=fb&&fb.find(q=>imgOK(IMG[q.f]));if(!g&&!dog){const b=FR.idle;g=b&&b.find(q=>imgOK(IMG[q.f]))}return g||null}
 function drawFrame(f,x,y,face,alpha){f=readyFrame(f);const im=f&&IMG[f.f];if(!im)return;ctx.save();if(alpha!=null)ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.scale(face*SC,SC);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}
 // Mythic runs: a soft step bounce + forward lean on top of the run frames (eases in/out, so no snap)
-function mRunBob(){const on=p.uf>=7&&p.ground&&!p.hunt&&/_run$/.test(p.anim||'');const dt=Math.min(.05,Math.max(0,now-(p.rbT||now)));p.rbT=now;p.rbA=(p.rbA||0)+((on?1:0)-(p.rbA||0))*Math.min(1,dt*12);p.rbPh=(p.rbPh||0)+dt*12.6;const a=p.rbA;if(a<.01)return{y:0,r:0};return{y:a*Math.abs(Math.sin(p.rbPh))*8,r:a*p.face*(.045+.015*Math.sin(p.rbPh*2))}}
+// v32: base walk gets a step bob (two dips per cycle, synced to the frames), a little squash on each footfall and a slight nod
+function walkBob(){const on=p.ground&&p.state==='normal'&&!p.hunt&&p.anim==='walk'&&Math.abs(p.vx)>25;const dt=Math.min(.05,Math.max(0,now-(p.wbT||now)));p.wbT=now;p.wbA=(p.wbA||0)+((on?1:0)-(p.wbA||0))*Math.min(1,dt*10);const a=p.wbA;if(a<.01)return{y:0,r:0,s:0};const n=(FR.walk||[1]).length,ph=(p.ft%n)/n*Math.PI*4,c=Math.cos(ph);return{y:a*(1-c)*2.6,r:a*p.face*Math.sin(ph)*.014,s:a*(c>.6?(c-.6)*.06:0)}}
+function mRunBob(){const w=walkBob();if(w.y||w.r){const m=mRunBob0();return{y:m.y+w.y,r:m.r+w.r}}return mRunBob0()}
+function mRunBob0(){const on=p.uf>=7&&p.ground&&!p.hunt&&/_run$/.test(p.anim||'');const dt=Math.min(.05,Math.max(0,now-(p.rbT||now)));p.rbT=now;p.rbA=(p.rbA||0)+((on?1:0)-(p.rbA||0))*Math.min(1,dt*12);p.rbPh=(p.rbPh||0)+dt*12.6;const a=p.rbA;if(a<.01)return{y:0,r:0};return{y:a*Math.abs(Math.sin(p.rbPh))*8,r:a*p.face*(.045+.015*Math.sin(p.rbPh*2))}}
 function draw(){
  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=cine.z<.999?'#120c1c':'#87c6f0';ctx.fillRect(0,0,cv.width,cv.height);
  const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;
@@ -390,7 +393,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='31a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='32a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -1726,7 +1729,7 @@ function r11Update(dt){
 const _r9Pre11=r9Pre;r9Pre=function(dt){r11Update(dt);_r9Pre11(dt)};
 const _setAnim11=setAnim;setAnim=function(a,force){if(p.recT>0&&a===fa('idle')&&p.ground){const r=fa('rec');if(r!==a&&FR[r])a=r}return _setAnim11(a,force)};
 // idle breathing + landing squash (scale about the feet)
-function r11Sq(){let s=1;if(p.ground&&p.state==='normal'&&/(^|_)idle$/.test(p.anim))s+=Math.sin(now*3.3)*.013;if(p.lsq>0){const k=1-p.lsq/.16;s-=.07*Math.sin(Math.PI*k)}return s}
+function r11Sq(){let s=1-(p.wbA>.01&&p.anim==='walk'?walkBob().s:0);if(p.ground&&p.state==='normal'&&/(^|_)idle$/.test(p.anim))s+=Math.sin(now*3.3)*.013;if(p.lsq>0){const k=1-p.lsq/.16;s-=.07*Math.sin(Math.PI*k)}return s}
 
 // ===================== ROUND 12: BIG BRUNO THE BRAWLER · VS card · rooftop arena · stealth hunt =====================
 // Big Bruno is drawn from his own 5-frame sheets (b_*) at DSC — ~420 world units tall, about 2.2x the old dog.
