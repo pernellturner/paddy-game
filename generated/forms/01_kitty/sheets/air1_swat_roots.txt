@@ -1,0 +1,8 @@
+# air1_swat: cell 477x642px, baseline y=567 (cell coords), form scale K=0.4928 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 air_ready 0 230
+2 air_ready -17 230
+3 a1_snap 19 230 HIT1 SFX:hup
+4 a1_snap 49 230 HIT2
+5 a1_snap 39 234
+6 air_ready 40 230

@@ -1,0 +1,13 @@
+# demo_1-2.gif: canvas 548x461; root x vs frame 1 (px), lift; gNfM = move N frame M; flags as in the sheets
+1 g1f1 ready 0 0
+2 g1f2 l1_load -26 0
+3 g1f3 l1_load -17 0
+4 g1f4 l1_snap 14 0 HIT1 SFX:hup
+5 g1f5 l1_snap 14 0 HIT2
+6 g1f6 l1_snap 12 0
+7 g2f2 l2_load 45 0 SFX:hup
+8 g2f3 l2_load 57 0
+9 g2f4 l2_snap 78 0 HIT1
+10 g2f5 l2_snap 78 0 HIT2
+11 g2f6 l2_snap 76 0
+12 g2f7 ready 74 0

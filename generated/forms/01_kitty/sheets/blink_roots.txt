@@ -1,0 +1,8 @@
+# blink: cell 894x411px, baseline y=361 (cell coords), form scale K=0.4928 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 bl_crouch 8 0 SFX:hiss
+3 bl_dash 207 20
+4 bl_dash 437 20
+5 land 466 0
+6 ready 510 0

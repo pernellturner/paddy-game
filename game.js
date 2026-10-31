@@ -393,7 +393,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='35a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='36a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -2723,7 +2723,7 @@ window.UFTABS.push(...UF.slice(7).map(x=>[x.ico+' '+x.nm.replace(/ PADDY$/,'').s
 #tiers .asc{background:linear-gradient(90deg,#3a2a00,#1a1040);border-radius:8px;padding:5px 6px;margin-top:4px}#tiers .ascimg{position:relative;width:84px;height:112px;flex:none;border-radius:8px;overflow:hidden;border:2px solid #ffe9a0;box-shadow:0 0 16px #ffd76a88}#tiers .ascimg img{width:100%;height:100%;object-fit:cover;filter:brightness(.5) saturate(.7) blur(1.5px)}#tiers .ascimg b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;text-shadow:0 0 10px #000}`;document.head.appendChild(st)})();
 function tiersHTML(){const LGU=[1,2,3,4,5,6].concat(UF.map((x,i)=>x&&x.legend?i:0).filter(Boolean)),MYU=UF.map((x,i)=>i>=7&&x&&!x.legend&&!x.god?i:0).filter(Boolean),nL=LGU.filter(u=>UNL.has(u)).length,nM=MYU.filter(u=>UNL.has(u)).length;
  const row=(c,n,t)=>`<div class="tr"><span class="tn" style="color:${c}">${n}</span><span>${t}</span></div>`;
- return `<div id="tiers"><h3>🐾 FORM TIERS</h3>`+row('#ffe08a','🐱 ALLEY CAT','Kitty · Neon Ninja <span class="tip">(start)</span>')+row('#ff9a6b','🗡️ PROWLER','Samurai · Knight · Pirate')+
+ return `<div id="tiers"><h3>🐾 FORM TIERS</h3>`+row('#ffe08a','🐱 ALLEY CAT','Kitty · Ninja <span class="tip">(start)</span>')+row('#ff9a6b','🗡️ PROWLER','Samurai · Knight · Pirate')+
   row('#ffe14d','🏆 LEGEND',LGU.map(u=>UF[u].ico).join(' ')+` <span class="tip">${nL}/${LGU.length} unlocked</span>`)+row('#7fe8ff','🌌 MYTHIC',MYU.map(u=>UF[u].ico).join(' ')+` <span class="tip">${nM}/${MYU.length} unlocked</span>`)+
   `<div class="tr asc"><div class="ascimg"><img src="assets/ascended_lock.webp?v=${VER}" loading="lazy" alt="Ascended Paddy (locked)"></div><div><span class="tn" style="color:#ffd23a">🌟 GOD</span><br><b>GOLDEN FURY</b> – the one God form, the true Paddy. ⚡ POWER UP (G) climbs Fury 1 → 2 → 3 → 4 → FURY GOD. <span class="tip">Unlocked for testing · awakens in the story finale.</span></div></div></div>`}
 function mythicHTML(){const d=UNL.d;let h=`<div id="mythic"><h3>🌌 MYTHIC · the strongest forms</h3><div class="stat">EXP ${d.exp} · Big Bruno K.O.s ${d.ko} · Ultimates ${d.ult} · Stealth takedowns ${d.tkd}</div>`;

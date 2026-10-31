@@ -1,0 +1,11 @@
+# heavy1_pounce: cell 765x411px, baseline y=361 (cell coords), form scale K=0.4928 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 h1_load 39 0
+3 h1_load 32 0
+4 h1_load 39 0 SFX:GRUNT
+5 h1_imp 139 60 HIT1
+6 h1_imp 289 60 HIT2
+7 h1_imp 319 34
+8 land 306 0
+9 ready 330 0

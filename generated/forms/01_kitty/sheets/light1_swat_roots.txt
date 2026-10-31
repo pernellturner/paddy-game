@@ -1,0 +1,9 @@
+# light1_swat: cell 508x422px, baseline y=372 (cell coords), form scale K=0.4928 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l1_load -26 0
+3 l1_load -17 0
+4 l1_snap 14 0 HIT1 SFX:hup
+5 l1_snap 14 0 HIT2
+6 l1_snap 12 0
+7 ready 34 0

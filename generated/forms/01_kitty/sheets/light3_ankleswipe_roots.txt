@@ -1,0 +1,9 @@
+# light3_ankleswipe: cell 517x411px, baseline y=361 (cell coords), form scale K=0.4928 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l3_load 37 0
+3 l3_load 51 0 SFX:hup
+4 l3_snap 74 0 HIT1
+5 l3_snap 74 0 HIT2
+6 l3_load 63 0
+7 ready 44 0

@@ -81,7 +81,7 @@ function upd(d,dt){d.t+=dt;d.pt+=dt;d.flash-=dt;d.sq*=Math.pow(.01,dt);d.stun-=d
 // ---------- the spar punch: DODGED / BLOCKED / COUNTER / BONK ----------
 function strike(d){d.done=1;const rel=(p.x-d.x)*d.face,inRange=rel>-30&&rel<(fighter()?DART.atk.reach*FSC()*SC+62:GR+100),low=p.y>GROUND-110;d.countered=0;
  const b0=PR.s.blocked,c0=PR.s.counter;
- const dodging=(p.state==='kdodge'||(p.state==='nj'&&window.NJ&&NJ.k==='dodge'))&&p.t<.22&&d.threat;   // a dodge right as it lands is a COUNTER even if the dash already cleared the reach
+ const dodging=(p.state==='kdodge'||(p.state==='nj'&&window.NJ&&NJ.k==='dodge')||(p.state==='kt'&&window.KY&&KY.k==='dodge'))&&p.t<.22&&d.threat;   // a dodge right as it lands is a COUNTER even if the dash already cleared the reach
  if(((inRange&&low)||dodging)&&dogStrike(d,0,'punch')){if(PR.s.counter>c0){d.countered=1}else if(PR.s.blocked>b0){d.cw=1.2}
   else{snd('paddy_hurt_meow',{v:.5,gap:.4})}}
  else if(d.threat){PR.s.dodged++;d.cw=1.2;_say('DODGED!','#bfe8ff',true);snd('paddy_dash',{v:.5,r:1.2});spark(p.x,p.y-80,10,['#bfe8ff','#fff'],240)}
@@ -137,6 +137,7 @@ const ST={spar:['🥊','SPAR','it hits back — defend, then punish'],turn:['↔
 function hints(){const nin=FORM()===1,base=FORM()===0||nin,kb=!document.body.classList.contains('touchy');
  if(PR.st==='spar')return [`Red glow + closing ring = punch coming!`,base?(kb?'DODGE: O · BLOCK: hold B':'DODGE: tap 🛡 · BLOCK: hold 🛡'):'Jump over it, dash or Blink away',base?(nin?'Block/dodge right as it lands = COUNTER (or Claw while blocking)':'Dodge/block right as it lands = COUNTER'):'Samurai & Knight: parry it',`Hit back straight after = COUNTER!`];
  if(PR.st==='turn')return ['Start a combo on one dummy…',kb?'…tap ← / → mid-combo to turn round':'…tap ◀ / ▶ mid-combo to turn round','Keep the chain going on both sides'];
+ if(FORM()===0&&window.KITTY36&&KITTY36.on)return ['Launch: ↑+Claw (Rocket Leap)','then Claw ×3 in the air: air swat, bunny kick, dive spike','Zoomies in the air closes the gap · every air hit = JUGGLE ×n'];
  if(nin)return ['Launch: ↑+Claw (Rising Launcher)','then Claw ×3 in the air: palm, side kick, axe spike','Blink in the air closes the gap · every air hit = JUGGLE ×n'];
  return [base?'Launch: ↑+Claw (Sky Swipe), power build':'Launch: Uppercut / launcher moves','Jump after it and keep hitting','Every air hit = JUGGLE ×n'];}
 function panel(){const S=PR.s,st=ST[PR.st],full=PR.hintT<9||S.hits===0,H=hints(),x=14,y=80,w=322,lh=19;

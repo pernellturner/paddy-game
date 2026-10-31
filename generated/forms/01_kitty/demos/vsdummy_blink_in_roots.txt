@@ -1,0 +1,12 @@
+# vsdummy_blink_in.gif: canvas 1552x422; root x vs frame 1 (px), lift; gNfM = move N frame M; flags as in the sheets
+1 g1f1 ready 0 0
+2 g1f2 bl_crouch 8 0 SFX:hiss
+3 g1f3 bl_dash 207 20
+4 g1f4 bl_dash 437 20
+5 g1f5 land 466 0
+6 g2f2 l1_load 484 0
+7 g2f3 l1_load 493 0
+8 g2f4 l1_snap 524 0 HIT1 SFX:hup
+9 g2f5 l1_snap 524 0 HIT2
+10 g2f6 l1_snap 522 0
+11 g2f7 ready 544 0

@@ -1,0 +1,23 @@
+# vsdummy_juggle.gif: canvas 1621x736; root x vs frame 1 (px), lift; gNfM = move N frame M; flags as in the sheets
+1 g1f1 ready 0 0
+2 g1f2 ln_load -63 0
+3 g1f3 ln_load -62 0 SFX:GRUNT
+4 g1f4 ln_imp 5 60 HIT1
+5 g1f5 ln_imp 35 60 HIT2
+6 g1f6 air_ready 27 190
+7 g2f2 bl_dash 191 260 SFX:hiss
+8 g2f3 bl_dash 391 260
+9 g3f2 air_ready 454 230
+10 g3f3 a1_snap 490 230 HIT1 SFX:hup
+11 g3f4 a1_snap 520 230 HIT2
+12 g3f5 a1_snap 510 234
+13 g4f2 air_ready 486 230
+14 g4f3 a2_snap 598 210 HIT1 SFX:hup
+15 g4f4 a2_snap 628 210 HIT2
+16 g4f5 a2_snap 595 216
+17 g5f2 a3_wind 562 250 SFX:GRUNT
+18 g5f3 a3_snap 607 170 HIT1
+19 g5f4 a3_snap 637 170 HIT2
+20 g5f5 a3_snap 647 90
+21 g5f6 land 570 0
+22 g5f7 ready 614 0

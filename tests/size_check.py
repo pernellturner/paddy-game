@@ -35,6 +35,7 @@ def size(f):
   return cache[f]
 def owner(k):
   if k.startswith(NOT): return None
+  if k.startswith('kt_'): return 'KITTY'   # v36: Kitty Paddy (base Paddy's Kitty style) frames
   if k.startswith(('nj_','nk_','nx_')): return 'NINJA'   # v35: Ninja Paddy's own anims + the old route anims remapped onto its frames
   best=None
   for nm,pre,_ in forms[1:]:
@@ -66,7 +67,7 @@ for nm,pre,big in forms:
 # TARGET=199: the studio reference (base upright guard at TARGET=199) is 340 px, x the game factor sqrt(fur area of idle_test_1)/199.
 # Head size constant across anims = every frame of the form was cut with ONE scale: each frame carries its cut scale (sc) in frames.json
 # and all of the form's frames must share it (the studio draws every pose at one K; only squash/stretch <= 4% on top).
-GATE={'NINJA':('n_','nj_')}   # form name -> (prefix, own sheet prefix); Kitty joins here when it is rebuilt
+GATE={'NINJA':('n_','nj_'),'KITTY':('kt_','kt_')}   # form name -> (prefix, own sheet prefix)
 FJ=json.load(open(os.path.join(ROOT,'assets/frames.json')));SCOF={e['f']:e.get('sc') for v in FJ.values() for e in v}
 def catmask(a):
   r,g,bb,al=[a[...,i].astype(int) for i in range(4)];return (al>200)&(((r-bb)>18)|((r<110)&(r>bb)))
