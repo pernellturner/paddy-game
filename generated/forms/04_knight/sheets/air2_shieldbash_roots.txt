@@ -1,0 +1,8 @@
+# air2_shieldbash: cell 316x698px, baseline y=625 (cell coords), form scale K=0.3949 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 air_ready 0 230
+2 air_ready -22 230
+3 a2_snap 17 220 HIT1 SFX:hup
+4 a2_snap 17 220 HIT2
+5 a2_snap 5 224
+6 air_ready 4 230

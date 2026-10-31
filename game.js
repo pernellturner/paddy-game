@@ -393,7 +393,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='37b',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='38a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -1316,7 +1316,7 @@ Object.assign(A,{
 const KG='#ffd34d',KBL='#4f8dff',KW='#fff6d8',PT='#2ec4d6',PG='#ffcf3f',PRD='#e8413c';
 // ---- the two new forms' data: 8-hit chains (hits 1-3 any press, 4-7 on the timing ring, perfect 8th = cinematic) ----
 const XF=[null,null,null,
- {pre:'kn',nm:'KNIGHT',col:KG,col2:KBL,H:.46,H0:.46,minT:.2,cancelT:.18,W:.26,E:.52,spd:400,airNm:'AIR CLEAVE',
+ {pre:'kn',nm:'KNIGHT',col:KG,col2:KBL,H:.46,H0:.46,minT:.2,cancelT:.18,W:.26,E:.52,spd:280,airNm:'AIR CLEAVE',
   CH:[null,{a:'kn_h1',k:'flat',lunge:250,ht:.09,nm:'GREATSWORD CLEAVE!',c:'#fff3c0'},{a:'kn_h2',k:'down',lunge:260,ht:.09,nm:'DIAGONAL CLEAVE!',c:'#ffe48a'},
    {a:'kn_h3',k:'over',lunge:230,ht:.1,nm:'OVERHEAD CRUSH!',c:KG},{a:'kn_h4',k:'flat',lunge:330,ht:.085,nm:'SHIELD BASH!',c:'#9cc2ff'},
    {a:'kn_h5',k:'rise',lunge:160,ht:.09,nm:'RISING CLEAVE!',c:'#ffd34d'},{a:'kn_h6',k:'spin',lunge:220,ht:.085,nm:'CYCLONE CLEAVE!',c:'#ffb340'},
@@ -1604,8 +1604,8 @@ LKF.push({col:KG,col2:KBL,C:{nm:'CRUSHING CLEAVE!',a:'kn_h3'},CC:{nm:'MOUNTAIN C
   M:{nm:'FLINTLOCK POP!',a:'pi_pop'},MM:{nm:'CANNON BLAST!',a:'pi_cannon'},B:{nm:'BARREL ROLL!',a:'pi_roll'},BB:{nm:'ROPE SWING!',a:'pi_swing'}});
 ROUTES.push(
  [{k:'CCCB',nm:'LANCE OF LIGHT!',fx:'lance',tip:'a blazing lance rush straight through him'},{k:'CCCM',nm:'HOLY NOVA!',fx:'nova',tip:'a battle-meow that bursts into rings of holy light'},
-  {k:'CCCTT',nm:'SHIELD BREAKER!',fx:'breaker',tip:'shield bash, then a spinning shield storm that cracks the ground'},{k:'TTTMM',nm:'CREST OF VALOUR!',fx:'crest',tip:'three guards, then a giant glowing crest and a pillar of light'},
-  {k:'CCCCCT',nm:'CASTLE CRUSHER!',fx:'castle',tip:'5 heavy timed cleaves, then a ground-cracking shield bash'},{k:'TTTCCC',nm:'GREATSWORD GALE!',fx:'gale',tip:'guard x3 into a rising whirlwind of cleaves'},
+  {k:'CCCTT',nm:'SHIELD BREAKER!',fx:'breaker',tip:'shield bash, then a spinning shield storm that cracks the ground'},{k:'TTTMM',nm:'CREST OF VALOUR!',fx:'crest',tip:'three shield charges, then a giant glowing crest and a pillar of light'},
+  {k:'CCCCCT',nm:'CASTLE CRUSHER!',fx:'castle',tip:'5 heavy timed cleaves, then a ground-cracking shield bash'},{k:'TTTCCC',nm:'GREATSWORD GALE!',fx:'gale',tip:'shield charge x3 into a rising whirlwind of cleaves'},
   {k:'CCCMBBTT',nm:'ROYAL CHARGE!',fx:'royal',tip:'holy shout, twin lance rush, shield storm juggle'},{k:'TTTMCTMC',nm:'ROYAL JUDGEMENT',ult:1,tip:'ULTIMATE: crest in the sky, a giant sword of light, a quake that splits the ground'}],
  [{k:'CCCB',nm:'BARREL BLITZ!',fx:'blitz',tip:'barrel-roll right through him and slash out'},{k:'CCCM',nm:'POINT BLANK POP!',fx:'pointblank',tip:'flintlock pop in a big cartoon puff'},
   {k:'CCCTT',nm:'ANCHORS AWEIGH!',fx:'aweigh',tip:'hook him in, then whirl the anchor round'},{k:'TTTMM',nm:'BROADSIDE!',fx:'broadside',tip:'three anchor hooks, then cannonballs rain in from the ship'},
@@ -1720,7 +1720,7 @@ function upgLoad(f,hi){if(!window.queueFrames||!F)return;const names=[];
 function r11Update(dt){
  if(p.lsq>0)p.lsq-=dt;if(p.recT>0)p.recT-=dt;
  // a short settle pose when a ground attack finishes, instead of snapping straight back to idle
- const S=p.state;if(S==='normal'&&r11Prev!=='normal'&&(p.sam||p.xf||p.uf)&&p.ground&&!/^(land|hurt|respawn|victory|nmorph|ledge|wallrun|bunny|lkult|sm|nj|kt)$/.test(r11Prev))p.recT=.24;r11Prev=S;
+ const S=p.state;if(S==='normal'&&r11Prev!=='normal'&&(p.sam||p.xf||p.uf)&&p.ground&&!/^(land|hurt|respawn|victory|nmorph|ledge|wallrun|bunny|lkult|sm|nj|kt|kg)$/.test(r11Prev))p.recT=.24;r11Prev=S;
  if(!window.queueFrames||!F)return;
  const f=FORM();if(f!==upgForm){upgForm=f;if(f>0)upgLoad(f,true)}
  if(!upgBg&&now>6&&SPRITES.loaded+SPRITES.failed.length>=SPRITES.total){upgBg=true;[2,1,3,4].forEach(k=>upgLoad(k,false))}

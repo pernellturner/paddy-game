@@ -1,0 +1,11 @@
+# heavy1_overhead: cell 396x450px, baseline y=400 (cell coords), form scale K=0.3949 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 h1_load -3 0
+3 h1_load -3 0
+4 h1_load 7 0 SFX:GRUNT
+5 h1_imp 58 0 HIT1
+6 h1_imp 58 0 HIT2
+7 h1_imp 58 0
+8 recover 26 0
+9 ready 56 0

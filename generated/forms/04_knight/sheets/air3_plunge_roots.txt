@@ -1,0 +1,10 @@
+# air3_plunge: cell 308x673px, baseline y=623 (cell coords), form scale K=0.3949 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 air_ready 0 230
+2 a3_wind 9 250 SFX:GRUNT
+3 a3_snap 32 170 HIT1
+4 a3_snap 32 170 HIT2
+5 a3_snap 42 90
+6 land 41 0
+7 recover 64 0
+8 ready 41 0

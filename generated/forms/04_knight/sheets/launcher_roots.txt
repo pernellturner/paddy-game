@@ -1,0 +1,9 @@
+# launcher: cell 382x673px, baseline y=623 (cell coords), form scale K=0.3949 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 ln_load 3 0
+3 ln_load 3 0 SFX:GRUNT
+4 ln_imp 168 60 HIT1
+5 ln_imp 168 60 HIT2
+6 air_ready 112 190
+7 air_ready 116 230

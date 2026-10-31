@@ -1,0 +1,9 @@
+# light1_shieldjab: cell 352x444px, baseline y=394 (cell coords), form scale K=0.3949 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l1_load -1 0
+3 l1_load 11 0 SFX:hup
+4 l1_snap 24 0 HIT1
+5 l1_snap 24 0 HIT2
+6 recover 6 0
+7 ready 34 0

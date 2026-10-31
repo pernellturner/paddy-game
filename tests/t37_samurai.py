@@ -110,8 +110,9 @@ async def main():
   check('victory pose = sm_victory',r[1].startswith('p/sm_victory'),r)
   # ---- route opener: 3 on-beat hits + Blink = NEON GHOST CUT ----
   await pg.wait_for_timeout(1500);await reset(160);await E("practice(2,0)");await pg.wait_for_timeout(1500)
-  await string(['KeyX','KeyX','KeyX'])
-  await onbeat();await pg.wait_for_timeout(30);await tap('KeyN');await pg.wait_for_timeout(1600);r=await E("[PR.clears,CARDS.join('|'),p.state]")
+  r0=await E("SM7.moves.length");await string(['KeyX','KeyX','KeyX'])
+  await onbeat(r0+3);await pg.wait_for_timeout(30);dg=await E("[SM7.moves.slice(-4),SM7.n,SM7.beat,p.miss,JSON.stringify(openerNow()),JSON.stringify(LK.op),PR.on,PR.f,FORM(),p.state,SM7.k,p.fi]");await tap('KeyN');await pg.wait_for_timeout(1600);r=await E("[PR.clears,CARDS.join('|'),p.state]")
+  if r[0]<1:print('ROUTE DEBUG',dg)
   check('C C C (on the beat) + B opens the samurai route PHANTOM IAI',r[0]>=1,r);await E("pracStop()")
   # ---- Practice Room spar as Ninja: hold B = BLOCKED, Claw right after = COUNTER, dodge early = DODGED ----
   await pg.wait_for_timeout(800);await E("ov(true)");await pg.wait_for_timeout(400);await pg.click('#mprac');await pg.wait_for_timeout(2500)

@@ -1,0 +1,15 @@
+# finisher_bastion: cell 535x503px, baseline y=453 (cell coords), form scale K=0.3949 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 fin_coil 1 0 SFX:HISS
+3 fin_coil 1 0
+4 h2_imp 154 0
+5 a3_wind 233 90 SFX:BIG GRUNT
+6 fin_imp 265 0 HIT1
+7 fin_imp 265 0 HIT2
+8 fin_imp 265 0 HIT3
+9 fin_imp 265 0
+10 recover 272 0
+11 fin_pose 239 0
+12 fin_pose 239 0
+13 ready 249 0

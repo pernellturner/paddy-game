@@ -61,7 +61,7 @@ const VO={5:'vo_nice',10:'vo_great',20:'vo_awesome',35:'vo_purrfect',50:'vo_insa
 function comboSound(n){S.play('combo_tick_'+TIER(n),{v:.55,gap:.03});if(STING[n])S.play(STING[n],{v:.8});if(VO[n])setTimeout(()=>S.play(VO[n],{v:1}),STING[n]?220:0)}
 S.combo=comboSound;
 // v30: base Paddy has 3 clear hit tiers: SMALL (jabs, swipes), POWER (power punch, launchers, counters, tail launcher), DEADLY (finisher hits)
-const T_DEADLY=/^(nj_fin|kt_fin|sm_fin|bunnylaunch|airfin|spike|finisher|pc8|tailslam|twister|cyclonefin|morphstrike)/,T_POWER=/^(nj_h|nj_launch|nj_counter|nj_a3|kt_h|kt_launch|kt_counter|kt_a3|sm_h|sm_launch|sm_counter|sm_a3|bxrb|bxp|pc3|pcup|kcounter|uppercut|dashstrike|tail3|launch|slam|airup|pc6|pc7|bunnygrab|hardland|swat)/;
+const T_DEADLY=/^(nj_fin|kt_fin|sm_fin|kg_fin|bunnylaunch|airfin|spike|finisher|pc8|tailslam|twister|cyclonefin|morphstrike)/,T_POWER=/^(nj_h|nj_launch|nj_counter|nj_a3|kt_h|kt_launch|kt_counter|kt_a3|sm_h|sm_launch|sm_counter|sm_a3|kg_h|kg_launch|kg_counter|kg_a3|bxrb|bxp|pc3|pcup|kcounter|uppercut|dashstrike|tail3|launch|slam|airup|pc6|pc7|bunnygrab|hardland|swat)/;
 S.tier=function(move){const mv=String(move||'');return T_DEADLY.test(mv)?3:T_POWER.test(mv)?2:1};S.tierLog=[];
 function tierSound(d,mv){const t=S.tier(mv);S.tierLog.push(t);if(S.tierLog.length>40)S.tierLog.shift();
  if(t===3){S.play('hit_deadly',{v:1,gap:.25});S.play('ground_slam',{v:.45,gap:.3})}
@@ -69,7 +69,7 @@ function tierSound(d,mv){const t=S.tier(mv);S.tierLog.push(t);if(S.tierLog.lengt
  else{S.play(rnd(['hit_small','hit_small2']),{v:.85,r:.92+Math.random()*.18,gap:.035});S.play(rnd(SWIPE),{v:.3,r:1.1,gap:.04})}
  const air=d&&d.y<(typeof GROUND!=='undefined'?GROUND-25:9e9);if(air&&t<3)S.play(rnd(['juggle_hit_1','juggle_hit_2']),{v:.45,gap:.06})}
 function hitSound(d,move){const f=fNow(),P=PAL[f]||PAL[0],mv=String(move||'');let special=null;
- if((f===0||/^(nj|kt|sm)_/.test(mv))&&SM.has('hit_small')){tierSound(d,mv);for(const [re,k] of MOVE)if(re.test(mv)){S.play(k,{v:.5,gap:.09});break}if(d&&!d.cr&&Math.random()<.3)S.play('dog_yelp',{v:.55,gap:.5});return}
+ if((f===0||/^(nj|kt|sm|kg)_/.test(mv))&&SM.has('hit_small')){tierSound(d,mv);for(const [re,k] of MOVE)if(re.test(mv)){S.play(k,{v:.5,gap:.09});break}if(d&&!d.cr&&Math.random()<.3)S.play('dog_yelp',{v:.55,gap:.5});return}
 for(const [re,k] of MOVE)if(re.test(mv)){special=k;break}
  if(special)S.play(special,{v:.9,gap:.09});else S.play(rnd(P.hit),{v:.75,r:(P.r||1)*(.95+Math.random()*.1),gap:.04});
  const air=d&&d.y<(typeof GROUND!=='undefined'?GROUND-25:9e9);if(air)S.play(rnd(['juggle_hit_1','juggle_hit_2']),{v:.6,gap:.06});

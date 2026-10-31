@@ -1,0 +1,8 @@
+# walk: cell 381x446px, baseline y=396 (cell coords), form scale K=0.3949 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 walk_a 0 0
+2 walk_a 21 0
+3 walk_b 60 5
+4 walk_c 78 0
+5 walk_c 99 0
+6 walk_d 138 5
