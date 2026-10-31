@@ -7,7 +7,7 @@
 // API: CUT.play(ids, done)            ids = 'w1c1' or ['w1a1','w1u03']; done() runs after the last panel or a skip
 //      CUT.trigger(levelId, ev, done) plays TRIGGERS[levelId+':'+ev] (ev = goal · boss_enter · boss_ko); false (and done()) if none
 //      CUT.next() · CUT.skip() · CUT.state() · CUT.log · CUT.off (?nocuts) · level.html?cut=w1c3 previews one cutscene
-// Unlock flags (W1-U01/U02 Kitty upgrades, W1-U03 Ninja) are saved in the shared 'paddyLegends' save under d.story.flags.
+// Unlock flags (W1-U01/U02 Kitty upgrades, W1-U03 Ninja) are saved in the story save ('paddyStory', level.html) under d.story.flags.
 (function(){
 const SRC=n=>'assets/story/'+n+'.webp?v=c1a';
 const FONTS="'Bangers','Luckiest Guy',Impact,'Arial Black',sans-serif";
@@ -42,8 +42,9 @@ const IM={};function load(n){if(!n)return null;if(IM[n])return IM[n];const im=ne
 const okIm=im=>im&&im.ok&&im.naturalWidth;
 // ---------- save (shared with game.js UNL / mission.js) ----------
 const hasUNL=()=>typeof UNL!=='undefined'&&UNL&&UNL.d;
-function data(){if(hasUNL())return UNL.d;try{return JSON.parse(localStorage.getItem('paddyLegends')||'{}')||{}}catch(_){return {}}}
-function save(d){if(hasUNL()){UNL.save();return}try{localStorage.setItem('paddyLegends',JSON.stringify(d))}catch(_){}}
+const SKEY=()=>hasUNL()?'paddyLegends':'paddyStory';   // story mode (level.html) -> its own save, see mission.js
+function data(){if(hasUNL())return UNL.d;try{return JSON.parse(localStorage.getItem(SKEY())||'{}')||{}}catch(_){return {}}}
+function save(d){if(hasUNL()){UNL.save();return}try{localStorage.setItem(SKEY(),JSON.stringify(d))}catch(_){}}
 function mark(sc,key){const d=data();d.story=d.story||{};const S=d.story;S.seen=S.seen||[];S.flags=S.flags||[];
  if(!S.seen.includes(key))S.seen.push(key);if(sc.flag&&!S.flags.includes(sc.flag))S.flags.push(sc.flag);save(d)}
 // ---------- DOM ----------

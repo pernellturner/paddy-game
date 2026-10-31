@@ -1,0 +1,1477 @@
+{
+ "id": "silverdale_4",
+ "world": "silverdale",
+ "label": "World 1-4",
+ "name": "Silverdale Village",
+ "subtitle": "old Silverdale Street: verandahs & gabled iron roofs → Wainui Rd roundabout → Silverdale Hall → church → village green",
+ "theme": "silverdale_village",
+ "music": "silverdale_village",
+ "tile": 48,
+ "width": 254,
+ "height": 12,
+ "layers": {
+  "solid": [
+   "..............................................................................................................................................................................................................................................................",
+   ".............................................................................................T......................L######L...................................................................................T................................T.............",
+   "...............LL...LL...LL.....T.......L#####L.........LL...................................T.....................L########L......T..................LL.......................T......L######L.................T.........LL....LL...............T.............",
+   "...........T..L##L.L##L.L##L..T.T##L....#######..T.....L##L...T.##L.........T............====T=====............T..L##########L..T..T##L.........TT...L##L.....T................T##L...########..T..............T........L##L..L##L...T..........T.............",
+   "....??.....TL################LT.TL##############LT..L########LT.L##########LT................T..........??.....TL##############LT..TL##########LTTL##########LT.........??.....TL##############LTFFFFFFFFFF.===T====.L##############LT.......===T====.........",
+   "...........T..................T.T................T............T.............T................T.................T................T..T............TT............T................T................T..............T.....................T..........T.............",
+   "...........T..................T.T................T............T.............T................T.................T................T..T............TT............T................T................T..............T.....................T..........T.............",
+   "...........T..................T.T................T............T.............T................T.................T................T..T............TT............T................T................T..............T.....................T..........T.............",
+   "...........T..................T.T................T............T.............T................T.................T................T..T............TT............T................T................T..............T.....................T..........T.............",
+   ".......#...T..................T.T................T............T.............#.............########............#T................T..T............TT............#..#............#T................####################.................T..........T.............",
+   "############################################################################################################################################################################################################################################^#################",
+   "##############################################################################################################################################################################################################################################################"
+  ],
+  "deco": [
+   "........................................................................................kk.kk.kh.kk........................................................................................................k.hk.kk.kk.......................k.kk.kk.kh........",
+   "........................................................................................k.kk..k.kh.k................OOOOOOOO................................................................................kk..k.kk.........................hk..k.kk.........",
+   "...............RR...RR...RR.....q.......OOOOOOO.........RR...............................hk.k..kk.kh...............OOOOOOOOOO......q..................OO.......................q......RRRRRRRR.............kh.k..hk.k....OO....OO...........kk.h..kk.k........",
+   "...........q..RRRR.RRRR.RRRR..q.qHHH....uuuuuuu..d.....RRRR...q.HHH.........q............bbbb.bbbbb............q..OOOOOOOOOOOO..q..qHHH.........dq...OOOO.....q................qHHH...uuuuuuuu..q..........k.kh.kk.hk...OOOO..OOOO...q......h.kk.hk.kk........",
+   "...........qVVVVVVVVVVVVVVVVVVq.qVVVVVVVVVVVVVVVVd..VVVVVVVVVVq.VVVVVVVVVVVVq..................................qVVVVVVVVVVVVVVVVq..qVVVVVVVVVVVVdqVVVVVVVVVVVVq................qVVVVVVVVVVVVVVVVq...........bbb.bbbb.VVVVVVVVVVVVVVVVq.......bbb.bbbb.........",
+   "...........qwwwwwwwwwwwwwwwwwwq.qwwwwwwwwwwwwwwwwd..wwwwwwwwwwq.wwwwwwwwwwwwq..................................qwwwwwwwwwwwwwwwwq..qwwwwwwwwwwwwdqwwwwwwwwwwwwq................qwwwwwwwwwwwwwwwwqffffffffff..........wwwwwwwwwwwwwwwwq........................",
+   "...........qwwwwwwwwwwwwwwwwwwq.qwwwwwwwwwwwwwwwwd..wwwwwwwwwwq.wwwwwwwwwwwwq..................................qwwwwwwwwwwwwwwwwq..qwwwwwwwwwwwwdqwwwwwwwwwwwwq................qwwwwwwwwwwwwwwwwqffffffffff..........wwwwwwwwwwwwwwwwq........................",
+   "...........qwwwwwwwwwwwwwwwwwwq.qwwwwwwwwwwwwwwwwd..wwwwwwwwwwq.wwwwwwwwwwwwq..................................qwwwwwwwwwwwwwwwwq..qwwwwwwwwwwwwdqwwwwwwwwwwwwq................qwwwwwwwwwwwwwwwwqffffffffff..........wwwwwwwwwwwwwwwwq........................",
+   "........l..qwwwwwwwwwwwwwwwwwwq.qwwwwwwwwwwwwwwwwd..wwwwwwwwwwq.wwwwwwwwwwwwq.l................................lwwwwwwwwwwwwwwwwq..qwwwwwwwwwwwwdqwwwwwwwwwwwwq.l..............lwwwwwwwwwwwwwwwwqffffffffff..........wwwwwwwwwwwwwwwwq.................l..G...",
+   "ns.....o.n.q..................qnq................ds...........qn............ons...........IIIIIIII...........soq................qn.q............dq............os.I...c...c..c.Iq................n...................n................q....................G.n.",
+   "................................................................................XXXXXXXXXX........XXXXXXXXXX......................................................XXXXXXXXXXXX........................................................YYYYYYYYYYYYYYYYYYYYYYYY",
+   ".............................................................................................................................................................................................................................................................."
+  ]
+ },
+ "legend": {
+  "#": "ground: solid on all sides (concrete, deck, roof slab)",
+  "=": "one-way platform: solid only from above, jump up through it, press ↓ to drop (glass canopy, tree branch)",
+  "B": "breakable: solid until hit (precast panel stack), then removed",
+  "?": "item block: solid; bonk from below or hit to release an item",
+  "^": "soft hazard: walkable floor that bumps Paddy and chips health, never kills",
+  "~": "water: not solid; touching it = soft respawn at last safe ground (shallow drain)",
+  "L": "ledge-grab edge: solid like #, plus Paddy can grab its top corner from below/side and pull up",
+  "T": "climbable trunk / pole: NOT solid (walk past it); hold ↑ while overlapping to cling and climb up/down, ←/→ steps onto an adjacent branch, verandah or roof, jump leaps off (deco: q verandah post, d drainpipe)",
+  "F": "fence top: 1-tile-thin walkable rail, one-way (land from above, jump up through, ↓ drops); posts/palings below are deco only",
+  ".": "empty"
+ },
+ "entityTypes": {
+  "kid": "{type:'kid', kind:'scooter'|'skateboard', x, y, range, harmless:true, hitbox:false, bonus:'hop'}: ambient NPC kid that rides back and forth over x..x+range on feet row y. HARMLESS: never deals damage and never knocks Paddy back; hitbox:false = no collision at all (Paddy walks straight through) and it cannot be attacked (swipes pass through). bonus:'hop' = Paddy hopping over the kid (airborne directly above it) gives a small coin bonus (suggest +3 coins, once per pass). Not an obstacle; the validator ignores kids for pathing/lanes.",
+  "car": "{type:\"car\", name, lane, x0, x1, speed, dir}: dodge-only moving hazard, ~2 tiles tall x 3 long. lane = feet row it drives on; it shuttles between x0 and x1 (tiles) at speed tiles/s starting in dir (+1 right / -1 left), turning at the ends. Touching it = a gentle bump (small hop away, brief invulnerability), NO damage, never kills. Cannot be attacked. Never leaves x0..x1: the tiles just outside are safe islands / kerbs. Paddy can single-jump over a car.",
+  "bus": "{type:\"bus\", ...same fields}: like car but ~3 tiles tall x 5 long and slower; too tall to single-jump, so wait on the island or go over it on the traffic-light mast arm. Same bump, no damage.",
+  "secret_paw": "{type:'secret_paw', id:'w1-<n>', x, y}: hidden golden-paw collectible (World 1 has 10: w1-1..w1-10, spread over silverdale_1..7). (x,y) = tile cell like other pickups (feet-cell convention); it floats there, no collision, collected on touch, never respawns once taken. id is unique across the game so the save file can track which paws are found; collecting all 10 is meant to unlock a reward (e.g. awakened character forms) - Game Studio to wire. Placed off the main path in hidden-but-fair cat-route spots."
+ },
+ "decoLegend": {
+  "V": "verandah slab: corrugated-iron verandah (skin on #/L)",
+  "R": "red corrugated-iron gable roof (skin on #/L)",
+  "O": "green corrugated-iron roof (skin on #/L)",
+  "H": "false parapet with sign (skin on #)",
+  "u": "upstairs sash windows (skin on #)",
+  "w": "weatherboard shopfront under the verandah (background)",
+  "q": "verandah post (skin on T)",
+  "d": "drainpipe (skin on T)",
+  "X": "road (skin on #)",
+  "I": "roundabout island / kerb (skin on #)",
+  "Y": "village-green grass (skin on #)",
+  "c": "angle-parked car (background)",
+  "b": "tree branch (skin on =)",
+  "k": "leaves",
+  "h": "flowers (pohutukawa / kowhai)",
+  "f": "white picket church fence",
+  "n": "native planting",
+  "l": "old-style lamp post",
+  "s": "tutorial sign",
+  "G": "exit / goal",
+  ".": "none"
+ },
+ "backdrop": {
+  "bush": true,
+  "spires": [
+   {
+    "x": 200,
+    "name": "Holy Trinity church spire"
+   }
+  ]
+ },
+ "spawn": {
+  "x": 1,
+  "y": 9
+ },
+ "checkpoints": [
+  {
+   "x": 78,
+   "y": 9
+  },
+  {
+   "x": 156,
+   "y": 9
+  },
+  {
+   "x": 229,
+   "y": 9
+  }
+ ],
+ "goal": {
+  "x": 250,
+  "y": 9
+ },
+ "entities": [
+  {
+   "type": "coin",
+   "x": 12,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 16,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 18,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 20,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 22,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 24,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 26,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 28,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 33,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 35,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 37,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 39,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 41,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 43,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 45,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 47,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 52,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 54,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 56,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 58,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 60,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 64,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 66,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 68,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 70,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 72,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 74,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 112,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 114,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 116,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 118,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 120,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 122,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 124,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 126,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 132,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 134,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 136,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 138,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 140,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 142,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 146,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 148,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 150,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 152,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 154,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 156,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 176,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 178,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 180,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 182,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 184,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 186,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 188,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 190,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 213,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 215,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 217,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 219,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 221,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 223,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 225,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 227,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 31,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 50,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 51,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 62,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 63,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 130,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 131,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 144,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 145,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 2,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 80,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 83,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 86,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 89,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 92,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 95,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 98,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 101,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 104,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 107,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 90,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 92,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 95,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 97,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 162,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 165,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 168,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 171,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 194,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 197,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 200,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 205,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 209,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 238,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 242,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 231,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 234,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 237,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 240,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 243,
+   "y": 9
+  },
+  {
+   "type": "fish",
+   "x": 77,
+   "y": 9
+  },
+  {
+   "type": "fish",
+   "x": 44,
+   "y": 1
+  },
+  {
+   "type": "fish",
+   "x": 120,
+   "y": 0
+  },
+  {
+   "type": "fish",
+   "x": 186,
+   "y": 1
+  },
+  {
+   "type": "fish",
+   "x": 226,
+   "y": 2
+  },
+  {
+   "type": "yarn",
+   "x": 21,
+   "y": 1
+  },
+  {
+   "type": "yarn",
+   "x": 118,
+   "y": 0
+  },
+  {
+   "type": "yarn",
+   "x": 209,
+   "y": 3
+  },
+  {
+   "type": "yarn",
+   "x": 151,
+   "y": 1
+  },
+  {
+   "type": "powerup",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "type": "powerup",
+   "x": 93,
+   "y": 0
+  },
+  {
+   "type": "powerup",
+   "x": 225,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 15,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 18,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "chihuahua",
+   "x": 21,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "hedgehog",
+   "x": 24,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "sausage",
+   "x": 28,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 53,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "persian",
+   "x": 56,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "poodle",
+   "x": 59,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "tabby",
+   "x": 62,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 66,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "labrador",
+   "x": 113,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "tabby",
+   "x": 116,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "hedgehog",
+   "x": 119,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "goose",
+   "x": 122,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "bulldog",
+   "x": 126,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "husky",
+   "x": 177,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "persian",
+   "x": 180,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 183,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "alleytom",
+   "x": 186,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 190,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "husky",
+   "x": 231,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "labrador",
+   "x": 234,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "persian",
+   "x": 238,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "hedgehog",
+   "x": 241,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "goose",
+   "x": 244,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 233,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 239,
+   "y": 0
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 243,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "hedgehog",
+   "x": 72,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "pukeko",
+   "x": 154,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 160,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 197,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "siamese",
+   "x": 17,
+   "y": 2,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "persian",
+   "x": 43,
+   "y": 1,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "tabby",
+   "x": 58,
+   "y": 2,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "alleytom",
+   "x": 70,
+   "y": 3,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 117,
+   "y": 0,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "persian",
+   "x": 139,
+   "y": 3,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "alleytom",
+   "x": 152,
+   "y": 2,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "tabby",
+   "x": 185,
+   "y": 1,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "tabby",
+   "x": 219,
+   "y": 2,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 84,
+   "y": 2
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 102,
+   "y": 2
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 167,
+   "y": 2
+  },
+  {
+   "type": "car",
+   "name": "Silverdale St into roundabout",
+   "lane": 9,
+   "x0": 80,
+   "x1": 89,
+   "speed": 2,
+   "dir": 1
+  },
+  {
+   "type": "car",
+   "name": "Roundabout exit to Wainui Rd",
+   "lane": 9,
+   "x0": 98,
+   "x1": 107,
+   "speed": 2,
+   "dir": -1
+  },
+  {
+   "type": "car",
+   "name": "Angled-parking reverser",
+   "lane": 9,
+   "x0": 162,
+   "x1": 173,
+   "speed": 1.5,
+   "dir": -1
+  },
+  {
+   "type": "secret_paw",
+   "id": "w1-5",
+   "x": 189,
+   "y": 1
+  },
+  {
+   "type": "secret_paw",
+   "id": "w1-6",
+   "x": 198,
+   "y": 3
+  }
+ ],
+ "bossArena": null,
+ "arenas": [
+  {
+   "name": "Old Store brawl",
+   "x0": 14,
+   "x1": 29,
+   "y": 9,
+   "enemies": [
+    "rat",
+    "ferret",
+    "chihuahua",
+    "hedgehog",
+    "sausage"
+   ]
+  },
+  {
+   "name": "Bakery bust-up",
+   "x0": 52,
+   "x1": 67,
+   "y": 9,
+   "enemies": [
+    "ferret",
+    "persian",
+    "poodle",
+    "tabby",
+    "rat"
+   ]
+  },
+  {
+   "name": "Hall steps scrap",
+   "x0": 112,
+   "x1": 127,
+   "y": 9,
+   "enemies": [
+    "labrador",
+    "tabby",
+    "hedgehog",
+    "goose",
+    "bulldog"
+   ]
+  },
+  {
+   "name": "Op-shop scuffle",
+   "x0": 176,
+   "x1": 191,
+   "y": 9,
+   "enemies": [
+    "husky",
+    "persian",
+    "ferret",
+    "alleytom",
+    "possum"
+   ]
+  },
+  {
+   "name": "Village-green showdown",
+   "x0": 230,
+   "x1": 245,
+   "y": 9,
+   "enemies": [
+    "husky",
+    "labrador",
+    "persian",
+    "hedgehog",
+    "goose",
+    "magpie",
+    "magpie",
+    "seagull"
+   ]
+  }
+ ],
+ "trees": [
+  {
+   "name": "Churchyard totara",
+   "trunk": {
+    "x": 207,
+    "top": 1,
+    "base": 8
+   },
+   "branches": [
+    {
+     "x0": 204,
+     "x1": 206,
+     "y": 4
+    },
+    {
+     "x0": 208,
+     "x1": 211,
+     "y": 4
+    }
+   ]
+  },
+  {
+   "name": "Roundabout pohutukawa",
+   "trunk": {
+    "x": 93,
+    "top": 1,
+    "base": 8
+   },
+   "branches": [
+    {
+     "x0": 89,
+     "x1": 92,
+     "y": 3
+    },
+    {
+     "x0": 94,
+     "x1": 98,
+     "y": 3
+    }
+   ]
+  },
+  {
+   "name": "Village-green kowhai",
+   "trunk": {
+    "x": 240,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 237,
+     "x1": 239,
+     "y": 4
+    },
+    {
+     "x0": 241,
+     "x1": 244,
+     "y": 4
+    }
+   ]
+  }
+ ],
+ "fences": [
+  {
+   "name": "Holy Trinity churchyard fence",
+   "x0": 193,
+   "x1": 202,
+   "y": 4
+  }
+ ],
+ "roofs": [
+  {
+   "name": "Old Silverdale Store (triple gable) roof",
+   "x0": 12,
+   "x1": 29,
+   "y": 2
+  },
+  {
+   "name": "Hammer Hardware roof",
+   "x0": 33,
+   "x1": 48,
+   "y": 2
+  },
+  {
+   "name": "Village Bakery roof",
+   "x0": 52,
+   "x1": 61,
+   "y": 2
+  },
+  {
+   "name": "Corner Cafe roof",
+   "x0": 64,
+   "x1": 75,
+   "y": 3
+  },
+  {
+   "name": "Silverdale Hall (1896) roof",
+   "x0": 112,
+   "x1": 127,
+   "y": 1
+  },
+  {
+   "name": "Village Dairy roof",
+   "x0": 132,
+   "x1": 143,
+   "y": 3
+  },
+  {
+   "name": "Fish & Chips roof",
+   "x0": 146,
+   "x1": 157,
+   "y": 2
+  },
+  {
+   "name": "Op Shop roof",
+   "x0": 176,
+   "x1": 191,
+   "y": 2
+  },
+  {
+   "name": "Village Vet & Books roof",
+   "x0": 213,
+   "x1": 228,
+   "y": 2
+  }
+ ],
+ "climbables": [
+  {
+   "name": "Old Silverdale Store (triple gable) verandah post",
+   "x": 11,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Old Silverdale Store (triple gable) verandah post",
+   "x": 30,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Hammer Hardware verandah post",
+   "x": 32,
+   "top": 2,
+   "base": 9
+  },
+  {
+   "name": "Hammer Hardware verandah post",
+   "x": 49,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Hardware drainpipe",
+   "x": 49,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Village Bakery verandah post",
+   "x": 62,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Corner Cafe verandah post",
+   "x": 76,
+   "top": 3,
+   "base": 8
+  },
+  {
+   "name": "Silverdale Hall (1896) verandah post",
+   "x": 111,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Silverdale Hall (1896) verandah post",
+   "x": 128,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Village Dairy verandah post",
+   "x": 131,
+   "top": 2,
+   "base": 9
+  },
+  {
+   "name": "Dairy drainpipe",
+   "x": 144,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Fish & Chips verandah post",
+   "x": 145,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Fish & Chips verandah post",
+   "x": 158,
+   "top": 3,
+   "base": 8
+  },
+  {
+   "name": "Op Shop verandah post",
+   "x": 175,
+   "top": 2,
+   "base": 9
+  },
+  {
+   "name": "Op Shop verandah post",
+   "x": 192,
+   "top": 3,
+   "base": 8
+  },
+  {
+   "name": "Village Vet & Books verandah post",
+   "x": 229,
+   "top": 3,
+   "base": 9
+  }
+ ],
+ "shopSigns": [
+  {
+   "x0": 13,
+   "x1": 28,
+   "y": 5,
+   "text": "SILVERDALE STORE  est. 1880s",
+   "bg": [
+    120,
+    70,
+    50
+   ]
+  },
+  {
+   "x0": 33,
+   "x1": 39,
+   "y": 2,
+   "text": "HAMMER HARDWARE",
+   "bg": [
+    200,
+    60,
+    40
+   ]
+  },
+  {
+   "x0": 52,
+   "x1": 61,
+   "y": 5,
+   "text": "BAKERY",
+   "bg": [
+    190,
+    140,
+    70
+   ]
+  },
+  {
+   "x0": 64,
+   "x1": 70,
+   "y": 2,
+   "text": "CAFÉ",
+   "bg": [
+    60,
+    110,
+    90
+   ]
+  },
+  {
+   "x0": 115,
+   "x1": 124,
+   "y": 5,
+   "text": "SILVERDALE HALL 1896",
+   "bg": [
+    90,
+    70,
+    60
+   ]
+  },
+  {
+   "x0": 132,
+   "x1": 138,
+   "y": 2,
+   "text": "DAIRY",
+   "bg": [
+    60,
+    110,
+    170
+   ]
+  },
+  {
+   "x0": 146,
+   "x1": 157,
+   "y": 5,
+   "text": "FISH & CHIPS",
+   "bg": [
+    40,
+    100,
+    160
+   ]
+  },
+  {
+   "x0": 176,
+   "x1": 181,
+   "y": 2,
+   "text": "OP SHOP",
+   "bg": [
+    140,
+    60,
+    120
+   ]
+  },
+  {
+   "x0": 213,
+   "x1": 228,
+   "y": 5,
+   "text": "VET  ·  BOOKS",
+   "bg": [
+    70,
+    120,
+    80
+   ]
+  },
+  {
+   "x0": 84,
+   "x1": 104,
+   "y": 0,
+   "text": "WAINUI RD ROUNDABOUT",
+   "bg": [
+    40,
+    110,
+    70
+   ]
+  }
+ ],
+ "tutorial": [
+  {
+   "x": 1,
+   "text": "SILVERDALE VILLAGE  — old Silverdale Street"
+  },
+  {
+   "x": 11,
+   "text": "VERANDAH POST  hold ↑ to climb onto the roofs"
+  },
+  {
+   "x": 50,
+   "text": "DRAINPIPE  climb between shops"
+  },
+  {
+   "x": 78,
+   "text": "ROUNDABOUT  wait on the island or take the tree"
+  },
+  {
+   "x": 109,
+   "text": "SILVERDALE HALL  big gable — double jump + grab"
+  },
+  {
+   "x": 159,
+   "text": "ANGLED PARKING  slow car reversing"
+  },
+  {
+   "x": 192,
+   "text": "CHURCH FENCE → TOTARA → ROOFS"
+  },
+  {
+   "x": 229,
+   "text": "VILLAGE GREEN  last scrap!"
+  }
+ ],
+ "continuesFrom": "silverdale_3 (tennis-club gate)",
+ "notes": "Entity y = feet cell. Ground (footpath) top is row 10 in this level. Verandah slabs (row 4) float over the footpath on posts (T), gables/parapets/upstairs stack on top (rows 1-3): a continuous rooftop route with <=2 steps and <=4 gaps, reached by verandah posts, drainpipes, trees, the church fence, or double jump + ledge grab. Enemies with route:\"roof\" patrol the rooftops. Main path stays on the footpath (walk + single jump). Cars are slow bump-only shuttles."
+}

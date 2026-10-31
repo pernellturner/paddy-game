@@ -22,7 +22,8 @@ body.ov #moves{display:block}
 #moves table{border-collapse:collapse;width:100%}#moves td,#moves th{padding:3px 6px;border-bottom:1px solid #fff2;text-align:left;vertical-align:top}
 #moves th{color:#9fd8ff}#moves button{font:600 14px system-ui;margin:3px;padding:6px 10px;border-radius:8px;border:0;background:#ffe14d;color:#222}
 #mclose{position:absolute;right:10px;top:8px;font-size:18px!important}.tip{opacity:.7}
-#rot{display:none;position:fixed;inset:0;background:#246;color:#fff;font:600 20px system-ui;align-items:center;justify-content:center;text-align:center}
+#rot{display:none;position:fixed;inset:0;background:#246;color:#fff;font:600 20px system-ui;align-items:center;justify-content:center;text-align:center;flex-direction:column;gap:14px;padding:0 18px}
+#rotor{font-size:15px;opacity:.8}#rotw1{font:26px Bangers,"Luckiest Guy",Impact,sans-serif;letter-spacing:1.5px;color:#fff;border:0;border-radius:999px;padding:.4em 1.2em;min-height:52px;background:linear-gradient(#9be36a,#2f8f3a);box-shadow:0 .18em 0 #1d5e24,0 .4em .9em #0006;text-shadow:0 2px 0 #1d5e24;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}#rotw1:active{transform:translateY(.12em) scale(.97)}
 @media (pointer:coarse){#oldhelp{display:none}}
 @media (orientation:portrait) and (pointer:coarse){.b.s{width:52px;height:52px;font-size:13px}.b.t{width:40px;height:40px;font-size:18px}
 #hint{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);color:#fff9;font:12px system-ui}
@@ -205,9 +206,9 @@ body.ov #moves{display:block}
 <p>Try now: <button data-try="zoomies">Zoomies</button><button data-try="hiss">Hiss</button><button data-try="swat">Swat</button><button data-try="victory">Victory</button><button data-try="hurtTest">Hurt</button></p>
 <p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
 <p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p></div></div>
-<div id="rot">🔄 Turn your phone sideways to play with Paddy</div>
-<script src="game.js?v=43a"></script>
-<script src="mission.js?v=m1b"></script>
+<div id="rot"><div>🔄 Turn your phone sideways to play with Paddy</div><div id="rotor">or play the World 1 levels right now:</div><button id="rotw1" type="button">🌳 PLAY WORLD 1</button></div>
+<script src="game.js?v=44a"></script>
+<script src="mission.js?v=44a"></script>
 <script src="smooth.js?v=32a"></script>
 <script src="darkside.js?v=20g"></script>
 <script src="poses.js?v=20d"></script>
@@ -236,7 +237,7 @@ lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 </script>
 <script src="controls.js?v=35a"></script>
 <script src="en.js?v=20a"></script>
-<script src="story.js?v=28a"></script>
+<script src="story.js?v=44a"></script>
 <script src="sfx.js?v=43a"></script>
 <script src="formfx.js?v=30a"></script>
 <script src="routefx26.js?v=26a"></script>

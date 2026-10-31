@@ -34,13 +34,13 @@ async def main():
   # standalone level runtime (no game.js): saved as pending, the game unlocks it on load
   await pg.add_init_script(GIFT)
   await pg.goto(URL+'level.html?level=silverdale_1&nocuts&v='+str(time.time()));await pg.wait_for_function('window.LV&&LV.ready',timeout=20000)
-  r=await E("(()=>{const i=missionComplete('test_duck');return [i.ok,i.u,JSON.parse(localStorage.getItem('paddyLegends')).mformsPending,!!document.getElementById('giftpop')]})()")
-  check('level runtime: gift popup + form saved as pending',r[0] and r[1]==0 and r[2]==['SHADOW REAPER'] and r[3],r)
-  await game();r=await E("[UNL.has(MISSION.formIndex('SHADOW REAPER')),(UNL.d.mformsPending||[]).length,MISSION.formIndex('SHADOW REAPER')]");check('game load turns the pending gift into the Shadow Reaper unlock',r==[True,0,5],r)
+  r=await E("(()=>{const i=missionComplete('test_duck');return [i.ok,i.u,JSON.parse(localStorage.getItem('paddyStory')).forms,!!document.getElementById('giftpop')]})()")
+  check('level runtime (story mode): gift popup + form saved in the separate story save',r[0] and r[1]==0 and r[2]==['shadow reaper'] and r[3],r)
+  await game();r=await E("[UNL.has(MISSION.formIndex('SHADOW REAPER')),(UNL.d.mformsPending||[]).length,MISSION.formIndex('SHADOW REAPER')]");check('free play is separate: the story-mode gift does not touch the free-play save',r==[False,0,5],r)
   # a level JSON 'mission' field fires at the goal
   await pg.goto(URL+'level.html?level=silverdale_1&nocuts&v='+str(time.time()));await pg.wait_for_function('window.LV&&LV.ready',timeout=20000);await pg.wait_for_timeout(500)
   await E("(()=>{MISSION_GIFTS.test_goal={gift:'a shell',formKey:'gs',animal:'crab'};LV.level.mission='test_goal';const g=LV.level.goal;LV.teleport(g.x+1,g.y)})()");await pg.wait_for_timeout(800)
-  r=await E("[LV.log.includes('mission:test_goal'),LV.mission&&LV.mission.ok,JSON.parse(localStorage.getItem('paddyLegends')).mformsPending]")
+  r=await E("[LV.log.includes('mission:test_goal'),LV.mission&&LV.mission.ok,JSON.parse(localStorage.getItem('paddyStory')).forms]")
   check("level JSON 'mission' completes at the goal",r[0] and r[1] and 'gs' in r[2],r)
   await E("localStorage.removeItem('paddyLegends')")
   check('no page errors',not errs,errs[:5])

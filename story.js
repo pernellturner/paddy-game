@@ -27,6 +27,7 @@ body.story #story{display:block}body.story #ui,body.story #lbl,body.story #hint{
 #story canvas{position:absolute;inset:0;width:100%;height:100%}
 #sbtns{position:absolute;left:0;width:100%;top:70%;display:flex;flex-direction:column;gap:var(--bg,10px);align-items:center;transition:opacity .5s}
 #sbtns .row{display:flex;gap:var(--bg,10px);justify-content:center;flex-wrap:wrap}
+.sbtn.big.w1{font-size:calc(var(--fp,34px)*.78);padding:.3em 1em;min-height:44px;background:linear-gradient(#9be36a,#2f8f3a);box-shadow:0 .18em 0 #1d5e24,0 .4em .9em #0006;text-shadow:0 2px 0 #1d5e24;animation-delay:.4s}
 .sbtn.big.prac{font-size:calc(var(--fp,34px)*.78);padding:.3em 1em;background:linear-gradient(#7af0a0,#1aa35a);box-shadow:0 .18em 0 #0b6a35,0 .4em .9em #0006;text-shadow:0 2px 0 #0b5a2c}
 #sprobe{position:absolute;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 #story.intro #sbtns{opacity:0;pointer-events:none}
@@ -44,7 +45,7 @@ body.touchy:not(.standalone) #stip{display:block}
 @media (max-height:460px){#lbl{display:none!important}}`;
 document.head.appendChild(css);
 const root=document.createElement('div');root.id='story';
-root.innerHTML='<canvas></canvas><div id="sbtns"><div class="row"><button class="sbtn big" id="splay">▶ PLAY</button><button class="sbtn big prac" id="sprac">🥋 PRACTICE</button></div><div class="row"><button class="sbtn alt" id="sstory">📖 STORY</button><button class="sbtn alt" id="scombo">☰ COMBO LIST</button><button class="sbtn alt" id="ssett">⚙ SETTINGS</button></div><div id="stip">📱 Tip: in Safari tap Share ⬆ → <b>Add to Home Screen</b> to play fullscreen (no Safari bars)</div></div><button id="sskip">SKIP ⏭</button><div id="sprobe"></div>';
+root.innerHTML='<canvas></canvas><div id="sbtns"><div class="row"><button class="sbtn big" id="splay">▶ PLAY</button><button class="sbtn big prac" id="sprac">🥋 PRACTICE</button><button class="sbtn big w1" id="sw1">🌳 PLAY WORLD 1</button></div><div class="row"><button class="sbtn alt" id="sstory">📖 STORY</button><button class="sbtn alt" id="scombo">☰ COMBO LIST</button><button class="sbtn alt" id="ssett">⚙ SETTINGS</button></div><div id="stip">📱 Tip: in Safari tap Share ⬆ → <b>Add to Home Screen</b> to play fullscreen (no Safari bars)</div></div><button id="sskip">SKIP ⏭</button><div id="sprobe"></div>';
 document.body.appendChild(root);
 const sc=root.querySelector('canvas'),g=sc.getContext('2d');
 let W=0,H=0,DPR=1,logoC=null,SA={t:0,r:0,b:0,l:0},L=null,FC={};
@@ -129,6 +130,12 @@ S.cutscene=(name,done)=>{if(CUTS[name])play(CUTS[name],done)};S.intro=done=>play
 function toGame(){try{localStorage.setItem('paddyIntroSeen','1')}catch(e){}
  setTimeout(()=>{try{if(window.ENW)ENW.start(0);else if(typeof card==='function')card('🌏 WORLD 1 · SILVERDALE','Find your way home, Paddy!','#ffd84a')}catch(e){}},300)}
 document.getElementById('splay').addEventListener('click',e=>{e.preventDefault();let seen=0;try{seen=localStorage.getItem('paddyIntroSeen')}catch(_){}if(!seen)S.intro(toGame);else{close();toGame()}});
+// 🌳 PLAY WORLD 1: the Silverdale levels (level.html, 1-1 .. 1-7) with the W1 cutscenes; resumes at the next level not cleared yet (story save 'paddyStory'.world1)
+// story mode has its OWN save ('paddyStory'): no save yet, or World 1 complete -> NEW GAME from 1-1 with every form locked; else resume
+function w1Start(){let d=null;try{d=JSON.parse(localStorage.getItem('paddyStory')||'null')}catch(_){}const w=d&&d.world1;return (w&&w.next&&/^silverdale_[1-7]$/.test(w.next))?w.next:'silverdale_1&new=1'}
+document.getElementById('sw1').addEventListener('click',e=>{e.preventDefault();location.href='level.html?level='+w1Start()+'&from=title'});
+window.W1START=w1Start;
+{const rb=document.getElementById('rotw1');if(rb)rb.addEventListener('click',e=>{e.preventDefault();location.href='level.html?level='+w1Start()+'&from=title'})}
 document.getElementById('sprac').addEventListener('click',e=>{e.preventDefault();close();if(window.TRAIN)TRAIN.open()});
 document.getElementById('sstory').addEventListener('click',e=>{e.preventDefault();S.intro(toGame)});
 document.getElementById('ssett').addEventListener('click',e=>{e.preventDefault();if(window.SETTINGS)SETTINGS.open()});

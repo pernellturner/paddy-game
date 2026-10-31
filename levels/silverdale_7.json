@@ -1,0 +1,1403 @@
+{
+ "id": "silverdale_7",
+ "world": "silverdale",
+ "label": "World 1-7",
+ "name": "Wēiti River",
+ "subtitle": "BOSS · shop backs → mangrove mud flats → old jetty → Scenic Reserve → Silverdale St bridges → Big Bruno under the 1913 bridge",
+ "theme": "silverdale_weiti",
+ "music": "silverdale_weiti",
+ "tile": 48,
+ "width": 224,
+ "height": 12,
+ "layers": {
+  "solid": [
+   "................................................................................................................................................................................................................................",
+   ".........T.......T.................T...T....................................T.......................................................T...........................................................................................",
+   ".........T.......TL###############LT...T....................................T.......................................................T......T.............T......................................................................",
+   ".........T.......T.................T.==T==..................................T.......................................................T......TFFFFFFFFFFFFFT..................................T........................T..........",
+   "......===T===....T.................T...T..................................==T==.....??...........................................===T====..T.............T.T..............T...??............T........................T.......###",
+   ".........T.......T.................T...T.......=====....======..............T.......................................................T......T.............T.T==============T..............===T........................T===....###",
+   "#####....T.......T.................T...T....................................T..................==================...................T......T.............T.T..............T.................T........................T......####",
+   "#####....T.......T.................T...T....................................T.......................................................T......T.............T.T..............T.................T........................T......####",
+   "######...T....#######################..T....................................T...............###..................##.................T......T.............T.T..............T.................T........................T.....#####",
+   "######...T....########################.T...........................###......T...............###..................##.....####........T......T.............T.T..............T.................T........................T.....#####",
+   "##########################################~~~~######~~~########~~~~###~~~~#####################~~~~~~~~~~~~~~~~~~##~~~~######~~~~###############################################################################################",
+   "################################################################################################################################################################################################################################"
+  ],
+  "deco": [
+   ".....k.kk.kk.k.......................kk.kk...............................kk.kk.k................................................k.kk.kk.kk......................................................................................",
+   "......kk..k.kk...d.................qkk..k.k..............................k.k..kk.................................................kk..k.kk................2222222222222222222....................................................",
+   ".....kk.k..kk....dOOOOOOOOOOOOOOOOOqk.k..kk...............................kk.kk.................................................kk.k..kk.k.3.............2222222222222222222..................................................G.",
+   ".....k.kk.kk.k...d....w....w....w..q.bb.bb...............................kk..k.k................................................k.kk.kk.kk.3.............3............................2222223222222222222222222222222322222222G2",
+   "......bbb.bbb....d...w....w....w...q......................................bb.bb..................................................bbb.bbbb..3ppppppppppppp3.3..............3.................3........................3..........",
+   ".s...............d..w....w....w....q...........44444....444444.............................................................................3ppppppppppppp3.3zzzzzzzzzzzzzz3..............zzz3........................3zzz.......",
+   ".................d.w....w....w....wq...........................................................zzzzzzzzzzzzzzzzzz..........................3ppppppppppppp3.3..............3.................3........................3..........",
+   "...............s.dw....w....w....w.q.......................................................................................................3ppppppppppppp3.3..............3.................3........................3..........",
+   ".....................................n.....................................................................................................3ppppppppppppp3.3..............3.................3........................3..........",
+   ".............n..........................s.1.1..s....1.1.1.1.1...1.15551.1......n...........s........................1.1n5555.....n.......ns3ppppppppppppp3.3..............3n......n.s.......3........................3..........",
+   "......DDDDDDDD........................DDDD....DDDDDD...DDDDDDDD...........DDDDDDDDDDDDDDDDDD...........................D....D....DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD..DD..DD..DD..DD..DD..DD..DD..DD..D.....",
+   "................................................................................................................................................................................................................................"
+  ]
+ },
+ "legend": {
+  "#": "ground: solid on all sides (concrete, deck, roof slab)",
+  "=": "one-way platform: solid only from above, jump up through it, press ↓ to drop (glass canopy, tree branch)",
+  "B": "breakable: solid until hit (precast panel stack), then removed",
+  "?": "item block: solid; bonk from below or hit to release an item",
+  "^": "soft hazard: walkable floor that bumps Paddy and chips health, never kills",
+  "~": "mud-flat shallows / river (soft): Paddy wades in, it is NOT standable; falling in = short soft respawn on the last bank. Never deadly.",
+  "L": "ledge-grab edge: solid like #, plus Paddy can grab its top corner from below/side and pull up",
+  "T": "climbable trunk / pole / pier: NOT solid; hold ↑ while overlapping to cling and climb, ←/→ steps onto an adjacent branch, beam, railing, ledge or roof, jump leaps off (deco: q post, d drainpipe, 3 concrete bridge pier)",
+  "F": "fence top: 1-tile-thin walkable rail, one-way (land from above, jump up through, ↓ drops); posts/palings below are deco only",
+  ".": "empty",
+  "J": "bounce pad (in-ground mini trampoline): SOLID, flush with the ground, walk across it normally. Landing on it from a jump or fall launches Paddy straight up ~6 tiles (hold jump for full height, hold ↓ to absorb and stop); can double-jump after. No damage. Main path never needs a bounce; pads lead to sky coins, the gazebo roof and the swing."
+ },
+ "entityTypes": {
+  "kid": "{type:'kid', kind:'scooter'|'skateboard', x, y, range, harmless:true, hitbox:false, bonus:'hop'}: ambient NPC kid that rides back and forth over x..x+range on feet row y. HARMLESS: never deals damage and never knocks Paddy back; hitbox:false = no collision at all (Paddy walks straight through) and it cannot be attacked (swipes pass through). bonus:'hop' = Paddy hopping over the kid (airborne directly above it) gives a small coin bonus (suggest +3 coins, once per pass). Not an obstacle; the validator ignores kids for pathing/lanes.",
+  "car": "{type:\"car\", name, lane, x0, x1, speed, dir}: dodge-only moving hazard, ~2 tiles tall x 3 long. lane = feet row it drives on; it shuttles between x0 and x1 (tiles) at speed tiles/s starting in dir (+1 right / -1 left), turning at the ends. Touching it = a gentle bump (small hop away, brief invulnerability), NO damage, never kills. Cannot be attacked. Never leaves x0..x1: the tiles just outside are safe islands / kerbs. Paddy can single-jump over a car.",
+  "bus": "{type:\"bus\", ...same fields}: like car but ~3 tiles tall x 5 long and slower; too tall to single-jump, so wait on the island or go over it on the traffic-light mast arm. Same bump, no damage.",
+  "secret_paw": "{type:'secret_paw', id:'w1-<n>', x, y}: hidden golden-paw collectible (World 1 has 10: w1-1..w1-10, spread over silverdale_1..7). (x,y) = tile cell like other pickups (feet-cell convention); it floats there, no collision, collected on touch, never respawns once taken. id is unique across the game so the save file can track which paws are found; collecting all 10 is meant to unlock a reward (e.g. awakened character forms) - Game Studio to wire. Placed off the main path in hidden-but-fair cat-route spots.",
+  "rooster": "{type:\"enemy\", id:\"rooster\"}: ground enemy (farmyard). Struts, then a short flapping hop-charge peck (1 heart); 3 hits. Like other ground enemies it needs a surface under its feet.",
+  "crab": "{type:\"enemy\", id:\"crab\"}: ground enemy on mud flats. Scuttles sideways, pinch (1 heart); 2 hits; flips onto its back when swiped.",
+  "eel": "{type:\"enemy\", id:\"eel\", water:true}: lives IN open shallow water: (x,y) is a \"~\" cell in a pool >=3 wide with open sky above. Lunges up out of the water when Paddy jumps over / wades nearby (1 heart), then sinks back; can be swiped while out. Never leaves the water.",
+  "bossArena": "bossArena {name, boss, x0, x1, floorY, bossSpawn, bossSize, walls{left,right,rows,closeOnEnter,openOn,triggerX}, ledges, pillars, phase2{atHealth, adds[{id,x}]}}: walls are full-height gates that rise when Paddy passes triggerX and drop when the boss is K.O.; phase2 spawns the adds once boss health <= atHealth."
+ },
+ "decoLegend": {
+  "D": "silty mud flat (skin on #)",
+  "5": "kauri log (skin on #)",
+  "O": "shop-back roof, iron (skin on #/L)",
+  "4": "mangrove root platform (skin on =)",
+  "z": "old jetty planks / bridge beam / ledge (skin on =)",
+  "b": "branch (skin on =)",
+  "q": "post (skin on T)",
+  "d": "drainpipe (skin on T)",
+  "3": "concrete bridge pier / pillar (skin on T)",
+  "p": "bridge railing balusters",
+  "w": "shop back windows (background)",
+  "1": "mangrove shrub with pneumatophores",
+  "2": "bridge deck (background, not solid)",
+  "k": "leaves (kohekohe / cabbage-tree tuft)",
+  "n": "harakeke flax",
+  "s": "tutorial sign",
+  "G": "exit: up onto the bridge top → World 2 Millwater",
+  ".": "none / old concrete apron"
+ },
+ "backdrop": {
+  "bush": true,
+  "spires": []
+ },
+ "spawn": {
+  "x": 1,
+  "y": 5
+ },
+ "checkpoints": [
+  {
+   "x": 75,
+   "y": 9
+  },
+  {
+   "x": 137,
+   "y": 9
+  },
+  {
+   "x": 181,
+   "y": 9
+  }
+ ],
+ "goal": {
+  "x": 222,
+  "y": 3
+ },
+ "entities": [
+  {
+   "type": "coin",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 15,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 18,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 21,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 24,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 27,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 30,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 33,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 36,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 19,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 21,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 23,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 25,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 27,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 29,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 31,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 33,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 37,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 38,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 40,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 41,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 42,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 43,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 44,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 45,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 52,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 53,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 54,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 63,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 64,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 65,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 66,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 70,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 71,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 72,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 73,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 47,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 48,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 49,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 50,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 51,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 56,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 57,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 58,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 59,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 60,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 61,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 74,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 75,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 77,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 78,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 80,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 83,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 86,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 89,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 96,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 98,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 100,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 102,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 104,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 106,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 108,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 110,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 115,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 116,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 117,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 118,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 125,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 126,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 127,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 128,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 129,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 131,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 133,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 135,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 141,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 143,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 145,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 147,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 149,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 151,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 157,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 159,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 161,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 163,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 165,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 167,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 169,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 172,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 174,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 176,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 178,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 180,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 219,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 220,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 221,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 223,
+   "y": 3
+  },
+  {
+   "type": "fish",
+   "x": 23,
+   "y": 1
+  },
+  {
+   "type": "fish",
+   "x": 59,
+   "y": 4
+  },
+  {
+   "type": "fish",
+   "x": 104,
+   "y": 5
+  },
+  {
+   "type": "fish",
+   "x": 150,
+   "y": 2
+  },
+  {
+   "type": "fish",
+   "x": 181,
+   "y": 9
+  },
+  {
+   "type": "yarn",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "type": "yarn",
+   "x": 49,
+   "y": 4
+  },
+  {
+   "type": "yarn",
+   "x": 134,
+   "y": 3
+  },
+  {
+   "type": "yarn",
+   "x": 163,
+   "y": 4
+  },
+  {
+   "type": "powerup",
+   "x": 30,
+   "y": 1
+  },
+  {
+   "type": "powerup",
+   "x": 110,
+   "y": 5
+  },
+  {
+   "type": "powerup",
+   "x": 179,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 20,
+   "y": 7
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 23,
+   "y": 7
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 26,
+   "y": 7
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 29,
+   "y": 7
+  },
+  {
+   "type": "enemy",
+   "id": "bulldog",
+   "x": 32,
+   "y": 7
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 80,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 82,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "pukeko",
+   "x": 84,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 86,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 88,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "goose",
+   "x": 90,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 97,
+   "y": 5
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 100,
+   "y": 5
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 103,
+   "y": 5
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 106,
+   "y": 5
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 109,
+   "y": 5
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 157,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 159,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 162,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 165,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "pukeko",
+   "x": 167,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 170,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 81,
+   "y": 3
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 87,
+   "y": 2
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 98,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 106,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "eel",
+   "x": 43,
+   "y": 10,
+   "water": true
+  },
+  {
+   "type": "enemy",
+   "id": "eel",
+   "x": 64,
+   "y": 10,
+   "water": true
+  },
+  {
+   "type": "enemy",
+   "id": "eel",
+   "x": 71,
+   "y": 10,
+   "water": true
+  },
+  {
+   "type": "enemy",
+   "id": "eel",
+   "x": 116,
+   "y": 10,
+   "water": true
+  },
+  {
+   "type": "enemy",
+   "id": "eel",
+   "x": 126,
+   "y": 10,
+   "water": true
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 40,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 55,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 61,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 119,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "crab",
+   "x": 135,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "pukeko",
+   "x": 142,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 174,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 22,
+   "y": 1,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 31,
+   "y": 1,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 160,
+   "y": 4,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 13,
+   "y": 2
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 128,
+   "y": 3
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 50,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 146,
+   "y": 0
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 177,
+   "y": 2
+  },
+  {
+   "type": "secret_paw",
+   "id": "w1-10",
+   "x": 174,
+   "y": 3
+  }
+ ],
+ "bossArena": {
+  "name": "Big Bruno under the old 1913 bridge",
+  "boss": "big_bruno",
+  "x0": 184,
+  "x1": 217,
+  "floorY": 9,
+  "bossSpawn": {
+   "x": 206,
+   "y": 9,
+   "face": -1
+  },
+  "bossSize": {
+   "worldUnitsTall": 337,
+   "tilesTall": 7.02,
+   "tilesWide": 4.19,
+   "tilesWideWalk": [
+    4.1,
+    4.5
+   ],
+   "tilesWidePunchMax": 5.8,
+   "tilesWideKoMax": 6,
+   "source": "measured hitbox from Game Studio (idle 4.19 x 7.02 tiles)"
+  },
+  "walls": {
+   "left": 183,
+   "right": 218,
+   "rows": [
+    0,
+    9
+   ],
+   "closeOnEnter": true,
+   "openOn": "boss_ko",
+   "triggerX": 186,
+   "skin": "old concrete bridge abutment / rusty floodgate"
+  },
+  "ledges": [
+   {
+    "x0": 185,
+    "x1": 187,
+    "y": 5
+   },
+   {
+    "x0": 214,
+    "x1": 216,
+    "y": 5
+   }
+  ],
+  "pillars": [
+   {
+    "x": 188,
+    "top": 3,
+    "base": 9
+   },
+   {
+    "x": 213,
+    "top": 3,
+    "base": 9
+   }
+  ],
+  "phase2": {
+   "atHealth": 0.5,
+   "adds": [
+    {
+     "id": "rat",
+     "x": 190
+    },
+    {
+     "id": "chihuahua",
+     "x": 211
+    },
+    {
+     "id": "rat",
+     "x": 200
+    }
+   ],
+   "note": "adds drop in from the bridge deck at 50% health"
+  },
+  "music": "boss_big_bruno",
+  "animations": [
+   "idle",
+   "walk",
+   "punch",
+   "punch2",
+   "bark",
+   "bite",
+   "stealth",
+   "hurt",
+   "ko"
+  ],
+  "sheets": "generated/boss/*.jpg (in-game sprites b_* / b_m_*)"
+ },
+ "arenas": [
+  {
+   "name": "Shop-backs brawl",
+   "x0": 19,
+   "x1": 34,
+   "y": 7,
+   "enemies": [
+    "rat",
+    "ferret",
+    "possum",
+    "rat",
+    "bulldog"
+   ]
+  },
+  {
+   "name": "Mud-flat melee",
+   "x0": 77,
+   "x1": 91,
+   "y": 9,
+   "enemies": [
+    "crab",
+    "crab",
+    "pukeko",
+    "ferret",
+    "crab",
+    "goose",
+    "seagull",
+    "magpie"
+   ]
+  },
+  {
+   "name": "Old-jetty scrap",
+   "x0": 96,
+   "x1": 111,
+   "y": 5,
+   "enemies": [
+    "rat",
+    "crab",
+    "ferret",
+    "possum",
+    "rat",
+    "seagull",
+    "seagull"
+   ]
+  },
+  {
+   "name": "Under-the-bridge bust-up",
+   "x0": 156,
+   "x1": 171,
+   "y": 9,
+   "enemies": [
+    "possum",
+    "crab",
+    "ferret",
+    "rat",
+    "pukeko",
+    "crab"
+   ]
+  }
+ ],
+ "trees": [
+  {
+   "name": "Kohekohe (path down)",
+   "kind": "kohekohe",
+   "trunk": {
+    "x": 9,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 6,
+     "x1": 8,
+     "y": 4
+    },
+    {
+     "x0": 10,
+     "x1": 12,
+     "y": 4
+    }
+   ]
+  },
+  {
+   "name": "Cabbage tree (bank)",
+   "kind": "cabbage tree",
+   "trunk": {
+    "x": 39,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 37,
+     "x1": 38,
+     "y": 3
+    },
+    {
+     "x0": 40,
+     "x1": 41,
+     "y": 3
+    }
+   ]
+  },
+  {
+   "name": "Cabbage tree (mud flat)",
+   "kind": "cabbage tree",
+   "trunk": {
+    "x": 76,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 74,
+     "x1": 75,
+     "y": 4
+    },
+    {
+     "x0": 77,
+     "x1": 78,
+     "y": 4
+    }
+   ]
+  },
+  {
+   "name": "Kohekohe (Scenic Reserve)",
+   "kind": "kohekohe",
+   "trunk": {
+    "x": 132,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 129,
+     "x1": 131,
+     "y": 4
+    },
+    {
+     "x0": 133,
+     "x1": 136,
+     "y": 4
+    }
+   ]
+  }
+ ],
+ "fences": [
+  {
+   "name": "New bridge railing",
+   "x0": 140,
+   "x1": 152,
+   "y": 3
+  }
+ ],
+ "roofs": [
+  {
+   "name": "Shop backs roof run",
+   "x0": 18,
+   "x1": 34,
+   "y": 2
+  }
+ ],
+ "climbables": [
+  {
+   "name": "Shop-back drainpipe",
+   "x": 17,
+   "top": 1,
+   "base": 7
+  },
+  {
+   "name": "Shop-back fire-escape pole",
+   "x": 35,
+   "top": 1,
+   "base": 7
+  },
+  {
+   "name": "New bridge pier (west)",
+   "x": 139,
+   "top": 2,
+   "base": 9
+  },
+  {
+   "name": "New bridge pier (east)",
+   "x": 153,
+   "top": 2,
+   "base": 9
+  },
+  {
+   "name": "Under-bridge pier",
+   "x": 155,
+   "top": 4,
+   "base": 9
+  },
+  {
+   "name": "Under-bridge pier (far)",
+   "x": 170,
+   "top": 4,
+   "base": 9
+  },
+  {
+   "name": "1913 bridge pillar (west)",
+   "x": 188,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "1913 bridge pillar (east)",
+   "x": 213,
+   "top": 3,
+   "base": 9
+  }
+ ],
+ "shopSigns": [
+  {
+   "x0": 0,
+   "x1": 7,
+   "y": 1,
+   "text": "TO THE RIVER",
+   "bg": [
+    70,
+    90,
+    60
+   ]
+  },
+  {
+   "x0": 19,
+   "x1": 33,
+   "y": 0,
+   "text": "BACKS OF THE SILVERDALE SHOPS",
+   "bg": [
+    110,
+    90,
+    70
+   ]
+  },
+  {
+   "x0": 47,
+   "x1": 61,
+   "y": 2,
+   "text": "WĒITI MANGROVES",
+   "bg": [
+    60,
+    100,
+    80
+   ]
+  },
+  {
+   "x0": 96,
+   "x1": 111,
+   "y": 1,
+   "text": "OLD JETTY",
+   "bg": [
+    110,
+    80,
+    50
+   ]
+  },
+  {
+   "x0": 129,
+   "x1": 137,
+   "y": 0,
+   "text": "SCENIC RESERVE",
+   "bg": [
+    50,
+    100,
+    60
+   ]
+  },
+  {
+   "x0": 155,
+   "x1": 170,
+   "y": 0,
+   "text": "SILVERDALE ST BRIDGE",
+   "bg": [
+    90,
+    90,
+    95
+   ]
+  },
+  {
+   "x0": 190,
+   "x1": 211,
+   "y": 0,
+   "text": "OLD 1913 BRIDGE · BIG BRUNO",
+   "bg": [
+    120,
+    0,
+    40
+   ]
+  }
+ ],
+ "tutorial": [
+  {
+   "x": 1,
+   "text": "WĒITI RIVER  — down from Pioneer Village"
+  },
+  {
+   "x": 15,
+   "text": "RIVERBANK  climb the drainpipe to the shop backs"
+  },
+  {
+   "x": 40,
+   "text": "MUD FLATS  soft water: fall in = back to the bank"
+  },
+  {
+   "x": 47,
+   "text": "MANGROVE ROOTS  double jump up"
+  },
+  {
+   "x": 91,
+   "text": "OLD JETTY  watch for eels in open water"
+  },
+  {
+   "x": 138,
+   "text": "BRIDGE  climb a pier, walk the railing"
+  },
+  {
+   "x": 155,
+   "text": "UNDER THE BRIDGE  beams overhead"
+  },
+  {
+   "x": 180,
+   "text": "BOSS AHEAD  checkpoint!"
+  }
+ ],
+ "continuesFrom": "silverdale_6 (path down from Pioneer Village)",
+ "leadsTo": "World 2-1 Millwater (from the Silverdale St bridge top)",
+ "notes": "Entity y = feet cell; ground top is row 10. Level part x0-182, boss arena x184-217 (34 wide), bridge-top goal x222. Mud-flat shallows (~) are soft: max 4 wide on the main path, falling in = soft respawn on the bank, never deadly. Eels live only in open pools (no platform above). Cat route: shop-backs roof, cabbage trees/kohekohe, mangrove roots, jetty posts, new-bridge railing and under-bridge beams. Boss arena: flat mud/concrete floor row 10, rows 0-9 fully open (bridge deck is background deco), two climbable pillars + one low ledge each near the walls (centre lane x190-211 clear), walls both ends close on entry. No Siamese; kids: none in this level."
+}

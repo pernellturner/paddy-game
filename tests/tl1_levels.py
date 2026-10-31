@@ -26,12 +26,12 @@ async def main():
   await pg.screenshot(path=OUT+'1-1_start.png')
   await hold('ArrowRight',1200);s=await st();check('walks right',s['x']>4,s)
   await tap('Space');await pg.wait_for_timeout(120);s1=await st();await pg.wait_for_timeout(900);s2=await st();check('jumps and lands again',not s1['ground'] and s2['ground'],[s1,s2])
-  # climb the pohutukawa trunk (T at x=51 rows 2-7) and step onto the branch
-  await tp(51,8);await pg.keyboard.down('ArrowUp');await pg.wait_for_timeout(1400);s=await st();await pg.screenshot(path=OUT+'1-1_climb.png')
+  # climb the pohutukawa trunk (T at x=51 rows 2-7, its base stands on the row-8 kerb) and step onto the branch
+  await tp(51,7);await pg.keyboard.down('ArrowUp');await pg.wait_for_timeout(1400);s=await st();await pg.screenshot(path=OUT+'1-1_climb.png')
   check('T trunk: hold ↑ = climb (not solid, he climbs up it)',s['state']=='climb' and s['y']<7,s)
   await pg.keyboard.up('ArrowUp');await hold('ArrowRight',150);await pg.wait_for_timeout(300);s=await st()
   check('T trunk: → steps off onto the branch (= row 3)',s['state']=='normal' and s['ground'] and abs(s['y']-3)<.1 and s['x']>51.5,s)
-  await tp(51,8);await pg.keyboard.down('ArrowUp');await pg.wait_for_timeout(800);await pg.keyboard.up('ArrowUp');await tap('Space');await pg.wait_for_timeout(100);s=await st()
+  await tp(51,7);await pg.keyboard.down('ArrowUp');await pg.wait_for_timeout(800);await pg.keyboard.up('ArrowUp');await tap('Space');await pg.wait_for_timeout(100);s=await st()
   check('T trunk: jump leaps off',s['state']=='normal' and not s['ground'] and 'trunkjump' in s['log'],s)
   await E("LV.arenas()[0].state='skip'")   # keep the Trolley-bay brawl dormant while the mechanics beside it are checked
   # fence rail F (row 4 x57-62): stand on it, ↓ drops through

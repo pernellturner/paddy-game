@@ -1,0 +1,1195 @@
+{
+ "id": "silverdale_2",
+ "world": "silverdale",
+ "label": "World 1-2",
+ "name": "The Shops",
+ "subtitle": "first big rooftop run: Kauri Walk → The Warehouse & Woolworths roofs → shops lane → mall roof → bus stop",
+ "theme": "silverdale_shops",
+ "music": "silverdale_shops",
+ "tile": 48,
+ "width": 232,
+ "height": 12,
+ "layers": {
+  "solid": [
+   "........................................................................................................................................................................................................................................",
+   "..........................T.....................................................................................................................................T............................................................T..........",
+   "..........................T..................................................................................................??.................................T............................................................T..........",
+   ".??...................====T===.............................L#.............................##........L####L......................................................T..........................L#................................T..........",
+   "......===============.....T...FFFF.......................#.##..###....T...................#####.....######.....###...#............=======================...====T===.......................##.###.............T.FFFFFFFF.====T====......",
+   "..........................T............L#############################LT..L################################################L.....................................T......L###########################L..L######LT..............T..........",
+   "..........................T............###############################T..##################################################.....................................T.....##############################..########T..............T..........",
+   "..........................T.........L#################################T..####################################################...................................T....###############################..########T..............T..........",
+   "....#....................###......####################################T..######################################################.#...............................T...################################..########T..............T..........",
+   "###################################################################################################################################################################################################################...##^###############",
+   "###################################################################################################################################################################################################################~~~##################",
+   "########################################################################################################################################################################################################################################"
+  ],
+  "deco": [
+   "......................kk.hk.kk.............................................................................................................................h.kk.hk.kk....................................................kk.hk.kk.k.....",
+   ".....................kh.kk.hk.k.............................................................................................................................kh.k..hk....................................................kh.kk.hk.kk.....",
+   ".....................k.kh..k.hk............................................................................................................................kk.kh.kk.h...................................................k.kh..k.hk......",
+   "......k..k..k..k..k...bbbb.bbb.............................aa.............................aa........PPPPPP........................k..k..k..k..k..k..k..k...k.kk..h.kk......................aa............................kk.k..kk.h.....",
+   "......ggggggggggggggg....................................v.aa..yyy.s..d...................aayyy...s.PPPPPP.....yyy...v............ggggggggggggggggggggggg...bbbb.bbb.......................aa.yyys............d..........bbbb.bbbb......",
+   "......wwww.wwww.wwww..........ffff.......................W.WW..WWW....d...................UUUUU.....UUUUUU.....UUU...U..........wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww...........................MM.MMM.............d.ffffffff................",
+   "......wwww.wwww.wwww..........ffff...s.WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWd..UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU.....wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww......KMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMd.ffffffff................",
+   "...l..wwww.wwww.wwww..........ffff.....WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWd..UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU.t.nlwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.....K.MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMdlffffffff...........l.G..",
+   ".s..o.wwww.wwww.wwww...ns.....ffffttPPPWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWd..UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUPP...owwwwwwwwwwwwwwwwwwwwwwwwwwwwwww..nsK..MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMdsffffffffn............G..",
+   "KKKK.KKKKKKKKKKKKKKKKKKKK...KK......PPPWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW...UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUPPPPA.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMAAAAAfffAAAAAAAAAAAAAAAAAA",
+   "....................................PPPWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW...UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUPPPP........................................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..........................",
+   "........................................................................................................................................................................................................................................"
+  ]
+ },
+ "legend": {
+  "#": "ground: solid on all sides (concrete, deck, roof slab)",
+  "=": "one-way platform: solid only from above, jump up through it, press ↓ to drop (glass canopy, tree branch)",
+  "B": "breakable: solid until hit (precast panel stack), then removed",
+  "?": "item block: solid; bonk from below or hit to release an item",
+  "^": "soft hazard: walkable floor that bumps Paddy and chips health, never kills",
+  "~": "water: not solid; touching it = soft respawn at last safe ground (shallow drain)",
+  "L": "ledge-grab edge: solid like #, plus Paddy can grab its top corner from below/side and pull up",
+  "T": "climbable trunk / drainpipe: NOT solid (walk past it); hold ↑ while overlapping to cling and climb up/down, ←/→ steps onto an adjacent branch or roof, jump leaps off; reaches from base to top tile (deco d = drainpipe skin)",
+  "F": "fence top: 1-tile-thin walkable rail, one-way (land from above, jump up through, ↓ drops); posts/palings below are deco only",
+  ".": "empty"
+ },
+ "decoLegend": {
+  "K": "kauri-pattern timber walkway (skin on #)",
+  "A": "amber resin paving (skin on #)",
+  "W": "big-box wall, The Warehouse (skin on #)",
+  "U": "big-box wall, Woolworths (skin on #)",
+  "M": "Silverdale Centre mall wall, faceted precast (skin on #)",
+  "P": "faceted precast panel / plant room (skin on #)",
+  "a": "rooftop AC unit (skin on #)",
+  "v": "roof vent (skin on #)",
+  "y": "raised skylight, glass (skin on #)",
+  "d": "drainpipe (skin on T)",
+  "o": "round concrete bollard (skin on #)",
+  "t": "shopping trolley (skin on #)",
+  "g": "glass canopy (skin on =)",
+  "b": "tree branch (skin on =)",
+  "k": "green kauri / tree leaves",
+  "h": "red pohutukawa flowers",
+  "f": "fence palings below a fence top",
+  "w": "shopfront window (background)",
+  "n": "native planting",
+  "l": "lamp post",
+  "s": "tutorial sign",
+  "G": "exit / goal (bus stop)",
+  ".": "none"
+ },
+ "spawn": {
+  "x": 2,
+  "y": 8
+ },
+ "checkpoints": [
+  {
+   "x": 68,
+   "y": 4
+  },
+  {
+   "x": 130,
+   "y": 8
+  },
+  {
+   "x": 168,
+   "y": 4
+  }
+ ],
+ "goal": {
+  "x": 229,
+  "y": 8
+ },
+ "entities": [
+  {
+   "type": "coin",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 11,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 15,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 17,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 19,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 21,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 22,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 24,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 28,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 26,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 31,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 33,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 35,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 37,
+   "y": 6
+  },
+  {
+   "type": "coin",
+   "x": 41,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 44,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 47,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 50,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 53,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 56,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 57,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 59,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 60,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 64,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 70,
+   "y": 6
+  },
+  {
+   "type": "coin",
+   "x": 71,
+   "y": 6
+  },
+  {
+   "type": "coin",
+   "x": 72,
+   "y": 6
+  },
+  {
+   "type": "coin",
+   "x": 75,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 78,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 81,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 84,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 87,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 90,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 91,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 101,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 103,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 105,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 112,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 107,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 108,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 109,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 110,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 123,
+   "y": 6
+  },
+  {
+   "type": "coin",
+   "x": 125,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 131,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 134,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 137,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 140,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 143,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 146,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 149,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 130,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 134,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 138,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 142,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 146,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 150,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 154,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 158,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 162,
+   "y": 8
+  },
+  {
+   "type": "coin",
+   "x": 157,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 159,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 162,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 170,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 173,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 176,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 179,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 182,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 185,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 187,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 188,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 191,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 196,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 197,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 199,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 201,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 203,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 209,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 211,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 213,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 215,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 218,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 223,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 225,
+   "y": 3
+  },
+  {
+   "type": "fish",
+   "x": 40,
+   "y": 4
+  },
+  {
+   "type": "fish",
+   "x": 96,
+   "y": 4
+  },
+  {
+   "type": "fish",
+   "x": 127,
+   "y": 7
+  },
+  {
+   "type": "fish",
+   "x": 168,
+   "y": 4
+  },
+  {
+   "type": "fish",
+   "x": 214,
+   "y": 3
+  },
+  {
+   "type": "yarn",
+   "x": 102,
+   "y": 2
+  },
+  {
+   "type": "yarn",
+   "x": 71,
+   "y": 8
+  },
+  {
+   "type": "yarn",
+   "x": 196,
+   "y": 8
+  },
+  {
+   "type": "yarn",
+   "x": 26,
+   "y": 0
+  },
+  {
+   "type": "powerup",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "type": "powerup",
+   "x": 197,
+   "y": 8
+  },
+  {
+   "type": "powerup",
+   "x": 141,
+   "y": 3
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "chihuahua",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 15,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "alleytom",
+   "x": 18,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "sausage",
+   "x": 21,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "alleytom",
+   "x": 44,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 47,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "tabby",
+   "x": 50,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "chihuahua",
+   "x": 54,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "sausage",
+   "x": 76,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "pukeko",
+   "x": 79,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 82,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "chihuahua",
+   "x": 85,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "alleytom",
+   "x": 88,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "sausage",
+   "x": 150,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "tabby",
+   "x": 153,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 156,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "chihuahua",
+   "x": 159,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "alleytom",
+   "x": 162,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "pukeko",
+   "x": 172,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "alleytom",
+   "x": 176,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "tabby",
+   "x": 180,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 184,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 46,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 53,
+   "y": 2
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 81,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 173,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 180,
+   "y": 2
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 185,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 62,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "chihuahua",
+   "x": 67,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 97,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "pukeko",
+   "x": 108,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "sausage",
+   "x": 120,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 199,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "chihuahua",
+   "x": 203,
+   "y": 4
+  },
+  {
+   "type": "enemy",
+   "id": "sausage",
+   "x": 209,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "pukeko",
+   "x": 224,
+   "y": 8
+  },
+  {
+   "type": "enemy",
+   "id": "seagull",
+   "x": 109,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 201,
+   "y": 1
+  },
+  {
+   "type": "kid",
+   "kind": "skateboard",
+   "x": 131,
+   "y": 8,
+   "range": 16,
+   "harmless": true,
+   "hitbox": false,
+   "bonus": "hop"
+  },
+  {
+   "type": "secret_paw",
+   "id": "w1-3",
+   "x": 1,
+   "y": 2
+  }
+ ],
+ "bossArena": null,
+ "arenas": [
+  {
+   "name": "Kauri Walk brawl",
+   "x0": 6,
+   "x1": 22,
+   "y": 8,
+   "enemies": [
+    "rat",
+    "chihuahua",
+    "rat",
+    "alleytom",
+    "sausage"
+   ]
+  },
+  {
+   "name": "Warehouse rooftop rumble",
+   "x0": 41,
+   "x1": 56,
+   "y": 4,
+   "enemies": [
+    "alleytom",
+    "rat",
+    "tabby",
+    "chihuahua",
+    "magpie",
+    "magpie"
+   ]
+  },
+  {
+   "name": "Woolworths roof scrap",
+   "x0": 74,
+   "x1": 89,
+   "y": 4,
+   "enemies": [
+    "sausage",
+    "pukeko",
+    "rat",
+    "chihuahua",
+    "alleytom",
+    "seagull"
+   ]
+  },
+  {
+   "name": "Barbers' backstreet",
+   "x0": 148,
+   "x1": 163,
+   "y": 8,
+   "enemies": [
+    "sausage",
+    "tabby",
+    "rat",
+    "chihuahua",
+    "alleytom"
+   ]
+  },
+  {
+   "name": "Mall-roof gull storm",
+   "x0": 169,
+   "x1": 186,
+   "y": 4,
+   "enemies": [
+    "pukeko",
+    "alleytom",
+    "tabby",
+    "rat",
+    "seagull",
+    "magpie",
+    "seagull"
+   ]
+  }
+ ],
+ "trees": [
+  {
+   "name": "Kauri Walk pohutukawa",
+   "trunk": {
+    "x": 26,
+    "top": 1,
+    "base": 7
+   },
+   "branches": [
+    {
+     "x0": 22,
+     "x1": 25,
+     "y": 3
+    },
+    {
+     "x0": 27,
+     "x1": 29,
+     "y": 3
+    }
+   ]
+  },
+  {
+   "name": "Shops-lane totara",
+   "trunk": {
+    "x": 160,
+    "top": 1,
+    "base": 8
+   },
+   "branches": [
+    {
+     "x0": 156,
+     "x1": 159,
+     "y": 4
+    },
+    {
+     "x0": 161,
+     "x1": 163,
+     "y": 4
+    }
+   ]
+  },
+  {
+   "name": "Bus-stop pohutukawa",
+   "trunk": {
+    "x": 221,
+    "top": 1,
+    "base": 8
+   },
+   "branches": [
+    {
+     "x0": 217,
+     "x1": 220,
+     "y": 4
+    },
+    {
+     "x0": 222,
+     "x1": 225,
+     "y": 4
+    }
+   ]
+  }
+ ],
+ "fences": [
+  {
+   "name": "Trolley-bay fence",
+   "x0": 30,
+   "x1": 33,
+   "y": 4
+  },
+  {
+   "name": "Bus-stop fence",
+   "x0": 208,
+   "x1": 215,
+   "y": 4
+  }
+ ],
+ "roofs": [
+  {
+   "name": "The Warehouse roof",
+   "x0": 39,
+   "x1": 69,
+   "y": 5
+  },
+  {
+   "name": "Woolworths roof",
+   "x0": 73,
+   "x1": 122,
+   "y": 5
+  },
+  {
+   "name": "Silverdale Centre mall roof",
+   "x0": 167,
+   "x1": 205,
+   "y": 5
+  }
+ ],
+ "climbables": [
+  {
+   "name": "Alley drainpipe (Warehouse)",
+   "x": 70,
+   "top": 4,
+   "base": 8
+  },
+  {
+   "name": "Mall drainpipe",
+   "x": 206,
+   "top": 4,
+   "base": 8
+  }
+ ],
+ "shopSigns": [
+  {
+   "x0": 7,
+   "x1": 12,
+   "y": 2,
+   "text": "CHEMIST",
+   "bg": [
+    70,
+    150,
+    120
+   ]
+  },
+  {
+   "x0": 15,
+   "x1": 20,
+   "y": 2,
+   "text": "FLORIST",
+   "bg": [
+    190,
+    110,
+    140
+   ]
+  },
+  {
+   "x0": 42,
+   "x1": 56,
+   "y": 7,
+   "text": "THE WAREHOUSE",
+   "bg": [
+    175,
+    60,
+    55
+   ]
+  },
+  {
+   "x0": 78,
+   "x1": 92,
+   "y": 7,
+   "text": "WOOLWORTHS",
+   "bg": [
+    60,
+    130,
+    75
+   ]
+  },
+  {
+   "x0": 130,
+   "x1": 137,
+   "y": 2,
+   "text": "PHARMACY",
+   "bg": [
+    60,
+    120,
+    170
+   ]
+  },
+  {
+   "x0": 139,
+   "x1": 147,
+   "y": 2,
+   "text": "STATIONERY",
+   "bg": [
+    50,
+    90,
+    160
+   ]
+  },
+  {
+   "x0": 148,
+   "x1": 154,
+   "y": 2,
+   "text": "BARBERS",
+   "bg": [
+    40,
+    40,
+    50
+   ]
+  },
+  {
+   "x0": 172,
+   "x1": 190,
+   "y": 7,
+   "text": "SILVERDALE CENTRE",
+   "bg": [
+    30,
+    90,
+    70
+   ]
+  }
+ ],
+ "tutorial": [
+  {
+   "x": 1,
+   "text": "THE SHOPS  — fight your way along Kauri Walk"
+  },
+  {
+   "x": 24,
+   "text": "CLIMB the tree → fence → roof"
+  },
+  {
+   "x": 37,
+   "text": "ROOFTOP RUN  up the trolley stack"
+  },
+  {
+   "x": 67,
+   "text": "DRAINPIPE  hold ↑ to climb out of the alley"
+  },
+  {
+   "x": 98,
+   "text": "PLANT ROOM  double jump + ledge grab"
+  },
+  {
+   "x": 129,
+   "text": "SKATEBOARD KID  harmless: hop over for coins!"
+  },
+  {
+   "x": 163,
+   "text": "TREE or TIMBER RAMP up to the mall roof"
+  },
+  {
+   "x": 193,
+   "text": "LIGHT-WELL  wall jump out"
+  },
+  {
+   "x": 207,
+   "text": "Nearly at the bus stop!"
+  }
+ ],
+ "continuesFrom": "silverdale_1 (exit by the shops)",
+ "entityTypes": {
+  "kid": "{type:'kid', kind:'scooter'|'skateboard', x, y, range, harmless:true, hitbox:false, bonus:'hop'}: ambient NPC kid that rides back and forth over x..x+range on feet row y. HARMLESS: never deals damage and never knocks Paddy back; hitbox:false = no collision at all (Paddy walks straight through) and it cannot be attacked (swipes pass through). bonus:'hop' = Paddy hopping over the kid (airborne directly above it) gives a small coin bonus (suggest +3 coins, once per pass). Not an obstacle; the validator ignores kids for pathing/lanes.",
+  "secret_paw": "{type:'secret_paw', id:'w1-<n>', x, y}: hidden golden-paw collectible (World 1 has 10: w1-1..w1-10, spread over silverdale_1..7). (x,y) = tile cell like other pickups (feet-cell convention); it floats there, no collision, collected on touch, never respawns once taken. id is unique across the game so the save file can track which paws are found; collecting all 10 is meant to unlock a reward (e.g. awakened character forms) - Game Studio to wire. Placed off the main path in hidden-but-fair cat-route spots."
+ },
+ "notes": "Kids are harmless NPCs (harmless:true, hitbox:false): no damage, no knock-back; hop over one for a small coin bonus (bonus:'hop'). Entity y = feet cell. Hitbox 3.5x1.5 (forms 4 tall). Main path = walk + single jump (step<=2, gap<=4); roofs are on the main path via trolley stack / loading dock / timber ramp, and also reachable by tree, fence, drainpipe, ledge grab and wall jump. Alley and light-well are escapable by drainpipe / wall jump / double jump. Fliers only where there is open sky. Arenas: Game Studio may lock the camera until each group is cleared."
+}

@@ -1,0 +1,1489 @@
+{
+ "id": "silverdale_5",
+ "world": "silverdale",
+ "label": "World 1-5",
+ "name": "Silverdale School",
+ "subtitle": "Longmore Lane: tree-lined drive → two-storey blocks → covered court → junior playground → field → native bush & stream",
+ "theme": "silverdale_school",
+ "music": "silverdale_school",
+ "tile": 48,
+ "width": 262,
+ "height": 12,
+ "layers": {
+  "solid": [
+   "......................................................................................................................................................................................................................................................................",
+   "................T.........T.........T....................................................T..............................................................................T..........................T...T.......................T.........T..........T.........T.......",
+   "................T.........T.........T.................................L#################LT..L#################L..................T..................T...................T====......................T...T.......................T.........T..........T.........T.......",
+   "................T.........T.........T.................................###################T..###################.....T.........T..TL################LT...................T..........................T...T.......................T......===T====......T......===T====...",
+   ".............===T====..===T====..===T====...??.......................####################T..####################....TL#######LT..T..................T......T............T.....................??...T...T....................===T====.....T.......===T===......T.......",
+   "................T.........T.........T................................####################T..####################....T.........T..T..................T...===T===.=======.T.....FFFFFFFFFFF..........T===T.......................T.........T..........T.........T.......",
+   "................T.........T.........T...............................#####################T..#####################...T.........T..T..................T......T............T..........................T...T.......................T.........T..........T.........T.......",
+   "................T.........T.........T...............................#####################T..#####################...T.........T..T..................T......T............T..........................T...T.......................T.........T..........T.........T.......",
+   "................T.........T.........T......................L####L..######################T..######################..T.........T..T..................T......T............T..........................T...T.......................T.........T..........T.........T.......",
+   "................T.........T.........T.....................#######..######################T..######################..T.........T..T..................T......T............T..........................T...T.......................T.........T..........T.........T.......",
+   "############################################################################################################################################################################################^#####################################~~~~########~~~#######~~~~##########",
+   "######################################################################################################################################################################################################################################################################"
+  ],
+  "deco": [
+   ".............hh.hh.hh.hh.hh.hh.hh.hh.hh.hh..................................................................................................................................................................................hh.hh.hh.hh.hh.hh.h..hh.hh.hh.hh.hh.hh.h..",
+   "............kk.k..kk.kk.kk.kk.kk.kk..k.kk.............................................s..d..............................................................................q..........................j...j...................kk.k..kk.kk.kk.kk.kk.kk.k..kk..k.kk.kk.kk..",
+   "............k.kk.kk.kk.kk..k.kk.kk.k..kk.k............................OOOOOOOOOOOOOOOOOOOd..OOOOOOOOOOOOOOOOOOO..................q..................q...................qzzzz......................j...j...................k.kk.kk.kk.kk..k.kk..k.kk.kk.k..kk..k.kk...",
+   ".............kk..k.kk.kk.k..kk.kk.kk.kk.kk............................UUUUUUUUUUUUUUUUUUUd..UUUUUUUUUUUUUUUUUUU.....q.........q..qVVVVVVVVVVVVVVVVVVq...................q..........................j...j....................kk..k.kk..bbb.bbbb...kk..k.kk..bbb.bbbb...",
+   ".............bbb.bbbb..bbb.bbbb..bbb.bbbb............................Puuuuuuuuuuuuuuuuuuud..uuuuuuuuuuuuuuuuuuuP....qVVVVVVVVVq..q..................q......q............q..........................j...j....................bbb.bbbb.............bbb.bbb..............",
+   "......................................................................UUUUUUUUUUUUUUUUUUUd..UUUUUUUUUUUUUUUUUUU.....qwwwwwwww.q..q..................q...zzzqzzz.ZZZZZZZ.q..........................jxxxj..............................................................",
+   "....................................................................P.UUUUUUUUUUUUUUUUUUUd..UUUUUUUUUUUUUUUUUUU.P...qwwwwwwww.q..q..................q......q............q.....fffffffffff..........j...j..............................................................",
+   "......................................................................uuuuuuuuuuuuuuuuuuud..uuuuuuuuuuuuuuuuuuu.....qwwwwwwww.q..q..................q......q............q.....fffffffffff..........j...j..............................................................",
+   ".........l.................................................RRRRRRl.P..UUUUUUUUUUUUUUUUUUUd..UUUUUUUUUUUUUUUUUUU..P..qwwwwwwww.q..q..................ql.....q............q.....fffffffffff..........j...j..................l........................................G..",
+   "ns........ns.............................n...............nPUUUUUU.s...UUUUUUUUUUUUUUUUUUUd..UUUUUUUUUUUUUUUUUUU...s.q.........qn.q..................q.s....q............q.....fffffffffffns........j...j.................n.s...........n..........n.........n......G..",
+   "YYYYYYYYYYYXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.................UUUUUU.....UUUUUUUUUUUUUUUUUUU...UUUUUUUUUUUUUUUUUUU...................NNNNNNNNNNNNNNNNNN......................................YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY..........................................",
+   "......................................................................................................................................................................................................................................................................"
+  ]
+ },
+ "legend": {
+  "#": "ground: solid on all sides (concrete, deck, roof slab)",
+  "=": "one-way platform: solid only from above, jump up through it, press ↓ to drop (glass canopy, tree branch)",
+  "B": "breakable: solid until hit (precast panel stack), then removed",
+  "?": "item block: solid; bonk from below or hit to release an item",
+  "^": "soft hazard: walkable floor that bumps Paddy and chips health, never kills",
+  "~": "water: not solid; touching it = soft respawn at last safe ground (shallow drain)",
+  "L": "ledge-grab edge: solid like #, plus Paddy can grab its top corner from below/side and pull up",
+  "T": "climbable trunk / pole: NOT solid (walk past it); hold ↑ while overlapping to cling and climb up/down, ←/→ steps onto an adjacent branch, deck, bar or roof, jump leaps off (deco: q post, d drainpipe, j goalpost upright)",
+  "F": "fence top: 1-tile-thin walkable rail, one-way (land from above, jump up through, ↓ drops); posts/palings below are deco only",
+  ".": "empty"
+ },
+ "entityTypes": {
+  "kid": "{type:'kid', kind:'scooter'|'skateboard', x, y, range, harmless:true, hitbox:false, bonus:'hop'}: ambient NPC kid that rides back and forth over x..x+range on feet row y. HARMLESS: never deals damage and never knocks Paddy back; hitbox:false = no collision at all (Paddy walks straight through) and it cannot be attacked (swipes pass through). bonus:'hop' = Paddy hopping over the kid (airborne directly above it) gives a small coin bonus (suggest +3 coins, once per pass). Not an obstacle; the validator ignores kids for pathing/lanes.",
+  "car": "{type:\"car\", name, lane, x0, x1, speed, dir}: dodge-only moving hazard, ~2 tiles tall x 3 long. lane = feet row it drives on; it shuttles between x0 and x1 (tiles) at speed tiles/s starting in dir (+1 right / -1 left), turning at the ends. Touching it = a gentle bump (small hop away, brief invulnerability), NO damage, never kills. Cannot be attacked. Never leaves x0..x1: the tiles just outside are safe islands / kerbs. Paddy can single-jump over a car.",
+  "bus": "{type:\"bus\", ...same fields}: like car but ~3 tiles tall x 5 long and slower; too tall to single-jump, so wait on the island or go over it on the traffic-light mast arm. Same bump, no damage.",
+  "secret_paw": "{type:'secret_paw', id:'w1-<n>', x, y}: hidden golden-paw collectible (World 1 has 10: w1-1..w1-10, spread over silverdale_1..7). (x,y) = tile cell like other pickups (feet-cell convention); it floats there, no collision, collected on touch, never respawns once taken. id is unique across the game so the save file can track which paws are found; collecting all 10 is meant to unlock a reward (e.g. awakened character forms) - Game Studio to wire. Placed off the main path in hidden-but-fair cat-route spots."
+ },
+ "decoLegend": {
+  "U": "classroom-block cladding (skin on #)",
+  "u": "classroom windows (skin on #)",
+  "O": "big overhanging green roof (skin on #/L)",
+  "R": "portacom roof (skin on #/L)",
+  "V": "verandah / court roof, iron (skin on #/L)",
+  "P": "concrete stair step (skin on #)",
+  "N": "blue assembly-court surface (skin on #)",
+  "Y": "grass (skin on #)",
+  "X": "driveway asphalt (skin on #)",
+  "z": "playground fort deck (skin on =)",
+  "Z": "monkey bars (skin on =)",
+  "x": "goalpost crossbar (skin on =)",
+  "q": "post / climbing pole (skin on T)",
+  "d": "drainpipe (skin on T)",
+  "j": "goalpost upright (skin on T)",
+  "w": "verandah glazing (background)",
+  "b": "tree branch (skin on =)",
+  "k": "native leaves",
+  "h": "flowers / berries",
+  "f": "school fence palings",
+  "n": "native planting",
+  "l": "lamp post",
+  "s": "tutorial sign",
+  "G": "exit / goal",
+  ".": "none"
+ },
+ "backdrop": {
+  "bush": true,
+  "spires": []
+ },
+ "spawn": {
+  "x": 1,
+  "y": 9
+ },
+ "checkpoints": [
+  {
+   "x": 62,
+   "y": 7
+  },
+  {
+   "x": 150,
+   "y": 9
+  },
+  {
+   "x": 218,
+   "y": 9
+  }
+ ],
+ "goal": {
+  "x": 259,
+  "y": 9
+ },
+ "entities": [
+  {
+   "type": "coin",
+   "x": 2,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 23,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 25,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 27,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 29,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 33,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 35,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 37,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 39,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 21,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 22,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 31,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 32,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 43,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 46,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 49,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 52,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 55,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 59,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 61,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 63,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 67,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 68,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 69,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 71,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 73,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 75,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 77,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 79,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 81,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 83,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 85,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 87,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 89,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 90,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 91,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 93,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 95,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 97,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 99,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 101,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 103,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 105,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 107,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 109,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 111,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 112,
+   "y": 5
+  },
+  {
+   "type": "coin",
+   "x": 113,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 116,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 118,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 120,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 122,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 124,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 131,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 133,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 135,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 137,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 139,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 141,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 143,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 145,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 152,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 154,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 156,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 158,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 161,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 163,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 165,
+   "y": 3
+  },
+  {
+   "type": "coin",
+   "x": 170,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 172,
+   "y": 0
+  },
+  {
+   "type": "coin",
+   "x": 175,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 177,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 179,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 181,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 183,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 187,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 190,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 193,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 196,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 199,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 202,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 205,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 208,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 211,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 214,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 217,
+   "y": 9
+  },
+  {
+   "type": "coin",
+   "x": 196,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 197,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 198,
+   "y": 4
+  },
+  {
+   "type": "coin",
+   "x": 220,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 225,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 230,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 235,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 241,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 246,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 251,
+   "y": 2
+  },
+  {
+   "type": "coin",
+   "x": 256,
+   "y": 1
+  },
+  {
+   "type": "coin",
+   "x": 226,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 227,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 228,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 229,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 238,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 239,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 240,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 248,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 249,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 250,
+   "y": 7
+  },
+  {
+   "type": "coin",
+   "x": 251,
+   "y": 7
+  },
+  {
+   "type": "fish",
+   "x": 65,
+   "y": 9
+  },
+  {
+   "type": "fish",
+   "x": 108,
+   "y": 1
+  },
+  {
+   "type": "fish",
+   "x": 149,
+   "y": 9
+  },
+  {
+   "type": "fish",
+   "x": 218,
+   "y": 9
+  },
+  {
+   "type": "fish",
+   "x": 245,
+   "y": 3
+  },
+  {
+   "type": "yarn",
+   "x": 90,
+   "y": 9
+  },
+  {
+   "type": "yarn",
+   "x": 171,
+   "y": 1
+  },
+  {
+   "type": "yarn",
+   "x": 197,
+   "y": 4
+  },
+  {
+   "type": "yarn",
+   "x": 234,
+   "y": 2
+  },
+  {
+   "type": "powerup",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "type": "powerup",
+   "x": 146,
+   "y": 2
+  },
+  {
+   "type": "powerup",
+   "x": 257,
+   "y": 2
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 44,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 47,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "chihuahua",
+   "x": 50,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 53,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "tabby",
+   "x": 56,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "alleytom",
+   "x": 95,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "tabby",
+   "x": 98,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 101,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 104,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "persian",
+   "x": 107,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "labrador",
+   "x": 132,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "hedgehog",
+   "x": 135,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "poodle",
+   "x": 138,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 141,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "sausage",
+   "x": 144,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "ferret",
+   "x": 154,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 157,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 161,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "husky",
+   "x": 163,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "hedgehog",
+   "x": 166,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "bulldog",
+   "x": 203,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "pukeko",
+   "x": 206,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "goose",
+   "x": 209,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 212,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 215,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 49,
+   "y": 2
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 159,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 205,
+   "y": 2
+  },
+  {
+   "type": "enemy",
+   "id": "magpie",
+   "x": 211,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "chihuahua",
+   "x": 37,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "weta",
+   "x": 61,
+   "y": 7
+  },
+  {
+   "type": "enemy",
+   "id": "siamese",
+   "x": 75,
+   "y": 1
+  },
+  {
+   "type": "enemy",
+   "id": "rat",
+   "x": 119,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "weta",
+   "x": 172,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "weta",
+   "x": 222,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "weta",
+   "x": 232,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "weta",
+   "x": 243,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "weta",
+   "x": 253,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 235,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 246,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "hedgehog",
+   "x": 256,
+   "y": 9
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 18,
+   "y": 3,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 28,
+   "y": 3,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 140,
+   "y": 2,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "possum",
+   "x": 197,
+   "y": 4,
+   "route": "roof"
+  },
+  {
+   "type": "enemy",
+   "id": "wasp",
+   "x": 228,
+   "y": 2
+  },
+  {
+   "type": "enemy",
+   "id": "wasp",
+   "x": 239,
+   "y": 3
+  },
+  {
+   "type": "enemy",
+   "id": "wasp",
+   "x": 250,
+   "y": 2
+  },
+  {
+   "type": "kid",
+   "kind": "scooter",
+   "x": 12,
+   "y": 9,
+   "range": 14,
+   "harmless": true,
+   "hitbox": false,
+   "bonus": "hop"
+  },
+  {
+   "type": "secret_paw",
+   "id": "w1-7",
+   "x": 199,
+   "y": 1
+  },
+  {
+   "type": "secret_paw",
+   "id": "w1-8",
+   "x": 223,
+   "y": 1
+  }
+ ],
+ "bossArena": null,
+ "arenas": [
+  {
+   "name": "Front-gate scrap",
+   "x0": 42,
+   "x1": 57,
+   "y": 9,
+   "enemies": [
+    "rat",
+    "possum",
+    "chihuahua",
+    "ferret",
+    "tabby",
+    "magpie"
+   ]
+  },
+  {
+   "name": "Block B roof rumble",
+   "x0": 93,
+   "x1": 108,
+   "y": 1,
+   "enemies": [
+    "alleytom",
+    "tabby",
+    "possum",
+    "rat",
+    "persian"
+   ]
+  },
+  {
+   "name": "Assembly-court clash",
+   "x0": 130,
+   "x1": 145,
+   "y": 9,
+   "enemies": [
+    "labrador",
+    "hedgehog",
+    "poodle",
+    "rat",
+    "sausage"
+   ]
+  },
+  {
+   "name": "Playground pandemonium",
+   "x0": 151,
+   "x1": 167,
+   "y": 9,
+   "enemies": [
+    "ferret",
+    "possum",
+    "rat",
+    "husky",
+    "hedgehog",
+    "magpie"
+   ]
+  },
+  {
+   "name": "Field-day frenzy",
+   "x0": 201,
+   "x1": 216,
+   "y": 9,
+   "enemies": [
+    "bulldog",
+    "pukeko",
+    "goose",
+    "rat",
+    "possum",
+    "magpie",
+    "magpie"
+   ]
+  }
+ ],
+ "trees": [
+  {
+   "name": "Driveway puriri",
+   "trunk": {
+    "x": 16,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 13,
+     "x1": 15,
+     "y": 4
+    },
+    {
+     "x0": 17,
+     "x1": 20,
+     "y": 4
+    }
+   ]
+  },
+  {
+   "name": "Driveway totara",
+   "trunk": {
+    "x": 26,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 23,
+     "x1": 25,
+     "y": 4
+    },
+    {
+     "x0": 27,
+     "x1": 30,
+     "y": 4
+    }
+   ]
+  },
+  {
+   "name": "Driveway kowhai",
+   "trunk": {
+    "x": 36,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 33,
+     "x1": 35,
+     "y": 4
+    },
+    {
+     "x0": 37,
+     "x1": 40,
+     "y": 4
+    }
+   ]
+  },
+  {
+   "name": "Bush kauri",
+   "trunk": {
+    "x": 223,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 220,
+     "x1": 222,
+     "y": 4
+    },
+    {
+     "x0": 224,
+     "x1": 227,
+     "y": 4
+    }
+   ]
+  },
+  {
+   "name": "Bush rimu",
+   "trunk": {
+    "x": 233,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 230,
+     "x1": 232,
+     "y": 3
+    },
+    {
+     "x0": 234,
+     "x1": 237,
+     "y": 3
+    }
+   ]
+  },
+  {
+   "name": "Bush puriri",
+   "trunk": {
+    "x": 244,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 241,
+     "x1": 243,
+     "y": 4
+    },
+    {
+     "x0": 245,
+     "x1": 247,
+     "y": 4
+    }
+   ]
+  },
+  {
+   "name": "Bush kahikatea",
+   "trunk": {
+    "x": 254,
+    "top": 1,
+    "base": 9
+   },
+   "branches": [
+    {
+     "x0": 251,
+     "x1": 253,
+     "y": 3
+    },
+    {
+     "x0": 255,
+     "x1": 258,
+     "y": 3
+    }
+   ]
+  }
+ ],
+ "fences": [
+  {
+   "name": "Playground fence",
+   "x0": 174,
+   "x1": 184,
+   "y": 5
+  }
+ ],
+ "roofs": [
+  {
+   "name": "Block A roof",
+   "x0": 70,
+   "x1": 88,
+   "y": 2
+  },
+  {
+   "name": "Block B roof",
+   "x0": 92,
+   "x1": 110,
+   "y": 2
+  },
+  {
+   "name": "Portacom roof",
+   "x0": 59,
+   "x1": 64,
+   "y": 8
+  },
+  {
+   "name": "Shared verandah",
+   "x0": 117,
+   "x1": 125,
+   "y": 4
+  },
+  {
+   "name": "Covered assembly court roof",
+   "x0": 130,
+   "x1": 147,
+   "y": 3
+  }
+ ],
+ "climbables": [
+  {
+   "name": "Light-well drainpipe (Block A)",
+   "x": 89,
+   "top": 1,
+   "base": 9
+  },
+  {
+   "name": "Verandah post (west)",
+   "x": 116,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Verandah post (east)",
+   "x": 126,
+   "top": 3,
+   "base": 9
+  },
+  {
+   "name": "Court post (west)",
+   "x": 129,
+   "top": 2,
+   "base": 9
+  },
+  {
+   "name": "Court post (east)",
+   "x": 148,
+   "top": 2,
+   "base": 9
+  },
+  {
+   "name": "Fort climbing pole",
+   "x": 155,
+   "top": 4,
+   "base": 9
+  },
+  {
+   "name": "Lookout-tower pole",
+   "x": 168,
+   "top": 1,
+   "base": 9
+  },
+  {
+   "name": "Goalpost (left upright)",
+   "x": 195,
+   "top": 1,
+   "base": 9
+  },
+  {
+   "name": "Goalpost (right upright)",
+   "x": 199,
+   "top": 1,
+   "base": 9
+  }
+ ],
+ "shopSigns": [
+  {
+   "x0": 41,
+   "x1": 49,
+   "y": 1,
+   "text": "SILVERDALE SCHOOL",
+   "bg": [
+    30,
+    80,
+    120
+   ]
+  },
+  {
+   "x0": 72,
+   "x1": 86,
+   "y": 5,
+   "text": "BLOCK A  ·  classrooms",
+   "bg": [
+    60,
+    120,
+    100
+   ]
+  },
+  {
+   "x0": 94,
+   "x1": 108,
+   "y": 5,
+   "text": "BLOCK B  ·  library",
+   "bg": [
+    60,
+    120,
+    100
+   ]
+  },
+  {
+   "x0": 131,
+   "x1": 146,
+   "y": 1,
+   "text": "ASSEMBLY COURT",
+   "bg": [
+    40,
+    90,
+    150
+   ]
+  },
+  {
+   "x0": 152,
+   "x1": 160,
+   "y": 0,
+   "text": "JUNIOR PLAYGROUND",
+   "bg": [
+    200,
+    120,
+    40
+   ]
+  },
+  {
+   "x0": 222,
+   "x1": 233,
+   "y": 0,
+   "text": "BUSH WALK & STREAM",
+   "bg": [
+    50,
+    100,
+    60
+   ]
+  }
+ ],
+ "tutorial": [
+  {
+   "x": 1,
+   "text": "SILVERDALE SCHOOL  — up Longmore Lane"
+  },
+  {
+   "x": 11,
+   "text": "TREE-TOP DRIVEWAY  climb a trunk, hop the branches"
+  },
+  {
+   "x": 66,
+   "text": "STAIRS up to the two-storey roofs"
+  },
+  {
+   "x": 86,
+   "text": "LIGHT-WELL  wall jump (or drainpipe) out"
+  },
+  {
+   "x": 114,
+   "text": "VERANDAH POSTS → court roof run"
+  },
+  {
+   "x": 150,
+   "text": "JUNIOR PLAYGROUND  bars, fort & tower"
+  },
+  {
+   "x": 186,
+   "text": "FIELD  climb the goalposts"
+  },
+  {
+   "x": 219,
+   "text": "NATIVE BUSH  wetas & wasps!"
+  }
+ ],
+ "continuesFrom": "silverdale_4 (village green)",
+ "notes": "Entity y = feet cell; ground top is row 10. No kids as enemies: one harmless scooter kid on the drive (harmless:true, hitbox:false, no damage/knock-back; hop over it for a small coin bonus). Main path climbs external stairs onto the two-storey Block A/B roofs (rooftop arena on Block B) and jumps the 3-wide courtyard light-well; dropping in is optional (yarn) and escapable by wall jump or the drainpipe. Covered court roof, playground decks, goalpost crossbar, bush branches are the cat route. Fliers (magpie, wasp) only under open sky."
+}

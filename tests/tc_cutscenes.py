@@ -21,7 +21,7 @@ async def main():
   check('10 W1 panels, all 1280x720 webp',len(r)==10 and all(x[1]==1280 and x[2]==720 for x in r),r)
   r=await E("Object.entries(CUT_TRIGGERS).map(([k,v])=>k+'='+v.join('+'))");check('11 play-order steps on 9 triggers',sum(len(x.split('=')[1].split('+')) for x in r)==11 and len(r)==9,r)
   # preview + screenshots at 1024x340 (side layout), each panel
-  await E("localStorage.removeItem('paddyLegends')")
+  await E("localStorage.removeItem('paddyStory')")
   await load('level=silverdale_1&cut=w1c1,w1u01,w1c3,w1u02,w1b1,w1a1,w1u03,w1x');await pg.wait_for_function('CUT.playing');await pg.wait_for_timeout(1200)
   shots=[];i=0
   while True:
@@ -31,7 +31,7 @@ async def main():
    await pg.touchscreen.tap(400,170);await pg.wait_for_timeout(900);i+=1
    if i>20:break
   check('tap advances through all 10 panels in play order, then closes',i==10 and 'preview:done' in await E("CUT.log"),[i,shots[-1:]])
-  r=await E("JSON.parse(localStorage.getItem('paddyLegends')).story");check('scenes seen + unlock flags saved (Kitty gloves, Ninja)','kitty_boxing_gloves' in r['flags'] and 'form_ninja' in r['flags'] and 'kitty_champ_sweatband' in r['flags'] and len(r['seen'])==8,r)
+  r=await E("JSON.parse(localStorage.getItem('paddyStory')).story");check('scenes seen + unlock flags saved (Kitty gloves, Ninja)','kitty_boxing_gloves' in r['flags'] and 'form_ninja' in r['flags'] and 'kitty_champ_sweatband' in r['flags'] and len(r['seen'])==8,r)
   # keyboard + skip
   await load('level=silverdale_1&cut=w1c3,w1b1');await pg.wait_for_function('CUT.playing');await pg.wait_for_timeout(500)
   await pg.keyboard.press('Space');await pg.wait_for_timeout(500);s=await E("CUT.state()");check('Space = next panel',s['idx']==1,s)
@@ -57,15 +57,15 @@ async def main():
   s=await E("[CUT.state(),LV.boss().arena.state]");check('1-7 boss arena entry plays W1-B1 (walls closed)',s[0]['playing'] and s[0]['scene']=='w1b1' and s[1]=='lock',s)
   await E("CUT.skip()");await pg.wait_for_timeout(300)
   await E("(()=>{for(let i=0;i<20;i++){LV.bossRaw().inv=0;LV.bossHit(1)}})()");await pg.wait_for_timeout(500)
-  s=await E("[CUT.state(),LV.reward,JSON.parse(localStorage.getItem('paddyLegends')).baseGot,MISSION.baseUnlocked('ninja'),!!document.getElementById('rewardpop')]")
+  s=await E("[CUT.state(),LV.reward,JSON.parse(localStorage.getItem('paddyStory')).baseGot,MISSION.baseUnlocked('ninja'),!!document.getElementById('rewardpop')]")
   check('Big Bruno K.O.: W1-A1 plays, Ninja reward saved (no extra popup, the cutscene shows the card)',s[0].get('scene')=='w1a1' and s[1]['form']=='ninja' and s[1]['first'] and s[2]==['ninja'] and s[3] and not s[4],s)
   await pg.keyboard.press('Space');await pg.wait_for_timeout(1000);s=await E("CUT.state()");fn=OUT+'1024x340_trigger_w1u03_ninja.png';await pg.screenshot(path=fn);shots.append(fn)
   check('…then W1-U03 NEW FORM! Ninja',s['scene']=='w1u03',s);await pg.keyboard.press('Space');await pg.wait_for_timeout(300)
-  r=await E("[MISSION.bossReward('big_bruno').first,(()=>{const d=JSON.parse(localStorage.getItem('paddyLegends'));d.baseGot=[];d.exp=2500;localStorage.setItem('paddyLegends',JSON.stringify(d));return MISSION.baseUnlocked('ninja')})(),(()=>{const d=JSON.parse(localStorage.getItem('paddyLegends'));d.exp=2499;localStorage.setItem('paddyLegends',JSON.stringify(d));return MISSION.baseUnlocked('ninja')})()]")
+  r=await E("[MISSION.bossReward('big_bruno').first,(()=>{const d=JSON.parse(localStorage.getItem('paddyStory'));d.baseGot=[];d.forms=[];d.exp=2500;localStorage.setItem('paddyStory',JSON.stringify(d));return MISSION.baseUnlocked('ninja')})(),(()=>{const d=JSON.parse(localStorage.getItem('paddyStory'));d.forms=[];d.exp=2499;localStorage.setItem('paddyStory',JSON.stringify(d));return MISSION.baseUnlocked('ninja')})()]")
   check('reward only once; EXP route (2,500) also unlocks Ninja',r==[False,True,False],r)
   await E("(()=>{const g=LV.level.goal;LV.teleport(g.x+1,g.y)})()");await pg.wait_for_timeout(600);s=await E("CUT.state()");check('1-7 goal plays W1-X',s.get('scene')=='w1x',s);await E("CUT.skip()")
   # secret_paw + mission_gift entities (injected into a level JSON at runtime)
-  await E("localStorage.removeItem('paddyLegends')")
+  await E("localStorage.removeItem('paddyStory')")
   await load('level=silverdale_1&nocuts')
   inj="(()=>{const L=JSON.parse(JSON.stringify(LV.level));L.entities=L.entities.concat([{type:'secret_paw',id:'w1-1',x:20,y:8},{type:'mission_gift',mission:'w3-ducklings',x:30,y:8}]);return L})()"
   await E(f"window._L={inj}")
@@ -73,19 +73,19 @@ async def main():
   await E("(()=>{const f0=window.fetch;window.fetch=(u,...a)=>String(u).includes('silverdale_1.json')?Promise.resolve(new Response(JSON.stringify(_L))):f0(u,...a)})()")
   await E("LV.go('silverdale_1')");await pg.wait_for_timeout(500);await E("LV.calm()")
   await E("LV.teleport(20,8)");await pg.wait_for_timeout(500)
-  s=await E("[LV.log.slice(-3),JSON.parse(localStorage.getItem('paddyLegends')).paws,MISSION.pawCount(1),LV.events.slice(-2)]")
+  s=await E("[LV.log.slice(-3),JSON.parse(localStorage.getItem('paddyStory')).paws,MISSION.pawCount(1),LV.events.slice(-2)]")
   check('secret_paw: collected, saved, counted 1/10 for World 1','paw:w1-1' in s[0] and 'w1-1' in s[1] and s[2]==1,s)
   await E("LV.teleport(30,8)");await pg.wait_for_timeout(500)
-  s=await E("[LV.log.slice(-3),LV.mission,MISSION.done('w3-ducklings'),JSON.parse(localStorage.getItem('paddyLegends')).mformsPending]")
-  check('mission_gift: completes w3-ducklings -> Skybreaker (skb) pending','gift:w3-ducklings' in s[0] and s[1]['ok'] and s[2] and 'skb' in s[3],s)
+  s=await E("[LV.log.slice(-3),LV.mission,MISSION.done('w3-ducklings'),JSON.parse(localStorage.getItem('paddyStory')).forms]")
+  check('mission_gift: completes w3-ducklings -> Skybreaker (skb) in the story save','gift:w3-ducklings' in s[0] and s[1]['ok'] and s[2] and 'skb' in s[3],s)
   await pg.wait_for_timeout(4200);await E("LV.go('silverdale_1')");await pg.wait_for_timeout(500)
   r=await E("(()=>{const e=LV.level.entities;return [MISSION.pawHas('w1-1'),e.some(x=>x.type==='secret_paw'),e.some(x=>x.type==='mission_gift')]})()")
   n0=await E("LV.log.length");await E("LV.teleport(20,8)");await pg.wait_for_timeout(500);await E("LV.teleport(30,8)");await pg.wait_for_timeout(500);r2=await E(f"[LV.log.slice({n0}).filter(x=>x.startsWith('paw:')||x.startsWith('gift:')).length]")
   check('collected paw + finished gift do not come back on reload',r==[True,True,True] and r2==[0],[r,r2])
-  r=await E("(()=>{for(let k=1;k<=10;k++)var x=MISSION.pawCollect('w1-'+k);return [x.count,x.set,JSON.parse(localStorage.getItem('paddyLegends')).pawSets]})()")
+  r=await E("(()=>{for(let k=1;k<=10;k++)var x=MISSION.pawCollect('w1-'+k);return [x.count,x.set,JSON.parse(localStorage.getItem('paddyStory')).pawSets]})()")
   check('10 paws in a world = full set saved (pawSets)',r==[10,True,[1]],r)
   # Level Builder's real secret paws (w1-1 .. w1-10 across silverdale_1..7): each one is reachable, collected, saved, and stays collected
-  await E("localStorage.removeItem('paddyLegends')");got=[]
+  await E("localStorage.removeItem('paddyStory')");got=[]
   for n in range(1,8):
    await load(f'level=silverdale_{n}&nocuts');await E("LV.calm()")
    paws=await E("LV.level.entities.filter(e=>e.type==='secret_paw')")
@@ -99,7 +99,7 @@ async def main():
     ok=await E(f"MISSION.pawHas('{e['id']}')");got.append([n,e['id'],cell,ok])
    await pg.screenshot(path=OUT+f'paws_1-{n}.png')
   check('all 10 Level Builder secret paws collected in 1-1..1-7 (trunk ones by climbing)',len(got)==10 and all(g[3] for g in got),got)
-  r=await E("[MISSION.pawCount(1),JSON.parse(localStorage.getItem('paddyLegends')).pawSets]");check('saved across levels: 10/10 World 1, full set recorded',r==[10,[1]],r)
+  r=await E("[MISSION.pawCount(1),JSON.parse(localStorage.getItem('paddyStory')).pawSets]");check('saved across levels: 10/10 World 1, full set recorded',r==[10,[1]],r)
   left=[]
   for n in range(1,8):
    await load(f'level=silverdale_{n}&nocuts');r=await E("[LV.level.entities.filter(e=>e.type==='secret_paw').length,LV.ents().filter(e=>e.type==='secret_paw').length]");left.append(r)
