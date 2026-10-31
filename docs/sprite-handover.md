@@ -19,5 +19,5 @@ Repo: github.com/pernellturner/paddy-game. Working copy: /workspace/paddy-game. 
 - Paddy faces RIGHT, full body, the same scale in every frame. Feet sit on the same baseline (except fly).
 - Standard move set per form: idle, run, jump, combo_a, combo_b, combo_c, ult (finisher), fly (if it flies), hurt. Each pose must clearly show what the move is.
 - Bigger tiers can be drawn bigger. In-game the idle body height is normalised to about 232px, so say if a form should be bigger (e.g. +10%).
-- Enemies (birds etc.): the same rules, one sheet per action (fly, attack, hurt) in generated/en/<name>_<action>.jpg, facing LEFT.
+- Enemies (birds etc.): the same rules, one folder per enemy: generated/en/<id>/move.jpg (walk/fly loop) and act.jpg (attack), optional hurt.jpg and ko.jpg, facing RIGHT, same scale on every sheet (cut by src/cut_en.py).
 - Then send me the paths and a list of prefixes and moves. I cut them with src/cut_*.py into assets/p/<prefix>_<move>_NN.png/.webp, register them in assets/frames.json, and test.
