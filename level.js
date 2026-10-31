@@ -4,7 +4,7 @@
 // Solid legend:  J bounce pad (solid flush trampoline: landing launches ~6 tiles with jump held, ↓ absorbs) · # ground · B breakable · ? item block · L solid with a grabbable top corner · = one-way platform (branches too)
 //   F one-way fence rail (↓ drops through) · T climbable trunk / drainpipe / pole (not solid: hold ↑ to climb, ← → step off onto a
 //   branch or roof, jump leaps off) · ^ soft hazard (bump + chip, never kills) · ~ water (soft respawn at last safe ground) · . empty
-// Fields: spawn, checkpoints, goal, entities (coin fish yarn powerup enemy kid car bus), arenas (camera lock until the group is cleared),
+// Fields: spawn, checkpoints, goal, mission (optional mission id, completed at the goal -> mission.js gift + form unlock), entities (coin fish yarn powerup enemy kid car bus), arenas (camera lock until the group is cleared),
 //   trees, fences, roofs, climbables, tutorial signs, shopSigns, backdrop, decoLegend skins.
 // Kids: harmless:true, hitbox:false -> no collision, no damage, no knock-back, can't be attacked; hopping over one = +3 coins once per pass.
 // Cars / buses (entityTypes): shuttle x0..x1 on their lane at speed tiles/s, bump Paddy with knock-back only (no damage), can't be attacked.
@@ -51,7 +51,7 @@ function init(lv){L=lv;W=L.width;H=L.height;S=L.layers.solid.slice();used.clear(
  climbMeta=[];for(const t of L.trees||[])climbMeta.push({x:t.trunk.x,top:t.trunk.top,base:t.trunk.base,skin:'tree',name:t.name});
  for(const c of L.climbables||[])climbMeta.push({x:c.x,top:c.top,base:c.base,skin:/drain|pipe/i.test(c.name)?'pipe':/pole|mast|post|light/i.test(c.name)?'pole':'tree',name:c.name,arms:c.arms});
  initBoss();
- cam.x=Math.max(0,p.x-VW*.35);LV.ready=true;LV.id=L.id;msg((L.label?L.label+' · ':'')+L.name,'#ffe08a',true)}
+ cam.x=Math.max(0,p.x-VW*.35);LV.ready=true;LV.id=L.id;LV.level=L;msg((L.label?L.label+' · ':'')+L.name,'#ffe08a',true)}
 function carCol(e){const C=['#d9483b','#3b7dd9','#e8c23a','#5aa95a','#9a5ad9'];let h=0;for(const ch of e.name||'')h=(h*31+ch.charCodeAt(0))>>>0;return e.type==='bus'?'#f2f2f2':C[h%C.length]}
 const FLY=new Set(['seagull','magpie','wasp']);
 function mkEnemy(id,x,y,e){const fly=FLY.has(id);return{id,x,y:fly?y-TS*2:y,x0:x-2.5*TS,x1:x+2.5*TS,vx:(Math.random()<.5?-1:1)*(fly?90:60),vy:0,hp:/bulldog|husky|labrador|goose/.test(id)?3:2,fly,alive:true,ko:0,face:-1,t:Math.random()*6,hurt:0,route:e&&e.route,w:fly?60:70,h:fly?60:/rat|hedgehog|weta|crab/.test(id)?50:80,arena:e&&e.arena}}
@@ -117,7 +117,7 @@ function update(dt){LV.t+=dt;p.t+=dt;p.inv=Math.max(0,p.inv-dt);p.drop=Math.max(
   const h=boxHits(ax,ay+40,70,110,(c,r)=>tile(c,r)==='B'||tile(c,r)==='?');if(h)bonk(h.c,h.r)}
  // checkpoints / goal
  for(const c of L.checkpoints||[]){if(p.x>=(c.x)*TS&&(!p.cp||p.cp.x<c.x*TS)){p.cp={x:(c.x+.5)*TS,y:(c.y+1)*TS};msg('CHECKPOINT','#7fffd4')}}
- const g=L.goal;if(!p.done&&p.x>=g.x*TS){p.done=true;msg((L.label||L.id)+' CLEAR!','#ffe08a',true);LV.log.push('goal')}
+ const g=L.goal;if(!p.done&&p.x>=g.x*TS){p.done=true;msg((L.label||L.id)+' CLEAR!','#ffe08a',true);LV.log.push('goal');if(L.mission&&window.missionComplete){LV.mission=missionComplete(L.mission);LV.log.push('mission:'+L.mission)}}   // level JSON 'mission': id -> gift + form unlock (mission.js)
  P.jump=P.attack=P.down=P.up=P.restart=P.next=0}
 function hitEnemy(e,dir){if(!e.alive)return;e.hp--;e.hurt=.25;e.vx=dir*240;e.y-=4;fx.push({k:'pow',x:e.x,y:e.y-e.h/2,l:.35});if(e.hp<=0){e.alive=false;e.ko=1;p.coins+=1;LV.log.push('ko:'+e.id)}}
 function updEnemies(dt){for(const e of enemies){e.t+=dt;if(!e.alive){e.ko=Math.max(0,e.ko-dt);continue}e.hurt=Math.max(0,e.hurt-dt);
