@@ -393,7 +393,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='38a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='39a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -1321,7 +1321,7 @@ const XF=[null,null,null,
    {a:'kn_h3',k:'over',lunge:230,ht:.1,nm:'OVERHEAD CRUSH!',c:KG},{a:'kn_h4',k:'flat',lunge:330,ht:.085,nm:'SHIELD BASH!',c:'#9cc2ff'},
    {a:'kn_h5',k:'rise',lunge:160,ht:.09,nm:'RISING CLEAVE!',c:'#ffd34d'},{a:'kn_h6',k:'spin',lunge:220,ht:.085,nm:'CYCLONE CLEAVE!',c:'#ffb340'},
    {a:'kn_h7',k:'thrust',lunge:620,ht:.11,nm:'LANCE CHARGE!',c:'#fff'}]},
- {pre:'pi',nm:'PIRATE',col:PT,col2:PG,H:.36,H0:.32,minT:.12,cancelT:.1,W:.16,E:.4,spd:480,airNm:'AIR SLASH',
+ {pre:'pi',nm:'PIRATE',col:PT,col2:PG,H:.36,H0:.32,minT:.12,cancelT:.1,W:.16,E:.4,spd:300,airNm:'AIR SLASH',
   CH:[null,{a:'pi_h1',k:'thrust',lunge:330,ht:.07,nm:'LUNGE THRUST!',c:'#dffcff'},{a:'pi_h2',k:'down',lunge:220,ht:.035,nm:'FOREHAND SLASH!',c:'#9ff3ff'},
    {a:'pi_h3',k:'up',lunge:220,ht:.035,nm:'BACKHAND SLASH!',c:PT},{a:'pi_h4',k:'over',lunge:260,ht:.05,nm:'LEAPING CUT!',c:PG},
    {a:'pi_h5',k:'spin',lunge:200,ht:.06,nm:'WHIRLPOOL SPIN!',c:'#5fe0ff'},{a:'pi_h6',k:'low',lunge:420,ht:.04,nm:'LOW TIDE SWEEP!',c:'#ffe27a'},
@@ -1608,8 +1608,8 @@ ROUTES.push(
   {k:'CCCCCT',nm:'CASTLE CRUSHER!',fx:'castle',tip:'5 heavy timed cleaves, then a ground-cracking shield bash'},{k:'TTTCCC',nm:'GREATSWORD GALE!',fx:'gale',tip:'shield charge x3 into a rising whirlwind of cleaves'},
   {k:'CCCMBBTT',nm:'ROYAL CHARGE!',fx:'royal',tip:'holy shout, twin lance rush, shield storm juggle'},{k:'TTTMCTMC',nm:'ROYAL JUDGEMENT',ult:1,tip:'ULTIMATE: crest in the sky, a giant sword of light, a quake that splits the ground'}],
  [{k:'CCCB',nm:'BARREL BLITZ!',fx:'blitz',tip:'barrel-roll right through him and slash out'},{k:'CCCM',nm:'POINT BLANK POP!',fx:'pointblank',tip:'flintlock pop in a big cartoon puff'},
-  {k:'CCCTT',nm:'ANCHORS AWEIGH!',fx:'aweigh',tip:'hook him in, then whirl the anchor round'},{k:'TTTMM',nm:'BROADSIDE!',fx:'broadside',tip:'three anchor hooks, then cannonballs rain in from the ship'},
-  {k:'CCCCCB',nm:'SWASHBUCKLE SWING!',fx:'swash',tip:'5 timed cutlass cuts, then a barrel-roll finish'},{k:'TTTCCC',nm:'WHIRLPOOL!',fx:'whirl',tip:'anchor hooks into a spinning ocean whirlpool juggle'},
+  {k:'CCCTT',nm:'ANCHORS AWEIGH!',fx:'aweigh',tip:'hook him in, then whirl the anchor round'},{k:'TTTMM',nm:'BROADSIDE!',fx:'broadside',tip:'three flèches, then cannonballs rain in from the ship'},
+  {k:'CCCCCB',nm:'SWASHBUCKLE SWING!',fx:'swash',tip:'5 timed cutlass cuts, then a barrel-roll finish'},{k:'TTTCCC',nm:'WHIRLPOOL!',fx:'whirl',tip:'flèche x3 into a spinning ocean whirlpool juggle'},
   {k:'CCCMBBTT',nm:'TREASURE STORM!',fx:'treasure',tip:'pop, roll, rope swing, anchor spin – showered in gold'},{k:'CCCTCBMM',nm:"CAPTAIN'S TIDAL WAVE",ult:1,tip:'ULTIMATE: corkscrew leap, the ship fires a broadside, a giant wave crashes down'}]);
 // ---- per-frame update ----
 function r10Update(dt){
@@ -1720,7 +1720,7 @@ function upgLoad(f,hi){if(!window.queueFrames||!F)return;const names=[];
 function r11Update(dt){
  if(p.lsq>0)p.lsq-=dt;if(p.recT>0)p.recT-=dt;
  // a short settle pose when a ground attack finishes, instead of snapping straight back to idle
- const S=p.state;if(S==='normal'&&r11Prev!=='normal'&&(p.sam||p.xf||p.uf)&&p.ground&&!/^(land|hurt|respawn|victory|nmorph|ledge|wallrun|bunny|lkult|sm|nj|kt|kg)$/.test(r11Prev))p.recT=.24;r11Prev=S;
+ const S=p.state;if(S==='normal'&&r11Prev!=='normal'&&(p.sam||p.xf||p.uf)&&p.ground&&!/^(land|hurt|respawn|victory|nmorph|ledge|wallrun|bunny|lkult|sm|nj|kt|kg|pr)$/.test(r11Prev))p.recT=.24;r11Prev=S;
  if(!window.queueFrames||!F)return;
  const f=FORM();if(f!==upgForm){upgForm=f;if(f>0)upgLoad(f,true)}
  if(!upgBg&&now>6&&SPRITES.loaded+SPRITES.failed.length>=SPRITES.total){upgBg=true;[2,1,3,4].forEach(k=>upgLoad(k,false))}

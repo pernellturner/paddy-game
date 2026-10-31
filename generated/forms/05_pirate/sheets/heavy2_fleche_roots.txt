@@ -1,0 +1,10 @@
+# heavy2_fleche: cell 481x416px, baseline y=366 (cell coords), form scale K=0.3846 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 h2_load 17 0
+3 h2_load 8 0 SFX:GRUNT
+4 h2_imp 121 0 HIT1
+5 h2_imp 121 0 HIT2
+6 h2_imp 127 0
+7 recover 129 0
+8 ready 128 0

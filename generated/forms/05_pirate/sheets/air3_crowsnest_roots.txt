@@ -1,0 +1,11 @@
+# air3_crowsnest: cell 346x714px, baseline y=630 (cell coords), form scale K=0.3846 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 air_ready 0 230
+2 a3_wind -5 250 SFX:GRUNT
+3 a3_wind -31 260
+4 a3_snap 21 170 HIT1
+5 a3_snap 21 170 HIT2
+6 a3_snap 31 90
+7 land 46 0
+8 recover 47 0
+9 ready 55 0

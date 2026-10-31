@@ -1,0 +1,9 @@
+# light4_hiltpunch: cell 366x423px, baseline y=373 (cell coords), form scale K=0.3846 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l4_load 25 0
+3 l4_load 32 0 SFX:hup
+4 l4_snap 61 0 HIT1
+5 l4_snap 61 0 HIT2
+6 recover 57 0
+7 ready 56 0

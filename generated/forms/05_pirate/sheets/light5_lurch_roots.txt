@@ -1,0 +1,10 @@
+# light5_lurch: cell 452x428px, baseline y=366 (cell coords), form scale K=0.3846 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l5_load -48 0
+3 l5_load -7 0 SFX:hup
+4 l5_snap 54 0 HIT1
+5 l5_snap 54 0 HIT2
+6 l5_snap 58 0
+7 recover 32 0
+8 ready 30 0
