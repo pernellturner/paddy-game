@@ -25,11 +25,16 @@ async def main():
   await pg.evaluate("p.state='normal';p.combo=0;p.x=dummies.filter(d=>d.alive&&!d.benched)[0].x+150;p.face=1;ST.length=0;C.n=0")
   await tap('attack',50);await pg.wait_for_timeout(90);await tap('left',40)
   r=await pg.evaluate("[p.face,p.state,p.combo,C.n,K29.turns]");print('turn ->',r)
-  await pg.wait_for_timeout(60);await tap('attack',50);await pg.wait_for_timeout(200)
-  print('after next claw ->',await pg.evaluate("[p.face,p.anim,p.combo,C.n]"))
+  await pg.wait_for_timeout(60);await tap('attack',50)
+  try:await pg.wait_for_function("p.combo>=2||p.state!=='claw'",timeout=1500,polling='raf')   # v33: the buffered press fires at the punch's cancel point
+  except Exception:pass
+  await pg.wait_for_timeout(100);print('after next claw ->',await pg.evaluate("[p.face,p.anim,p.combo,C.n]"))
   # up strike: claw, claw, jump
   await pg.wait_for_timeout(800);await pg.evaluate("p.state='normal';p.combo=0;p.face=1;p.x=dummies.filter(d=>d.alive&&!d.benched)[0].x-110")
-  await tap('attack',50);await pg.wait_for_timeout(150);await tap('jump',50);await pg.wait_for_timeout(120)
+  await tap('attack',50);await pg.wait_for_timeout(150);await tap('jump',50)
+  # v33: the jab is a full 12 fps punch; the buffered ↑ press throws the SKY SWIPE at its cancel point
+  try:await pg.wait_for_function("p.anim==='pcup'||p.state!=='claw'",timeout=1500,polling='raf')
+  except Exception:pass
   print('up ->',await pg.evaluate("[p.anim,K29.ups]"))
   await pg.evaluate("setForm(1,true)");await pg.wait_for_timeout(1500)
   print('guard hidden in ninja:',await pg.evaluate("getComputedStyle(document.querySelector('#ui .b[data-k=guard]')).display"))

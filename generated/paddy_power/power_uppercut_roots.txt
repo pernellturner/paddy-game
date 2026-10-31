@@ -1,0 +1,12 @@
+# cell width 460px; root x of each frame relative to frame 1 (px, final scale)
+1 guard_1.png 0
+2 peekaboo_1.png 21
+3 u_dip_1.png 21
+4 u_drive_1.png 35
+5 u_imp1_1.png 46
+6 u_imp2_1.png 45
+7 u_imp3_1.png 43
+8 u_follow_1.png 75
+9 u_peak_1.png 88
+10 peekaboo_1.png 78
+11 guard_1.png 61

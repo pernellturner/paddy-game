@@ -2645,6 +2645,36 @@
    "peak_db": -1.0,
    "mean_db": -11.6,
    "bytes": 17598
+  },
+  {
+   "key": "pvo_hiss1",
+   "file": "pvo_hiss1.mp3",
+   "duration": 0.366,
+   "category": "combat",
+   "description": "v33 Paddy vocal: effort puff (big punches)",
+   "peak_db": -1.0,
+   "mean_db": -15.8,
+   "bytes": 7567
+  },
+  {
+   "key": "pvo_hiss2",
+   "file": "pvo_hiss2.mp3",
+   "duration": 0.549,
+   "category": "combat",
+   "description": "v33 Paddy vocal: effort hiss (big punches)",
+   "peak_db": -1.0,
+   "mean_db": -15.8,
+   "bytes": 7567
+  },
+  {
+   "key": "pvo_hiss3",
+   "file": "pvo_hiss3.mp3",
+   "duration": 0.496,
+   "category": "combat",
+   "description": "v33 Paddy vocal: effort hiss long (big punches)",
+   "peak_db": -1.0,
+   "mean_db": -15.8,
+   "bytes": 7567
   }
  ]
 }

@@ -11,10 +11,10 @@ if(typeof SM!=='function'||typeof A==='undefined')return;
 const base=()=>{try{return FORM()===0}catch(_){return false}};
 const K29={turns:0,counters:0,blocks:0,dodges:0,ups:0,imp:[]};window.K29=K29;
 // ---------- 1. frames ----------
-// v31: pc1-pc7 are the boxing chain in box31.js (k_bx_* sheets); kguard uses the boxing guard frame
+// v33: pc1-pc8 alias the approved punch-string sheets in punch33.js (k_ps_*/k_pw_*); kguard uses the shared guard pose (k_ps_jab1_00)
 const NEW={
  airspin:[13,0,'k_m_aircart',[0,1,2,3,4]],pclunge:[12,0,'k_m_grab',[0,1]],bk_leap:[10,0,'k_m_grab',[1,2]],bk_roll:[1,0,'k_m_grab',[3]],
- bk_kick:[1,0,'k_m_bkick',[0,1,2]],bk_land:[7,0,'k_m_brel',[0,1]],kguard:[1,0,'k_bx_jab',[8]],kcounter:[22,0,'k_m_power',[1,2,2,3]],
+ bk_kick:[1,0,'k_m_bkick',[0,1,2]],bk_land:[7,0,'k_m_brel',[0,1]],kguard:[1,0,'k_ps_jab1',[0]],kcounter:[22,0,'k_m_power',[1,2,2,3]],
  pcup:[18,0,'launcher',[1,2,3,3]],uppercut:[14,0,'uppercut',[0,1,2,3,4]]};
 SM(0,'',NEW);for(const k in NEW){const v=NEW[k];A[k]=[v[2],v[3],v[0],v[1]];if(window.SMOOTH)SMOOTH.DONE.delete(k)}
 Object.assign(CLAWS[1],{k:'thrust',nm:'LEFT JAB!',lunge:120});Object.assign(CLAWS[2],{k:'thrust',nm:'RIGHT JAB!',lunge:140});Object.assign(CLAWS[3],{k:'thrust',nm:'POWER PUNCH!',lunge:260});

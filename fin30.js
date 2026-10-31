@@ -143,7 +143,7 @@ function vox(kind,prob,force){const t=rnow();if(!force&&(t-voxT<.75||Math.random
  voxT=t;voxLast=k;W30.vox=(W30.vox||0)+1;snd(k,{v:kind==='grunt'?.75:.8,r:.94+Math.random()*.14,gap:.2});return true}
 W30.voxFn=vox;
 const _sc30=startClaw;startClaw=function(){const r=_sc30.apply(this,arguments);try{if(base()&&p.state==='claw'){const c=p.combo|0;
- if(c===3)vox(Math.random()<.5?'meow':'grunt',.55);else if(c>=6)vox(Math.random()<.4?'growl':'grunt',.35);else vox('grunt',.2)}}catch(_){}return r};
+ if(window.P33)return r;if(c===3)vox(Math.random()<.5?'meow':'grunt',.55);else if(c>=6)vox(Math.random()<.4?'growl':'grunt',.35);else vox('grunt',.2)}}catch(_){}return r};
 const _act30=act;act=function(state){const r=_act30.apply(this,arguments);try{if(base()){if(state==='uppercut'||state==='dashstrike'||state==='kcounter')vox(state==='kcounter'?'growl':'grunt',.45);else if(state==='airspin')vox('meow',.35)}}catch(_){}return r};
 // ---------- AERIAL FINISHER: the 8th hit lands in the air / mid-juggle -> mid-air grab, spin, SPIKE into the ground ----------
 // Frame hook: swap these anim names for the artist's sheets later (register them with SM()/A like kitty29.js does), and set rot:false

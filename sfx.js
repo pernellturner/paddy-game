@@ -2,7 +2,7 @@
 // WebAudio, unlocked on the first tap/key (iOS), small files preloaded after that, big ones fetched in idle time or on first use.
 // Hooks: hits (per-form swipe/element + combo ticks/stingers/announcer), moves (act), form change, hurt/KO, critters, moon launch.
 (function(){
-const DIR='assets/sfx/',V='?v=30';
+const DIR='assets/sfx/',V='?v=33';
 const SM=new Set();// keys known to exist (from manifest)
 let M=[],ac=null,master=null,unlocked=false;const BUF={},LOADING={},LAST={};
 const S=window.SND={on:true,vol:.8,ready:false};
@@ -61,7 +61,7 @@ const VO={5:'vo_nice',10:'vo_great',20:'vo_awesome',35:'vo_purrfect',50:'vo_insa
 function comboSound(n){S.play('combo_tick_'+TIER(n),{v:.55,gap:.03});if(STING[n])S.play(STING[n],{v:.8});if(VO[n])setTimeout(()=>S.play(VO[n],{v:1}),STING[n]?220:0)}
 S.combo=comboSound;
 // v30: base Paddy has 3 clear hit tiers: SMALL (jabs, swipes), POWER (power punch, launchers, counters, tail launcher), DEADLY (finisher hits)
-const T_DEADLY=/^(bunnylaunch|airfin|spike|finisher|pc8|tailslam|twister|cyclonefin|morphstrike)/,T_POWER=/^(pc3|pcup|kcounter|uppercut|dashstrike|tail3|launch|slam|airup|pc6|pc7|bunnygrab|hardland|swat)/;
+const T_DEADLY=/^(bunnylaunch|airfin|spike|finisher|pc8|tailslam|twister|cyclonefin|morphstrike)/,T_POWER=/^(bxrb|bxp|pc3|pcup|kcounter|uppercut|dashstrike|tail3|launch|slam|airup|pc6|pc7|bunnygrab|hardland|swat)/;
 S.tier=function(move){const mv=String(move||'');return T_DEADLY.test(mv)?3:T_POWER.test(mv)?2:1};S.tierLog=[];
 function tierSound(d,mv){const t=S.tier(mv);S.tierLog.push(t);if(S.tierLog.length>40)S.tierLog.shift();
  if(t===3){S.play('hit_deadly',{v:1,gap:.25});S.play('ground_slam',{v:.45,gap:.3})}
