@@ -1,0 +1,17 @@
+# finisher_powersurge: cell 488x513px, baseline y=463 (cell coords), form scale K=0.3967 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 fin_coil 0 0 SFX:HISS
+3 fin_coil 0 0
+4 fin_coil 0 0
+5 fin_draw 23 0 HIT1
+6 fin_draw 23 0 HIT2
+7 a3_wind 36 100 SFX:BIG GRUNT
+8 fin_imp 95 0 HIT1
+9 fin_imp 95 0 HIT2
+10 fin_imp 95 0 HIT3
+11 fin_imp 95 0
+12 recover 109 0
+13 fin_pose 41 0
+14 fin_pose 41 0
+15 ready 104 0

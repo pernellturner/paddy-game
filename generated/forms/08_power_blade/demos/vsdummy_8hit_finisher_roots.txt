@@ -1,0 +1,65 @@
+# vsdummy_8hit_finisher.gif: canvas 1550x521; root x vs frame 1 (px), lift; gNfM = move N frame M; flags as in the sheets
+1 g1f1 ready 0 0
+2 g1f2 l1_load -28 0
+3 g1f3 l1_load -32 0
+4 g1f4 l1_load -16 0 SFX:hup
+5 g1f5 l1_snap 65 0 HIT1
+6 g1f6 l1_snap 65 0 HIT2
+7 g1f7 l1_snap 71 0
+8 g1f8 recover 79 0
+9 g2f2 l5_load 66 0
+10 g2f3 l5_load 79 0 SFX:hup
+11 g2f4 l5_snap 113 0 HIT1
+12 g2f5 l5_snap 113 0 HIT2
+13 g2f6 l5_snap 117 0
+14 g2f7 recover 143 0
+15 g3f2 l2_load 102 0
+16 g3f3 l2_load 98 0
+17 g3f4 l2_load 112 0 SFX:hup
+18 g3f5 l2_snap 179 0 HIT1
+19 g3f6 l2_snap 179 0 HIT2
+20 g3f7 l2_snap 185 0
+21 g3f8 recover 195 0
+22 g4f2 l3_load 141 0
+23 g4f3 l3_load 132 0
+24 g4f4 l3_load 161 0 SFX:hup
+25 g4f5 l3_snap 220 0 HIT1
+26 g4f6 l3_snap 220 0 HIT2
+27 g4f7 l3_snap 226 0
+28 g4f8 recover 249 0
+29 g5f2 l4_load 165 0
+30 g5f3 l4_load 175 0 SFX:hup
+31 g5f4 l4_snap 226 0 HIT1
+32 g5f5 l4_snap 226 0 HIT2
+33 g5f6 l4_snap 230 0
+34 g5f7 recover 309 0
+35 g6f2 l1_load 272 0
+36 g6f3 l1_load 268 0
+37 g6f4 l1_load 284 0 SFX:hup
+38 g6f5 l1_snap 365 0 HIT1
+39 g6f6 l1_snap 365 0 HIT2
+40 g6f7 l1_snap 371 0
+41 g6f8 recover 379 0
+42 g7f2 h1_load 324 0
+43 g7f3 h1_load 318 0
+44 g7f4 h1_load 314 0
+45 g7f5 h1_load 346 0 SFX:GRUNT
+46 g7f6 h1_imp 480 0 HIT1
+47 g7f7 h1_imp 480 0 HIT2
+48 g7f8 h1_imp 484 0 HIT1
+49 g7f9 h1_imp 486 0
+50 g7f10 recover 479 0
+51 g8f2 fin_coil 470 0 SFX:HISS
+52 g8f3 fin_coil 470 0
+53 g8f4 fin_coil 470 0
+54 g8f5 fin_draw 493 0 HIT1
+55 g8f6 fin_draw 493 0 HIT2
+56 g8f7 a3_wind 506 100 SFX:BIG GRUNT
+57 g8f8 fin_imp 565 0 HIT1
+58 g8f9 fin_imp 565 0 HIT2
+59 g8f10 fin_imp 565 0 HIT3
+60 g8f11 fin_imp 565 0
+61 g8f12 recover 579 0
+62 g8f13 fin_pose 511 0
+63 g8f14 fin_pose 511 0
+64 g8f15 ready 574 0

@@ -1,0 +1,13 @@
+# heavy2_groundslam: cell 396x598px, baseline y=536 (cell coords), form scale K=0.3967 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 ready 0 0
+3 ready 0 0 SFX:GRUNT
+4 h2_load 35 70
+5 h2_load 61 120
+6 h2_load 75 90
+7 h2_imp 95 0 HIT1
+8 h2_imp 95 0 HIT2
+9 h2_imp 95 0
+10 recover 101 0
+11 ready 90 0

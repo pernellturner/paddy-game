@@ -1,0 +1,11 @@
+# light1_overheadchop: cell 439x456px, baseline y=398 (cell coords), form scale K=0.3967 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l1_load -28 0
+3 l1_load -32 0
+4 l1_load -16 0 SFX:hup
+5 l1_snap 65 0 HIT1
+6 l1_snap 65 0 HIT2
+7 l1_snap 71 0
+8 recover 79 0
+9 ready 70 0
