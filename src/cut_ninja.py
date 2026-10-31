@@ -91,7 +91,7 @@ for sheet,short in KEYS.items():
         fl=rows[i][4:] if len(rows[i])>4 else []
         hit=next((int(x[3]) for x in fl if x.startswith('HIT')),0); sfx=next((' '.join(rows[i][rows[i].index(x):]).split(':',1)[1] for x in rows[i] if x.startswith('SFX:')),'')
         fn=f'p/{PRE}{short}_{i:02d}'; rgba.save(f'assets/{fn}.png',optimize=True); rgba.save(f'assets/{fn}.webp',quality=90,method=6)
-        e=dict(f=fn,ax=round(ax),ay=round(ay),w=W,h=Hh,rx=round((fa['cx']-f0['cx'])*GS,1),ly=round(fa['lift']*GS,1),p=fa['p'])
+        e=dict(f=fn,ax=round(ax),ay=round(ay),w=W,h=Hh,rx=round((fa['cx']-f0['cx'])*GS,1),ly=round(fa['lift']*GS,1),p=fa['p'],sc=round(an['K']*GS,5))   # sc = studio raw -> game px scale, one value for the whole form (size gate)
         if hit:e['hit']=hit
         if sfx:e['sfx']=sfx
         frames[PRE+short].append(e)

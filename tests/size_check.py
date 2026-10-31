@@ -6,7 +6,7 @@ sqrt(area of solid pixels, alpha>=200) - pose-independent enough to compare a cr
 Per anim: median over its frames. Flags: anim median vs its form's idle median off by more than TOL (default 4%),
 and a normal form's idle vs base idle off by more than TOL. FX-heavy frames (trails/flashes baked in) can raise a false
 flag; the report lists the numbers so a human can tell. Usage: python3 tests/size_check.py [URL] [OUT] [TOL]
-Writes OUT/size_report.txt; exit code 1 if anything is flagged."""
+Writes OUT/size_report.txt. v35: exit code = the HEIGHT GATE for the rebuilt forms (see GATE); area flags = backlog."""
 import asyncio,time,json,sys,os,statistics as st
 import numpy as np
 from PIL import Image
@@ -61,7 +61,36 @@ for nm,pre,big in forms:
     r=m/i[0];bad=abs(r-1)>TOL
     if bad: flags.append(f'{nm}: {k} {r:.2f}x idle ({n} frames, e.g. {f0})')
     lines.append(f'  {"!!" if bad else "  "} {k:<22} {r:5.2f}  n={n}')
+# ---- v35 HEIGHT GATE (Pernell's rule is visible size: standing height + head size), for the rebuilt studio forms ----
+# Standing height = solid (alpha>=128) bbox height of the form's idle and ready frames, vs base Paddy's upright standing height at
+# TARGET=199: the studio reference (base upright guard at TARGET=199) is 340 px, x the game factor sqrt(fur area of idle_test_1)/199.
+# Head size constant across anims = every frame of the form was cut with ONE scale: each frame carries its cut scale (sc) in frames.json
+# and all of the form's frames must share it (the studio draws every pose at one K; only squash/stretch <= 4% on top).
+GATE={'NINJA':('n_','nj_')}   # form name -> (prefix, own sheet prefix); Kitty joins here when it is rebuilt
+FJ=json.load(open(os.path.join(ROOT,'assets/frames.json')));SCOF={e['f']:e.get('sc') for v in FJ.values() for e in v}
+def catmask(a):
+  r,g,bb,al=[a[...,i].astype(int) for i in range(4)];return (al>200)&(((r-bb)>18)|((r<110)&(r>bb)))
+GS=float(np.sqrt(catmask(np.asarray(Image.open(os.path.join(ROOT,'assets/p/idle_test_1_00.png')).convert('RGBA'))).sum())/199.0)
+BASE_STAND=340*GS
+def hgt(f):
+  a=np.asarray(Image.open(os.path.join(ROOT,'assets',f+'.png')).convert('RGBA'))[...,3];ys=np.where(a.max(1)>=128)[0];return int(ys[-1]-ys[0]+1)
+gate_fail=[];glines=[f'\nHEIGHT GATE  base standing height {BASE_STAND:.1f} frame px (340 px at TARGET=199 x {GS:.4f}), tol {TOL:.0%}']
+for nm,(pre,own) in GATE.items():
+  for a in (own+'idle',own+'ready'):
+    L=FJ.get(a)
+    if not L: gate_fail.append(f'{nm}: no {a} sheet');continue
+    h=hgt(L[0]['f']) if a.endswith('idle') else hgt(L[-1]['f']);r=h/BASE_STAND
+    ok=abs(r-1)<=TOL if a.endswith('idle') else True
+    glines.append(f'  {"  " if ok else "!!"} {nm} {a} standing height {h} px = {r:.3f}x base'+('' if a.endswith('idle') else '  (low guard, info only)'))
+    if not ok: gate_fail.append(f'{nm}: {a} height {r:.3f}x base standing height')
+  fl=sorted({f for k,v in D['FR'].items() if owner(k)==nm for f in v})
+  scs={SCOF.get(f) for f in fl};glines.append(f'     {nm} frames drawn: {len(fl)}  cut scales: {sorted(x for x in scs if x is not None)}'+('  + UNSTAMPED' if None in scs else ''))
+  if None in scs or len(scs)!=1: gate_fail.append(f'{nm}: frames do not share one cut scale {scs}')
+glines.append('  GATE '+('FAIL: '+'; '.join(gate_fail) if gate_fail else 'PASS')+'   (area flags below are kept as the backlog for the other forms; not gated)')
+lines[1:1]=glines
+flags=[x for x in flags if x.split(':')[0] not in GATE]   # height-gated forms: no area check
 lines.insert(1,f'FLAGGED {len(flags)} (anims off their form idle by >{TOL:.0%}, or normal-form idle off base idle)')
 os.makedirs(OUT,exist_ok=True);open(os.path.join(OUT,'size_report.txt'),'w').write('\n'.join(lines+['','FLAGS:']+flags)+'\n')
 print('\n'.join(lines[:2]));print('per form flagged:',{nm:sum(1 for f in flags if f.startswith(nm+':')) for nm,_,_ in forms})
-sys.exit(1 if flags else 0)
+print('\n'.join(glines))
+sys.exit(1 if gate_fail else 0)
