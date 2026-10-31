@@ -1,3 +1,4 @@
+# (loads with &nocuts: the story cutscenes are covered by tc_cutscenes.py)
 # level-1-1 branch: tilemap level runtime checks + screenshots for Silverdale 1-1 .. 1-7 (World 1) (level.html, tile 48).
 import asyncio,sys,os,time,json
 from playwright.async_api import async_playwright
@@ -12,7 +13,7 @@ async def main():
   pg=await br.new_page(viewport={'width':960,'height':540});errs=[];pg.on('pageerror',lambda e:errs.append(str(e)));pg.on('console',lambda m:m.type=='error' and 'Failed to load resource' not in m.text and errs.append(m.text))   # levels/ then levels-dev/ probing 404s are expected
   E=pg.evaluate
   async def load(lv):
-   await pg.goto(URL+'level.html?level='+lv+'&v='+str(time.time()));await pg.wait_for_function('window.LV&&LV.ready',timeout=20000);await pg.wait_for_timeout(1500)
+   await pg.goto(URL+'level.html?level='+lv+'&nocuts&v='+str(time.time()));await pg.wait_for_function('window.LV&&LV.ready',timeout=20000);await pg.wait_for_timeout(1500)
   async def hold(k,ms):
    await pg.keyboard.down(k);await pg.wait_for_timeout(ms);await pg.keyboard.up(k)
   async def tap(k):await hold(k,60)
@@ -157,7 +158,7 @@ async def main():
     await pg.screenshot(path=OUT+f'1-{n}_boss_ko.png')
     await E("LV.p.x=216.5*48");await hold('ArrowRight',900);s=await st();check(f'1-{n} east wall (x218) gone after the KO',s['x']>218.2,s['x'])
     # hitbox overlay shot
-    await pg.goto(URL+'level.html?level='+lv+'&hitbox&v='+str(time.time()));await pg.wait_for_function('window.LV&&LV.ready',timeout=20000);await pg.wait_for_timeout(1200)
+    await pg.goto(URL+'level.html?level='+lv+'&hitbox&nocuts&v='+str(time.time()));await pg.wait_for_function('window.LV&&LV.ready',timeout=20000);await pg.wait_for_timeout(1200)
     await E("LV.calm()");await tp(199,9,600);await pg.screenshot(path=OUT+f'1-{n}_boss_hitbox.png');await E("LV.teleport(199,9)")
    await tp(L['goal']['x']-1,L['goal']['y'],200);await hold('ArrowRight',600);await pg.wait_for_timeout(600);s=await st();check(f'1-{n} goal reached = clear',s['done'],s)
   check('no page errors',not errs,errs[:5])
