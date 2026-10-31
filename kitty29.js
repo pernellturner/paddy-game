@@ -11,9 +11,10 @@ if(typeof SM!=='function'||typeof A==='undefined')return;
 const base=()=>{try{return FORM()===0}catch(_){return false}};
 const K29={turns:0,counters:0,blocks:0,dodges:0,ups:0,imp:[]};window.K29=K29;
 // ---------- 1. frames ----------
-const NEW={pc1:[24,0,'k_m_jabL',[0,1,2,2,3]],pc2:[24,0,'k_m_jabR2',[0,1,2,2,3]],pc3:[20,0,'k_m_power',[0,1,2,2,3]],
+// v31: pc1-pc7 are the boxing chain in box31.js (k_bx_* sheets); kguard uses the boxing guard frame
+const NEW={
  airspin:[13,0,'k_m_aircart',[0,1,2,3,4]],pclunge:[12,0,'k_m_grab',[0,1]],bk_leap:[10,0,'k_m_grab',[1,2]],bk_roll:[1,0,'k_m_grab',[3]],
- bk_kick:[1,0,'k_m_bkick',[0,1,2]],bk_land:[7,0,'k_m_brel',[0,1]],kguard:[1,0,'k_m_jabL',[0]],kcounter:[22,0,'k_m_power',[1,2,2,3]],
+ bk_kick:[1,0,'k_m_bkick',[0,1,2]],bk_land:[7,0,'k_m_brel',[0,1]],kguard:[1,0,'k_bx_jab',[8]],kcounter:[22,0,'k_m_power',[1,2,2,3]],
  pcup:[18,0,'launcher',[1,2,3,3]],uppercut:[14,0,'uppercut',[0,1,2,3,4]]};
 SM(0,'',NEW);for(const k in NEW){const v=NEW[k];A[k]=[v[2],v[3],v[0],v[1]];if(window.SMOOTH)SMOOTH.DONE.delete(k)}
 Object.assign(CLAWS[1],{k:'thrust',nm:'LEFT JAB!',lunge:120});Object.assign(CLAWS[2],{k:'thrust',nm:'RIGHT JAB!',lunge:140});Object.assign(CLAWS[3],{k:'thrust',nm:'POWER PUNCH!',lunge:260});
@@ -22,7 +23,7 @@ Object.assign(NAMES,{pc1:'LEFT JAB!',pc2:'RIGHT JAB!',pc3:'POWER PUNCH!',pcup:'S
 Object.assign(KB,{pc1:[70,-60,0,.06],pc2:[90,-80,0,.065],pc3:[460,-300,.12,.1],pcup:[40,-700,.45,.07],airup:[60,-560,.4,.06],kcounter:[560,-560,.4,.13],bunnykick:[0,-40,.5,.06]});
 Object.assign(REACH,{pc1:[150,140],pc2:[155,150],pc3:[190,170],pcup:[140,340],swat:[145,125]});
 // paw is fully out on this many seconds into the move: the hit (and its hitstop) lands there, not on the wind-up frame
-const EXT={pc1:.075,pc2:.075,pc3:.11,pcup:.06};
+const EXT=window.K29EXT={pc1:.075,pc2:.075,pc3:.11,pcup:.06};
 let asked=false;
 // ---------- 2. hits you can SEE ----------
 const _hit=hitDummy;hitDummy=function(d,move,dir){const r=_hit.apply(this,arguments);

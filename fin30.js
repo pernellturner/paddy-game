@@ -31,6 +31,7 @@ function whoosh(n){try{noiseS(.28+n*.06,300,2600+n*500,.22+n*.04)}catch(_){}}
 function finish(){if(!W30.on)return;W30.on=false;if(W30.air){p.rot=0;W30.air=false}drone(false);musCut(false)}
 // ---------- the finisher ----------
 const _bk=bunnyKick;bunnyKick=function(){_bk.apply(this,arguments);if(!base()||p.state!=='bunny')return;
+ if((!p.grab||!p.grab.alive)&&window.W31&&W31.upD&&W31.upD.alive&&rnow()-W31.upT<1.2)p.grab=W31.upD;
  W30.on=true;W30.runs++;W30.kicks=0;W30.shotAt=0;W30.charged=false;W30.comic=null;W30.boom=null;W30.speed=0;W30.dark=1;W30.nums.length=0;
  W30.air=false;W30.airS=null;if(wantAir()){W30.air=true;W30.airruns=(W30.airruns||0)+1;W30.airS={spins:0};if(!p.grab||!p.grab.alive)p.grab=airTarget();p.vx=0;p.vy=0;p.ground=false;p.kicks=0;texts.length=0}
  else vox('growl',.8,true);
@@ -149,7 +150,8 @@ const _act30=act;act=function(state){const r=_act30.apply(this,arguments);try{if
 // if the new spin frames already rotate. Every value is a key of FR/A.
 window.AIRFIN_FRAMES=window.AIRFIN_FRAMES||{grab:'pclunge',spin:'airspin',windup:'bk_roll',spike:'diveclaw',land:'bk_land',rot:true};
 const AF=k=>{const a=(window.AIRFIN_FRAMES||{})[k];return a&&FR[a]?a:({grab:'pclunge',spin:'airspin',windup:'bk_roll',spike:'diveclaw',land:'bk_land'})[k]};
-function wantAir(){const g=p.grab&&p.grab.alive?p.grab:null;if(!p.ground||p.y<GROUND-40)return true;if(g&&g.y<GROUND-70)return true;
+function wantAir(){const g=p.grab&&p.grab.alive?p.grab:null;if(p.ground&&p.y>=GROUND-40&&window.W31&&W31.upT&&rnow()-W31.upT<1.2)return false; // v31: our own ground UPPERCUT pop-up -> catch him: ground Bunny Kick
+if(!p.ground||p.y<GROUND-40)return true;if(g&&g.y<GROUND-70)return true;
  if(!g){for(const d of dummies)if(d.alive&&!d.benched&&d.y<GROUND-90&&Math.abs(d.x-p.x)<260&&d.y>p.y-420)return true}return false}
 function airTarget(){let best=null,bd=420;for(const d of dummies){if(!d.alive||d.benched||d.gone)continue;const dd=Math.hypot(d.x-p.x,(d.y-p.y)*.8);if(dd<bd){bd=dd;best=d}}return best}
 function airState(dt){const A=W30.airS,t=p.t,g=p.grab&&p.grab.alive?p.grab:null;p.inv=Math.max(p.inv,.5);p.noFlick=true;cine.tb=1;
