@@ -1,0 +1,12 @@
+# air3_helmbreaker: cell 399x703px, baseline y=637 (cell coords), form scale K=0.4024 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 air_ready 0 230
+2 a3_wind -4 250 SFX:GRUNT
+3 a3_wind -19 260
+4 a3_snap 13 160 HIT1
+5 a3_snap 13 160 HIT2
+6 a3_snap 21 110
+7 land 43 0
+8 land 43 0
+9 recover 34 0
+10 ready 30 0

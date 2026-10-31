@@ -1,0 +1,28 @@
+# demo_1-2-3-4.gif: canvas 630x480; root x vs frame 1 (px), lift; gNfM = move N frame M; flags as in the sheets
+1 g1f1 ready 0 0
+2 g1f2 l1_load -28 0
+3 g1f3 l1_load -19 0 SFX:hup
+4 g1f4 l1_snap 80 0 HIT1
+5 g1f5 l1_snap 80 0 HIT2
+6 g1f6 l1_snap 86 0
+7 g1f7 recover 46 0
+8 g2f2 l2_load 59 0
+9 g2f3 l2_load 67 0 SFX:hup
+10 g2f4 l2_snap 97 0 HIT1
+11 g2f5 l2_snap 97 0 HIT2
+12 g2f6 l2_snap 103 0
+13 g2f7 recover 84 0
+14 g3f2 l3_load 26 0
+15 g3f3 l3_load 32 0 SFX:hup
+16 g3f4 l3_snap -6 0 HIT1
+17 g3f5 l3_snap -6 0 HIT2
+18 g3f6 l3_snap -15 0
+19 g3f7 l3_load 50 0
+20 g3f8 recover 108 0
+21 g4f2 l4_load 63 0
+22 g4f3 l4_load 81 0 SFX:hup
+23 g4f4 l4_snap 175 0 HIT1
+24 g4f5 l4_snap 175 0 HIT2
+25 g4f6 l4_snap 181 0
+26 g4f7 recover 144 0
+27 g4f8 ready 140 0

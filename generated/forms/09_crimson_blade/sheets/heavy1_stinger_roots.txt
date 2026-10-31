@@ -1,0 +1,13 @@
+# heavy1_stinger: cell 610x468px, baseline y=418 (cell coords), form scale K=0.4024 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 h1_load 12 0
+3 h1_load 14 0
+4 h1_load 32 0 SFX:GRUNT
+5 h1_imp 132 0
+6 h1_imp 197 0 HIT1
+7 h1_imp 197 0 HIT2
+8 h1_imp 213 0
+9 h1_imp 219 0
+10 recover 186 0
+11 ready 182 0

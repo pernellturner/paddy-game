@@ -1,0 +1,11 @@
+# light5_cleave: cell 374x475px, baseline y=418 (cell coords), form scale K=0.4024 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l5_load 17 0
+3 l5_load 13 0
+4 l5_load 29 0 SFX:hup
+5 l5_snap 75 0 HIT1
+6 l5_snap 75 0 HIT2
+7 l5_snap 81 0
+8 recover 50 0
+9 ready 46 0

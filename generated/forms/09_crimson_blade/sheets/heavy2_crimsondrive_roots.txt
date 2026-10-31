@@ -1,0 +1,12 @@
+# heavy2_crimsondrive: cell 474x471px, baseline y=418 (cell coords), form scale K=0.4024 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 h2_load -10 0
+3 h2_load -18 0
+4 h2_load 6 0 SFX:GRUNT
+5 h2_imp 108 0 HIT1
+6 h2_imp 108 0 HIT2
+7 h2_imp 108 0 HIT3
+8 h2_imp 114 0
+9 recover 80 0
+10 ready 76 0

@@ -1,0 +1,22 @@
+# vsdummy_1-1-2.gif: canvas 1092x480; root x vs frame 1 (px), lift; gNfM = move N frame M; flags as in the sheets
+1 g1f1 ready 0 0
+2 g1f2 l1_load -28 0
+3 g1f3 l1_load -19 0 SFX:hup
+4 g1f4 l1_snap 80 0 HIT1
+5 g1f5 l1_snap 80 0 HIT2
+6 g1f6 l1_snap 86 0
+7 g1f7 recover 46 0
+8 g2f2 l3_load -12 0
+9 g2f3 l3_load -6 0 SFX:hup
+10 g2f4 l3_snap -44 0 HIT1
+11 g2f5 l3_snap -44 0 HIT2
+12 g2f6 l3_snap -53 0
+13 g2f7 l3_load 12 0
+14 g2f8 recover 70 0
+15 g3f2 l2_load 83 0
+16 g3f3 l2_load 91 0 SFX:hup
+17 g3f4 l2_snap 121 0 HIT1
+18 g3f5 l2_snap 121 0 HIT2
+19 g3f6 l2_snap 127 0
+20 g3f7 recover 108 0
+21 g3f8 ready 104 0

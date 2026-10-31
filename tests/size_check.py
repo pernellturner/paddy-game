@@ -35,6 +35,7 @@ def size(f):
   return cache[f]
 def owner(k):
   if k.startswith(NOT): return None
+  if k.startswith('cr_'): return 'CRIMSON BLADE'   # v43: Crimson Blade Paddy's own frames (old cb_* anims are remapped onto them)
   if k.startswith('pw_'): return 'POWER BLADE'   # v42: Power Blade Paddy's own frames (old pb_* anims are remapped onto them)
   if k.startswith('lt_'): return 'LIGHT PADDY'   # v41: Light Paddy's own frames (old lp_* anims are remapped onto them)
   if k.startswith('gn_'): return 'GUNSLINGER'   # v40: Gunslinger Paddy's own frames (old gs_* anims are remapped onto them)
@@ -73,7 +74,7 @@ for nm,pre,big in forms:
 # TARGET=199: the studio reference (base upright guard at TARGET=199) is 340 px, x the game factor sqrt(fur area of idle_test_1)/199.
 # Head size constant across anims = every frame of the form was cut with ONE scale: each frame carries its cut scale (sc) in frames.json
 # and all of the form's frames must share it (the studio draws every pose at one K; only squash/stretch <= 4% on top).
-GATE={'NINJA':('n_','nj_'),'KITTY':('kt_','kt_'),'SAMURAI':('s_','sm_'),'KNIGHT':('kn_','kg_'),'PIRATE':('pi_','pr_'),'GUNSLINGER':('gs_','gn_'),'LIGHT PADDY':('lp_','lt_'),'POWER BLADE':('pb_','pw_')}   # form name -> (prefix, own sheet prefix)
+GATE={'NINJA':('n_','nj_'),'KITTY':('kt_','kt_'),'SAMURAI':('s_','sm_'),'KNIGHT':('kn_','kg_'),'PIRATE':('pi_','pr_'),'GUNSLINGER':('gs_','gn_'),'LIGHT PADDY':('lp_','lt_'),'POWER BLADE':('pb_','pw_'),'CRIMSON BLADE':('cb_','cr_')}   # form name -> (prefix, own sheet prefix)
 FJ=json.load(open(os.path.join(ROOT,'assets/frames.json')));SCOF={e['f']:e.get('sc') for v in FJ.values() for e in v}
 def catmask(a):
   r,g,bb,al=[a[...,i].astype(int) for i in range(4)];return (al>200)&(((r-bb)>18)|((r<110)&(r>bb)))

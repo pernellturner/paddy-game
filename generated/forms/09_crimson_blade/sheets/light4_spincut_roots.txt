@@ -1,0 +1,10 @@
+# light4_spincut: cell 499x480px, baseline y=418 (cell coords), form scale K=0.4024 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l4_load -41 0
+3 l4_load -23 0 SFX:hup
+4 l4_snap 71 0 HIT1
+5 l4_snap 71 0 HIT2
+6 l4_snap 77 0
+7 recover 40 0
+8 ready 36 0

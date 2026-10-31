@@ -1,0 +1,10 @@
+# light2_risingslash: cell 413x479px, baseline y=418 (cell coords), form scale K=0.4024 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l2_load 17 0
+3 l2_load 25 0 SFX:hup
+4 l2_snap 55 0 HIT1
+5 l2_snap 55 0 HIT2
+6 l2_snap 61 0
+7 recover 42 0
+8 ready 38 0

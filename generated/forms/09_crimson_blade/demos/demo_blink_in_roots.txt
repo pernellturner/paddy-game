@@ -1,0 +1,14 @@
+# demo_blink_in.gif: canvas 988x480; root x vs frame 1 (px), lift; gNfM = move N frame M; flags as in the sheets
+1 g1f1 ready 0 0
+2 g1f2 bl_push 41 0 SFX:hiss
+3 g1f3 bl_dash 176 20
+4 g1f4 bl_dash 326 20
+5 g1f5 bl_dash 456 16
+6 g1f6 land 483 0
+7 g2f2 l1_load 442 0
+8 g2f3 l1_load 451 0 SFX:hup
+9 g2f4 l1_snap 550 0 HIT1
+10 g2f5 l1_snap 550 0 HIT2
+11 g2f6 l1_snap 556 0
+12 g2f7 recover 516 0
+13 g2f8 ready 512 0

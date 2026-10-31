@@ -393,7 +393,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='42a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='43a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -1720,7 +1720,7 @@ function upgLoad(f,hi){if(!window.queueFrames||!F)return;const names=[];
 function r11Update(dt){
  if(p.lsq>0)p.lsq-=dt;if(p.recT>0)p.recT-=dt;
  // a short settle pose when a ground attack finishes, instead of snapping straight back to idle
- const S=p.state;if(S==='normal'&&r11Prev!=='normal'&&(p.sam||p.xf||p.uf)&&p.ground&&!/^(land|hurt|respawn|victory|nmorph|ledge|wallrun|bunny|lkult|sm|nj|kt|kg|pr|gn|lt|pw)$/.test(r11Prev))p.recT=.24;r11Prev=S;
+ const S=p.state;if(S==='normal'&&r11Prev!=='normal'&&(p.sam||p.xf||p.uf)&&p.ground&&!/^(land|hurt|respawn|victory|nmorph|ledge|wallrun|bunny|lkult|sm|nj|kt|kg|pr|gn|lt|pw|cr)$/.test(r11Prev))p.recT=.24;r11Prev=S;
  if(!window.queueFrames||!F)return;
  const f=FORM();if(f!==upgForm){upgForm=f;if(f>0)upgLoad(f,true)}
  if(!upgBg&&now>6&&SPRITES.loaded+SPRITES.failed.length>=SPRITES.total){upgBg=true;[2,1,3,4].forEach(k=>upgLoad(k,false))}
@@ -1951,7 +1951,7 @@ const UF=[null,
  {pre:'pb',nm:'POWER BLADE',ico:'⚡',col:'#3cc8ff',col2:'#c9f6ff',spd:280,H:.42,H0:.4,minT:.17,W:.22,E:.5,
   CH:[null,{a:'h1',k:'flat',lunge:220,ht:.09,nm:'REV SLASH!'},{a:'h2',k:'rise',lunge:200,ht:.09,nm:'REV SLASH II!'},{a:'h3',k:'spin',lunge:200,ht:.08,nm:'REV SPIN!'},
    {a:'h4',k:'over',lunge:300,ht:.09,nm:'HIGH ROLLER!'},{a:'h5',k:'rise',lunge:120,ht:.09,nm:'SPLIT RISE!'},{a:'h6',k:'cross',lunge:260,ht:.08,nm:'DOUBLE DOWN!'},{a:'h7',k:'over',lunge:180,ht:.13,nm:'MAX REV!'}]},
- {pre:'cb',nm:'CRIMSON BLADE',ico:'🗡️',col:'#ff2a3a',col2:'#ffd060',spd:460,H:.36,H0:.32,minT:.13,W:.17,E:.44,
+ {pre:'cb',nm:'CRIMSON BLADE',ico:'🗡️',col:'#ff2a3a',col2:'#ffd060',spd:300,H:.36,H0:.32,minT:.13,W:.17,E:.44,
   CH:[null,{a:'h1',k:'flat',lunge:260,ht:.06,nm:'CRIMSON CUT!'},{a:'h2',k:'low',lunge:220,ht:.06,nm:'LOW CUT!'},{a:'h3',k:'rise',lunge:220,ht:.07,nm:'RISING CUT!'},
    {a:'h4',k:'spin',lunge:200,ht:.06,nm:'WHIRL!'},{a:'h5',k:'rise',lunge:120,ht:.07,nm:'BACKFLIP KICK!'},{a:'h6',k:'over',lunge:320,ht:.07,nm:'HELM SPLITTER!'},{a:'h7',k:'low',lunge:360,ht:.08,nm:'SLIDE CUT!'}]},
  {pre:'sr',nm:'SHADOW REAPER',ico:'🌙',col:'#a66bff',col2:'#e2d6ff',spd:440,H:.4,H0:.36,minT:.15,W:.2,E:.48,

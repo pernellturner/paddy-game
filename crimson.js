@@ -18,7 +18,8 @@ Object.assign(NAMES,{smstab:'MILLION STAB!',smstabF:'…AND STAB!',smsting:'STIN
 const S={t:0,n:0,hold:0,seg:-1,rib:[]};window.CBSM=S;
 const ST=['smstab','smsting','smrt','smprop','smdrive','smimpact','smdance'];
 const NO=['lkult','ufin','nmorph','respawn','ledge','bunny','lk','umeowc','umeow','hurt','ko','moon','moonl','victory','stun'];
-const free=()=>p.uf===U4&&!(typeof CINE!=='undefined'&&CINE.includes(p.state))&&!NO.includes(p.state)&&!(window.MOON&&MOON.on)&&(!ST.includes(p.state)||S.t>.2);
+const free=()=>p.uf===U4&&!(window.CRIMSON43&&CRIMSON43.MV)&&   // v43: Crimson Blade Paddy's own engine (crimson43.js) replaces these style triggers
+ !(typeof CINE!=='undefined'&&CINE.includes(p.state))&&!NO.includes(p.state)&&!(window.MOON&&MOON.on)&&(!ST.includes(p.state)||S.t>.2);
 const snd=(k,v,g)=>{try{SND.play(k,{v:v||.8,gap:g||.05,r:.95+Math.random()*.1})}catch(_){}};
 const chain=()=>{if(typeof CHN==='undefined')return;CHN.n=(now-CHN.t<2.2&&CHN.n>0)?CHN.n+1:1;CHN.t=now;if(CHN.n>1){CHN.show=1.6;CHN.best=Math.max(CHN.best||0,CHN.n)}};
 function go(st,anim,nm,c){act(st,'cb_'+anim,{say:nm,c:c||COL2});S.t=0;S.n=0;S.seg=-1;C.atk=(C.atk||0)+1;extend();chain()}
@@ -60,7 +61,7 @@ function tick(dt){const st=p.state,t=S.t,f=p.face,at=T=>t<T&&S.t>=T;S.t+=dt;
  }}
 const _nu=nUpdate;nUpdate=function(dt){if(p.uf===U4){if(K.attack&&S.hold>=0)S.hold+=dt;else if(!K.attack)S.hold=0;if(free())trig();if(ST.includes(p.state)||/^sm/.test(p.state)){p.t=Math.min(p.t,1);tick(dt)}}_nu(dt)};
 // Meow: tap = DRIVE, level 2 = REAL IMPACT, full charge keeps the old big move
-if(typeof ufMeow==='function'){const _um=ufMeow;ufMeow=function(L){if(p.uf===U4&&L<2){if(L===0)go('smdrive','smdrive','DRIVE!');else go('smimpact','smimpact','REAL IMPACT!','#ff6070');return}return _um.apply(this,arguments)}}
+if(typeof ufMeow==='function'){const _um=ufMeow;ufMeow=function(L){if(p.uf===U4&&L<2&&!(window.CRIMSON43&&CRIMSON43.MV)){if(L===0)go('smdrive','smdrive','DRIVE!');else go('smimpact','smimpact','REAL IMPACT!','#ff6070');return}return _um.apply(this,arguments)}}
 // the thrown sword: out, hover & shred, then home back
 const _pre=r9Pre;r9Pre=function(dt){_pre(dt);
  for(const r of S.rib)r.l-=dt;S.rib=S.rib.filter(r=>r.l>0);
@@ -74,7 +75,7 @@ const _fx=drawFx;drawFx=function(){_fx();if(!S.rib.length&&!U.proj.some(o=>o.k==
   ctx.fillStyle='#9aa2ad';ctx.beginPath();ctx.moveTo(-6,-8*o.s);ctx.lineTo(L,0);ctx.lineTo(-6,8*o.s);ctx.closePath();ctx.fill();ctx.strokeStyle=COL;ctx.lineWidth=3;ctx.stroke();
   ctx.fillStyle='#4a2a1a';ctx.fillRect(-28*o.s,-5*o.s,24*o.s,10*o.s);ctx.fillStyle='#c0a060';ctx.fillRect(-8*o.s,-16*o.s,6*o.s,32*o.s);ctx.restore()}
  ctx.restore()};
-const _bl=buildList;buildList=function(){_bl();const el=document.getElementById('clist');if(!el)return;const h3=el.querySelector('h3');if(!h3)return;
+const _bl=buildList;buildList=function(){_bl();if(window.CRIMSON43)return;const el=document.getElementById('clist');if(!el)return;const h3=el.querySelector('h3');if(!h3)return;
  h3.insertAdjacentHTML('afterend',`<div id="cbsm" style="background:linear-gradient(135deg,#3a0a10,#1a0608);border:2px solid #ff2a3a;border-radius:12px;padding:6px 10px;margin:6px 0 10px;box-shadow:0 0 16px #ff2a3a55">
  <h3 style="color:#ff6070;margin:2px 0">🗡️ CRIMSON BLADE · SWORDMASTER STYLE</h3>
  <p class="tip" style="margin:3px 0"><b>STINGER</b> – hold <b>◀/▶ forward + BLINK</b>: dash-thrust through everyone · <b>HIGH TIME</b> – <b>▼+CLAW</b> launcher · <b>MILLION STAB</b> – hold <b>CLAW</b></p>
