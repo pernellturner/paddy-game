@@ -24,7 +24,7 @@ D=asyncio.run(dump())
 # the Practice Room dummy draws straight from frames.json (sd_* sheets), not through FR
 for k,v in json.load(open(os.path.join(ROOT,'assets/frames.json'))).items():
   if k.startswith('sd_'): D['FR'][k]=[f['f'] for f in v]
-forms=[('base','',0),('NEON NINJA','n_',0),('SAMURAI','s_',0),('KNIGHT','kn_',0),('PIRATE','pi_',0)]+[(u['nm'],u['pre']+'_',1 if (u['legend'] or u['god']) else 0) for u in D['UF'] if u]+[('SPARRING DUMMY','sd_',2)]
+forms=[('base','',0),('NINJA','n_',0),('SAMURAI','s_',0),('KNIGHT','kn_',0),('PIRATE','pi_',0)]+[(u['nm'],u['pre']+'_',1 if (u['legend'] or u['god']) else 0) for u in D['UF'] if u]+[('SPARRING DUMMY','sd_',2)]
 NOT=('r_','en_')
 cache={}
 def size(f):
@@ -35,6 +35,7 @@ def size(f):
   return cache[f]
 def owner(k):
   if k.startswith(NOT): return None
+  if k.startswith(('nj_','nk_','nx_')): return 'NINJA'   # v35: Ninja Paddy's own anims + the old route anims remapped onto its frames
   best=None
   for nm,pre,_ in forms[1:]:
     if k.startswith(pre) and (best is None or len(pre)>len(best[1])): best=(nm,pre)

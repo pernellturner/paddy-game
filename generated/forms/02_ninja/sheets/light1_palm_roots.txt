@@ -1,0 +1,9 @@
+# light1_palm: cell 404x401px, baseline y=351 (cell coords), form scale K=0.4298 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l1_load 3 0
+3 l1_half 17 0
+4 l1_snap 21 0 HIT1 SFX:hup
+5 l1_snap 21 0 HIT2
+6 l1_half 19 0
+7 ready 30 0

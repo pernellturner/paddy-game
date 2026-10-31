@@ -1,0 +1,10 @@
+# heavy2_flyknee: cell 496x524px, baseline y=474 (cell coords), form scale K=0.4298 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 ln_load 21 0
+3 h2_drive 76 30 SFX:GRUNT
+4 h2_imp 139 90 HIT1
+5 h2_imp 179 90 HIT2
+6 walk_4 164 40
+7 land 173 0
+8 ready 150 0

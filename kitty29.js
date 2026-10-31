@@ -84,7 +84,7 @@ const _pre=r9Pre;r9Pre=function(dt){
  try{if(!asked&&window.queueFrames&&F){asked=true;const L=[];for(const k in NEW){const v=NEW[k],s=F[v[2]];if(s)(v[3]||s.map((_,i)=>i)).forEach(i=>s[i]&&L.push(s[i].f))}
    for(const a of ['claw1','pc4','pc5','pc6','pc7','airswipe','diveclaw','dashstrike','swat','tailwhip','pawpop','finisher','dash'])(FR[a]||[]).forEach(q=>L.push(q.f));queueFrames([...new Set(L)],true)}
   K29.imp=K29.imp.filter(o=>(o.l-=dt*(o.streak?5:5.5))>0);
-  const gb=document.querySelector('#ui .b[data-k=guard]');if(gb){const want=base()?'':'none';if(gb.style.display!==want){gb.style.display=want;dispatchEvent(new Event('resize'))}}
+  const gb=document.querySelector('#ui .b[data-k=guard]');if(gb){const want=(base()||FORM()===1)?'':'none';if(gb.style.display!==want){gb.style.display=want;dispatchEvent(new Event('resize'))}}
   if(base()){p.kdCool=(p.kdCool||0)-dt;
    if(p.state!=='claw')p.k29fu=0;
    // ↑ / Jump pressed during a claw combo = the next combo hit goes UP (instead of cancelling into a jump)

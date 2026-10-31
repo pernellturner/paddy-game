@@ -1,0 +1,14 @@
+# finisher_crescent: cell 680x508px, baseline y=458 (cell coords), form scale K=0.4298 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 fin_coil -8 0 SFX:HISS
+3 bl_crouch 19 0
+4 bl_dash 221 18
+5 fin_rise 324 40 SFX:BIG GRUNT
+6 fin_imp 321 120 HIT1
+7 fin_imp 341 120 HIT2
+8 fin_imp 361 120 HIT3
+9 air_ready 316 150
+10 land 314 0
+11 fin_pose 373 0
+12 ready 302 0

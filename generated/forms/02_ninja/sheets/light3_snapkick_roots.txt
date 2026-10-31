@@ -1,0 +1,9 @@
+# light3_snapkick: cell 368x397px, baseline y=347 (cell coords), form scale K=0.4298 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 ready 0 0
+3 l3_load 23 0
+4 l3_snap 49 0 HIT1 SFX:hup
+5 l3_snap 59 0 HIT2
+6 l3_load 37 0
+7 ready 22 0

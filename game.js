@@ -201,7 +201,7 @@ function update(dt){
  default: if(S==='lk')lkState(dt);else if(S==='lkult')ultState(dt);else if(NST.includes(S))nState(S,dt,end,dir);else if(SST.includes(S))sState(S,dt,end,dir);else if(UST.has(S))ufState(S,dt,end,dir);else if(XST.has(S))xState(S,dt,end,dir);else if(S==='stun'){p.vx*=Math.pow(.05,dt);if(p.t>.45)p.state='normal'}break;
  }
  if(p.state==='normal'){
-  const T=false,N=p.ninja||p.sam||!!p.xf||!!p.uf,running=K.run||(touchMode&&p.holdT>.6)||N,spd=p.hunt?110:p.uf?UF[p.uf].spd:p.xf?XF[p.xf].spd:p.ninja?470:p.sam?430:260*(running?1.6:1),JB=1;
+  const T=false,N=p.ninja||p.sam||!!p.xf||!!p.uf,running=K.run||(touchMode&&p.holdT>.6)||N,spd=p.hunt?110:p.uf?UF[p.uf].spd:p.xf?XF[p.xf].spd:p.ninja?340:p.sam?430:260*(running?1.6:1),JB=1;
   if(K.down&&p.ground&&!p.hunt&&Math.abs(p.vx)>300&&P.down&&!T&&!N){act('slide','slide',{say:'SLIDE!'});}
   else if(K.down&&p.ground&&!p.hunt&&!T&&!N){p.vx*=.7;setAnim('crouch');}
   else{p.vx+=(dir*spd-p.vx)*Math.min(1,dt*(p.xf===3?(p.ground?(dir?5.5:6.5):4):N?(p.ground?(dir?8:10):5):T?(p.ground?(dir?4.5:6):2.5):(p.ground?(dir?7:9):4)));if(dir&&!p.wall)p.face=dir;}
@@ -296,7 +296,7 @@ function update(dt){
  shake*=.85; // input buffer: an unused press stays live for ~0.15s so moves chain; any new action consumes it
  for(const k in P)if(acted||INSTANT.includes(k)||now-(BUF[k]??-9)>.15)delete P[k];acted=false;
  const nm={manner:p.anim,claw:p.anim.replace(/^claw(\d)/,'claw $1/3')}[p.state]||(p.state==='normal'?p.anim:p.state);
- if(now-errShown>3)lbl.textContent=(p.uf?UF[p.uf].ico+' '+UF[p.uf].nm+' · ':p.xf===3?'🛡️ KNIGHT · ':p.xf===4?'⚓ PIRATE · ':p.ninja?'🥷 NEON NINJA · ':p.sam?'⚔️ SAMURAI · ':'')+nm.replace(/^([nsr]|kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/,'')+(p.wall?' (wall)':'')+(p.hunt?' · HUNT':'');
+ if(now-errShown>3)lbl.textContent=(p.uf?UF[p.uf].ico+' '+UF[p.uf].nm+' · ':p.xf===3?'🛡️ KNIGHT · ':p.xf===4?'⚓ PIRATE · ':p.ninja?'🥷 NINJA · ':p.sam?'⚔️ SAMURAI · ':'')+nm.replace(/^([nsr]|kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/,'')+(p.wall?' (wall)':'')+(p.hunt?' · HUNT':'');
 }
 function burst(x,y,fire){shake=10;for(let i=0;i<24;i++){const a=Math.random()*6.28,v=100+Math.random()*300;sparks.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.5,c:i%2?'#fff':fire?'#ff9a2e':'#5cc8ff'})}}
 function readyFrame(f,dog){if(f&&imgOK(IMG[f.f]))return f;const fb=FR[dog?'r_idle':fa('idle')];let g=fb&&fb.find(q=>imgOK(IMG[q.f]));if(!g&&!dog){const b=FR.idle;g=b&&b.find(q=>imgOK(IMG[q.f]))}return g||null}
@@ -393,7 +393,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='34a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='35a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -917,7 +917,7 @@ function setForm(f,force){if(p.state==='nmorph'&&p.t<.18){p.morphQ=f+1;return}if
  if(f>=3&&force&&!formReady(f)&&typeof loadForm==='function')loadForm(['','','','kn','pi'][f],true);
  if(f>=3&&!force&&!formReady(f)){requestForm(f);return}if(f<3)p.morphWait=null;
  formReset();const from=(FR[p.anim]||FR.idle)[p.fi];p.ninja=f===1;p.sam=f===2;p.xf=f>=3?f:0;p.xcombo=0;p.xair=0;p.rot=0;p.hunt=false;huntBtn&&huntBtn.classList.remove('lit');p.wall=false;p.combo=0;p.ncombo=0;p.scombo=0;p.rot=0;p.scyc=null;
- const L=[['idle','back to Paddy','#ffe08a',['#ffe08a','#fff']],['n_idle','NEON NINJA!',NV,[NV,NC,'#fff']],['s_draw','SAMURAI PADDY!',SR,[SR,SG,SP,'#fff']],['kn_power','KNIGHT PADDY!',KG,[KG,KBL,'#fff']],['pi_victory','PIRATE PADDY!',PT,[PT,PG,'#fff']]][f];
+ const L=[['idle','back to Paddy','#ffe08a',['#ffe08a','#fff']],['n_idle','NINJA PADDY!',NV,[NV,NC,'#fff']],['s_draw','SAMURAI PADDY!',SR,[SR,SG,SP,'#fff']],['kn_power','KNIGHT PADDY!',KG,[KG,KBL,'#fff']],['pi_victory','PIRATE PADDY!',PT,[PT,PG,'#fff']]][f];
  act('nmorph',L[0],{say:L[1],c:L[2]});p.mfrom=from;p.blend=0;p.vx*=.3;
  waves.push({x:p.x,y:p.y,r:10,l:1,big:true});puffShadow(p.x,p.y);spark(p.x,p.y-70,26,L[3],380);shake=8;
  if(f===2){kanjiFx('侍','SAMURAI','#c8102e');petals(p.x,p.y-80,24,1)}if(f===3){crest(p.x,p.y-150,.9);clang()}if(f===4){splash(p.x,GROUND,30,1);parrot('AHOY!');coinBurst(p.x,p.y-100,8);splashS()}morphStrike()}
@@ -1070,9 +1070,9 @@ const ROUTES=[
   {k:'CCCTT',nm:'TAIL SPIN SLAM!',fold:'CCCTT',tip:'spin, then a rising tornado and slam'},{k:'TTTMB',nm:'BOOM & ZOOM!',tip:'meow him up, blink up after him'},
   {k:'CCCCCT',nm:'COMET TAIL!',tip:'5 timed claws, then a blazing tail spin'},{k:'TTTCCC',nm:'CLAW CYCLONE!',fold:'TTTCCC',tip:'tail launch into a claw whirlwind'},
   {k:'CCCMBBTT',nm:'PURR-NADO!',tip:'blast, zig-zag blinks, tail tornado juggle'},{k:'CCCTMTMC',nm:'PURRFECT CATACLYSM',ult:1,tip:'ULTIMATE: leap, mega dive, giant paw quake'}],
- [{k:'CCCB',nm:'NEON GHOST CUT!',tip:'teleports through him with a neon cut'},{k:'CCCM',nm:'NEON SHOCKWAVE!',tip:'neon sound-ring blast'},
-  {k:'CCCTT',nm:'SHADOW CLONE BARRAGE!',fold:'CCCTT',tip:'shuriken spin, then clones throw stars'},{k:'TTTBB',nm:'STARFALL STEP!',tip:'star volley, then two blink cuts'},
-  {k:'CCCCCB',nm:'LIGHTNING ZIGZAG!',tip:'5 timed slashes, then a blink cut'},{k:'TTTCCC',nm:'NINJA TORNADO!',fold:'TTTCCC',tip:'stars into a neon tornado'},
+ [{k:'CCCB',nm:'NEON GHOST CUT!',tip:'3 clean hits, then blinks through him with a neon palm'},{k:'CCCM',nm:'NEON SHOCKWAVE!',tip:'neon sound-ring blast'},
+  {k:'CCCTT',nm:'SHADOW CLONE BARRAGE!',fold:'CCCTT',tip:'shuriken spin, then clones throw stars'},{k:'TTTBB',nm:'STARFALL STEP!',tip:'3 flying knees, then two blink strikes'},
+  {k:'CCCCCB',nm:'LIGHTNING ZIGZAG!',tip:'5 timed strikes, then a blink strike'},{k:'TTTCCC',nm:'NINJA TORNADO!',fold:'TTTCCC',tip:'3 flying knees into a neon tornado'},
   {k:'CCCMBBTT',nm:'PHANTOM CYCLONE!',tip:'screech, phantom cross, cyclone kick juggle'},{k:'TTTCBMCM',nm:'NEON MOONFALL',ult:1,tip:'ULTIMATE: moonlit flip, neon zig-zags, crater dive'}],
  [{k:'CCCB',nm:'PHANTOM IAI!',kj:'一閃',tip:'flash-step straight through him'},{k:'CCCM',nm:'KIAI THUNDER!',kj:'気',tip:'battle-shout shockwave'},
   {k:'CCCTT',nm:'PARRY BREAKER!',fold:'CCCTT',tip:'sheath spin into a guard-breaking slam'},{k:'CCCCCB',nm:'CRESCENT FLASH!',kj:'月',tip:'5 timed cuts, then a moonlit flash-step'},
@@ -1285,7 +1285,7 @@ const _drawCombo9=drawCombo;drawCombo=function(){_drawCombo9();r9DrawHUD()};
 // ---- the COMBO LIST / practice panel in the ? menu (built from ROUTES so it always matches the game) ----
 function buildList(){const el=document.getElementById('clist');if(!el)return;const F=[['🐱 KITTY','#ffe08a'],['🥷 NINJA','#c9a7ff'],['⚔️ SAMURAI','#ff6b6b'],['🛡️ KNIGHT','#ffd34d'],['⚓ PIRATE','#2ec4d6']].concat(window.UFTABS||[]);
  const ch=k=>`<span class="ck" style="background:${KEYCOL[k]}">${k}</span>`;
- let h='<h3>🎯 COMBO LIST &amp; PRACTICE</h3><p class="tip"><b>How it works:</b> land 3 timed hits of <b>Claw</b> (C C C) or <b>Tail</b> (T T T) to <b>open</b> a combo. Then press <b>Claw</b>, <b>Tail</b>, <b>Meow</b> or <b>Blink</b> on the beat – when the ring around Paddy turns green and you hear the chime – to chain a new move. Too early and the combo drops. Each button does something different (Blink = teleport slash, Meow = shockwave, Tail = spin, Claw = pounce) and pressing the same one twice gives a bigger version. Keep Claw going to 4 and 5 first, then add the others. Knight: Tail = Shield Bash, Meow = Holy Shout, Blink = Lance Rush. Pirate: Tail = Anchor Hook, Meow = Flintlock / Cannon, Blink = Barrel Roll / Rope Swing. Keys: C = Claw (X/J) · T = Tail (T/L) · M = Meow (C/K) · B = Blink (N/Ctrl). Tap ▶ to practise one – the buttons light up as you get them.</p><div class="tabs">';
+ let h='<h3>🎯 COMBO LIST &amp; PRACTICE</h3><p class="tip"><b>How it works:</b> land 3 timed hits of <b>Claw</b> (C C C) or <b>Tail</b> (T T T) to <b>open</b> a combo. Then press <b>Claw</b>, <b>Tail</b>, <b>Meow</b> or <b>Blink</b> on the beat – when the ring around Paddy turns green and you hear the chime – to chain a new move. Too early and the combo drops. Each button does something different (Blink = teleport slash, Meow = shockwave, Tail = spin, Claw = pounce) and pressing the same one twice gives a bigger version. Keep Claw going to 4 and 5 first, then add the others. Ninja: open with 3 on-beat hits of its freestyle string (or 3 Flying Knees, T T T). Knight: Tail = Shield Bash, Meow = Holy Shout, Blink = Lance Rush. Pirate: Tail = Anchor Hook, Meow = Flintlock / Cannon, Blink = Barrel Roll / Rope Swing. Keys: C = Claw (X/J) · T = Tail (T/L) · M = Meow (C/K) · B = Blink (N/Ctrl). Tap ▶ to practise one – the buttons light up as you get them.</p><div class="tabs">';
  F.forEach((f,i)=>h+=`<button class="tab" data-tab="${i}" style="border-bottom:3px solid ${f[1]}">${f[0]}</button>`);h+='</div>';
  F.forEach((f,i)=>{h+=`<table class="ctab" data-f="${i}" style="${i?'display:none':''}">`;ROUTES[i].forEach((r,j)=>{h+=`<tr${r.ult?' class="ult"':''}><td class="seq">${r.k.split('').map(ch).join('')}</td><td><b>${r.ult?'⚡ ULTIMATE · ':''}${r.nm.replace(/!+$/,'')}</b>${r.kj?' '+r.kj:''}<br><span class="tip">${r.tip}</span></td><td><button data-prac="${i}:${j}">▶ Practise</button></td></tr>`});h+='</table>'});
  el.innerHTML=h;
@@ -1793,7 +1793,7 @@ function r12DogMarks(d,H){if(!d.alive||d.aware==null)return;const y=d.y-H+70;d={
   ctx.save();ctx.translate(x-14,yy+3);ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(0,0,9,5,0,0,6.283);ctx.fill();ctx.fillStyle=c;ctx.beginPath();ctx.arc(0,0,3,0,6.283);ctx.fill();ctx.restore()}
  else if(p.hunt&&['idle','walk','punch','bite','bark'].includes(d.st)){ctx.save();ctx.globalAlpha=.8;ctx.translate(d.x,y+30);ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(0,0,12,7,0,0,6.283);ctx.fill();ctx.fillStyle='#ff3b3b';ctx.beginPath();ctx.arc(0,0,4.5,0,6.283);ctx.fill();ctx.restore();fancy('sees you',d.x,y+48,13,0,1,.7,'#ffb0b0')}}
 // ---------- VS intro + round banners (overlay; any button skips) ----------
-const FCOL=['#ffe08a',NV,SR,KG,PT],FNAME=['PADDY','NEON NINJA PADDY','SAMURAI PADDY','KNIGHT PADDY','PIRATE PADDY'];
+const FCOL=['#ffe08a',NV,SR,KG,PT],FNAME=['PADDY','NINJA PADDY','SAMURAI PADDY','KNIGHT PADDY','PIRATE PADDY'];
 function r12Over(){const t=R12.vs;
  if(t>=0&&t<3.1){ctx.save();const ein=Math.min(1,t/.35),e=1-Math.pow(1-ein,3),out=t>2.2?Math.min(1,(t-2.2)/.3):0,o=out*out;
   ctx.globalAlpha=t<2.2?.78:.78*(1-o);ctx.fillStyle='#0a0418';ctx.fillRect(-500,-500,VW+1000,VH+1000);ctx.globalAlpha=1;

@@ -1,0 +1,9 @@
+# air3_axespike: cell 406x813px, baseline y=686 (cell coords), form scale K=0.4298 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 air_ready 0 230
+2 a3_wind 74 250 SFX:GRUNT
+3 a3_snap -4 230 HIT1
+4 a3_snap 15 230 HIT2
+5 air_ready 46 130
+6 land 49 0
+7 ready -14 0
