@@ -1,0 +1,16 @@
+# finisher_dawnbloom: cell 488x521px, baseline y=471 (cell coords), form scale K=0.3700 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 fin_coil -23 0 SFX:HISS
+3 fin_coil -23 0
+4 fin_draw 31 0 HIT1
+5 fin_draw 31 0 HIT2
+6 a3_wind 133 90 SFX:BIG GRUNT
+7 fin_imp 141 0 HIT1
+8 fin_imp 141 0 HIT2
+9 fin_imp 141 0 HIT3
+10 fin_imp 141 0
+11 recover 93 0
+12 fin_pose 149 0
+13 fin_pose 149 0
+14 ready 104 0

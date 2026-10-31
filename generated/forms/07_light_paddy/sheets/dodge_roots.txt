@@ -1,0 +1,8 @@
+# dodge: cell 289x396px, baseline y=346 (cell coords), form scale K=0.3700 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 ready 0 0
+3 dodge_duck -14 0
+4 dodge_duck -24 0
+5 recover -67 0
+6 ready -64 0

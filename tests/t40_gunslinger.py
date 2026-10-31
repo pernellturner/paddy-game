@@ -166,10 +166,10 @@ async def main():
   await T("GN0.moves.length=0");await tb('tail');await tp.wait_for_timeout(700);m=await T("GN0.moves.slice()");check('touch: Tail = knee slide',m[:1]==['h2'],m)
   await tp.screenshot(path=OUT+'touch.png')
   check('touch: no page errors',not terr,terr[:5])
-  # the other legend forms share the uf* functions: Light Paddy keeps his own moves and art
-  await T("setForm(6)");await tp.wait_for_timeout(1800);await T(f"(()=>{{const d={D};p.state='normal';p.x=330;p.y=GROUND;p.face=1;d.x=500;d.y=GROUND;d.hp=99;d.cool=9;GN0.moves.length=0}})()")
+  # the other legend forms share the uf* functions: Power Blade keeps his own moves and art (v41: Light Paddy has his own engine, t41 checks him)
+  await T("setForm(7)");await tp.wait_for_timeout(1800);await T(f"(()=>{{const d={D};p.state='normal';p.x=330;p.y=GROUND;p.face=1;d.x=500;d.y=GROUND;d.hp=99;d.cool=9;GN0.moves.length=0}})()")
   await tb('attack');await tp.wait_for_timeout(150);r=await T("[FORM(),p.uf,p.state,p.anim,((FR[p.anim]||[])[p.fi]||{}).f,GN0.moves.length]")
-  check('Light Paddy untouched: Claw = his own chain hit (u1, lp_*)',r[0]==6 and r[2]=='u1' and not str(r[4]).startswith('p/gn_') and r[5]==0,r)
+  check('Power Blade untouched: Claw = his own chain hit (u1, not gn_*)',r[0]==7 and r[2]=='u1' and not str(r[4]).startswith('p/gn_') and r[5]==0,r)
   await br.close()
  print('FAILS',len(FAILS),FAILS)
 asyncio.run(main())

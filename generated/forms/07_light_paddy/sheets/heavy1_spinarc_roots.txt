@@ -1,0 +1,12 @@
+# heavy1_spinarc: cell 474x398px, baseline y=346 (cell coords), form scale K=0.3700 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 h1_load 24 0
+3 h1_load 16 0
+4 h1_load 44 0 SFX:GRUNT
+5 h1_imp 116 0 HIT1
+6 h1_imp 116 0 HIT2
+7 h1_imp 120 0 HIT1
+8 h1_imp 122 0
+9 recover 87 0
+10 ready 94 0

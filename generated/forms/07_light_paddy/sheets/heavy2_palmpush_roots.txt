@@ -1,0 +1,10 @@
+# heavy2_palmpush: cell 375x396px, baseline y=346 (cell coords), form scale K=0.3700 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 h2_load 11 0
+3 h2_load 2 0 SFX:GRUNT
+4 h2_imp 79 0 HIT1
+5 h2_imp 79 0 HIT2
+6 h2_imp 85 0
+7 recover 67 0
+8 ready 74 0
