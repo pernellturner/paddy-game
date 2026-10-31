@@ -1,0 +1,10 @@
+# victory: cell 312x442px, baseline y=387 (cell coords), form scale K=0.3782 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 idle_b -34 0
+3 vic_1 -71 0
+4 vic_1 -75 0
+5 vic_1 -76 0
+6 vic_2 -25 0
+7 vic_2 -19 0
+8 vic_2 -13 0

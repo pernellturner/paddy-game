@@ -393,7 +393,7 @@ let started=false;addEventListener('pageshow',()=>{last=performance.now()});docu
 // ---- sprite loading: robust on slow phones ----
 // small .webp first (falls back to .png), a few at a time, most important first; the game starts as soon as the
 // basics are in (or after a few seconds) and keeps loading the rest in the background. A missing/broken image never blocks anything.
-const VER='39a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
+const VER='40a',ESSENTIAL=['idle','walk','run','jump','fall','land','djump','crouch','r_idle','r_walk','n_idle','s_idle','s_draw'];
 const LAZY=a=>/^(kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/.test(String((A[a]||[''])[0]));
 const imgOK=im=>!!(im&&im.complete&&im.naturalWidth>0);
 function startGame(){if(started)return;started=true;last=performance.now();requestAnimationFrame(loop)}
@@ -1720,7 +1720,7 @@ function upgLoad(f,hi){if(!window.queueFrames||!F)return;const names=[];
 function r11Update(dt){
  if(p.lsq>0)p.lsq-=dt;if(p.recT>0)p.recT-=dt;
  // a short settle pose when a ground attack finishes, instead of snapping straight back to idle
- const S=p.state;if(S==='normal'&&r11Prev!=='normal'&&(p.sam||p.xf||p.uf)&&p.ground&&!/^(land|hurt|respawn|victory|nmorph|ledge|wallrun|bunny|lkult|sm|nj|kt|kg|pr)$/.test(r11Prev))p.recT=.24;r11Prev=S;
+ const S=p.state;if(S==='normal'&&r11Prev!=='normal'&&(p.sam||p.xf||p.uf)&&p.ground&&!/^(land|hurt|respawn|victory|nmorph|ledge|wallrun|bunny|lkult|sm|nj|kt|kg|pr|gn)$/.test(r11Prev))p.recT=.24;r11Prev=S;
  if(!window.queueFrames||!F)return;
  const f=FORM();if(f!==upgForm){upgForm=f;if(f>0)upgLoad(f,true)}
  if(!upgBg&&now>6&&SPRITES.loaded+SPRITES.failed.length>=SPRITES.total){upgBg=true;[2,1,3,4].forEach(k=>upgLoad(k,false))}
@@ -1942,7 +1942,7 @@ UA('sh',{idle:['idle',[1,3,4,3],5,1],run:['run',null,13,1],rise:['jump',[1,2],8]
 const UPRE=[null,'gs','lp','pb','cb','sr','sh'];
 // ---- the six forms ----
 const UF=[null,
- {pre:'gs',nm:'GUNSLINGER',ico:'🤠',col:'#ff4a3a',col2:'#ffc04d',spd:470,H:.34,H0:.3,minT:.12,W:.16,E:.42,
+ {pre:'gs',nm:'GUNSLINGER',ico:'🤠',col:'#ff4a3a',col2:'#ffc04d',spd:300,H:.34,H0:.3,minT:.12,W:.16,E:.42,
   CH:[null,{a:'h1',k:'shot',lunge:0,ht:.06,nm:'RUNE SHOT!'},{a:'h2',k:'shot',lunge:0,ht:.06,nm:'TWIN SHOT!'},{a:'h3',k:'shot',lunge:60,ht:.07,nm:'HIP FIRE!'},
    {a:'h4',k:'big',lunge:-80,ht:.08,nm:'BIG IRON!'},{a:'h5',k:'big',lunge:-80,ht:.08,nm:'BIGGER IRON!'},{a:'h6',k:'flat',lunge:300,ht:.07,nm:'SPUR KICK!'},{a:'h7',k:'shell',lunge:-120,ht:.12,nm:'SHOULDER CANNON!'}]},
  {pre:'lp',nm:'LIGHT PADDY',ico:'✨',col:'#7dff6a',col2:'#fff2a8',spd:450,H:.38,H0:.34,minT:.14,W:.18,E:.46,

@@ -1,0 +1,10 @@
+# light4_spurkick: cell 320x427px, baseline y=370 (cell coords), form scale K=0.3782 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 l4_load -72 0
+3 l4_load -84 0 SFX:hup
+4 l4_snap -58 0 HIT1
+5 l4_snap -58 0 HIT2
+6 l4_snap -62 0
+7 recover -16 0
+8 ready -8 0

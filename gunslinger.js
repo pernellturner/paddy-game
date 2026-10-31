@@ -12,7 +12,8 @@ Object.assign(NAMES,{ushotr:'TWIN PAW RAPID-FIRE!',ushotj:'GUN JUGGLE!',ushotk:'
 const G={hold:0,t:0,fire:0,tg:null,n:0};window.GSTYLE=G;
 const GS=['gsrapid','gsrain','gsjug','gsspin','gsstorm','gsfire','gstwo','gskick','gsstomp','gsrocket','gsoff','gstaunt'];
 const NO=['lkult','ufin','nmorph','respawn','ledge','bunny','lk','umeowc','umeow','hurt','ko','moon','moonl','shadowfin','victory'];
-const free=()=>p.uf===1&&!p.dead&&!(typeof CINE!=='undefined'&&CINE.includes(p.state))&&!NO.includes(p.state)&&!(window.MOON&&MOON.on)&&(!GS.includes(p.state)||G.t>.2);
+const free=()=>p.uf===1&&!(window.GUN40&&GUN40.MV)&&   // v40: Gunslinger Paddy's own engine (gunslinger40.js) replaces these style triggers
+ !p.dead&&!(typeof CINE!=='undefined'&&CINE.includes(p.state))&&!NO.includes(p.state)&&!(window.MOON&&MOON.on)&&(!GS.includes(p.state)||G.t>.2);
 const pop=v=>{try{SND.play('gun_pop',{v:v||.55,r:.9+Math.random()*.25,gap:.035})}catch(_){bang&&bang()}};
 const cann=()=>{try{SND.play('cannon',{v:.85,gap:.15})}catch(_){boom()}};
 const juggledT=r=>dummies.filter(d=>d.alive&&!d.benched&&d.y<GROUND-90&&Math.abs(d.x-p.x)<(r||520)).sort((a,b)=>Math.abs(a.x-p.x)-Math.abs(b.x-p.x))[0]||null;

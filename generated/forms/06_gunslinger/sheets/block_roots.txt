@@ -1,0 +1,8 @@
+# block: cell 274x400px, baseline y=348 (cell coords), form scale K=0.3782 (idle = 340px = base Paddy idle at TARGET=199)
+# frame  pose  root_x(px, vs frame 1)  lift(px above baseline)  flags (HIT1/2/3 = hit-stop frame, SFX:<cue> = effort sound)
+1 ready 0 0
+2 block -17 0
+3 block -17 0
+4 block -38 0
+5 block -29 0
+6 ready -12 0
