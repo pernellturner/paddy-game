@@ -1,5 +1,7 @@
-"""Cut enemy sheets generated/en/<id>/{move,act}.jpg -> assets/p/en_<id>_<sheet>_NN.png + frames.json.
-Background = magenta connected to the border (inner pink ears stay). Usage: python3 src/cut_en.py id[:height] ..."""
+"""Cut enemy sheets generated/en/<id>/{move,act,hurt,ko}.jpg -> assets/p/en_<id>_<sheet>_NN.png + frames.json.
+hurt.jpg / ko.jpg (6-frame reaction sheets, v44) become en_<id>_m_hurt / en_<id>_m_ko.
+Background = magenta connected to the border (inner pink ears stay).
+Usage: python3 src/cut_en.py id[:height[:fly]] ...   (':fly' = flyer: anchor on the body, not a ground line)"""
 import numpy as np, json, os, sys
 from PIL import Image, ImageFilter
 from scipy import ndimage as nd
@@ -30,13 +32,13 @@ def parts_of(path,it=3):
     return parts
 frames=json.load(open('assets/frames.json'))
 for arg in sys.argv[1:]:
-    eid,Hs=(arg.split(':')+['150'])[:2]; H=float(Hs)
+    bits=arg.split(':'); eid=bits[0]; H=float(bits[1]) if len(bits)>1 else 150.; fly='fly' in bits[2:]
     mv=parts_of(f'generated/en/{eid}/move.jpg'); sc=H/np.median([p[3]-p[2] for p in mv[:2]])
-    for sh in ('move','act'):
+    for sh in ('move','act','hurt','ko'):
         path=f'generated/en/{eid}/{sh}.jpg'
         if not os.path.exists(path): continue
-        parts=mv if sh=='move' else parts_of(path); name=f'en_{eid}_{sh}'; frames[name]=[]
-        ground=int(np.median([p[3] for p in parts]))
+        parts=mv if sh=='move' else parts_of(path); name=f'en_{eid}_{sh}' if sh in ('move','act') else f'en_{eid}_m_{sh}'; frames[name]=[]
+        ground=int(np.median([p[3] for p in parts])); cy=float(np.median([(p[2]+p[3])/2 for p in parts]))
         for kk,(x0,x1,y0,y1,m,c) in enumerate(parts):
             a=Image.fromarray((m*255).astype(np.uint8)).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(.8))
             c=c.copy(); edge=np.asarray(a)<250
@@ -46,7 +48,8 @@ for arg in sys.argv[1:]:
             W,Hh=max(1,round(rgba.width*sc)),max(1,round(rgba.height*sc))
             rgba=rgba.resize((W,Hh),Image.LANCZOS)
             xs=np.nonzero(m)[1]; ax=float((xs.min()+xs.max())/2)*sc if len(xs) else W/2
-            ay=Hh+3 if (ground-y1)*sc<15 else (ground-y0)*sc+3
+            if fly: ay=(cy-y0)*sc+H/2   # flyers: steady body centre, H/2 above the anchor (no ground snap)
+            else: ay=Hh+3 if (ground-y1)*sc<15 else (ground-y0)*sc+3
             fn=f'p/{name}_{kk:02d}'; rgba.save(f'assets/{fn}.png',optimize=True)
             frames[name].append(dict(f=fn,ax=round(ax),ay=round(ay),w=W,h=Hh))
         print(name,len(parts),'scale %.3f'%sc,[(f['w'],f['h']) for f in frames[name]])

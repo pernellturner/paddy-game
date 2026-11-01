@@ -25,6 +25,13 @@ const E={
  possum:{nm:'Possum',h:120,hp:8,spd:105,atk:['spin'],dead:1,wind:.25,dmg:.25,reach:130,line:'SURPRISE! TAIL WHIP!',ko:'playing dead… for real',ouch:'TAIL-WHIPPED!'},
  rat:{nm:'Rat',h:75,hp:4,spd:190,atk:['lunge'],wind:.35,dmg:.12,reach:80,lv:300,line:'NIBBLE!',ko:'squeak…',ouch:'NIBBLED!'},
  ferret:{nm:'Ferret',h:95,hp:6,spd:170,atk:['charge'],zig:1,wind:.35,dmg:.18,cs:650,line:'DOOK DOOK DASH!',ko:'dook…',ouch:'DOOKED!'},
+ // v44: Enemy Studio's World 1 drafts (new ids; the old slots above stay as they are)
+ sewer_rat:{nm:'Gutter Gnasher',h:110,hp:5,spd:185,atk:['lunge'],wind:.35,dmg:.12,reach:88,lv:300,line:'GNASH GNASH!',ko:'squeak… back to the drain',ouch:'GNASHED!'},
+ gull_bandit:{nm:'Chip Bandit',h:120,hp:5,spd:170,fly:95,atk:['dive'],wind:.45,dmg:.15,reach:89,line:'YOUR CHIPS! MINE!',ko:'…keep your chips',ouch:'PECKED!'},
+ alley_cat:{nm:'Scratch',h:170,hp:8,spd:100,atk:['lunge'],wind:.55,dmg:.22,reach:119,lv:180,line:'SCRATCH ATTACK!',ko:'hmph… nap time',ouch:'SCRATCHED!'},
+ possum_w1:{nm:'Hooks',h:120,hp:6,spd:105,atk:['spin'],dead:1,wind:.3,dmg:.18,reach:93,line:'HOOKS SPIN!',ko:'playing dead… for real',ouch:'TAIL-WHIPPED!'},
+ magpie_boss:{nm:'Boss Squawk',h:130,hp:8,spd:160,fly:90,atk:['dive'],wind:.4,dmg:.2,reach:90,boss:1,line:'SQUAWK! GET HIM, GULLS!',ko:'squawk… you win',ouch:'SWOOPED!'},
+ ferret_zip:{nm:'Zip',h:95,hp:5,spd:175,atk:['charge'],zig:1,wind:.35,dmg:.15,cs:650,reach:61,line:'ZIP ZIP ZOOM!',ko:'zip… zzz',ouch:'ZAPPED!'},
  goose:{nm:'Goose Gang',h:160,hp:8,spd:110,atk:['shot','charge'],shot:'honk',gang:2,wind:.5,dmg:.22,cs:520,line:'HONK!!',ko:'…honk',ouch:'HONKED!'},
  rooster:{nm:'Rooster',h:150,hp:9,spd:110,atk:['pounce'],wind:.55,dmg:.25,reach:120,line:'COCK-A-DOODLE-KICK!',ko:'cock-a-doodle-don\'t',ouch:'FLAP-KICKED!'},
  crab:{nm:'Crab',h:85,hp:7,spd:90,atk:['lunge'],wind:.5,dmg:.2,reach:90,lv:160,front:1,line:'PINCH!',ko:'crabby nap',ouch:'PINCHED!'},
@@ -55,7 +62,8 @@ const ANIMS=id=>({idle:[`en_${id}_move`,[0,1],2.6,1],walk:[`en_${id}_move`,[2,3,
  hold:[`en_${id}_act`,[2],1,0],hurt:[`en_${id}_act`,[3],1,0],air:[`en_${id}_act`,[4],1,0],ko:[`en_${id}_act`,[5],1,0],dead:[`en_${id}_act`,[0],1,0],roll:[`en_${id}_act`,[1,2],7,1]});
 // v20: 4-frame in-betweens (en_<id>_m_idle/wind/atk/hurt/air/ko) replace the 1-2 frame poses when present
 const MBADX={hedgehog:{hurt:[2,3]}};
-const ANIMS2=id=>{const a=ANIMS(id),m=k=>F[`en_${id}_m_${k}`],D=E[id]||{},bad=MBADX[id]||{};if(!m('idle'))return a;
+const ANIMS2=id=>{const a=ANIMS(id),m=k=>F[`en_${id}_m_${k}`],D=E[id]||{},bad=MBADX[id]||{};
+ if(!m('idle')){if(m('hurt'))a.hurt=[`en_${id}_m_hurt`,null,12,0];if(m('ko'))a.ko=[`en_${id}_m_ko`,null,8,0];return a} // v44: 6-frame hurt/ko sheets
  const set=(k,src,fps,loop,idx)=>{if(m(src))a[k]=[`en_${id}_m_${src}`,idx||bad[src]||null,fps,loop]};
  set('idle','idle',5,1);set('wind','wind',Math.max(5,Math.min(16,3.6/(D.wind||.5))),0);set('atk','atk',12,0);set('hold','atk',1,0,[3]);
  set('hurt','hurt',9,0);set('air','air',8,1);set('ko','ko',4.5,0);if(id==='hedgehog')set('roll','atk',10,1);return a};
@@ -172,7 +180,7 @@ function drawShots(){for(const s of shots){ctx.save();ctx.globalAlpha=Math.min(1
   ctx.restore()}
  for(const o of poofs){ctx.save();ctx.globalAlpha=Math.max(0,Math.min(1,o.l*2));if(o.txt)fancy(o.txt,o.x,o.y,30,-.06,1,Math.min(1,o.l*2),'#fff');else if(o.star)star(o.x,o.y,o.r,o.c);else{ctx.fillStyle=o.c;ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,6.283);ctx.fill()}ctx.restore()}}
 // ---------- drawing ----------
-function frameOf(d){const fr=String(d.anim).startsWith('en_')?FR[d.anim]:null;const f=fr&&fr[Math.min(d.fi,fr.length-1)];if(f&&imgOK(IMG[f.f]))return f;const g=FR[`en_${d.cr}_idle`];const h=g&&g.find(q=>imgOK(IMG[q.f]));return h||null}
+function frameOf(d){const fr=String(d.anim).startsWith('en_')?FR[d.anim]:null;const f=fr&&fr[Math.min(d.fi,fr.length-1)];if(f&&imgOK(IMG[f.f]))return f;for(const g of [fr,FR[`en_${d.cr}_idle`],FR[`en_${d.cr}_move`]]){const h=g&&g.find(q=>imgOK(IMG[q.f]));if(h)return h}return null}   // v44d: still loading -> any loaded frame of this anim, then idle, then move (new W1 enemies have no idle)
 function drawCF(f,fs,alpha,front){if(!f)return;const im=IMG[f.f];if(!imgOK(im))return;ctx.save();if(alpha!=null)ctx.globalAlpha*=alpha;ctx.scale((front?1:Math.sign(fs)*Math.max(.15,Math.abs(fs)))*ESC,ESC);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}
 function drawCritters(){for(const d of dummies){if(!d.cr||d.gone)continue;const D=d.D,f=frameOf(d);if(!f)continue;const H=d.alive?d.h:d.h*.6;
  const hg=Math.max(0,GROUND-d.y);ctx.fillStyle='rgba(0,0,0,.18)';ctx.beginPath();ctx.ellipse(d.x,GROUND+3,f.w*ESC*.38*Math.max(.35,1-hg/400),8,0,0,6.28);ctx.fill();

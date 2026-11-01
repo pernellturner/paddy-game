@@ -48,7 +48,7 @@ function init(lv){L=lv;W=L.width;H=L.height;S=L.layers.solid.slice();used.clear(
  ents=[];enemies=[];kids=[];cars=[];fx=[];msgs=[];arena=null;
  arenas=(L.arenas||[]).map(a=>Object.assign({},a,{state:'idle',slots:[],want:a.enemies.slice()}));
  for(const e of L.entities||[]){const x=(e.x+.5)*TS,y=(e.y+1)*TS;
-  if(e.type==='enemy'){const a=arenaFor(e);if(a)a.slots.push({id:e.id,x,y});else enemies.push(mkEnemy(e.id,x,y,e))}   // v44 audit: an arena's own enemies wait for the arena (no double count)
+  if(e.type==='enemy'){const a=arenaFor(e);if(a)a.slots.push({id:e.id,x,y,e});else enemies.push(mkEnemy(e.id,x,y,e))}   // v44 audit: an arena's own enemies wait for the arena (no double count)
   else if(e.type==='kid'){kids.push({kind:e.kind,x,y,x0:e.x*TS,x1:(e.x+(e.range||10))*TS,dir:1,sp:2*TS,ph:0,harmless:e.harmless===true,hitbox:e.hitbox!==false?true:false,bonus:e.bonus})}
   else if(e.type==='car'||e.type==='bus'){const len=e.type==='bus'?5:3,ht=e.type==='bus'?3:2;
    cars.push({kind:e.type,name:e.name,lane:e.lane,x:(e.dir<0?(e.x1+1)*TS-len*TS:e.x0*TS),y:(e.lane+1)*TS,w:len*TS,h:ht*TS,x0:e.x0*TS,x1:(e.x1+1)*TS,sp:e.speed*TS,dir:e.dir||1,col:carCol(e)})}
@@ -61,10 +61,17 @@ function init(lv){L=lv;W=L.width;H=L.height;S=L.layers.solid.slice();used.clear(
  initBoss();
  cam.x=Math.max(0,p.x-VW*.35);LV.ready=true;LV.id=L.id;LV.level=L;msg((lab()+' · ')+L.name,'#ffe08a',true)}
 function carCol(e){const C=['#d9483b','#3b7dd9','#e8c23a','#5aa95a','#9a5ad9'];let h=0;for(const ch of e.name||'')h=(h*31+ch.charCodeAt(0))>>>0;return e.type==='bus'?'#f2f2f2':C[h%C.length]}
-const FLY=new Set(['seagull','magpie','wasp']);
+const FLY=new Set(['seagull','magpie','wasp','gull_bandit','magpie_boss']);
+// v44d: World 1 (silverdale_*) draws Enemy Studio's new W1 enemies in the old slots' places (the old ids keep their own art everywhere else).
+// magpie_boss (Boss Squawk) is a mini-boss only where a level asks for it: id 'magpie_boss', or a magpie with "miniBoss":true.
+const W1SPR={rat:'sewer_rat',seagull:'gull_bandit',alleytom:'alley_cat',possum:'possum_w1',ferret:'ferret_zip'};
+const isW1=()=>!!(L&&(/^silverdale_/.test(L.id||'')||L.world==='silverdale'));
 // an entity enemy inside an arena's x-range whose id is still on that arena's list belongs to the arena (it spawns where it was placed, at lock)
 function arenaFor(e){for(const a of arenas){if(e.x<a.x0||e.x>a.x1)continue;const i=a.want.indexOf(e.id);if(i>=0){a.want.splice(i,1);return a}}return null}
-function mkEnemy(id,x,y,e){const fly=FLY.has(id);return{id,x,y:fly?y-TS*2:y,x0:x-2.5*TS,x1:x+2.5*TS,vx:(Math.random()<.5?-1:1)*(fly?90:60),vy:0,hp:/bulldog|husky|labrador|goose/.test(id)?3:2,fly,alive:true,ko:0,face:-1,t:Math.random()*6,hurt:0,route:e&&e.route,w:fly?60:70,h:fly?60:/rat|hedgehog|weta|crab/.test(id)?50:80,arena:e&&e.arena}}
+function mkEnemy(id,x,y,e){const fly=FLY.has(id),mini=id==='magpie_boss'||(id==='magpie'&&e&&e.miniBoss);const spr=mini?'magpie_boss':(isW1()&&W1SPR[id])||id;
+ const en=mkEnemy0(id,x,y,e,fly);en.spr=spr;for(const k of ['_move','_m_hurt','_m_ko'])(F['en_'+spr+k]||[]).forEach(f=>img(f.f));   // preload every frame up front (no pop-in)
+ if(mini){en.mini=true;en.hp=6;en.w=80;en.h=80}return en}
+function mkEnemy0(id,x,y,e,fly){return{id,x,y:fly?y-TS*2:y,x0:x-2.5*TS,x1:x+2.5*TS,vx:(Math.random()<.5?-1:1)*(fly?90:60),vy:0,hp:/bulldog|husky|labrador|goose/.test(id)?3:2,fly,alive:true,ko:0,face:-1,t:Math.random()*6,hurt:0,route:e&&e.route,w:fly?60:70,h:fly?60:/rat|hedgehog|weta|crab/.test(id)?50:80,arena:e&&e.arena}}
 // ---------- Paddy physics ----------
 function boxHits(x,y,w,h,test){const c0=Math.floor((x-w/2)/TS),c1=Math.floor((x+w/2-1)/TS),r0=Math.floor((y-h)/TS),r1=Math.floor((y-1)/TS);
  for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++)if(test(c,r))return{c,r};return null}
@@ -150,7 +157,7 @@ function updCars(dt){for(const v of cars){v.x+=v.dir*v.sp*dt;if(v.x+v.w>v.x1){v.
   const cx=v.x+v.w/2;if(p.inv<=0&&Math.abs(p.x-cx)<(v.w+BW)/2-8&&p.y>v.y-v.h+6&&p.y-BH<v.y){const d=Math.sign(p.x-cx)||-v.dir;p.vx=d*360;p.vy=-430;p.ground=false;p.inv=.8;p.state='hurt';p.t=0;msg('BEEP BEEP!','#ffe08a');LV.log.push('bump:'+v.kind)}}}   // knock-back only: no damage
 function updArenas(){for(const a of arenas){if(a.state==='idle'&&p.x>a.x0*TS+TS&&p.x<(a.x1)*TS&&!arena){a.state='lock';arena=a;a.list=[];msg(a.name.toUpperCase()+'!','#ff9a5a',true);LV.log.push('arena:'+a.name);
    const n=a.want.length,sl=a.slots.concat(a.want.map((id,i)=>({id,x:(a.x0+1.5+(a.x1-a.x0-2)*(i+.5)/Math.max(1,n))*TS,y:(a.y+1)*TS})));   // v44 audit: on the arena floor, not 300px up
-   for(const q of sl){if(Math.abs(q.x-p.x)<TS*2)q.x=Math.min((a.x1-.5)*TS,p.x+TS*3);const e=mkEnemy(q.id,q.x,q.y,{});e.inArena=true;e.arenaSpd=90;e.x0=a.x0*TS;e.x1=(a.x1+1)*TS;enemies.push(e);a.list.push(e)}}
+   for(const q of sl){if(Math.abs(q.x-p.x)<TS*2)q.x=Math.min((a.x1-.5)*TS,p.x+TS*3);const e=mkEnemy(q.id,q.x,q.y,q.e||{});e.inArena=true;e.arenaSpd=90;e.x0=a.x0*TS;e.x1=(a.x1+1)*TS;enemies.push(e);a.list.push(e)}}
   if(a.state==='lock'&&a.list.every(e=>!e.alive)){a.state='done';arena=null;msg('CLEAR!','#7fffd4',true);LV.log.push('cleared:'+a.name)}}}
 function updEnts(){for(const e of ents){if(e.got)continue;e.ph+=.05;e.y=e.base+Math.sin(e.ph)*4;if(Math.abs(e.x-p.x)<50&&e.y>p.y-BH-10&&e.y<p.y+10){e.got=true;
   if(e.type==='coin')p.coins++;else if(e.type==='fish'){p.hp=Math.min(p.max,p.hp+1);p.fish++;msg('FISH! +1 ♥','#9fdcff')}else if(e.type==='yarn'){p.yarn++;msg('YARN BALL '+p.yarn+'/4','#ff9ad5')}else if(e.type==='powerup'){p.power=8;msg('ZOOMIES POWER!','#7fffd4')}
@@ -263,8 +270,8 @@ function updCam(dt){let tx=p.x-VW*.4+p.face*60;if(arena&&arena.state==='lock'){c
 // ---------- drawing ----------
 const SKIN={J:'#3fbf7f',P:'#b9b4aa',R:'#8a5a44',o:'#cfcfcf',t:'#9aa6b5',r:'#e8c23a',
  // v44: decoLegend skins that had no colour yet (big-box walls, mall, walkways, road, fields, roofs, mud…)
- W:'#c7352e',U:'#2f8a4a',M:'#c9c0b0',K:'#9a6a3e',A:'#c98a3a',X:'#4a4b50',Z:'#b8342c',Y:'#4c9a3a',N:'#3d7a9a',O:'#3f7a4a',H:'#d9cdb5',u:'#d8cdb8',V:'#8c9aa3',D:'#7b6a52','5':'#8a5a34',I:'#bdbdb5',y:'#a8d4e6',a:'#c0c4c8',v:'#9aa0a6'};
-const TOPC={R:'#a8452f',X:'#5c5d62',Z:'#c8443a',O:'#4f8a5a',V:'#9aa8b0',A:'#d9a050',K:'#b07a48',D:'#8b7a5f',Y:'#5fb048',N:'#4f8cae',W:'#a82a24',U:'#23703a',I:'#d6d6ce',a:'#d0d4d8',v:'#aab0b6',y:'#c8e8f4'};
+ W:'#a9564c',U:'#4a7d5a',M:'#c9c0b0',K:'#9a6a3e',A:'#c98a3a',X:'#4a4b50',Z:'#b8342c',Y:'#4c9a3a',N:'#3d7a9a',O:'#3f7a4a',H:'#d9cdb5',u:'#d8cdb8',V:'#8c9aa3',D:'#7b6a52','5':'#8a5a34',I:'#bdbdb5',y:'#a8d4e6',a:'#c0c4c8',v:'#9aa0a6'};
+const TOPC={R:'#a8452f',X:'#5c5d62',Z:'#c8443a',O:'#4f8a5a',V:'#9aa8b0',A:'#d9a050',K:'#b07a48',D:'#8b7a5f',Y:'#5fb048',N:'#4f8cae',W:'#8e463e',U:'#3b6849',I:'#d6d6ce',a:'#d0d4d8',v:'#aab0b6',y:'#c8e8f4'};
 const ONEC={b:'#6b4a2e',g:'rgba(170,220,240,.85)',z:'#c27a3a',x:'#f2f2f2','4':'#5e4630',Q:'#fff2a0',J:'#5d666e'};
 function sky(){const th=L.theme||'';const g=ctx.createLinearGradient(0,0,0,VH);if(/night/.test(th)){g.addColorStop(0,'#141a3a');g.addColorStop(1,'#3a3260')}else{g.addColorStop(0,'#7fc4f0');g.addColorStop(1,'#e6f3ff')}ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
  // far hills / bush backdrop (parallax)
@@ -336,8 +343,9 @@ function drawEnts(){for(const e of ents){if(e.got)continue;const x=e.x-cam.x,y=e
   if(v.kind==='bus'){for(let i=0;i<4;i++)ctx.fillRect(x+12+i*56,y-v.h+22,40,36);ctx.fillStyle='#2f7ad9';ctx.fillRect(x,y-40,v.w,10)}else ctx.fillRect(x+v.w*(v.dir>0?.55:.1),y-v.h+18,v.w*.35,30);
   ctx.fillStyle='#222';ctx.beginPath();ctx.arc(x+28,y-10,12,0,6.283);ctx.arc(x+v.w-28,y-10,12,0,6.283);ctx.fill()}
  for(const k of kids){const key=k.kind==='skateboard'?'en_kidskate_move':'en_kidscoot_move';drawFrame(key,k.ph*10,k.x-cam.x,k.y-cam.y,k.dir,SC*.9)}
- for(const e of enemies){if(!e.alive&&e.ko<=0)continue;const key='en_'+e.id+(e.alive?(e.hurt>0?'_m_hurt':'_move'):'_m_ko');const x=e.x-cam.x,y=e.y-cam.y;if(x<-100||x>VW+100)continue;
-  if(!drawFrame(key,e.t*10,x,y,e.face,SC,e.alive?1:e.ko)){ctx.fillStyle='#a05a3a';ctx.fillRect(x-e.w/2,y-e.h,e.w,e.h)}}}
+ for(const e of enemies){if(!e.alive&&e.ko<=0)continue;const key='en_'+(e.spr||e.id)+(e.alive?(e.hurt>0?'_m_hurt':'_move'):'_m_ko');const x=e.x-cam.x,y=e.y-cam.y;if(x<-100||x>VW+100)continue;
+  if(!drawFrame(key,e.t*10,x,y,e.face,SC,e.alive?1:e.ko)){const mv='en_'+(e.spr||e.id)+'_move',fb=[key,mv].map(k=>(F[k]||[]).findIndex(f=>ok(img(f.f)))).map((i,j)=>[[key,mv][j],i]).find(q=>q[1]>=0);   // v44d: still loading -> a loaded frame, never a box flash
+   if(fb)drawFrame(fb[0],fb[1],x,y,e.face,SC,e.alive?1:e.ko);else if(!F[key]&&!F[mv]){ctx.fillStyle='#a05a3a';ctx.fillRect(x-e.w/2,y-e.h,e.w,e.h)}}}}
 function drawPaddy(){const a=ANIM[p.anim]||ANIM.idle,key=a[0];const fi=p.anim==='climb'?(p.y/24):LV.t*a[1];const blink=p.inv>0&&Math.floor(LV.t*20)%2;
  if(!drawFrame(key,fi,p.x-cam.x,p.y-cam.y+(p.anim==='ledge'?BH*.45:0),p.face,SC,blink?.4:1)){ctx.fillStyle='#e8c8a0';ctx.fillRect(p.x-cam.x-BW/2,p.y-cam.y-BH,BW,BH)}
  if(qs.has('hitbox')){ctx.strokeStyle='#f0f';ctx.strokeRect(p.x-cam.x-BW/2,p.y-cam.y-BH,BW,BH)}}
