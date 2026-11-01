@@ -15,12 +15,12 @@ const FONTS="'Bangers','Luckiest Guy',Impact,'Arial Black',sans-serif";
 const SCENES=window.CUT_SCENES={
  w1c1:{id:'W1-C1',panels:[{img:'w1c1_1',cap:'Paddy dodges the trolleys and slips out of the car park. Which way is Stanmore Bay? He picks a direction… and hopes it\'s right.',fx:.55,fy:.5,z0:1.05,z1:1.2}]},
  w1u01:{id:'W1-U01',flag:'kitty_boxing_gloves',card:'UPGRADE! Kitty · Boxing Gloves',panels:[{img:'w1u01_1',cap:'Tiny red boxing gloves, left on a bench… a PERFECT fit!',fx:.45,fy:.5,z0:1.2,z1:1.04}]},
- w1hop12:{id:'W1-map 1-2',map:1,panels:[{cap:'From the bus stop, Paddy follows the busy highway…'}]},
+ w1c2:{id:'W1-C2',panels:[{img:'w1c2_1',cap:'The bus stop on the Hibiscus Coast Highway. WHOOSH! Cars, buses, trucks… Paddy\'s whiskers blow flat. "Stay off the road. Follow it from the side."',fx:.5,fy:.5,z0:1.05,z1:1.2}]},
  w1c3:{id:'W1-C3',panels:[{img:'w1c3_1',cap:'Night at the floodlit park. No blanket, no bed… just cold grass by the tennis courts. Paddy stares at the moon…',fx:.5,fy:.55,z0:1.02,z1:1.22},
   {img:'w1c3_2',cap:'…the very same moon Savannah and Hallie are watching. "Goodnight, Paddy. Wherever you are."',fx:.6,fy:.45,z0:1.22,z1:1.02}]},
- w1hop14:{id:'W1-map 1-4',map:1,panels:[{cap:'Past the village green and up the hill to the school…'}]},
+ w1c4:{id:'W1-C4',panels:[{img:'w1c4_1',cap:'Dusk on the village green. Paddy sniffs the air… DING-A-LING! A school bell up the road. Kids… like Savannah and Hallie! Off he goes.',fx:.55,fy:.45,z0:1.2,z1:1.04}]},
  w1u02:{id:'W1-U02',flag:'kitty_champ_sweatband',card:'UPGRADE! Kitty · Champ Sweatband',panels:[{img:'w1u02_1',cap:'A lost sweatband on the school field. Jab-jab-JAB! Faster than ever!',fx:.55,fy:.5,z0:1.05,z1:1.2}]},
- w1hop16:{id:'W1-map 1-6',map:1,panels:[{cap:'Down the path to the Wēiti River…'}]},
+ w1c6:{id:'W1-C6',panels:[{img:'w1c6_1',cap:'From Pioneer Village, the path winds down to the Wēiti River. Then… RUMBLE. Birds burst from the mangroves. Something BIG is under that old bridge…',fx:.65,fy:.4,z0:1.02,z1:1.22}]},
  w1b1:{id:'W1-B1',panels:[{img:'w1b1_1',cap:'Under the old 1913 bridge, the mangroves go quiet. Something HUGE blocks the way…',fx:.45,fy:.5,z0:1.2,z1:1.04},
   {img:'w1b1_2',cap:'BIG BRUNO! "Nobody gets past MY river, fluffball." Paddy\'s tail puffs up. "Watch me."',fx:.5,fy:.55,z0:1.02,z1:1.22}]},
  w1a1:{id:'W1-A1',panels:[{img:'w1a1_1',cap:'Bruno\'s down! For one heartbeat, Paddy\'s fur flickers GOLD. "…What was THAT?"',fx:.6,fy:.45,z0:1.22,z1:1.02,hero:1}]},
@@ -29,11 +29,11 @@ const SCENES=window.CUT_SCENES={
 // play order + triggers (HANDOFF-W1.md "Order and triggers"); level ids are the Level Builder ids (silverdale_N = 1-N)
 const TRIGGERS=window.CUT_TRIGGERS={
  'silverdale_1:goal':['w1c1','w1u01'],      // 1, 2   end of 1-1 Centre Car Park (+ Kitty upgrade, 150 EXP in the plan)
- 'silverdale_2:goal':['w1hop12'],           // 3      map hop
+ 'silverdale_2:goal':['w1c2'],              // 3      end of 1-2 The Shops -> the Hibiscus Coast Highway bus stop (v44c)
  'silverdale_3:goal':['w1c3'],              // 4      end of 1-3 Highway (floodlit tennis courts)
- 'silverdale_4:goal':['w1hop14'],           // 5      map hop
+ 'silverdale_4:goal':['w1c4'],              // 5      end of 1-4 Silverdale Village -> dusk on the village green (v44c)
  'silverdale_5:goal':['w1u02'],             // 6      end of 1-5 Silverdale School (+ Kitty upgrade, 1,200 EXP in the plan)
- 'silverdale_6:goal':['w1hop16'],           // 7      map hop
+ 'silverdale_6:goal':['w1c6'],              // 7      end of 1-6 Pioneer Village -> the river rumble (v44c)
  'silverdale_7:boss_enter':['w1b1'],        // 8      1-7 entering the boss arena under the 1913 bridge
  'silverdale_7:boss_ko':['w1a1','w1u03'],   // 9, 10  Big Bruno K.O. -> gold flicker, then the Ninja reward
  'silverdale_7:goal':['w1x']};              // 11     1-7 goal on the Silverdale St bridge (then Level Builder's map reveal)

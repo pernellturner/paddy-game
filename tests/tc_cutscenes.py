@@ -18,11 +18,13 @@ async def main():
   # every panel file is there and loads
   await load('level=silverdale_1&nocuts')
   r=await E("Promise.all(Object.values(CUT_SCENES).flatMap(s=>s.panels).filter(p=>p.img).map(p=>new Promise(res=>{const i=new Image();i.onload=()=>res([p.img,i.naturalWidth,i.naturalHeight]);i.onerror=()=>res([p.img,0,0]);i.src='assets/story/'+p.img+'.webp'})))")
-  check('10 W1 panels, all 1280x720 webp',len(r)==10 and all(x[1]==1280 and x[2]==720 for x in r),r)
+  check('13 W1 panels, all 1280x720 webp',len(r)==13 and all(x[1]==1280 and x[2]==720 for x in r),r)
   r=await E("Object.entries(CUT_TRIGGERS).map(([k,v])=>k+'='+v.join('+'))");check('11 play-order steps on 9 triggers',sum(len(x.split('=')[1].split('+')) for x in r)==11 and len(r)==9,r)
+  order=await E("['silverdale_1:goal','silverdale_2:goal','silverdale_3:goal','silverdale_4:goal','silverdale_5:goal','silverdale_6:goal','silverdale_7:boss_enter','silverdale_7:boss_ko','silverdale_7:goal'].flatMap(k=>CUT_TRIGGERS[k]||[])")
+  check('play order C1, U01, C2, C3, C4, U02, C6, B1, A1, U03, X (no map hops left)',order==['w1c1','w1u01','w1c2','w1c3','w1c4','w1u02','w1c6','w1b1','w1a1','w1u03','w1x'],order)
   # preview + screenshots at 1024x340 (side layout), each panel
   await E("localStorage.removeItem('paddyStory')")
-  await load('level=silverdale_1&cut=w1c1,w1u01,w1c3,w1u02,w1b1,w1a1,w1u03,w1x');await pg.wait_for_function('CUT.playing');await pg.wait_for_timeout(1200)
+  await load('level=silverdale_1&cut=w1c1,w1u01,w1c2,w1c3,w1c4,w1u02,w1c6,w1b1,w1a1,w1u03,w1x');await pg.wait_for_function('CUT.playing');await pg.wait_for_timeout(1200)
   shots=[];i=0
   while True:
    s=await E("CUT.state()")
@@ -30,8 +32,8 @@ async def main():
    fn=OUT+f"1024x340_{i+1:02d}_{s['scene']}_{s['panel']}.png";await pg.screenshot(path=fn);shots.append(fn)
    await pg.touchscreen.tap(400,170);await pg.wait_for_timeout(900);i+=1
    if i>20:break
-  check('tap advances through all 10 panels in play order, then closes',i==10 and 'preview:done' in await E("CUT.log"),[i,shots[-1:]])
-  r=await E("JSON.parse(localStorage.getItem('paddyStory')).story");check('scenes seen + unlock flags saved (Kitty gloves, Ninja)','kitty_boxing_gloves' in r['flags'] and 'form_ninja' in r['flags'] and 'kitty_champ_sweatband' in r['flags'] and len(r['seen'])==8,r)
+  check('tap advances through all 13 panels in play order, then closes',i==13 and 'preview:done' in await E("CUT.log"),[i,shots[-1:]])
+  r=await E("JSON.parse(localStorage.getItem('paddyStory')).story");check('scenes seen + unlock flags saved (Kitty gloves, Ninja)','kitty_boxing_gloves' in r['flags'] and 'form_ninja' in r['flags'] and 'kitty_champ_sweatband' in r['flags'] and len(r['seen'])==11,r)
   # keyboard + skip
   await load('level=silverdale_1&cut=w1c3,w1b1');await pg.wait_for_function('CUT.playing');await pg.wait_for_timeout(500)
   await pg.keyboard.press('Space');await pg.wait_for_timeout(500);s=await E("CUT.state()");check('Space = next panel',s['idx']==1,s)
@@ -42,7 +44,8 @@ async def main():
   # other sizes
   for (w,h) in [(960,540),(390,844),(1024,340)]:
    await pg.set_viewport_size({'width':w,'height':h});await load('level=silverdale_1&cut=w1u02');await pg.wait_for_timeout(1300);fn=OUT+f'{w}x{h}_w1u02_card.png';await pg.screenshot(path=fn);shots.append(fn)
-  await load('level=silverdale_1&cut=w1hop14');await pg.wait_for_timeout(2600);fn=OUT+'1024x340_maphop_1-4.png';await pg.screenshot(path=fn);shots.append(fn)
+  for k in ('w1c2','w1c4','w1c6'):
+   await load('level=silverdale_1&cut='+k);await pg.wait_for_timeout(2600);fn=OUT+f'1024x340_{k}_end.png';await pg.screenshot(path=fn);shots.append(fn)
   # level triggers: goal of 1-1 plays W1-C1 then W1-U01, the level is paused and keys don't move Paddy; mission fires after
   await load('level=silverdale_1')
   await E("(()=>{LV.calm();LV.level.mission='w2-stray';const g=LV.level.goal;LV.teleport(g.x+1,g.y)})()");await pg.wait_for_timeout(700)
