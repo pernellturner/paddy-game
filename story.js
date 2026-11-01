@@ -45,7 +45,7 @@ body.touchy:not(.standalone) #stip{display:block}
 @media (max-height:460px){#lbl{display:none!important}}`;
 document.head.appendChild(css);
 const root=document.createElement('div');root.id='story';
-root.innerHTML='<canvas></canvas><div id="sbtns"><div class="row"><button class="sbtn big" id="splay">▶ PLAY</button><button class="sbtn big prac" id="sprac">🥋 PRACTICE</button><button class="sbtn big w1" id="sw1">🌳 PLAY WORLD 1</button></div><div class="row"><button class="sbtn alt" id="sstory">📖 STORY</button><button class="sbtn alt" id="scombo">☰ COMBO LIST</button><button class="sbtn alt" id="ssett">⚙ SETTINGS</button></div><div id="stip">📱 Tip: in Safari tap Share ⬆ → <b>Add to Home Screen</b> to play fullscreen (no Safari bars)</div></div><button id="sskip">SKIP ⏭</button><div id="sprobe"></div>';
+root.innerHTML='<canvas></canvas><div id="sbtns"><div class="row"><button class="sbtn big" id="sw1">▶ PLAY</button><button class="sbtn big prac" id="sprac">🥋 PRACTICE</button></div><div class="row"><button class="sbtn alt" id="sstory">📖 STORY</button><button class="sbtn alt" id="splay" style="background:linear-gradient(#b48cff,#6a3fd0);box-shadow:0 .18em 0 #3d1f8a,0 .4em .9em #0006;text-shadow:0 2px 0 #3d1f8a">🛠 FREE PLAY</button><button class="sbtn alt" id="scombo">☰ COMBO LIST</button><button class="sbtn alt" id="ssett">⚙ SETTINGS</button></div><div id="stip">📱 Tip: in Safari tap Share ⬆ → <b>Add to Home Screen</b> to play fullscreen (no Safari bars)</div></div><button id="sskip">SKIP ⏭</button><div id="sprobe"></div>';
 document.body.appendChild(root);
 const sc=root.querySelector('canvas'),g=sc.getContext('2d');
 let W=0,H=0,DPR=1,logoC=null,SA={t:0,r:0,b:0,l:0},L=null,FC={};
@@ -129,22 +129,25 @@ function close(){const d=S.done;S.mode='off';root.classList.remove('intro');paus
 S.cutscene=(name,done)=>{if(CUTS[name])play(CUTS[name],done)};S.intro=done=>play(INTRO,done,'WORLD 1 · SILVERDALE');S.title=startTitle;
 function toGame(){try{localStorage.setItem('paddyIntroSeen','1')}catch(e){}
  setTimeout(()=>{try{if(window.ENW)ENW.start(0);else if(typeof card==='function')card('🌏 WORLD 1 · SILVERDALE','Find your way home, Paddy!','#ffd84a')}catch(e){}},300)}
-document.getElementById('splay').addEventListener('click',e=>{e.preventDefault();let seen=0;try{seen=localStorage.getItem('paddyIntroSeen')}catch(_){}if(!seen)S.intro(toGame);else{close();toGame()}});
+// v45: 🛠 FREE PLAY = the old free-play arena (DEV TEST: every form, see dev44.js), straight in, no story
+document.getElementById('splay').addEventListener('click',e=>{e.preventDefault();close();toGame()});
 // 🌳 PLAY WORLD 1: the Silverdale levels (level.html, 1-1 .. 1-7) with the W1 cutscenes; resumes at the next level not cleared yet (story save 'paddyStory'.world1)
 // story mode has its OWN save ('paddyStory'): no save yet, or World 1 complete -> NEW GAME from 1-1 with every form locked; else resume
 function w1Start(){let d=null;try{d=JSON.parse(localStorage.getItem('paddyStory')||'null')}catch(_){}const w=d&&d.world1;return (w&&w.next&&/^silverdale_[1-7]$/.test(w.next))?w.next:'silverdale_1&new=1'}
-document.getElementById('sw1').addEventListener('click',e=>{e.preventDefault();location.href='level.html?level='+w1Start()+'&from=title'});
+// v45: ▶ PLAY IS the story: a NEW GAME plays the intro story (SKIP ⏭ any time), then World 1-1; a saved game resumes at the next level
+function goW1(){location.href='level.html?level='+w1Start()+'&from=title'}
+document.getElementById('sw1').addEventListener('click',e=>{e.preventDefault();if(/new/.test(w1Start())){try{localStorage.setItem('paddyIntroSeen','1')}catch(_){}S.intro(goW1)}else goW1()});
 window.W1START=w1Start;
 {const rb=document.getElementById('rotw1');if(rb)rb.addEventListener('click',e=>{e.preventDefault();location.href='level.html?level='+w1Start()+'&from=title'})}
 document.getElementById('sprac').addEventListener('click',e=>{e.preventDefault();close();if(window.TRAIN)TRAIN.open()});
-document.getElementById('sstory').addEventListener('click',e=>{e.preventDefault();S.intro(toGame)});
+document.getElementById('sstory').addEventListener('click',e=>{e.preventDefault();S.intro(goW1)});   // v45: the story leads into World 1, not free play
 document.getElementById('ssett').addEventListener('click',e=>{e.preventDefault();if(window.SETTINGS)SETTINGS.open()});
 (function(){const st=!!(navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches));document.body.classList.toggle('standalone',st);if(('ontouchstart' in window)||navigator.maxTouchPoints>0)document.body.classList.add('touchy')})();
 document.getElementById('scombo').addEventListener('click',e=>{e.preventDefault();if(typeof ov==='function')ov(true);else document.body.classList.add('ov')});
 document.getElementById('sskip').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(S.mode==='seq'||S.mode==='end')close()});
 sc.addEventListener('pointerdown',e=>{e.preventDefault();if(S.mode==='seq')next();else if(S.mode==='end')close()});
 addEventListener('keydown',e=>{if(S.mode==='off'||document.body.classList.contains('ov'))return;
- if(S.mode==='title'){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();document.getElementById('splay').click()}return}
+ if(S.mode==='title'){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();document.getElementById('sw1').click()}return}
  e.preventDefault();e.stopImmediatePropagation();if(e.key==='Escape')close();else if(S.mode==='end')close();else next()},true);
 // ---- title layout: Paddy's whole face stays visible; logo + buttons go in the clear sky/sea space beside (or above/below) him ----
 const PAD={x0:.59,x1:.94,y0:.16,y1:.76}; // Paddy's box inside key_art (fractions)

@@ -1,4 +1,4 @@
-# Story save (World 1 levels): a NEW GAME from the title's 🌳 PLAY WORLD 1 starts with EVERY form locked (plain Paddy), in its own save
+# Story save (World 1 levels): a NEW GAME from the title's ▶ PLAY (v45: intro story, then 1-1; was 🌳 PLAY WORLD 1) starts with EVERY form locked (plain Paddy), in its own save
 # 'paddyStory'. Forms unlock only through that save's EXP, mission gifts and boss rewards; old / free-play / practice unlocks
 # ('paddyLegends', ?legends tryAll) are never read and never written. Free play keeps working as before.
 import asyncio,sys,time,json
@@ -16,7 +16,11 @@ async def main():
   await pg.goto(URL+'index.html?story&v='+str(time.time()));await E(f"localStorage.clear();localStorage.setItem('paddyLegends',JSON.stringify({json.dumps(OLD)}))")
   await pg.goto(URL+'index.html?story&v='+str(time.time()));await pg.wait_for_selector('#sw1',state='visible',timeout=30000);await pg.wait_for_timeout(1500)
   old=await E("localStorage.getItem('paddyLegends')")
-  await pg.locator('#sw1').tap(force=True);await pg.wait_for_function('window.LV&&LV.ready',timeout=30000);await pg.wait_for_timeout(800)
+  check('title: ▶ PLAY is the story button (no separate PLAY WORLD 1), 🛠 FREE PLAY kept',(await E("[document.getElementById('sw1').textContent,document.getElementById('splay').textContent]"))==['▶ PLAY','🛠 FREE PLAY'])
+  await pg.locator('#sw1').tap(force=True);await pg.wait_for_timeout(1200)
+  check('v45: a NEW GAME from ▶ PLAY plays the intro story first',await E("STORY.mode")in('seq','end'),await E("STORY.mode"))
+  await pg.locator('#sskip').tap(force=True)
+  await pg.wait_for_function('window.LV&&LV.ready',timeout=30000);await pg.wait_for_timeout(800)
   st=await E("JSON.parse(localStorage.getItem('paddyStory'))")
   check('NEW GAME opens 1-1 (old free-play save has every form + World 1 progress)',(await E("LV.level.id"))=='silverdale_1' and 'newgame' in await E("LV.log"),pg.url)
   check('new story save: every form locked, 0 EXP, no missions / rewards / paws carried over',st['forms']==[] and st['exp']==0 and st['missions']=={} and st['baseGot']==[] and st['paws']=={} and st['world1']['cleared']==[],st)
@@ -33,7 +37,7 @@ async def main():
   await pg.goto(URL+'index.html?story&v='+str(time.time()));await pg.wait_for_selector('#sw1',state='visible',timeout=30000);await pg.wait_for_timeout(800)
   await pg.locator('#sw1').tap(force=True);await pg.wait_for_function('window.LV&&LV.ready',timeout=30000);await pg.wait_for_timeout(600)
   r=await E("[LV.level.id,MISSION.forms(),LV.log.includes('newgame'),JSON.parse(localStorage.getItem('paddyStory')).world1.cleared]")
-  check('PLAY WORLD 1 again resumes at 1-2 with the earned forms (no reset)',r[0]=='silverdale_2' and r[1]==['ninja','lp','samurai'] and not r[2] and r[3]==['silverdale_1'],r)
+  check('▶ PLAY again resumes (straight in, no intro) at 1-2 with the earned forms (no reset)',r[0]=='silverdale_2' and r[1]==['ninja','lp','samurai'] and not r[2] and r[3]==['silverdale_1'],r)
   # free play still has its own unlocks
   await pg.goto(URL+'index.html?nostory&v='+str(time.time()));await pg.wait_for_function('typeof started!=="undefined"&&started',timeout=30000);await pg.wait_for_timeout(600)
   r=await E("[UNL.d.got.length,UNL.has(18),UNL.d.exp]");check('free play keeps its own unlocks as before',r==[18,True,99999],r)
