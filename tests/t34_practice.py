@@ -93,7 +93,7 @@ async def main():
   await E(f"p.x={D0}.x-110;p.face=1;hitDummy({D0},'uppercut',1)");await pg.wait_for_timeout(260);await pg.screenshot(path=OUT+'launch_air.png')
   r=await E(f"[{D0}.ps,Math.round(GROUND-{D0}.y),PRACTICE.s.launches]");check('launcher sends it flying (LAUNCH! counted)',r[0]=='air' and r[1]>60 and r[2]==1,r)
   for i in range(3):   # Paddy jumps up beside it and swipes as it comes down
-   await pg.wait_for_function(f"{D0}.vy>0",timeout=3000,polling='raf')
+   await pg.wait_for_timeout(300)   # a timed juggle: one swipe every ~0.3-0.5 s (the 2 s air cap ends slow apex-to-apex juggles)
    await E(f"p.x={D0}.x-70;p.face=1;p.y=Math.min(GROUND,{D0}.y+30);p.ground=false;p.vy=-150;p.state='normal';hitDummy({D0},'airswipe',1)");await pg.wait_for_timeout(120)
   await pg.screenshot(path=OUT+'launch_juggle.png');r=await E("PRACTICE.s.jug");check('air hits count as JUGGLE ×n',r>=3,r)
   await pg.wait_for_function(f"{D0}.ps==='air'&&{D0}.k==='sd_launched_fall'",timeout=5000,polling='raf');await pg.screenshot(path=OUT+'launch_fall.png')
