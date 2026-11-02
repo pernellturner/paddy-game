@@ -64,7 +64,7 @@ function init(lv){L=lv;W=L.width;H=L.height;S=L.layers.solid.slice();used.clear(
 
  climbMeta=[];for(const t of L.trees||[])climbMeta.push({x:t.trunk.x,top:t.trunk.top,base:t.trunk.base,skin:'tree',name:t.name});
  for(const c of L.climbables||[])climbMeta.push({x:c.x,top:c.top,base:c.base,skin:/drain|pipe/i.test(c.name)?'pipe':/pole|mast|post|light/i.test(c.name)?'pole':'tree',name:c.name,arms:c.arms});
- initBoss();
+ initBoss();artLoad();
  cam.x=Math.max(0,p.x-VW*.35);LV.ready=true;LV.id=L.id;LV.level=L;msg((lab()+' · ')+L.name,'#ffe08a',true)}
 function carCol(e){const C=['#d9483b','#3b7dd9','#e8c23a','#5aa95a','#9a5ad9'];let h=0;for(const ch of e.name||'')h=(h*31+ch.charCodeAt(0))>>>0;return e.type==='bus'?'#f2f2f2':C[h%C.length]}
 const FLY=new Set(['seagull','magpie','wasp','gull_bandit','magpie_boss']);
@@ -87,7 +87,7 @@ function boxHits(x,y,w,h,test){const c0=Math.floor((x-w/2)/TS),c1=Math.floor((x+
  for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++)if(test(c,r))return{c,r};return null}
 function moveX(dt){let nx=p.x+p.vx*dt;if(arena&&arena.state==='lock'){nx=Math.max(arena.x0*TS+BW/2,Math.min((arena.x1+1)*TS-BW/2,nx))}
  nx=Math.max(BW/2,Math.min(W*TS-BW/2,nx));
- const h=boxHits(nx,p.y-2,BW,BH-4,solidAt);if(h){if((h.c+.5)*TS>p.x)nx=h.c*TS-BW/2-.01;else nx=(h.c+1)*TS+BW/2+.01;p.wallDir=Math.sign(p.vx);p.vx=0}else p.wallDir=0;p.x=nx}   // v44 audit: push out on the side the tile is on (not by vx), so a shove can't embed him
+ const h=boxHits(nx,p.y-2,BW,BH-4,solidAt);if(h){if((h.c+.5)*TS>p.x)nx=h.c*TS-BW/2-.01;else nx=(h.c+1)*TS+BW/2+.01;p.wallDir=Math.sign(p.vx);p.vx=0}else{const sd=Math.sign(p.vx);p.wallDir=sd&&!p.ground&&boxHits(nx+sd*3,p.y-2,BW,BH-4,solidAt)?sd:0}p.x=nx}   // v46: pressed against a wall counts every frame (wall jump no longer flickers)   // v44 audit: push out on the side the tile is on (not by vx), so a shove can't embed him
 function moveY(dt){const oy=p.y;let ny=p.y+p.vy*dt;p.ground=false;
  if(p.vy>=0){const c0=Math.floor((p.x-BW/2)/TS),c1=Math.floor((p.x+BW/2-1)/TS);   // v44 audit: feet span his full width (x-36..x+35), same as the body
   for(let r=Math.floor(oy/TS);r<=Math.floor(ny/TS);r++){let hit=false,ch='';for(let c=c0;c<=c1;c++){const t=tile(c,r);if(BLOCK.has(t)||t==='^'||(ONE.has(t)&&p.drop<=0&&oy<=r*TS+1)){hit=true;if(ch!=='J')ch=t}}   // a pad under any part of his feet counts
@@ -108,7 +108,7 @@ function trunkSpan(c){let top=H,base=-1;for(let r=0;r<H;r++)if(tile(c,r)==='T'){
 // v44 audit: after a step-off / pull-up places him, slide him clear of a block his body overlaps (trunk-base blocks, roof edges)
 function unembed(){for(let i=0;i<2;i++){const h=boxHits(p.x,p.y-2,BW,BH-4,solidAt);if(!h)return true;p.x=(h.c+.5)*TS>p.x?h.c*TS-BW/2-.01:(h.c+1)*TS+BW/2+.01}return !boxHits(p.x,p.y-2,BW,BH-4,solidAt)}
 function stepOff(dir){// a branch / roof / fence next to the trunk near the feet
- const c=p.climbX;for(let dc=1;dc<=2;dc++){const cc=c+dir*dc;for(let dr=-2;dr<=2;dr++){const r=Math.floor(p.y/TS)+dr;const t=tile(cc,r);if((BLOCK.has(t)||ONE.has(t))&&!solidAt(cc,r-1)&&!solidAt(cc,r-2)){const ox=p.x,oy=p.y;p.x=(cc+.5)*TS;p.y=r*TS;if(!unembed()){p.x=ox;p.y=oy;continue}p.state='normal';p.vx=0;p.vy=0;p.ground=true;p.face=dir;LV.log.push('stepoff');return true}}}return false}
+ const c=p.climbX;for(let dc=1;dc<=2;dc++){const cc=c+dir*dc;for(const dr of [-2,-1,0,1,2,3,4]){const r=Math.floor(p.y/TS)+dr;const t=tile(cc,r);if((BLOCK.has(t)||ONE.has(t))&&!solidAt(cc,r-1)&&!solidAt(cc,r-2)){const ox=p.x,oy=p.y;p.x=(cc+.5)*TS;p.y=r*TS;if(!unembed()){p.x=ox;p.y=oy;continue}p.state='normal';p.vx=0;p.vy=0;p.ground=true;p.face=dir;LV.log.push('stepoff');return true}}}return false}
 function tryLedge(){if(p.ground||p.vy<-200)return false;const dir=K.right?1:K.left?-1:0;if(!dir)return false;
  const c=Math.floor((p.x+dir*(BW/2+6))/TS);const top=p.y-BH;for(let r=Math.floor((top-10)/TS);r<=Math.floor((top+BH*.45)/TS);r++){
   if(tile(c,r)==='L'&&!solidAt(c,r-1)&&!solidAt(c,r-2)&&!solidAt(c,r-3)){p.state='ledge';p.t=0;p.face=dir;p.hang={c,r};p.vx=p.vy=0;p.x=c*TS+(dir>0?-BW/2:TS+BW/2);p.y=r*TS+BH*.55;LV.log.push('ledge');return true}}return false}
@@ -220,9 +220,9 @@ function updFlyer(e,dt){const sw=e.sw||(e.sw={st:'cruise',t:1.2+Math.random()*1.
 function hitEnemy(e,dir,d){if(!e.alive)return;d=d||{};e.hp-=(d.dmg||1);e.hurt=.25+(d.launch?.35:0);e.vx=dir*(d.kb||240);e.y-=4;if(e.fly){e.sw={st:'stun',t:.7};e.vy=0}else if(d.launch){e.vy=d.launch}if(d.say2)fx.push({k:'say',t:d.say2,c:d.c||'#fff',x:e.x,y:e.y-e.h-20,l:.7});fx.push({k:'pow',x:e.x,y:e.y-e.h/2,l:.35});exp(1);if(e.hp<=0){e.alive=false;e.ko=1;p.coins+=1;LV.log.push('ko:'+e.id);exp(25)}}
 function updEnemies(dt){for(const e of enemies){e.t+=dt;if(!e.alive){e.ko=Math.max(0,e.ko-dt);continue}e.hurt=Math.max(0,e.hurt-dt);
   if(e.fly)updFlyer(e,dt);
-  else{if(e.hurt<=0){const sp=e.arenaSpd||60;e.vx=Math.sign(e.vx||1)*sp}e.vy=Math.min(e.vy+G*dt,1400);let nx=e.x+e.vx*dt;const c=Math.floor((nx+Math.sign(e.vx)*e.w/2)/TS),r=Math.floor((e.y-10)/TS);
+  else{if(e.hurt<=0){e.wb=0;const sp=e.arenaSpd||60;if(e.inArena&&Math.abs(p.x-e.x)>TS*1.6&&((e.t*7+e.x)%3)>.6)e.vx=Math.sign(p.x-e.x)*sp;else e.vx=Math.sign(e.vx||1)*sp}e.vy=Math.min(e.vy+G*dt,1400);let nx=e.x+e.vx*dt;const c=Math.floor((nx+Math.sign(e.vx)*e.w/2)/TS),r=Math.floor((e.y-10)/TS);
    const fl=surfaceRow(Math.floor(nx/TS),Math.floor((e.y-4)/TS));
-   if(solidAt(c,r)||(e.hurt<=0&&(fl*TS>e.y+TS*.5))||(!e.inArena&&(nx<e.x0||nx>e.x1))){e.vx*=-1;nx=e.x}if(e.inArena&&arena)nx=Math.max(arena.x0*TS+30,Math.min((arena.x1+1)*TS-30,nx));e.x=nx;
+   if(solidAt(c,r)||(e.hurt<=0&&(fl*TS>e.y+TS*.5))||(!e.inArena&&(nx<e.x0||nx>e.x1))){e.vx*=-1;nx=e.x}if(e.inArena&&arena)nx=arenaWall(e,nx);e.x=nx;
    let ny=e.y+e.vy*dt;const fr=surfaceRow(Math.floor(e.x/TS),Math.floor((e.y-4)/TS));if(ny>=fr*TS){ny=fr*TS;e.vy=0}e.y=ny}
   e.face=e.vx<0?-1:1;
   // touch: stomp from above, else a small bump
@@ -234,10 +234,23 @@ function updKids(dt){for(const k of kids){k.x+=k.dir*k.sp*dt;if(k.x>k.x1){k.x=k.
   if(Math.abs(p.x-k.x)>110||p.ground&&Math.abs(p.x-k.x)>60)k.hopped=false}}
 function updCars(dt){for(const v of cars){v.x+=v.dir*v.sp*dt;if(v.x+v.w>v.x1){v.x=v.x1-v.w;v.dir=-1}if(v.x<v.x0){v.x=v.x0;v.dir=1}
   const cx=v.x+v.w/2;if(p.inv<=0&&Math.abs(p.x-cx)<(v.w+BW)/2-8&&p.y>v.y-v.h+6&&p.y-BH<v.y){const d=Math.sign(p.x-cx)||-v.dir;p.vx=d*360;p.vy=-430;p.ground=false;p.inv=.8;p.state='hurt';p.t=0;msg('BEEP BEEP!','#ffe08a');LV.log.push('bump:'+v.kind)}}}   // knock-back only: no damage
+// v46: arenas[].waves = [{enemies:[{id,from:'left'|'right'|'sky'}]}...]: wave 1 on lock, the next one waveGap s after a wave is cleared, CLEAR! after the last
+function spawnWave(a,w,skip){const ids=(skip||[]).slice();let nl=0,nr=0,ns=0;for(const q of w.enemies||[]){const id=q.id||q,fr=q.from||'right';const k=ids.indexOf(id);if(k>=0){ids.splice(k,1);continue}
+  let x,y=(a.y+1)*TS;const lo=a.x0*TS+30,hi=(a.x1+1)*TS-30;
+  if(fr==='sky')x=Math.max(lo+TS,Math.min(hi-TS,p.x+((ns++)%2?1:-1)*TS*(3+ns)));else if(fr==='left')x=Math.max(lo,Math.min(hi,cam.x-50-(nl++)*70));else x=Math.min(hi,Math.max(lo,cam.x+VW+50+(nr++)*70));
+  const e=mkEnemy(id,x,y,{});if(fr==='sky'&&e.fly){e.y=cam.y-70;e.y0=null}e.inArena=true;e.arenaSpd=90;e.x0=a.x0*TS;e.x1=(a.x1+1)*TS;e.vx=Math.sign(p.x-x||1)*Math.abs(e.vx||90);e.from=fr;enemies.push(e);a.list.push(e)}}
+function arenaWall(e,nx){const lo=arena.x0*TS+30,hi=(arena.x1+1)*TS-30;if(nx>=lo&&nx<=hi)return nx;const side=nx<lo?-1:1;nx=Math.max(lo,Math.min(hi,nx));
+ if(arena.wallBounce&&e.hurt>0&&Math.abs(e.vx)>=180&&!e.wb){e.wb=1;e.vx=-side*Math.max(260,Math.abs(e.vx)*.7);e.vy=Math.min(e.vy||0,-640);e.hurt=Math.max(e.hurt,.55);shake=Math.max(shake,6);
+  fx.push({k:'say',t:'WALL BOUNCE!',c:'#7fffd4',x:nx,y:e.y-e.h-20,l:.7});fx.push({k:'pow',x:nx+side*20,y:e.y-e.h/2,l:.35});LV.log.push('wallbounce:'+e.id)}
+ else if(e.hurt<=0)e.vx=-side*Math.abs(e.vx||60);return nx}
 function updArenas(){for(const a of arenas){if(a.state==='idle'&&p.x>a.x0*TS+TS&&p.x<(a.x1)*TS&&!arena){a.state='lock';arena=a;a.list=[];msg(a.name.toUpperCase()+'!','#ff9a5a',true);LV.log.push('arena:'+a.name);
-   const n=a.want.length,sl=a.slots.concat(a.want.map((id,i)=>({id,x:(a.x0+1.5+(a.x1-a.x0-2)*(i+.5)/Math.max(1,n))*TS,y:(a.y+1)*TS})));   // v44 audit: on the arena floor, not 300px up
-   for(const q of sl){if(Math.abs(q.x-p.x)<TS*2)q.x=Math.min((a.x1-.5)*TS,p.x+TS*3);const e=mkEnemy(q.id,q.x,q.y,q.e||{});e.inArena=true;e.arenaSpd=90;e.x0=a.x0*TS;e.x1=(a.x1+1)*TS;enemies.push(e);a.list.push(e)}}
-  if(a.state==='lock'&&a.list.every(e=>!e.alive)){a.state='done';arena=null;msg('CLEAR!','#7fffd4',true);LV.log.push('cleared:'+a.name)}}}
+   const WV=a.waves&&a.waves.length?a.waves:null;
+   const n=a.want.length,sl=a.slots.concat(WV?[]:a.want.map((id,i)=>({id,x:(a.x0+1.5+(a.x1-a.x0-2)*(i+.5)/Math.max(1,n))*TS,y:(a.y+1)*TS})));   // v44 audit: on the arena floor, not 300px up
+   for(const q of sl){if(Math.abs(q.x-p.x)<TS*2)q.x=Math.min((a.x1-.5)*TS,p.x+TS*3);const e=mkEnemy(q.id,q.x,q.y,q.e||{});e.inArena=true;e.arenaSpd=90;e.x0=a.x0*TS;e.x1=(a.x1+1)*TS;enemies.push(e);a.list.push(e)}
+   if(WV){a.wi=0;a.gapT=0;spawnWave(a,WV[0],a.slots.map(q=>q.id));msg('WAVE 1/'+WV.length,'#ffb870');LV.log.push('wave:'+a.name+':1')}}
+  if(a.state==='lock'&&a.list.every(e=>!e.alive)){const WV=a.waves&&a.waves.length?a.waves:null;
+   if(WV&&a.wi<WV.length-1){if(!a.gapT)a.gapT=LV.t+(a.waveGap!=null?a.waveGap:.8);else if(LV.t>=a.gapT){a.gapT=0;a.wi++;spawnWave(a,WV[a.wi]);msg('WAVE '+(a.wi+1)+'/'+WV.length+(a.wi===WV.length-1?' · LAST!':''),'#ffb870',true);LV.log.push('wave:'+a.name+':'+(a.wi+1))}}
+   else{a.state='done';arena=null;msg('CLEAR!','#7fffd4',true);LV.log.push('cleared:'+a.name)}}}}
 function updEnts(){for(const e of ents){if(e.got)continue;e.ph+=.05;e.y=e.base+Math.sin(e.ph)*4;if(Math.abs(e.x-p.x)<50&&e.y>p.y-BH-10&&e.y<p.y+10){e.got=true;
   if(e.type==='coin')p.coins++;else if(e.type==='fish'){p.hp=Math.min(p.max,p.hp+1);p.fish++;msg('FISH! +1 ♥','#9fdcff')}else if(e.type==='yarn'){p.yarn++;msg('YARN BALL '+p.yarn+'/4','#ff9ad5')}else if(e.type==='powerup'){p.power=8;msg('ZOOMIES POWER!','#7fffd4')}
   else if(e.type==='secret_paw'){const r=window.MISSION?MISSION.pawCollect(e.id):{count:'?',of:10,world:'?'};LV.log.push('paw:'+e.id);msg('🐾 SECRET PAW '+r.count+'/'+r.of+' (World '+r.world+')','#ffe14d',true);if(r.set){msg('FULL SET OF SECRET PAWS!','#ffe14d',true);LV.log.push('pawset:'+r.world)}}
@@ -402,7 +415,54 @@ function midStrip(){const k=L.id;if(midK===k&&midC)return midC;const th=L.theme|
  x.globalCompositeOperation='source-atop';x.fillStyle='rgba(205,228,242,.28)';x.fillRect(0,0,w,VH);x.globalCompositeOperation='source-over';
  const CW=2048,ch=[];for(let ox=0;ox<w;ox+=CW){const cc=document.createElement('canvas');cc.width=Math.min(CW,w-ox);cc.height=VH;cc.getContext('2d').drawImage(c,ox,0,cc.width,VH,0,0,cc.width,VH);ch.push(cc)}c.width=c.height=1;
  midC=ch;midK=k;return ch}
-function sky(){const th=L.theme||'';const g=ctx.createLinearGradient(0,0,0,VH);if(/night/.test(th)){g.addColorStop(0,'#141a3a');g.addColorStop(1,'#3a3260')}else{g.addColorStop(0,'#7fc4f0');g.addColorStop(1,'#e6f3ff')}ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
+// ---------- v46: painted level art (L.art.manifest, e.g. levels/art/silverdale_1/): sky / far / mid parallax, lanterns over the brawl zones,
+// textured + edge-shaded tiles, props (trees, drainpipes, lamps + glow, flax, bollards, trolleys), ground haze, near layer, vignette.
+// Loaded in the background; until it is ready (or if a file is missing) the level keeps the flat World 1 drawing.
+const ART={k:'',ready:false},ART_DECO=new Set(['l','n','o','t','k','h','d','P','M','R','w']);
+const artOn=()=>!!(ART.ready&&L&&L.art&&ART.k===L.art.manifest);
+function artImg(u){return new Promise(res=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>{if(!i._p){i._p=1;i.src=u+'.png?v=46'}else res(null)};i.src=u+'.webp?v=46'})}
+function artLoad(){const a=L.art;if(!a||!a.manifest){return}if(ART.k===a.manifest&&ART.ready)return;const k=ART.k=a.manifest,base=k.replace(/[^/]*$/,'');ART.ready=false;
+ fetch(k+'?v=46').then(r=>{if(!r.ok)throw new Error(k+' '+r.status);return r.json()}).then(M=>{const want={sky:'sky',far:'far',mid:'mid',near:'near',tiles:'tiles_atlas',props:'props_atlas',vig:'light_vignette',glow:'light_glow'};
+  return Promise.all(Object.entries(want).map(([n,f])=>artImg(base+f).then(i=>[n,i]))).then(rs=>{if(ART.k!==k)return;const I=Object.fromEntries(rs);if(!I.sky||!I.far||!I.mid||!I.tiles){console.warn('level art incomplete: flat drawing');return}
+   const cvs=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));return c};
+   const sc=(i,h)=>{if(!i)return null;const c=cvs(i.naturalWidth*h/i.naturalHeight,h);c.getContext('2d').drawImage(i,0,0,c.width,c.height);return c};   // pre-scaled once, never per frame
+   ART.sky=sc(I.sky,VH*1.15);ART.far=sc(I.far,520);ART.mid=sc(I.mid,300);ART.near=sc(I.near,VH*.42);ART.vig=I.vig?sc(I.vig,VH):null;ART.glowI=I.glow;
+   ART.tile={};for(const [n,t] of Object.entries(M.tiles||{})){const c=cvs(TS,TS),[ax,ay,aw,ah]=t.atlas;c.getContext('2d').drawImage(I.tiles,ax,ay,aw,ah,0,0,TS,TS);ART.tile[n]=c}
+   ART.prop={};if(I.props)for(const [n,q] of Object.entries(M.props||{})){const [ax,ay,aw,ah]=q.atlas,c=cvs(aw,ah);c.getContext('2d').drawImage(I.props,ax,ay,aw,ah,0,0,aw,ah);ART.prop[n]=c}
+   ART.lc=(M.lighting&&M.lighting.lanterns&&M.lighting.lanterns.colours)||['#ff8a3d','#ffd166','#3fd1a8','#ff5e7a'];ART.gr=a.groundRow||(H-2);ART.tc={};ART.pc={};ART.ready=true;LV.art=true;LV.log.push('art')})}).catch(e=>console.warn('level art',e))}
+function artScaled(n,w,h){const key=n+'|'+Math.round(w)+'|'+Math.round(h);let c=ART.pc[key];if(c)return c;const src=n==='glow'?ART.glowI:ART.prop[n];if(!src)return null;
+ c=document.createElement('canvas');c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));c.getContext('2d').drawImage(src,0,0,c.width,c.height);ART.pc[key]=c;return c}
+function artProp(n,cx,by,ht){const src=ART.prop[n];if(!src)return;const h=ht*TS,w=src.width*h/src.height,c=artScaled(n,w,h);if(c&&cx+w/2>-10&&cx-w/2<VW+10)ctx.drawImage(c,Math.round(cx-w/2),Math.round(by-h))}
+function artGlow(cx,cy,sz){const c=artScaled('glow',sz,sz);if(c)ctx.drawImage(c,Math.round(cx-sz/2),Math.round(cy-sz/2))}
+function artTileX(c,ox,y){if(!c)return;const w=c.width;for(let x=-(((ox%w)+w)%w);x<VW;x+=w)ctx.drawImage(c,Math.round(x),Math.round(y))}
+const artSol=(c,r)=>c>=0&&c<W&&(r>=H||(r>=0&&(S[r][c]==='#'||S[r][c]==='L')));
+// textured tile + the edge-shading pass (dusk tint, lit top lip, dark exposed sides, AO at a wall's foot, darker ground), cached per variant
+function artTile(c,r,t,d){const g=ART.gr,top=!artSol(c,r-1),le=!artSol(c-1,r),re=!artSol(c+1,r),ao=r===g-1,gd=r>=g?r-g+1:0,h=hsh(c*7919+r*104729)%7;
+ let kind={P:'precast',t:'precast',M:top?'mall_parapet_top':'mall_wall',w:top?'roof_iron':'mall_wall',R:'roof_iron'}[d]||(top?'ground_top':'ground_fill');
+ const key=kind+(top?1:0)+(le?1:0)+(re?1:0)+(ao?1:0)+gd+'|'+h+t;let cv0=ART.tc[key];if(cv0)return cv0;
+ cv0=document.createElement('canvas');cv0.width=cv0.height=TS;const x=cv0.getContext('2d');if(ART.tile[kind])x.drawImage(ART.tile[kind],0,0);else{x.fillStyle='#7a756c';x.fillRect(0,0,TS,TS)}
+ x.fillStyle=`rgba(40,25,90,${((52+6*h)/255).toFixed(3)})`;x.fillRect(0,0,TS,TS);
+ if(top){x.fillStyle='rgba(255,205,150,.59)';x.fillRect(0,0,TS,4);x.fillStyle='rgba(255,205,150,.2)';x.fillRect(0,4,TS,3)}
+ for(const [ex,x0,x1] of [[le,0,12],[re,TS,TS-12]])if(ex){const gg=x.createLinearGradient(x0,0,x1,0);gg.addColorStop(0,'rgba(20,10,40,.47)');gg.addColorStop(1,'rgba(20,10,40,0)');x.fillStyle=gg;x.fillRect(Math.min(x0,x1),0,12,TS)}
+ if(ao){const gg=x.createLinearGradient(0,TS,0,TS-16);gg.addColorStop(0,'rgba(15,8,30,.43)');gg.addColorStop(1,'rgba(15,8,30,0)');x.fillStyle=gg;x.fillRect(0,TS-16,TS,16)}
+ if(gd){x.fillStyle=`rgba(20,12,45,${Math.min(.9,(70+25*(gd-1))/255).toFixed(3)})`;x.fillRect(0,0,TS,TS)}
+ if(t==='L'&&ART.tile.ledge_lip)x.drawImage(ART.tile.ledge_lip,0,0);
+ ART.tc[key]=cv0;return cv0}
+function artBack(){const gy=ART.gr*TS-cam.y;ctx.fillStyle='#2a1c5a';ctx.fillRect(0,0,VW,VH);ctx.drawImage(ART.sky,Math.round(-cam.x*.012),Math.round(-cam.y*.02-40));
+ artTileX(ART.far,cam.x*.12,gy+60-ART.far.height);artTileX(ART.mid,cam.x*.45,gy+14-ART.mid.height);
+ // paper lanterns strung across each brawl zone (background only), sagging between 4 posts
+ for(const a of arenas){if(a.boss)continue;const x0=a.x0*TS-cam.x,x1=(a.x1+1)*TS-cam.x;if(x1<0||x0>VW)continue;const yb=gy-360,pt=i=>[x0+(x1-x0)*i/60,yb+38*(1-(2*((i/15)%1)-1)**2)];
+  ctx.strokeStyle='#1e1428';ctx.lineWidth=2;ctx.beginPath();for(let i=0;i<=60;i++){const [x,y]=pt(i);i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.stroke();
+  for(let i=3;i<60;i+=6){const [lx,ly]=pt(i);if(lx<-40||lx>VW+40)continue;artGlow(lx,ly+10,70);ctx.fillStyle=ART.lc[(i/6|0)%ART.lc.length];ctx.strokeStyle='#3c1e14';ctx.beginPath();ctx.ellipse(lx,ly+11,9,11,0,0,6.283);ctx.fill();ctx.stroke()}ctx.lineWidth=1}}
+function artProps(c0,c1){for(const tr of L.trees||[]){const t=tr.trunk;artProp(/ohutukawa/i.test(tr.name)?'pohutukawa':/puriri/i.test(tr.name)?'puriri':'cabbage_tree',(t.x+.5)*TS-cam.x,(t.base+1)*TS-cam.y+6,t.base-t.top+4)}
+ for(const m of climbMeta){if(m.skin==='tree'&&(L.trees||[]).some(tr=>tr.trunk.x===m.x))continue;const h=(m.base-m.top+1)*TS,c=artScaled('drainpipe',22,h),x=(m.x+.5)*TS-cam.x-11;if(c&&x>-30&&x<VW+30)ctx.drawImage(c,Math.round(x),Math.round(m.top*TS-cam.y))}
+ for(let r=0;r<H;r++)for(let c=Math.max(0,c0-4);c<=Math.min(W-1,c1+4);c++){const d=deco(c,r);if(d==='.')continue;const x=(c+.5)*TS-cam.x,by=(r+1)*TS-cam.y+4;
+  if(d==='l'){artProp('lamp_post',x,by,4.2);artGlow(x,by-4*TS+20,260)}else if(d==='n')artProp('flax',x,by,1.6);else if(d==='o')artProp('bollard',x,by,1.1);
+  else if(d==='t'&&deco(c,r-1)!=='t')artProp('trolley',x,r*TS-cam.y+4,1.3);
+  else if(d==='d'&&tile(c,r)!=='T'){const pc=artScaled('drainpipe',22,TS);if(pc)ctx.drawImage(pc,Math.round(x-11),Math.round(r*TS-cam.y))}}}
+function artFront(){const gy=ART.gr*TS-cam.y,g=ctx.createLinearGradient(0,gy-40,0,gy+20);g.addColorStop(0,'rgba(150,120,200,0)');g.addColorStop(.5,'rgba(150,120,200,.18)');g.addColorStop(1,'rgba(150,120,200,0)');ctx.fillStyle=g;ctx.fillRect(0,gy-40,VW,60);
+ if(ART.near){ctx.globalAlpha=.9;artTileX(ART.near,cam.x*1.25,VH-ART.near.height+30);ctx.globalAlpha=1}if(ART.vig)ctx.drawImage(ART.vig,0,0)}
+function sky(){if(artOn()){artBack();return}const th=L.theme||'';const g=ctx.createLinearGradient(0,0,0,VH);if(/night/.test(th)){g.addColorStop(0,'#141a3a');g.addColorStop(1,'#3a3260')}else{g.addColorStop(0,'#7fc4f0');g.addColorStop(1,'#e6f3ff')}ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
  const set=BGSET[th]||(isW1()?'suburb':null);
  if(set){const fc=farStrip(set);if(fc){const sw=fc.width,ox=-((cam.x*.1)%sw),oy=-cam.y*.08;for(let x=ox;x<VW;x+=sw)ctx.drawImage(fc,x,oy)}
   else{ctx.fillStyle='#9cc6a8';for(let i=-1;i<12;i++){const x=i*260-(cam.x*.2)%260;ctx.beginPath();ctx.ellipse(x,VH*.72,200,90,0,0,6.283);ctx.fill()}}
@@ -416,14 +476,15 @@ function sky(){const th=L.theme||'';const g=ctx.createLinearGradient(0,0,0,VH);i
  // far hills / bush backdrop (parallax)
  ctx.fillStyle=L.backdrop&&L.backdrop.bush?'#4f8a52':'#9cc6a8';for(let i=-1;i<12;i++){const x=i*260-(cam.x*.2)%260;ctx.beginPath();ctx.ellipse(x,VH*.72,200,90,0,0,6.283);ctx.fill()}
  if(L.backdrop)for(const s of L.backdrop.spires||[]){const x=s.x*TS-cam.x*.5;ctx.fillStyle='#e9e2d4';ctx.fillRect(x-14,VH*.38,28,140);ctx.beginPath();ctx.moveTo(x-18,VH*.38);ctx.lineTo(x,VH*.2);ctx.lineTo(x+18,VH*.38);ctx.fill()}}
-function drawTiles(){const c0=Math.max(0,Math.floor(cam.x/TS)),c1=Math.min(W-1,Math.ceil((cam.x+VW)/TS));
+function drawTiles(){const c0=Math.max(0,Math.floor(cam.x/TS)),c1=Math.min(W-1,Math.ceil((cam.x+VW)/TS)),art=artOn();
  // trunk / pipe / pole skins
- for(const m of climbMeta){const x=m.x*TS-cam.x,y0=m.top*TS-cam.y,y1=(m.base+1)*TS-cam.y;if(x<-200||x>VW+200)continue;
+ for(const m of art?[]:climbMeta){const x=m.x*TS-cam.x,y0=m.top*TS-cam.y,y1=(m.base+1)*TS-cam.y;if(x<-200||x>VW+200)continue;
   if(m.skin==='pipe'){ctx.fillStyle='#8d959c';ctx.fillRect(x+16,y0,16,y1-y0);ctx.fillStyle='#6d757c';for(let y=y0;y<y1;y+=48)ctx.fillRect(x+12,y,24,6)}
   else if(m.skin==='pole'){ctx.fillStyle='#5d666e';ctx.fillRect(x+19,y0,10,y1-y0);if(m.arms)for(const a of m.arms){ctx.fillRect(a.x0*TS-cam.x,a.y*TS-cam.y,(a.x1-a.x0+1)*TS,6)}}
   else{ctx.fillStyle='#7a5234';ctx.fillRect(x+10,y0,28,y1-y0);ctx.fillStyle='#5e3d25';for(let y=y0;y<y1;y+=22)ctx.fillRect(x+14,y,8,10)}}
  for(let r=0;r<H;r++)for(let c=c0;c<=c1;c++){const t=tile(c,r),d=deco(c,r),x=c*TS-cam.x,y=r*TS-cam.y;
-  if(d!=='.'&&!BLOCK.has(t)&&!ONE.has(t))drawDeco(d,x,y);
+  if(d!=='.'&&!BLOCK.has(t)&&!ONE.has(t)&&!(art&&ART_DECO.has(d)))drawDeco(d,x,y);
+  if(art&&(t==='#'||t==='L')){if(y>-TS&&y<VH)ctx.drawImage(artTile(c,r,t,d),x,y);continue}
   if(t==='J'){ctx.fillStyle='#2a2a2a';ctx.fillRect(x,y+10,TS,TS-10);ctx.fillStyle='#3fd18a';ctx.fillRect(x+2,y,TS-4,12);ctx.fillStyle='#ffe08a';ctx.fillRect(x+6,y+14,TS-12,4)}
   else if(t==='#'||t==='L'){const gr=!SKIN[d]&&GRASSY.test(L.theme||''),top0=r>0&&!BLOCK.has(tile(c,r-1));ctx.fillStyle=SKIN[d]||(gr?(top0?'#8a6a48':'#76583a'):(top0?'#8f8a80':'#7a756c'));ctx.fillRect(x,y,TS,TS);
    if(!SKIN[d]){const hv=hsh(c*131+r*7);ctx.fillStyle=gr?'rgba(60,40,20,.35)':'rgba(255,255,255,.1)';ctx.fillRect(x+hv%36+4,y+(hv>>6)%30+12,6,4);ctx.fillRect(x+(hv>>11)%30+8,y+(hv>>16)%20+20,4,4);ctx.fillStyle='rgba(0,0,0,.08)';ctx.fillRect(x,y+TS-6,TS,6)}if(d==='X'&&c%3===0){ctx.fillStyle='#e8e2c8';ctx.fillRect(x+10,y+TS/2-2,TS-20,4)}else if(d==='u'||d==='H'){ctx.fillStyle=d==='u'?'#5a7f9a':'#8a3a2e';ctx.fillRect(x+12,y+10,TS-24,TS-22)}
@@ -436,6 +497,7 @@ function drawTiles(){const c0=Math.max(0,Math.floor(cam.x/TS)),c1=Math.min(W-1,M
   else if(t==='F'){ctx.fillStyle='#d8c8a8';ctx.fillRect(x,y,TS,8);ctx.fillStyle='#bfae8c';for(let i=4;i<TS;i+=12)ctx.fillRect(x+i,y+8,6,TS*1.6)}
   else if(t==='^'){ctx.fillStyle='#e0703a';for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(x+i*12,y+TS);ctx.lineTo(x+i*12+6,y+TS-16);ctx.lineTo(x+i*12+12,y+TS);ctx.fill()}}
   else if(t==='~'){ctx.fillStyle='rgba(60,140,220,.7)';ctx.fillRect(x,y+10+Math.sin(LV.t*3+c)*3,TS,TS-10)}}
+ if(art){artProps(c0,c1);return}
  groundProps(c0,c1);
  // tree canopies
  for(const tr of L.trees||[]){const x=(tr.trunk.x+.5)*TS-cam.x,y=tr.trunk.top*TS-cam.y;if(x<-300||x>VW+300)continue;const red=/pohutukawa/i.test(tr.name);
@@ -506,7 +568,7 @@ function drawFx(dt){for(const f of fx){f.l-=dt;const x=f.x-cam.x,y=f.y-cam.y;ctx
 function hud(dt){ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(10,10,420,40);ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='left';
  ctx.fillText('♥'.repeat(Math.max(0,p.hp))+'♡'.repeat(Math.max(0,p.max-p.hp))+'   🪙 '+p.coins+'   🧶 '+p.yarn+'/4',22,37);
  ctx.textAlign='right';ctx.fillText(lab()+' · '+L.name,VW-14,30);{const d=prog();ctx.font='bold 15px sans-serif';ctx.fillText('EXP '+(d.exp||0)+' · forms '+((d.forms||[]).length),VW-14,52);ctx.font='bold 20px sans-serif'}
- if(arena&&arena.state==='lock'&&!arena.boss){ctx.fillStyle='#ff9a5a';ctx.textAlign='center';ctx.fillText('⚔ '+arena.name+' — '+arena.list.filter(e=>e.alive).length+' left',VW/2,76)}
+ if(arena&&arena.state==='lock'&&!arena.boss){ctx.fillStyle='#ff9a5a';ctx.textAlign='center';ctx.fillText('⚔ '+arena.name+(arena.waves&&arena.waves.length?' — wave '+(arena.wi+1)+'/'+arena.waves.length:'')+' — '+arena.list.filter(e=>e.alive).length+' left',VW/2,76)}
  let y=(p.lt||0)<(L.id==='silverdale_1'?10:4)&&!p.done?(L.id==='silverdale_1'?250:195):130;for(const m of msgs){m.l-=dt;ctx.globalAlpha=Math.max(0,Math.min(1,m.l*2));ctx.fillStyle=m.c;ctx.textAlign='center';ctx.font=`bold ${m.big?40:26}px sans-serif`;ctx.strokeStyle='rgba(0,0,0,.5)';ctx.lineWidth=5;ctx.strokeText(m.t,VW/2,y);ctx.fillText(m.t,VW/2,y);y+=m.big?50:34}
  ctx.globalAlpha=1;ctx.lineWidth=1;msgs=msgs.filter(m=>m.l>0);
  // v45: Paddy's moves card at the start of 1-1 (and for 4 s at the start of every other level)
@@ -515,7 +577,7 @@ function hud(dt){ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(10,10,420,40);ctx.
   if(L.id==='silverdale_1'){ctx.fillStyle='#fff';ctx.font='bold 15px sans-serif';ctx.fillText('▲ + CLAW = UPPERCUT (reaches birds!) · CLAW in the air = AIR SWIPE / SPIN',VW/2,y+52);ctx.font='bold 14px sans-serif';ctx.fillText('combos: CLAW×3 + TAIL×2 · CLAW×5 + TAIL · CLAW×3 + MEOW · TAIL×3 + CLAW×3',VW/2,y+78)}ctx.globalAlpha=1}}
  if(p.done){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(VW/2-220,VH/2-60,440,120);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 24px sans-serif';ctx.fillText('🪙 '+p.coins+' · 🧶 '+p.yarn+'/4 · '+(TOUCH?'tap ':'press N or ')+(isLast()?'for the title':'NEXT for the next level'),VW/2,VH/2+8);if(isLast()){ctx.fillStyle='#ffe14d';ctx.font='bold 30px sans-serif';ctx.fillText('🌏 WORLD 1 COMPLETE!',VW/2,VH/2-26)}}}
 let last=0;function loop(ts){const dt=Math.min(.033,(ts-(last||ts))/1000);last=ts;if(L&&!LV.pause&&hs>0){hs-=dt}else if(L&&!LV.pause){update(dt);updEnemies(dt);updKids(dt);updCars(dt);updArenas();updBoss(dt);updEnts();updCam(dt)}
- if(L){ctx.save();sky();shake=Math.max(0,shake-dt*30);if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);drawTiles();signs();drawEnts();drawBoss();drawPaddy();drawFx(dt);ctx.restore();hud(dt);bossHud()}requestAnimationFrame(loop)}
+ if(L){ctx.save();sky();shake=Math.max(0,shake-dt*30);if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);drawTiles();signs();drawEnts();drawBoss();drawPaddy();drawFx(dt);ctx.restore();if(artOn())artFront();hud(dt);bossHud()}requestAnimationFrame(loop)}
 function fit(){const s=Math.min(innerWidth/VW,innerHeight/VH);cv.style.width=VW*s+'px';cv.style.height=VH*s+'px'}addEventListener('resize',fit);fit();
 async function go(id){try{const lv=await loadLevel(id);history.replaceState(null,'','?level='+id+(qs.has('hitbox')?'&hitbox':''));init(lv)}catch(e){LV.err=String(e);console.error(e)}}
 LV.go=go;LV.p=p;LV.tile=tile;LV.state=()=>({id:L&&L.id,x:p.x/TS,y:p.y/TS,state:p.state,ground:p.ground,coins:p.coins,hp:p.hp,arena:arena&&arena.name,done:p.done,log:LV.log.slice(-20)});

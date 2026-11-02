@@ -34,6 +34,12 @@ async def main():
    # exact standing spots the simulator reached (x in tiles, feet row) -- not cell centres, which can sit under a low overhang
    try:cells=[(d[1],d[2]) for d in json.load(open(f'{SIM}/Q{n}.json'))['dump'] if d[2] is not None and not d[5]]
    except Exception as ex:cells=[];print('no sim cells',n,ex)
+   # v46: drop sim spots that are no longer standable in the current layout (1-1 was rebuilt; the sim dump can be older than the level)
+   SL=json.load(open(f'levels/silverdale_{n}.json'))['layers']['solid'];SW=len(SL[0])
+   def standable(c,r):
+    cs=range(max(0,int(c-.75)),min(SW,int(c+.75)+1))
+    return 1<=c<=SW-1 and 0<r<len(SL) and any(SL[r][k] in '#B?LJ=F' for k in cs) and all(SL[rr][k] in '.T' for rr in range(max(0,r-3),r) for k in cs)
+   cells=[q for q in cells if standable(*q)]
    pick=random.sample(cells,min(24,len(cells)));bad=[];below=[]
    for cell in pick:
     c,r=cell

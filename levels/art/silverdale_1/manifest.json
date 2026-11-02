@@ -1,0 +1,309 @@
+{
+ "tile": 48,
+ "layers": [
+  {
+   "id": "sky",
+   "file": "sky.png",
+   "parallax": [
+    0.012,
+    0.02
+   ],
+   "anchor": "top",
+   "tileX": false,
+   "note": "opaque dusk sky + moon, ONE painting, do not tile: draw first at height VH*1.15 (~621 px -> ~1104 px wide); 216 tiles x 48 x 0.012 = 124 px of scroll, so it always covers the 960 px view"
+  },
+  {
+   "id": "far",
+   "file": "far.png",
+   "parallax": [
+    0.12,
+    0.06
+   ],
+   "anchor": "bottom",
+   "baselineFromBottom": 0,
+   "tileX": true,
+   "note": "Hibiscus Coast hills + Hauraki Gulf glimpse; transparent above the ridgeline"
+  },
+  {
+   "id": "mid",
+   "file": "mid.png",
+   "parallax": [
+    0.45,
+    0.3
+   ],
+   "anchor": "ground",
+   "tileX": true,
+   "height_px": "scale so the parking building is ~7 tiles tall (draw height ~ 300px at VH 540)",
+   "note": "Silverdale Centre buildings; its bottom edge sits on the ground line (surface row 14), behind the playfield",
+   "size": [
+    1280,
+    297
+   ]
+  },
+  {
+   "id": "near",
+   "file": "near.png",
+   "parallax": [
+    1.25,
+    1.0
+   ],
+   "anchor": "bottom",
+   "tileX": true,
+   "alpha": 0.9,
+   "note": "dark foreground flax / cabbage trees / bollards IN FRONT of Paddy; sparse, keep under 20% of screen"
+  }
+ ],
+ "tiles": {
+  "ground_fill": {
+   "file": "tiles/ground_fill.png",
+   "char": "#",
+   "note": "car-park asphalt / ground body (rows below the surface)",
+   "atlas": [
+    0,
+    0,
+    96,
+    96
+   ]
+  },
+  "ground_top": {
+   "file": "tiles/ground_top.png",
+   "char": "# (surface row)",
+   "note": "paved kerb lip + asphalt: top-most solid tile of a column",
+   "atlas": [
+    96,
+    0,
+    96,
+    96
+   ]
+  },
+  "precast": {
+   "file": "tiles/precast.png",
+   "char": "P",
+   "note": "faceted precast concrete panel (Silverdale Centre walls, retaining wall, stair tower)",
+   "atlas": [
+    192,
+    0,
+    96,
+    96
+   ]
+  },
+  "roof_iron": {
+   "file": "tiles/roof_iron.png",
+   "char": "R / w",
+   "note": "corrugated iron verandah roof",
+   "atlas": [
+    288,
+    0,
+    96,
+    96
+   ]
+  },
+  "mall_wall": {
+   "file": "tiles/mall_wall.png",
+   "char": "M",
+   "note": "cream mall wall / parapet",
+   "atlas": [
+    384,
+    0,
+    96,
+    96
+   ]
+  },
+  "mall_parapet_top": {
+   "file": "tiles/mall_parapet_top.png",
+   "char": "M (surface row)",
+   "note": "parapet cap on the top row of an M block",
+   "atlas": [
+    480,
+    0,
+    96,
+    96
+   ]
+  },
+  "ledge_lip": {
+   "file": "tiles/ledge_lip.png",
+   "char": "L",
+   "note": "overlay on top of the tile under an L cell",
+   "atlas": [
+    576,
+    0,
+    96,
+    96
+   ]
+  }
+ },
+ "props": {
+  "pohutukawa": {
+   "file": "props/pohutukawa.png",
+   "size": [
+    337,
+    338
+   ],
+   "drawHeightTiles": 6.5,
+   "anchor": "bottom-centre on the ground surface",
+   "use": "T trunk at the planting island (x44) + canopy deco h/k",
+   "atlas": [
+    0,
+    33,
+    337,
+    338
+   ]
+  },
+  "cabbage_tree": {
+   "file": "props/cabbage_tree.png",
+   "size": [
+    264,
+    371
+   ],
+   "drawHeightTiles": 5.5,
+   "anchor": "bottom-centre on the ground surface",
+   "use": "background / near-layer accent",
+   "atlas": [
+    341,
+    0,
+    264,
+    371
+   ]
+  },
+  "puriri": {
+   "file": "props/puriri.png",
+   "size": [
+    298,
+    350
+   ],
+   "drawHeightTiles": 6.5,
+   "anchor": "bottom-centre on the ground surface",
+   "use": "T trunk by the exit (x195) + canopy deco k",
+   "atlas": [
+    609,
+    21,
+    298,
+    350
+   ]
+  },
+  "flax": {
+   "file": "props/flax.png",
+   "size": [
+    270,
+    235
+   ],
+   "drawHeightTiles": 1.6,
+   "anchor": "bottom-centre on the ground surface",
+   "use": "deco n",
+   "atlas": [
+    911,
+    136,
+    270,
+    235
+   ]
+  },
+  "lamp_post": {
+   "file": "props/lamp_post.png",
+   "size": [
+    63,
+    294
+   ],
+   "drawHeightTiles": 4.2,
+   "anchor": "bottom-centre on the ground surface",
+   "use": "deco l (warm light source)",
+   "atlas": [
+    1185,
+    77,
+    63,
+    294
+   ]
+  },
+  "bollard": {
+   "file": "props/bollard.png",
+   "size": [
+    113,
+    216
+   ],
+   "drawHeightTiles": 1.1,
+   "anchor": "bottom-centre on the ground surface",
+   "use": "deco o",
+   "atlas": [
+    1252,
+    155,
+    113,
+    216
+   ]
+  },
+  "trolley": {
+   "file": "props/trolley.png",
+   "size": [
+    235,
+    224
+   ],
+   "drawHeightTiles": 1.4,
+   "anchor": "bottom-centre on the ground surface",
+   "use": "deco t / trolley-crate stack",
+   "atlas": [
+    1369,
+    147,
+    235,
+    224
+   ]
+  },
+  "drainpipe": {
+   "file": "props/drainpipe.png",
+   "size": [
+    39,
+    255
+   ],
+   "drawHeightTiles": 2.0,
+   "anchor": "bottom-centre on the ground surface",
+   "use": "skin on T climbables (tile vertically)",
+   "atlas": [
+    1608,
+    116,
+    39,
+    255
+   ]
+  },
+  "bench": {
+   "file": "props/bench.png",
+   "size": [
+    326,
+    194
+   ],
+   "drawHeightTiles": 1.2,
+   "anchor": "bottom-centre on the ground surface",
+   "use": "deco, street dressing",
+   "atlas": [
+    1651,
+    177,
+    326,
+    194
+   ]
+  }
+ },
+ "lighting": {
+  "vignette": {
+   "file": "light_vignette.png",
+   "blend": "source-over",
+   "note": "screen-space dusk grade + purple vignette, drawn after sprites, before UI"
+  },
+  "glow": {
+   "file": "light_glow.png",
+   "blend": "lighter",
+   "note": "additive warm pool: draw at every deco 'l' lamp (radius ~3 tiles) and along the lantern strings; pulse 3% on big hits"
+  },
+  "lanterns": {
+   "note": "string of paper lanterns (Training Arena look) across each brawl zone at ~row 3-4, BACKGROUND only, no collision",
+   "colours": [
+    "#ff8a3d",
+    "#ffd166",
+    "#3fd1a8",
+    "#ff5e7a"
+   ]
+  },
+  "fog": {
+   "note": "thin ground haze: 40 px tall gradient rgba(150,120,200,.18) along the ground line, parallax 0.9"
+  }
+ },
+ "zones_art": {
+  "brawl": "open sky above, lanterns + lamps at the edges, mid layer fully visible",
+  "trav": "painted solid blocks (precast / iron / mall tiles) carry the climbable shapes"
+ }
+}

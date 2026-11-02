@@ -1,10 +1,10 @@
 # (loads with &nocuts: the story cutscenes are covered by tc_cutscenes.py)
-# level-1-1 branch: tilemap level runtime checks + screenshots for Silverdale 1-1 .. 1-7 (World 1) (level.html, tile 48).
+# level-1-1 branch (v46: 1-1 is the brawler rebuild): tilemap level runtime checks + screenshots for Silverdale 1-1 .. 1-7 (World 1) (level.html, tile 48).
 import asyncio,sys,os,time,json
 from playwright.async_api import async_playwright
 URL=sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:8766/'
 OUT=sys.argv[2] if len(sys.argv)>2 else '/workspace/rev_level11/';os.makedirs(OUT,exist_ok=True)
-FAILS=[]
+FAILS=[];REPO=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..')
 def check(nm,ok,info=''):
  print(('PASS ' if ok else 'FAIL ')+nm,str(info)[:300],flush=True);(None if ok else FAILS.append(nm))
 async def main():
@@ -20,60 +20,78 @@ async def main():
   async def tp(x,y,wait=500):
    await E(f"LV.teleport({x},{y})");await pg.wait_for_timeout(wait)
   st=lambda:E("LV.state()")
-  # ---------- 1-1 ----------
-  await load('silverdale_1');s=await st()
-  check('1-1 loads, tile 48, Paddy at the spawn on the ground',s['id']=='silverdale_1' and s['ground'] and abs(s['x']-2.5)<.6,s)
+  # ---------- 1-1 (v46 brawler rebuild: 216x16, 4 brawl zones with waves, climb / wall jump / ledge / drop set-pieces, painted art) ----------
+  await load('silverdale_1');s=await st();L1=json.loads(open(os.path.join(REPO,'levels/silverdale_1.json')).read())
+  check('1-1 loads, tile 48, 216x16, Paddy at the spawn on the ground',s['id']=='silverdale_1' and s['ground'] and abs(s['x']-2.5)<.6 and L1['width']==216 and L1['height']==16,s)
+  await pg.wait_for_function('LV.art',timeout=15000);check('1-1 painted art (levels/art/silverdale_1) loaded: parallax + textured tiles',await E('!!LV.art'))
   await pg.screenshot(path=OUT+'1-1_start.png')
   await hold('ArrowRight',1200);s=await st();check('walks right',s['x']>4,s)
   await tap('Space');await pg.wait_for_timeout(120);s1=await st();await pg.wait_for_timeout(900);s2=await st();check('jumps and lands again',not s1['ground'] and s2['ground'],[s1,s2])
-  # climb the pohutukawa trunk (T at x=51 rows 2-7, its base stands on the row-8 kerb) and step onto the branch
-  await tp(51,7);await pg.keyboard.down('ArrowUp');await pg.wait_for_timeout(1400);s=await st();await pg.screenshot(path=OUT+'1-1_climb.png')
-  check('T trunk: hold ↑ = climb (not solid, he climbs up it)',s['state']=='climb' and s['y']<7,s)
-  await pg.keyboard.up('ArrowUp');await hold('ArrowRight',150);await pg.wait_for_timeout(300);s=await st()
-  check('T trunk: → steps off onto the branch (= row 3)',s['state']=='normal' and s['ground'] and abs(s['y']-3)<.1 and s['x']>51.5,s)
-  await tp(51,7);await pg.keyboard.down('ArrowUp');await pg.wait_for_timeout(800);await pg.keyboard.up('ArrowUp');await tap('Space');await pg.wait_for_timeout(100);s=await st()
-  check('T trunk: jump leaps off',s['state']=='normal' and not s['ground'] and 'trunkjump' in s['log'],s)
-  await E("LV.arenas()[0].state='skip'")   # keep the Trolley-bay brawl dormant while the mechanics beside it are checked
-  # fence rail F (row 4 x57-62): stand on it, ↓ drops through
-  await tp(59,3,700);s=await st();check('F fence rail: walkable from above',s['ground'] and abs(s['y']-4)<.1,s);await pg.screenshot(path=OUT+'1-1_fence.png')
-  await tap('ArrowDown')
-  for _ in range(30):
-   await pg.wait_for_timeout(60);s=await st()
-   if s['ground'] and s['y']>8.5:break
-  s=await st();check('F fence rail: ↓ drops through to the ground',s['ground'] and s['y']>8.5 and 'drop' in s['log'],s)
-  # one-way platform '=' (row 3 x47-55, branches): jump up through from below
-  # (1-1 now puts the branches 5-6 tiles up, reached by the trunk; so launch him from just under the branch and check he passes up through it and lands on top)
-  await tp(48,3,0);r=await E("LV.tile(48,3)");await E("LV.p.vy=-1200;LV.p.ground=false");await pg.wait_for_timeout(1000);s=await st()
-  check("= platform: jump up through it from below and land on top",r=='=' and s['ground'] and abs(s['y']-3)<.1,[r,s])
-  # L ledge (row 3 'L######L' at x68-75): fall short beside it holding toward = grab + pull up
-  await E("LV.arenas()[0].state='skip'");await tp(66,1,50);await E("LV.p.y=(3)*48+168*.5;LV.p.vy=0");await pg.keyboard.down('ArrowRight');await pg.wait_for_timeout(900);await pg.keyboard.up('ArrowRight');s=await st()
-  check('L corner: ledge grab and pull up onto the roof',('ledge' in s['log'] or 'pullup' in s['log']) and s['ground'] and abs(s['y']-3)<.1,s)
-  await E("LV.arenas()[0].state='idle'")
-  # arena lock
-  await tp(60,8,300);await hold('ArrowRight',500);s=await st();await pg.wait_for_timeout(700);await pg.screenshot(path=OUT+'1-1_arena.png')
-  a=await E("LV.arenas().map(a=>[a.name,a.state])");check('arena: entering locks the camera / walls until the group is cleared',s['arena']=='Trolley-bay brawl' or any(x[1]=='lock' for x in a),[s,a])
-  await E("LV.arenas().forEach(a=>{if(a.state==='lock')a.list.forEach(e=>{e.alive=false;e.ko=0})})");await pg.wait_for_timeout(300);a=await E("LV.arenas().map(a=>[a.name,a.state])");s=await st()
-  check('arena: clearing the group unlocks it',a[0][1]=='done' and not s['arena'],a)
-  # attack: X bops an enemy
-  await E("(()=>{const e=LV.enemies().find(e=>e.alive&&!e.fly&&!e.inArena);LV.teleport(Math.floor(e.x/48)-2,Math.floor(e.y/48)-1);e.vx=0;e.x0=e.x-1;e.x1=e.x+1;window._E=e})()");await pg.wait_for_timeout(400)
-  await E("LV.p.face=Math.sign(_E.x-LV.p.x)||1");await tap('KeyX');await pg.wait_for_timeout(450);await pg.screenshot(path=OUT+'1-1_attack.png');await tap('KeyX');await pg.wait_for_timeout(450)
-  r=await E("[_E.alive,_E.hp,LV.state().log]");check('X attack bops a critter (2 hits KO)',not r[0],r)
-  # kid: harmless, no collision, hop bonus
-  k=await E("(()=>{const k=LV.kids()[0];return [k.harmless,k.hitbox,k.bonus,k.x/48,k.y/48]})()");check('kid entity: harmless:true, hitbox:false, bonus hop',k[0] is True and k[1] is False and k[2]=='hop',k)
-  hp0=(await st())['hp'];await E("(()=>{const k=LV.kids()[0];k.sp=0;LV.teleport(Math.round(k.x/48)-0.5,Math.round(k.y/48)-1)})()");await pg.wait_for_timeout(700);s=await st()
-  check('kid: Paddy walks straight through, no damage, no knock-back',s['hp']==hp0 and 'bump:kid' not in s['log'] and s['state']=='normal',s)
-  c0=s['coins'];await E("LV.calm()");await E("(()=>{const k=LV.kids()[0];k.sp=0;k.x=140.5*48;k.hopped=false;LV.teleport(133,8)})()");await pg.wait_for_timeout(300);await pg.keyboard.down('ArrowRight')
-  for _ in range(60):
-   if await E("LV.p.x>LV.kids()[0].x-120"):break
-   await pg.wait_for_timeout(25)
-  await hold('Space',260);await pg.wait_for_timeout(500);await pg.keyboard.up('ArrowRight');await pg.wait_for_timeout(600);s=await st()
-  await pg.screenshot(path=OUT+'1-1_kidhop.png');check('kid: hopping over it = +3 coin hop bonus',s['coins']>=c0+3 and 'hop' in s['log'],[c0,s])
-  # ? block bonk + checkpoint + goal
-  await tp(190,8,300);s=await st();await tp(216,8,200);await hold('ArrowRight',600);await pg.wait_for_timeout(800);s=await st();await pg.screenshot(path=OUT+'1-1_goal.png')
+  SO=L1['layers']['solid'];open_ok=all(SO[r][c]=='.' for a in L1['arenas'] for c in range(a['x0'],a['x1']+1) for r in range(0,14))
+  check('brawl zones: flat, 14 open rows above the floor (no ceilings / slabs)',open_ok and all(SO[14][c]=='#' for a in L1['arenas'] for c in range(a['x0'],a['x1']+1)))
+  await E("LV.calm()")   # critters off for the set-piece checks
+  # pohutukawa trunk T x44 (rows 5-13) beside the retaining wall x45-51 (top row 8): climb, step → onto the wall, drop off the far side
+  await tp(44,13);await pg.keyboard.down('ArrowUp');await pg.wait_for_timeout(1300);s=await st();await pg.screenshot(path=OUT+'1-1_climb.png')
+  check('pohutukawa: hold ↑ = climb',s['state']=='climb' and s['y']<12,s)
+  await hold('ArrowRight',150);await pg.keyboard.up('ArrowUp');await pg.wait_for_timeout(300);s=await st()
+  check('pohutukawa: → steps onto the retaining-wall top (row 8)',s['state']=='normal' and s['ground'] and abs(s['y']-8)<.1 and s['x']>44.9,s)
+  await hold('ArrowRight',1400);await pg.wait_for_timeout(500);s=await st();check('retaining wall: drop down the far side to the deck',s['ground'] and abs(s['y']-14)<.1 and s['x']>52,s)
+  await tp(44,13);await pg.keyboard.down('ArrowUp');await pg.wait_for_timeout(700);await pg.keyboard.up('ArrowUp');await tap('Space');await pg.wait_for_timeout(100);s=await st()
+  check('trunk: jump leaps off',s['state']=='normal' and not s['ground'] and 'trunkjump' in s['log'],s)
+  # stair tower: 3-wide lightwell x93-95 between the step (x91-92, top row 10) and the tower (x96-103, top row 6, L corner at x96)
+  await tp(94,13,400);await pg.keyboard.down('ArrowRight');await pg.wait_for_timeout(250);await hold('Space',250)
+  for _ in range(25):
+   await pg.wait_for_timeout(30)
+   if await E("LV.p.wallDir>0&&!LV.p.ground"):break
+  await tap('Space');await pg.wait_for_timeout(120);s=await st();await pg.keyboard.up('ArrowRight');await pg.screenshot(path=OUT+'1-1_walljump.png')
+  check('lightwell: jump at the tower wall, jump again off it = WALL JUMP',('walljump' in s['log']),s)
+  await pg.wait_for_timeout(900);await tp(92,9,400);await pg.keyboard.down('ArrowRight');await hold('Space',350)
+  for _ in range(40):
+   await pg.wait_for_timeout(40);s=await st()
+   if 'ledge' in s['log']:break
+  await pg.screenshot(path=OUT+'1-1_ledge.png');await pg.wait_for_timeout(600);await pg.keyboard.up('ArrowRight');s=await st()
+  check('stair tower: from the step, jump → ledge grab on the L corner + pull up onto the roof (row 6)',('ledge' in s['log'] and 'pullup' in s['log']) and s['ground'] and s['y']<6.1 and s['x']>96,s)
+  await tp(102,5,400);await hold('ArrowRight',900);await pg.wait_for_timeout(500);s=await st();check('tower roof: drop down the far side into the street',s['ground'] and abs(s['y']-14)<.1 and s['x']>104,s)
+  await E("LV.calm()")
+  # shop drainpipe T x141 -> verandah roof (row 9) -> parapet L x150 (row 6) -> drop
+  await tp(141,13);await pg.keyboard.down('ArrowUp');await pg.wait_for_timeout(1200);s=await st();check('drainpipe: climbable',s['state']=='climb',s)
+  await hold('ArrowRight',150);await pg.keyboard.up('ArrowUp');await pg.wait_for_timeout(300);s=await st();check('drainpipe: → onto the verandah roof (row 9)',s['ground'] and abs(s['y']-9)<.1 and s['x']>141.9,s)
+  await tp(148,8,400);await pg.keyboard.down('ArrowRight');await hold('Space',350)
+  for _ in range(40):
+   await pg.wait_for_timeout(40);s=await st()
+   if 'ledge' in s['log']:break
+  await pg.wait_for_timeout(600);await pg.keyboard.up('ArrowRight');s=await st()
+  check('parapet: ledge grab + pull up (row 6)',('ledge' in s['log'] and 'pullup' in s['log']) and s['ground'] and s['y']<6.1 and s['x']>150,s)
+  await hold('ArrowRight',1300);await pg.wait_for_timeout(500);s=await st();check('parapet: drop down to Seagull square',s['ground'] and abs(s['y']-14)<.1 and s['x']>156,s)
+  await E("LV.calm()")
+  # puriri T x195 (rows 4-13): climb right to the top, → still steps onto the exit wall (row 9)
+  await tp(195,13);await pg.keyboard.down('ArrowUp');await pg.wait_for_timeout(2600);s0=await st();await hold('ArrowRight',150);await pg.keyboard.up('ArrowUp');await pg.wait_for_timeout(300);s=await st()
+  check('puriri: climbed to the top, → steps onto the exit-wall top (row 9)',s0['state']=='climb' and s0['y']<7 and s['ground'] and abs(s['y']-9)<.1 and s['x']>195.9,[s0,s])
+  # brawl waves: reload, walk into the Trolley-bay brawl
+  await load('silverdale_1');await tp(10,13,200);await hold('ArrowRight',700);await pg.wait_for_timeout(300);s=await st();a=await E("LV.arenas()[0]")
+  n1=await E("LV.enemies().filter(e=>e.alive&&e.inArena).length")
+  check('Trolley-bay brawl locks and spawns wave 1 (3 enemies)',s['arena']=='Trolley-bay brawl' and a['wi']==0 and n1==len(L1['arenas'][0]['waves'][0]['enemies']),[s['arena'],a.get('wi'),n1])
+  await pg.wait_for_timeout(900);await pg.screenshot(path=OUT+'1-1_wave1.png')
+  # wall bounce: a knocked-back enemy hits the camera-lock wall and bounces back up (juggle)
+  r=await E("(()=>{const a=LV.arenas()[0],e=a.list.find(e=>e.alive&&!e.fly);e.x=(a.x1+1)*48-70;e.hurt=.5;e.vx=520;e.vy=0;return e.id})()");await pg.wait_for_timeout(250);s=await st()
+  vb=await E("(()=>{const e=LV.arenas()[0].list.find(e=>e.alive&&!e.fly&&e.wb);return e?[e.vx,e.vy]:null})()")
+  check('wallBounce: the brawl wall bounces a knocked enemy back (juggle)',any(x.startswith('wallbounce') for x in s['log']) and vb is not None,[s['log'][-4:],vb])
+  for w in range(1,len(L1['arenas'][0]['waves'])):
+   await E("LV.arenas()[0].list.forEach(e=>{e.alive=false;e.ko=0})");await pg.wait_for_timeout(1300);a=await E("({wi:LV.arenas()[0].wi,st:LV.arenas()[0].state,n:LV.enemies().filter(e=>e.alive&&e.inArena).length})")
+   check(f'wave {w+1} spawns after wave {w} is cleared (waveGap)',a['wi']==w and a['st']=='lock' and a['n']==len(L1['arenas'][0]['waves'][w]['enemies']),a)
+   if w==1:await pg.screenshot(path=OUT+'1-1_wave2.png')
+  await E("LV.arenas()[0].list.forEach(e=>{e.alive=false;e.ko=0})");await pg.wait_for_timeout(400);s=await st();a=await E("LV.arenas()[0].state")
+  check('CLEAR only after the last wave',a=='done' and not s['arena'] and any(x.startswith('cleared') for x in s['log']),[a,s['log'][-3:]])
+  # a real hit lands
+  await E("(()=>{const e=LV.mkEnemy('rat',30.5*48,14*48,{});e.vx=0;e.x0=e.x-1;e.x1=e.x+1;LV.enemies().push(e);window._E=e;LV.teleport(28,13)})()");await pg.wait_for_timeout(300)
+  await E("LV.p.face=1");await tap('KeyX');await pg.wait_for_timeout(350);await tap('KeyX');await pg.wait_for_timeout(450);r=await E("[_E.alive,_E.hp]");check('X claw combo KOs a rat',not r[0],r)
+  # kid: harmless
+  k=await E("(()=>{const k=LV.kids()[0];return [k.harmless,k.hitbox,k.bonus]})()");check('kid entity: harmless:true, hitbox:false, bonus hop',k[0] is True and k[1] is False and k[2]=='hop',k)
+  await E("LV.calm()");await tp(209,13,300);await hold('ArrowRight',900);await pg.wait_for_timeout(800);s=await st();await pg.screenshot(path=OUT+'1-1_goal.png')
   check('reaching the goal clears 1-1',s['done'],s)
   # ---------- 1-2 .. 1-7 ----------
   for n in (2,3,4,5,6,7):
-   lv=f'silverdale_{n}';await load(lv);s=await st();L=json.loads(open(f'/workspace/paddy-game/levels/{lv}.json').read())
+   lv=f'silverdale_{n}';await load(lv);s=await st();L=json.loads(open(os.path.join(REPO,f'levels/{lv}.json')).read())
    check(f'1-{n} loads and Paddy stands at the spawn',s['id']==lv and s['ground'],s);await pg.screenshot(path=OUT+f'1-{n}_start.png');await E('LV.calm()')   # critters off for the mechanic checks
    if L.get('shopSigns'):
     sg=L['shopSigns'][0];await tp(sg['x0']+2,surf(L,sg['x0']+2),600);await pg.screenshot(path=OUT+f'1-{n}_shopsign.png')
