@@ -29,6 +29,12 @@ async function getJSON(u){const r=await fetch(u+'?v='+Date.now());if(!r.ok)throw
 async function loadLevel(id){for(const base of ['levels/','levels-dev/']){try{return await getJSON(base+id+'.json')}catch(_){}}throw new Error('level '+id+' not found')}
 const ANIM={idle:['idle_test_1',4],walk:['o_walk',11],run:['o_run',12],jump:['o_jump',8],fall:['o_fall',6],land:['o_land',10],djump:['doublejump',14],
  climb:['o_climb',8],wall:['walljump',10],ledge:['ledge',7],hurt:['o_hurt',1],attack:['clawcombo',22],victory:['victory',7]};
+// v45b: one consistent Paddy. Every sheet was drawn at SC, but the sheets were painted at different sizes (land/fall/jump/climb
+// smaller, roar/victory/air spins bigger), so Paddy grew and shrank between moves. PSC rescales each sheet so his body matches
+// idle_test_1 at SC (the free-play / s4.png size). IDLE_SEQ = free play's idle order: frames 2 and 3 have a different face
+// (cream, no mask / eyes shut), so they are never shown; he breathes with a tiny vertical scale bob instead.
+const PSC={o_walk:1.04,o_run:1.07,o_land:1.22,o_fall:1.24,o_diveclaw:1.24,o_climb:1.19,o_jump:1.16,o_claw1:1.04,o_claw2:1.06,clawcombo:1.02,
+ victory:.9,uppercut:.98,tailwhip:.97,doublejump:.93,o_hurt:.95,walljump:.95,ledge:.95,o_airswipe:.95,o_roar:.85,o_airspin:.93},IDLE_SEQ=[0,1,4,1];
 function img(f){if(IMG[f])return IMG[f];const im=new Image();im.src='assets/'+f+'.webp';im.onerror=()=>{if(!im._png){im._png=1;im.src='assets/'+f+'.png'}};IMG[f]=im;return im}
 const ok=im=>im&&im.complete&&im.naturalWidth>0;
 // ---------- tiles ----------
@@ -68,9 +74,13 @@ const W1SPR={rat:'sewer_rat',seagull:'gull_bandit',alleytom:'alley_cat',possum:'
 const isW1=()=>!!(L&&(/^silverdale_/.test(L.id||'')||L.world==='silverdale'));
 // an entity enemy inside an arena's x-range whose id is still on that arena's list belongs to the arena (it spawns where it was placed, at lock)
 function arenaFor(e){for(const a of arenas){if(e.x<a.x0||e.x>a.x1)continue;const i=a.want.indexOf(e.id);if(i>=0){a.want.splice(i,1);return a}}return null}
+// v45b: enemies are never smaller than Paddy. ENS[sprite]=[draw scale x SC, hitbox w, hitbox h]: each sheet is scaled so its
+// visible height is at least ~128 px (Paddy idle is ~122 px; Boss Squawk ~1.3x), and the body box is sized to the scaled art.
+// Big Bruno already stands ~337 px, so he is unchanged.
+const ENS={sewer_rat:[1.48,69,128],possum_w1:[1.37,93,128],magpie:[1.38,85,128],chihuahua:[1.73,68,128],gull_bandit:[1.57,132,128],ferret_zip:[1.69,79,128],pukeko:[1,65,133],sausage:[1.53,132,129],tabby:[1.19,65,129],alley_cat:[1,75,133],crab:[2.02,123,128],goose:[1,60,129],hedgehog:[1.84,91,128],persian:[1.16,64,128],weta:[1.88,93,129],wasp:[2.04,81,128],rooster:[1.08,60,129],bulldog:[1.29,106,128],poodle:[1.1,75,129],eel:[1.19,93,128],labrador:[1,127,133],husky:[1,108,140],siamese:[1.07,80,128],magpie_boss:[1.9,172,167]};
 function mkEnemy(id,x,y,e){const fly=FLY.has(id),mini=id==='magpie_boss'||(id==='magpie'&&e&&e.miniBoss);const spr=mini?'magpie_boss':(isW1()&&W1SPR[id])||id;
  const en=mkEnemy0(id,x,y,e,fly);en.spr=spr;for(const k of ['_move','_m_hurt','_m_ko'])(F['en_'+spr+k]||[]).forEach(f=>img(f.f));   // preload every frame up front (no pop-in)
- if(mini){en.mini=true;en.hp=6;en.w=80;en.h=80}return en}
+ if(mini){en.mini=true;en.hp=6}const z=ENS[spr];en.sc=z?z[0]:1;if(z){en.w=z[1];en.h=z[2]}else if(mini){en.w=80;en.h=80}return en}
 function mkEnemy0(id,x,y,e,fly){return{id,x,y:fly?y-TS*2:y,x0:x-2.5*TS,x1:x+2.5*TS,vx:(Math.random()<.5?-1:1)*(fly?90:60),vy:0,hp:/bulldog|husky|labrador|goose/.test(id)?3:2,fly,alive:true,ko:0,face:-1,t:Math.random()*6,hurt:0,route:e&&e.route,w:fly?60:70,h:fly?60:/rat|hedgehog|weta|crab/.test(id)?50:80,arena:e&&e.arena}}
 // ---------- Paddy physics ----------
 function boxHits(x,y,w,h,test){const c0=Math.floor((x-w/2)/TS),c1=Math.floor((x+w/2-1)/TS),r0=Math.floor((y-h)/TS),r1=Math.floor((y-1)/TS);
@@ -467,8 +477,8 @@ function signs(){ctx.textAlign='center';
  // checkpoints + goal
  for(const c of L.checkpoints||[]){const x=(c.x+.5)*TS-cam.x,y=(c.y+1)*TS-cam.y;ctx.fillStyle='#ddd';ctx.fillRect(x-3,y-110,6,110);ctx.fillStyle=p.cp&&p.cp.x>=x+cam.x-1?'#7fffd4':'#ff8a5a';ctx.fillRect(x+3,y-110,36,24)}
  const g=L.goal,gx=(g.x+.5)*TS-cam.x,gy=(g.y+1)*TS-cam.y;ctx.fillStyle='#ffd34d';ctx.fillRect(gx-60,gy-200,14,200);ctx.fillRect(gx+46,gy-200,14,200);ctx.fillRect(gx-60,gy-214,120,22);ctx.fillStyle='#3a2a1a';ctx.font='bold 16px sans-serif';ctx.fillText('HOME →',gx,gy-197)}
-function drawFrame(key,fi,x,y,face,s,alpha){const L2=F[key];if(!L2||!L2.length)return false;const f=L2[Math.floor(fi)%L2.length];const im=img(f.f);if(!ok(im))return false;
- ctx.save();ctx.globalAlpha=alpha==null?1:alpha;ctx.translate(x,y);ctx.scale(face*s,s);ctx.drawImage(im,-f.ax,-f.ay,f.w,f.h);ctx.restore();return true}
+function drawFrame(key,fi,x,y,face,s,alpha,sy){const L2=F[key];if(!L2||!L2.length)return false;const f=L2[Math.floor(fi)%L2.length];const im=img(f.f);if(!ok(im))return false;
+ ctx.save();ctx.globalAlpha=alpha==null?1:alpha;ctx.translate(x,y);ctx.scale(face*s,s*(sy||1));ctx.drawImage(im,-f.ax,-f.ay,f.w,f.h);ctx.restore();return true}
 function drawEnts(){for(const e of ents){if(e.got)continue;const x=e.x-cam.x,y=e.y-cam.y;if(x<-50||x>VW+50)continue;
   if(e.type==='coin'){ctx.fillStyle='#ffd34d';ctx.beginPath();ctx.ellipse(x,y,10*Math.abs(Math.cos(e.ph*2))+3,12,0,0,6.283);ctx.fill()}
   else if(e.type==='fish'){ctx.fillStyle='#7fc6ff';ctx.beginPath();ctx.ellipse(x,y,18,9,0,0,6.283);ctx.fill();ctx.beginPath();ctx.moveTo(x+14,y);ctx.lineTo(x+26,y-9);ctx.lineTo(x+26,y+9);ctx.fill()}
@@ -481,11 +491,12 @@ function drawEnts(){for(const e of ents){if(e.got)continue;const x=e.x-cam.x,y=e
   ctx.fillStyle='#222';ctx.beginPath();ctx.arc(x+28,y-10,12,0,6.283);ctx.arc(x+v.w-28,y-10,12,0,6.283);ctx.fill()}
  for(const k of kids){const key=k.kind==='skateboard'?'en_kidskate_move':'en_kidscoot_move';drawFrame(key,k.ph*10,k.x-cam.x,k.y-cam.y,k.dir,SC*.9)}
  for(const e of enemies){if(!e.alive&&e.ko<=0)continue;const key='en_'+(e.spr||e.id)+(e.alive?(e.hurt>0?'_m_hurt':'_move'):'_m_ko');const x=e.x-cam.x,y=e.y-cam.y;if(x<-100||x>VW+100)continue;
-  if(!drawFrame(key,e.t*10,x,y,e.face,SC,e.alive?1:e.ko)){const mv='en_'+(e.spr||e.id)+'_move',fb=[key,mv].map(k=>(F[k]||[]).findIndex(f=>ok(img(f.f)))).map((i,j)=>[[key,mv][j],i]).find(q=>q[1]>=0);   // v44d: still loading -> a loaded frame, never a box flash
-   if(fb)drawFrame(fb[0],fb[1],x,y,e.face,SC,e.alive?1:e.ko);else if(!F[key]&&!F[mv]){ctx.fillStyle='#a05a3a';ctx.fillRect(x-e.w/2,y-e.h,e.w,e.h)}}}}
-function drawPaddy(){if(p.anim==='mv'&&!p.mv)p.anim=p.ground?'idle':'fall';const a=p.anim==='mv'?[p.mv.d.a,p.mv.d.fps||12]:(ANIM[p.anim]||ANIM.idle),key=a[0];const nf=(F[key]||[1]).length;const fi=p.anim==='climb'?(p.y/24):p.anim==='mv'?(p.mv.d.loop?p.mv.t*a[1]:Math.min(nf-1,p.mv.t*a[1])):LV.t*a[1];
+  if(!drawFrame(key,e.t*10,x,y,e.face,SC*(e.sc||1),e.alive?1:e.ko)){const mv='en_'+(e.spr||e.id)+'_move',fb=[key,mv].map(k=>(F[k]||[]).findIndex(f=>ok(img(f.f)))).map((i,j)=>[[key,mv][j],i]).find(q=>q[1]>=0);   // v44d: still loading -> a loaded frame, never a box flash
+   if(fb)drawFrame(fb[0],fb[1],x,y,e.face,SC*(e.sc||1),e.alive?1:e.ko);else if(!F[key]&&!F[mv]){ctx.fillStyle='#a05a3a';ctx.fillRect(x-e.w/2,y-e.h,e.w,e.h)}}}}
+function drawPaddy(){if(p.anim==='mv'&&!p.mv)p.anim=p.ground?'idle':'fall';const a=p.anim==='mv'?[p.mv.d.a,p.mv.d.fps||12]:(ANIM[p.anim]||ANIM.idle),key=a[0];const nf=(F[key]||[1]).length;let fi=p.anim==='climb'?(p.y/24):p.anim==='mv'?(p.mv.d.loop?p.mv.t*a[1]:Math.min(nf-1,p.mv.t*a[1])):LV.t*a[1];
  if(p.mv&&p.mv.d.trail)moveTrail();const blink=p.inv>0&&Math.floor(LV.t*20)%2;
- if(!drawFrame(key,fi,p.x-cam.x,p.y-cam.y+(p.anim==='ledge'?BH*.45:0),p.face,SC,blink?.4:1)){ctx.fillStyle='#e8c8a0';ctx.fillRect(p.x-cam.x-BW/2,p.y-cam.y-BH,BW,BH)}
+ const idle=key==='idle_test_1';if(idle)fi=IDLE_SEQ[Math.floor(fi)%IDLE_SEQ.length];LV.pFrame=key+':'+(Math.floor(fi)%nf);
+ if(!drawFrame(key,fi,p.x-cam.x,p.y-cam.y+(p.anim==='ledge'?BH*.45:0),p.face,SC*(PSC[key]||1),blink?.4:1,idle?1+.012*Math.sin(LV.t*2.6):1)){ctx.fillStyle='#e8c8a0';ctx.fillRect(p.x-cam.x-BW/2,p.y-cam.y-BH,BW,BH)}
  if(qs.has('hitbox')){ctx.strokeStyle='#f0f';ctx.strokeRect(p.x-cam.x-BW/2,p.y-cam.y-BH,BW,BH)}}
 function drawFx(dt){for(const f of fx){f.l-=dt;const x=f.x-cam.x,y=f.y-cam.y;ctx.globalAlpha=Math.max(0,Math.min(1,f.l*2));
   if(f.k==='say'){f.y-=40*dt;ctx.font='bold 24px sans-serif';ctx.textAlign='center';ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=5;ctx.strokeText(f.t,x,y);ctx.fillStyle=f.c;ctx.fillText(f.t,x,y);ctx.lineWidth=1}
@@ -510,6 +521,6 @@ async function go(id){try{const lv=await loadLevel(id);history.replaceState(null
 LV.go=go;LV.p=p;LV.tile=tile;LV.state=()=>({id:L&&L.id,x:p.x/TS,y:p.y/TS,state:p.state,ground:p.ground,coins:p.coins,hp:p.hp,arena:arena&&arena.name,done:p.done,log:LV.log.slice(-20)});
 LV.teleport=(tx,ty)=>{if(arena){arena.state='idle';arena.list.forEach(e=>{e.alive=false;e.ko=0});if(arena.boss)arena.list=[];arena=null}p.x=(tx+.5)*TS;p.y=(ty+1)*TS;p.vx=p.vy=0;p.state='normal';cam.x=Math.max(0,Math.min(W*TS-VW,p.x-VW*.4))};
 LV.boss=()=>boss&&{id:boss.id,name:boss.def.name,title:boss.def.title,hp:boss.hp,max:boss.max,st:boss.st,alive:boss.alive,x:boss.x/TS,y:boss.y/TS,wTiles:boss.w/TS,hTiles:boss.h/TS,wPx:boss.w,hPx:boss.h,arena:bossA&&{state:bossA.state,x0:bossA.x0,x1:bossA.x1,trig:bossA.trig,wl:bossA.wl,wr:bossA.wr,p2:bossA.p2,adds:bossA.list.length}};LV.bossHit=n=>bossHit(n);LV.bossRaw=()=>boss;
-LV.calm=()=>{enemies.forEach(e=>{e.alive=false;e.ko=0});arenas.forEach(a=>a.state='done');arena=null};LV.kids=()=>kids;LV.ents=()=>ents;LV.cars=()=>cars;LV.enemies=()=>enemies;LV.arenas=()=>arenas;LV.cam=cam;
+LV.mkEnemy=mkEnemy;LV.calm=()=>{enemies.forEach(e=>{e.alive=false;e.ko=0});arenas.forEach(a=>a.state='done');arena=null};LV.kids=()=>kids;LV.ents=()=>ents;LV.cars=()=>cars;LV.enemies=()=>enemies;LV.arenas=()=>arenas;LV.cam=cam;
 (async()=>{F=await getJSON('assets/frames.json');for(const a of Object.values(ANIM))(F[a[0]]||[]).forEach(f=>img(f.f));await go(LID);requestAnimationFrame(loop)})();
 })();
