@@ -49,6 +49,7 @@ body.ov #moves{display:block}
 <div id="ui">
  <div class="b" data-k="left"  style="left:calc(16px + env(safe-area-inset-left));bottom:24px">◀</div>
  <div class="b" data-k="right" style="left:calc(96px + env(safe-area-inset-left));bottom:24px">▶</div>
+ <div class="b" data-k="up"    style="left:calc(56px + env(safe-area-inset-left));bottom:168px;width:56px;height:56px">▲</div>
  <div class="b" data-k="down"  style="left:calc(56px + env(safe-area-inset-left));bottom:96px;width:56px;height:56px">▼</div>
  <div class="b" data-k="attack"  style="right:calc(96px + env(safe-area-inset-right));bottom:24px">Claw</div>
  <div class="b" data-k="jump"    style="right:calc(16px + env(safe-area-inset-right));bottom:56px;width:72px;height:72px">Jump</div>
@@ -235,7 +236,7 @@ const mb=document.getElementById('mute');const ms=()=>mb.textContent=muted?'🔇
 addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.classList.contains('ov'))}else if(e.key==='Escape')ov(false)});
 lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 </script>
-<script src="controls.js?v=35a"></script>
+<script src="controls.js?v=47a"></script>
 <script src="en.js?v=44d"></script>
 <script src="story.js?v=45a"></script>
 <script src="sfx.js?v=43a"></script>
@@ -256,4 +257,5 @@ lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 <script src="power42.js?v=42a"></script>
 <script src="crimson43.js?v=43a"></script>
 <script src="juggle44.js?v=44b"></script>
-<script src="dev44.js?v=45a"></script></body></html>
+<script src="dev44.js?v=45a"></script>
+<script src="kitti47.js?v=47a"></script></body></html>

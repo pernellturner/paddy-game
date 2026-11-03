@@ -13,6 +13,10 @@
 //   (after its cutscenes); progress saved in the STORY save 'paddyStory'.world1 (separate from free play; ?new or no save = NEW GAME, every form locked; EXP / gifts / boss rewards unlock) {cleared, next}; after 1-7 + W1-X: WORLD 1 COMPLETE -> title.
 // Kids: harmless:true, hitbox:false -> no collision, no damage, no knock-back, can't be attacked; hopping over one = +3 coins once per pass.
 // Cars / buses (entityTypes): shuttle x0..x1 on their lane at speed tiles/s, bump Paddy with knock-back only (no damage), can't be attacked.
+// v47 (Pernell 4 Nov 2026): story Paddy = the free-play practice Paddy: CLAW = the 1-2-3 punch string (JAB · CROSS · LEFT HOOK ·
+//   BODY SHOT · POWER UPPERCUT, same k_ps_* / k_pw_* sheets and size as practice; ▼ + CLAW = BODY SHOT) and the Kitti double-taps:
+//   ◀◀/▶▶ away = DODGE (+CLAW COUNTER SLASH) · toward = DASH (+CLAW DASH STRIKE, counts as a CLAW in the string) ·
+//   ▲▲ SKY POUNCE (+CLAW POUNCE LAUNCHER) · ▼▼ CAT SLIDE (+CLAW SLIDE SWEEP). D-pad is a diamond (▲ top, ◀ ▶, ▼ bottom).
 (function(){
 const TS=48,VW=960,VH=540,SC=0.8,G=2600,JV=835,DJV=760,WALK=250,RUN=370,BW=72,BH=168;
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
@@ -22,13 +26,22 @@ const LV=window.LV={ready:false,log:[],events:[],t:0};
 let F={},IMG={},L=null,S=null,W=0,H=0;
 const K={},P={};
 const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',Space:'jump',KeyZ:'jump',KeyX:'attack',KeyJ:'attack',KeyC:'tail',KeyT:'tail',KeyV:'meow',KeyM:'meow',ShiftLeft:'run',ShiftRight:'run',KeyN:'next',KeyR:'restart'};
-addEventListener('keydown',e=>{const k=KEYMAP[e.code];if(!k)return;e.preventDefault();if(!K[k])P[k]=1;K[k]=1});
-addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)K[k]=0});
+// v47 double-tap: two short presses (each let go within 0.25 s, the 2nd within 0.3 s of the 1st); back/forward = vs his facing at the 1st tap
+const DT=LV.dt={last:{},req:null,log:[]},DTK=['left','right','up','down'];
+function dtap(k){if(!DTK.includes(k))return false;const t=performance.now()/1000,L0=DT.last[k];
+ if(L0&&L0.up&&t-L0.t<.3&&L0.up-L0.t<.25){DT.last[k]=null;const f=L0.face;DT.req={k:k==='left'||k==='right'?((k==='right'?1:-1)===f?'fwd':'back'):k,face:f,t};DT.log.push('dtap:'+DT.req.k);return true}
+ DT.last[k]={t,up:0,face:p.face};return false}
+function dtrel(k){const L0=DT.last[k];if(L0&&!L0.up)L0.up=performance.now()/1000}
+function keyDown(k){if(!K[k]){const d=dtap(k);if(!(d&&k==='up'))P[k]=1}K[k]=1}   // the 2nd ▲ of a double-tap is the pounce, not a double jump
+function keyUp(k){K[k]=0;dtrel(k)}
+addEventListener('keydown',e=>{const k=KEYMAP[e.code];if(!k)return;e.preventDefault();if(e.repeat){K[k]=1;return}keyDown(k)});
+addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)keyUp(k)});
 // ---------- loading ----------
 async function getJSON(u){const r=await fetch(u+'?v='+Date.now());if(!r.ok)throw new Error(u+' '+r.status);return r.json()}
 async function loadLevel(id){for(const base of ['levels/','levels-dev/']){try{return await getJSON(base+id+'.json')}catch(_){}}throw new Error('level '+id+' not found')}
-const ANIM={idle:['idle_test_1',4],walk:['o_walk',11],run:['o_run',12],jump:['o_jump',8],fall:['o_fall',6],land:['o_land',10],djump:['doublejump',14],
- climb:['o_climb',8],wall:['walljump',10],ledge:['ledge',7],hurt:['o_hurt',1],attack:['clawcombo',22],victory:['victory',7]};
+// v47: the same sheets / frames as the free-play practice room's base Paddy (k_run, k_jump rise/apex/fall/land, hurt) - [sheet, fps, frames?, loop?]
+const ANIM={idle:['idle_test_1',4],walk:['o_walk',11],run:['k_run',15],jump:['k_jump',8,[1,2],0],apex:['k_jump',1,[3],0],fall:['k_jump',1,[4],0],land:['k_jump',1,[5],0],djump:['doublejump',14],
+ climb:['o_climb',8],wall:['walljump',10],ledge:['ledge',7],hurt:['hurt',5,[0,1,2,3,5],0],attack:['clawcombo',22],victory:['victory',7]};
 // v45b: one consistent Paddy. Every sheet was drawn at SC, but the sheets were painted at different sizes (land/fall/jump/climb
 // smaller, roar/victory/air spins bigger), so Paddy grew and shrank between moves. PSC rescales each sheet so his body matches
 // idle_test_1 at SC (the free-play / s4.png size). IDLE_SEQ = free play's idle order: frames 2 and 3 have a different face
@@ -126,7 +139,15 @@ function update(dt){LV.t+=dt;p.t+=dt;p.lt=(p.lt||0)+dt;p.inv=Math.max(0,p.inv-dt
  }else if(p.state==='ledge'){p.anim='ledge';if(P.jump||K.up||p.t>.35){const h=p.hang;p.x=(h.c+.5)*TS+p.face*0;p.y=h.r*TS;unembed();p.state='normal';p.ground=true;p.vy=0;LV.log.push('pullup')}else if(K.down){p.state='normal';p.vy=100}
  }else{
   if(p.state==='hurt'&&(p.t>.35||p.ground&&p.t>.12))p.state='normal';
-  if(p.state==='normal'){const sp=(K.run||p.power>0?RUN:WALK)*(p.power>0?1.15:1);const want=dir*sp*(p.mv&&p.ground?.2:1);p.vx+=(want-p.vx)*Math.min(1,dt*(p.ground?14:6));if(dir&&!p.mv)p.face=dir;
+  if(p.state==='normal'&&DT.req){const q=DT.req;DT.req=null;const busy=p.mv&&(p.mv.d.fin||p.mv.d.dive||p.mv.d.dtap);   // v47 double-tap moves
+   if(performance.now()/1000-q.t<.25&&!busy){
+    if(q.k==='back'){p.face=q.face;startMove('dodge')}
+    else if(q.k==='fwd'){p.face=q.face;startMove('dash')}
+    else if(q.k==='up'){if(!p.kpUsed&&!p.wallDir)startMove('pounce');else P.jump=1}
+    else if(q.k==='down'&&p.ground)startMove('slide');
+    if(p.mv&&p.mv.d.dtap)DT.log.push(p.mv.id)}}
+  if(p.ground&&!(p.mv&&p.mv.id==='pounce'))p.kpUsed=false;
+  if(p.state==='normal'){const sp=(K.run||p.power>0?RUN:WALK)*(p.power>0?1.15:1);const want=dir*sp*(p.mv&&p.ground?.2:1);if(!(p.mv&&p.mv.d.vx))p.vx+=(want-p.vx)*Math.min(1,dt*(p.ground?14:6));if(dir&&!p.mv)p.face=dir;
    if(K.up&&!p.mv&&trunkAt(p.x,p.y)>=0){p.climbX=trunkAt(p.x,p.y);p.state='climb';p.vx=0;p.vy=0;P.up=0;LV.log.push('climb')}
    else if(P.up)P.jump=1;   // ↑ = jump away from a trunk
    if(P.down&&p.ground){const c0=Math.floor((p.x-BW/2+4)/TS),c1=Math.floor((p.x+BW/2-5)/TS),r=Math.round(p.y/TS);let one=false;for(let c=c0;c<=c1;c++){if(ONE.has(tile(c,r)))one=true}
@@ -134,13 +155,13 @@ function update(dt){LV.t+=dt;p.t+=dt;p.lt=(p.lt||0)+dt;p.inv=Math.max(0,p.inv-dt
    if(P.jump){if(p.ground){p.vy=-JV;p.ground=false;p.jumps=1;p.jumpT=p.lt;fx.push({k:'dust',x:p.x,y:p.y,l:.4})}
     else if(p.wallDir&&!p.ground){p.vy=-DJV;p.vx=-p.wallDir*380;p.face=-p.wallDir;p.jumps=1;LV.log.push('walljump');msg('WALL JUMP!')}
     else if(p.jumps<2){p.vy=-DJV;p.jumps=2;LV.log.push('djump');fx.push({k:'ring',x:p.x,y:p.y-30,l:.4})}}
-   if(!K.jump&&!K.up&&p.vy<-300)p.vy+=G*dt*.9;   // short hop when jump is let go
+   if(!K.jump&&!K.up&&p.vy<-300&&!(p.mv&&p.mv.d.vy))p.vy+=G*dt*.9;   // short hop when jump is let go
    if(P.jump&&p.mv&&!p.mv.d.air)p.mv=null;   // a jump cancels a ground move
    moveInput()}
   if(p.state!=='climb'&&p.state!=='ledge'){p.vy=Math.min(p.vy+G*dt,1500);moveX(dt);moveY(dt);if(p.state==='normal')tryLedge()}
   if(p.ground&&tile(Math.floor(p.x/TS),Math.round(p.y/TS))!=='^')p.safe={x:p.x,y:p.y};
   if(boxHits(p.x,p.y,BW-20,BH-20,(c,r)=>tile(c,r)==='~'))water();
-  p.anim=p.state==='hurt'?'hurt':p.mv?'mv':!p.ground?(p.wallDir&&p.vy>0?'wall':p.jumps===2&&p.vy<0?'djump':p.vy<0?'jump':'fall'):Math.abs(p.vx)>RUN*.8?'run':Math.abs(p.vx)>30?'walk':'idle'}
+  p.anim=p.state==='hurt'?'hurt':p.mv?'mv':!p.ground?(p.wallDir&&p.vy>0?'wall':p.jumps===2&&p.vy<0?'djump':p.vy<-260?'jump':p.vy<200?'apex':'fall'):Math.abs(p.vx)>RUN*.8?'run':Math.abs(p.vx)>30?'walk':'idle'}
  // v45 moves: hits enemies, birds, the boss, breakables and item blocks (moveHit)
  updMove(dt);
  // checkpoints / goal
@@ -153,19 +174,30 @@ function update(dt){LV.t+=dt;p.t+=dt;p.lt=(p.lt||0)+dt;p.inv=Math.max(0,p.inv-dt
 // Free play's base Paddy routes: CCCTT TAIL SPIN SLAM · CCCCCT COMET TAIL · TTTCCC CLAW CYCLONE · CCCM MEOW CANNON
 // hitbox: rx in front, bk behind, up above his feet, dn below them (px); hits at the tick times (s); each tick hits each target once.
 const MV={
- claw1:{a:'o_claw1',dur:.24,hits:[.06],rx:125,bk:20,up:160,dn:10,kb:200,say:'SCRATCH!',c:'#ffffff',lunge:150},
- claw2:{a:'o_claw2',dur:.24,hits:[.06],rx:130,bk:20,up:170,dn:10,kb:220,say:'SWIPE!',c:'#bfe8ff',lunge:160},
- claw3:{a:'o_claw3',fps:10,dur:.34,hits:[.08],rx:145,bk:20,up:180,dn:10,kb:420,say:'TRIPLE CLAW!',c:'#ffe08a',lunge:220,shake:5},
- claw4:{a:'o_claw1',dur:.22,hits:[.05],rx:130,bk:20,up:165,dn:10,kb:220,say:'CLAW 4!',c:'#ffd0a0',lunge:150},
- claw5:{a:'o_claw2',dur:.24,hits:[.05],rx:135,bk:20,up:175,dn:10,kb:300,say:'CLAW 5!',c:'#ffb870',lunge:170},
+ // v47: the practice room's punch string (same sheets, same size)
+ claw1:{a:'k_ps_jab1',fps:20,dur:.3,hits:[.12],rx:150,bk:20,up:175,dn:10,kb:200,say:'JAB!',c:'#ffffff',lunge:110},
+ claw2:{a:'k_ps_cross',fps:20,dur:.3,hits:[.12],rx:155,bk:20,up:175,dn:10,kb:230,say:'CROSS!',c:'#bfe8ff',lunge:120},
+ claw3:{a:'k_ps_lhook',fps:18,dur:.34,hits:[.14],rx:155,bk:20,up:180,dn:10,kb:420,say:'LEFT HOOK!',c:'#bfe8ff',lunge:150,shake:5},
+ claw4:{a:'k_ps_rbody',fps:20,dur:.3,hits:[.12],rx:150,bk:20,up:140,dn:10,kb:300,say:'BODY SHOT!',c:'#ffb040',lunge:120,shake:4},
+ claw5:{a:'k_pw_upper',fps:22,dur:.46,hits:[.18,.24],rx:140,bk:30,up:290,dn:10,kb:120,launch:-760,say:'UPPERCUT!',c:'#ffe14d',lunge:80,shake:6},
+ body:{a:'k_ps_rbody',fps:20,dur:.3,hits:[.12],rx:150,bk:20,up:140,dn:10,kb:300,say:'BODY SHOT!',c:'#ffb040',lunge:120,shake:4},
+ // v47 Kitti double-taps (dtap) and their + CLAW follow-ups (existing Paddy frames)
+ dodge:{a:'dash',fps:14,dur:.3,hits:[],vx:-760,inv:.34,say:'DODGE!',c:'#bfe8ff',dtap:'back',ghost:1},
+ dash:{a:'dash',fps:14,dur:.26,hits:[],vx:900,say:'DASH!',c:'#ffffff',dtap:'fwd',ghost:1},
+ pounce:{a:'pounce',fps:6,dur:.6,hits:[],air:1,vy:-980,vx:520,say:'SKY POUNCE!',c:'#ffe08a',dtap:'up',ghost:1},
+ slide:{a:'slide',fps:12,dur:.42,hits:[],vx:820,inv:.3,say:'CAT SLIDE!',c:'#ffe08a',dtap:'down',ghost:1},
+ counter:{a:'k_m_power',fps:14,dur:.45,hits:[.14],rx:185,bk:20,up:190,dn:20,kb:520,launch:-420,vx:620,inv:.4,say:'COUNTER SLASH!',c:'#7fffd4',shake:7,trail:'#bfffe8',ghost:1},
+ dstrike:{a:'dashstrike',fps:14,dur:.38,hits:[.05,.16],rx:165,bk:20,up:160,dn:10,kb:380,vx:1000,say:'DASH STRIKE!',c:'#ff9fd0',shake:6,ghost:1},
+ plaunch:{a:'launcher',fps:16,dur:.5,hits:[.13,.22],rx:165,bk:30,up:280,dn:120,kb:120,launch:-950,air:1,swoop:1,say:'POUNCE LAUNCHER!',c:'#ffd070',shake:8,ghost:1},
+ sweep:{a:'tailwhip',fps:18,dur:.42,hits:[.06,.16],rx:190,bk:40,up:100,dn:10,kb:200,launch:-600,vx:480,say:'SLIDE SWEEP!',c:'#ffb070',trail:'#ffe9a8',shake:6},
  tail1:{a:'tailwhip',fps:16,dur:.3,hits:[.08],rx:135,bk:120,up:140,dn:10,kb:300,say:'TAIL WHIP!',c:'#ffd0a0',trail:'#fff7e0'},
  tail2:{a:'tailwhip',fps:18,dur:.3,hits:[.08],rx:140,bk:125,up:145,dn:10,kb:340,say:'DOUBLE WHIP!',c:'#ffb870',trail:'#ffd0a0'},
  tail3:{a:'tailwhip',fps:18,dur:.38,hits:[.1],rx:145,bk:130,up:160,dn:10,kb:160,launch:-820,say:'TAIL LAUNCHER!',c:'#ff9a2e',trail:'#ffb870',shake:6},
  meow:{a:'o_roar',dur:.42,hits:[.12],rx:210,bk:0,up:170,dn:10,kb:560,say:'MEOW!',c:'#bfe8ff',wave:1,cool:.7},
  upper:{a:'uppercut',fps:12,dur:.42,hits:[.04,.16],rx:120,bk:40,up:270,dn:10,kb:120,launch:-760,say:'UPPERCUT!',c:'#ffe08a',air:1,vy:-800},
- airswipe:{a:'o_airswipe',dur:.28,hits:[.05],rx:145,bk:30,up:200,dn:70,kb:260,say:'AIR SWIPE!',c:'#bfe8ff',air:1,vyMax:-120},
- airspin:{a:'o_airspin',fps:14,dur:.42,loop:1,hits:[.05,.17,.29],rx:140,bk:140,up:200,dn:80,kb:280,say:'AIR SPIN!',c:'#ffe08a',air:1,vyMax:-60,trail:'#fff7e0'},
- dive:{a:'o_diveclaw',dur:.9,hits:[.05,.15,.25,.35,.45,.55,.65,.75],rx:90,bk:50,up:90,dn:60,kb:200,say:'DIVE CLAW!',c:'#ff9a7a',air:1,dive:1},
+ airswipe:{a:'kt_m_airswipe',dur:.28,hits:[.05],rx:145,bk:30,up:200,dn:70,kb:260,say:'AIR SWIPE!',c:'#bfe8ff',air:1,vyMax:-120},
+ airspin:{a:'k_m_aircart',fps:14,dur:.42,loop:1,hits:[.05,.17,.29],rx:140,bk:140,up:200,dn:80,kb:280,say:'AIR SPIN!',c:'#ffe08a',air:1,vyMax:-60,trail:'#fff7e0'},
+ dive:{a:'kt_m_diveclaw',dur:.9,hits:[.05,.15,.25,.35,.45,.55,.65,.75],rx:90,bk:50,up:90,dn:60,kb:200,say:'DIVE CLAW!',c:'#ff9a7a',air:1,dive:1},
  // named routes (free play's base Paddy combos)
  tailslam:{a:'o_airspin',fps:16,dur:.7,loop:1,hits:[.06,.2,.34,.5],rx:160,bk:160,up:220,dn:10,kb:420,launch:-700,dmg:1,say:'TAIL SPIN SLAM!',c:'#ff9a2e',trail:'#ffb870',shake:8,fin:1},
  comet:{a:'o_airspin',fps:20,dur:.8,loop:1,hits:[.06,.18,.3,.42,.6],rx:170,bk:170,up:230,dn:10,kb:520,launch:-760,dmg:1,say:'COMET TAIL!',c:'#ff6a2e',trail:'#ff8a3a',shake:9,fin:1},
@@ -173,31 +205,41 @@ const MV={
  cannon:{a:'o_roar',dur:.55,hits:[.12],rx:300,bk:0,up:190,dn:10,kb:900,dmg:2,say:'MEOW CANNON!',c:'#9fdcff',wave:2,shake:9,fin:1}};
 for(const d of Object.values(MV))d.fps=d.fps||12;
 let hs=0,shake=0;   // hitstop (s) + screen shake (px)
-function moveInput(){if(p.mv&&p.mv.t<p.mv.d.dur*.55){for(const k of ['attack','tail','meow'])if(P[k]){p.buf=k;p.bufT=.3}return}   // buffered until the move can cancel
+const FU={back:'counter',fwd:'dstrike',up:'plaunch',down:'sweep'},FU_IDS=new Set(Object.values(FU));
+function moveInput(){
+ if(P.attack){const q=p.mv&&p.mv.d.dtap?p.mv.d.dtap:(p.dtEnd&&p.lt-p.dtEnd.t<.3?p.dtEnd.k:null);   // + CLAW right after a double-tap move
+  if(q){p.dtEnd=null;P.attack=0;p.buf=null;const id=FU[q];if(id==='dstrike')p.seq=(p.seq+'C').slice(-8);startMove(id);DT.log.push('fu:'+id);return}}
+ if(p.mv&&p.mv.t<p.mv.d.dur*.55){for(const k of ['attack','tail','meow'])if(P[k]){p.buf=k;p.bufT=.3}return}   // buffered until the move can cancel
  let k=P.attack?'attack':P.tail?'tail':P.meow?'meow':null;if(!k&&p.buf&&p.bufT>0)k=p.buf;if(!k)return;p.buf=null;
  if(p.chainT<=0&&!p.mv)p.seq='';
  let id=null;
  if(!p.ground&&k==='attack'&&K.up&&p.airN===0&&p.vy<0&&(p.lt-(p.jumpT||-9))<.35)id='upper';   // ▲ is also jump here: ▲ + CLAW right after take-off = UPPERCUT
  else if(!p.ground){if(k==='attack'){if(K.down)id='dive';else if(p.airN===0)id='airswipe';else if(p.airN<3)id='airspin'}else if(k==='tail'){if(p.airN<3)id='airspin'}else if(p.meowCool<=0)id='meow';if(id&&id!=='meow')p.airN++}
  else if(k==='attack'&&K.up)id='upper';
+ else if(k==='attack'&&K.down){id='body';p.seq=(p.seq+'C').slice(-8)}   // v47: ▼ + CLAW = BODY SHOT (as in practice)
  else{const s=p.seq+(k==='attack'?'C':k==='tail'?'T':'M');
   if(k==='attack'){if(/TTTCCC$/.test(s))id='cyclone';else{const n=(s.match(/C+$/)[0]).length;id=n<=5?'claw'+n:'claw1';if(n>5)p.seq=''}}
   else if(k==='tail'){if(/CCCCCT$/.test(s))id='comet';else if(/CCCTT$/.test(s))id='tailslam';else{const n=(s.match(/T+$/)[0]).length;id=n<=3?'tail'+n:'tail1';if(n>3)p.seq=''}}
   else{if(/CCCM$/.test(s))id='cannon';else if(p.meowCool<=0)id='meow'}
   if(id)p.seq=(p.seq+(k==='attack'?'C':k==='tail'?'T':'M')).slice(-8)}
  if(id)startMove(id)}
-function startMove(id){const d=MV[id];p.mv={id,d,t:0,ti:0};if(id==='upper')p.airN=1;p.atk=d.dur;p.chainT=0;if(d.fin)p.seq='';if(id==='meow'||id==='cannon')p.meowCool=d.cool||.5;
+function startMove(id){const d=MV[id];p.mv={id,d,t:0,ti:0};if(id==='upper')p.airN=1;p.atk=d.dur;p.chainT=0;
+ if(d.vx)p.vx=p.face*d.vx;if(d.inv){p.inv=Math.max(p.inv,d.inv);p.mvInv=p.lt+d.inv}if(id==='pounce')p.kpUsed=true;
+ if(d.swoop){p.vy=0;let best=null;for(const e of enemies){if(!e.alive)continue;const dx=(e.x-p.x)*p.face,dy=e.y-p.y;if(dx>-40&&dx<320&&dy>-140&&dy<460&&(!best||dx<(best.x-p.x)*p.face))best=e}p.mv.tg=best}if(d.fin)p.seq='';if(id==='meow'||id==='cannon')p.meowCool=d.cool||.5;
  if(d.lunge&&p.ground)p.vx=p.face*d.lunge;if(d.vy){p.vy=d.vy;p.ground=false;p.jumps=2}if(d.vyMax!=null)p.vy=Math.min(p.vy,d.vyMax);if(d.dive){p.vy=1100;p.vx=p.face*120}
  if(d.wave)fx.push({k:'wave',x:p.x+p.face*40,y:p.y-90,l:.5,r:d.wave>1?260:170,c:d.c,face:p.face});
- fx.push({k:'say',t:d.say,c:d.c,x:p.x,y:p.y-BH-24,l:.8});if(d.fin)msg(d.say,d.c,true);
+ fx.push({k:'say',t:d.say,c:d.c,x:p.x,y:p.y-BH-(FU_IDS.has(id)?58:24),l:.8});if(d.fin)msg(d.say,d.c,true);
  LV.log.push('attack');LV.log.push('move:'+id);LV.moves=(LV.moves||0)+1}
 function updMove(dt){p.chainT=Math.max(0,p.chainT-dt);p.bufT=Math.max(0,(p.bufT||0)-dt);p.meowCool=Math.max(0,(p.meowCool||0)-dt);if(p.ground)p.airN=0;
  const m=p.mv;if(!m){p.atk=0;return}const d=m.d,t0=m.t;m.t+=dt;p.atk=Math.max(.01,d.dur-m.t);
+ if(d.vx)p.vx=p.face*d.vx*Math.max(.15,1-m.t/d.dur*.85);
+ if(d.swoop){if(m.t<.12){const e=m.tg&&m.tg.alive?m.tg:null;if(e){p.vx=(e.x-p.face*90-p.x)*12;p.vy=Math.max(-200,Math.min(1400,(e.y-p.y)*12))}else{p.vx*=.5;p.vy=Math.min(p.vy,0)}}else if(t0<.12){p.vy=-560;p.ground=false}}   // pounce launcher: swoop onto him, then swipe up
+ if(d.ghost&&Math.floor(m.t*30)!==Math.floor(t0*30)){const g=LV.pFrame&&LV.pFrame.split(':');if(g)fx.push({k:'ghost',key:g[0],fi:+g[1],x:p.x,y:p.y,face:p.face,l:.22});if(d.vx&&Math.abs(d.vx)>600)fx.push({k:'line',x:p.x-p.face*(30+Math.random()*60),y:p.y-20-Math.random()*120,len:70+Math.random()*80,face:Math.sign(p.vx)||p.face,l:.3})}
  if(d.vyMax!=null&&m.t<d.dur*.8)p.vy=Math.min(p.vy,d.vyMax+m.t*600);
  if(d.dive)p.vy=Math.max(p.vy,1000);
  for(const ti of d.hits)if(t0<ti&&m.t>=ti)moveHit(d);
  if(d.dive&&p.ground){fx.push({k:'ring',x:p.x,y:p.y,l:.45});shake=Math.max(shake,6);moveHit(Object.assign({},d,{rx:120,bk:120,up:100,dn:20,kb:320,dmg:1}));p.mv=null;p.atk=0;p.chainT=.2;return}
- if(m.t>=d.dur||(d.air&&!d.dive&&p.ground&&m.t>.12&&d!==MV.upper)||(d===MV.upper&&p.ground&&m.t>.2)){p.mv=null;p.atk=0;p.chainT=.5;if(p.buf&&p.bufT>0)moveInput()}}
+ if(m.t>=d.dur||(d.air&&!d.dive&&p.ground&&m.t>.12&&d!==MV.upper)||(d===MV.upper&&p.ground&&m.t>.2)){p.mv=null;p.atk=0;p.chainT=.5;if(d.dtap)p.dtEnd={k:d.dtap,t:p.lt};if(p.buf&&p.bufT>0)moveInput()}}
 function moveHit(d){const x0=p.face>0?p.x-d.bk:p.x-d.rx,x1=p.face>0?p.x+d.rx:p.x+d.bk,y0=p.y-d.up,y1=p.y+d.dn;let n=0;
  const ov=(ax0,ax1,ay0,ay1)=>ax1>x0&&ax0<x1&&ay1>y0&&ay0<y1;
  for(const e of enemies){if(!e.alive)continue;if(ov(e.x-e.w/2,e.x+e.w/2,e.y-e.h,e.y)){const dir=(d.bk>=100?Math.sign(e.x-p.x):p.face)||p.face;hitEnemy(e,dir,d);n++}}
@@ -280,7 +322,7 @@ const TCSS=document.createElement('style');TCSS.textContent=`#tc{position:fixed;
 const tc=document.createElement('div');tc.id='tc';if(!TOUCH)tc.classList.add('nopad');
 const TB=[['tl','◀','left'],['tr','▶','right'],['tu','▲','up'],['td','▼','down'],['tj','JUMP','jump'],['ta','CLAW','attack'],['tt','TAIL','tail'],['tm','MEOW','meow'],['tR','RUN','run']];
 for(const [id,t,k] of TB){const b=document.createElement('button');b.id=id;b.className='pad';b.textContent=t;b.dataset.k=k;b.setAttribute('aria-label',k);
- const dn=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}if(!K[k])P[k]=1;K[k]=1;b.classList.add('on')},up=e=>{e.preventDefault();K[k]=0;b.classList.remove('on')};
+ const dn=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}keyDown(k);b.classList.add('on')},up=e=>{e.preventDefault();if(K[k])keyUp(k);b.classList.remove('on')};
  b.addEventListener('pointerdown',dn);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up);b.addEventListener('contextmenu',e=>e.preventDefault());tc.appendChild(b)}
 const home=document.createElement('button');home.id='thome';home.className='pill';home.textContent='🏠 TITLE';home.addEventListener('click',e=>{e.preventDefault();location.href='index.html'});tc.appendChild(home);
 const rs=document.createElement('button');rs.id='trestart';rs.className='pill';rs.textContent='↺ CHECKPOINT';rs.setAttribute('aria-label','restart from the last checkpoint');rs.addEventListener('click',e=>{e.preventDefault();if(LV.pause||p.done)return;LV.log.push('restart:cp');respawn(false);msg('BACK TO THE CHECKPOINT','#ffd0a0')});tc.appendChild(rs);   // v44 audit: touch restart if he ever gets stuck
@@ -291,7 +333,7 @@ function layoutTC(){const w=innerWidth,h=innerHeight,s=Math.min(w/VW,h/VH),cw=VW
  const put=(id,x,y)=>{const e=document.getElementById(id);e.style.left=x+'px';e.style.top=y+'px'};
  // bottom-anchored clusters: d-pad left, actions right (they sit in the side bars on wide phones and under the picture on tall ones)
  const by=h-m-b,lx=m+Math.max(0,(Math.min(sideW,b*2.3)-b*2-g)/2);
- put('tl',lx,by);put('tr',lx+b+g,by);put('tu',lx+(b+g)/2,by-b-g);put('td',lx+(b+g)/2+(b+g),by-b-g);
+ {const hx=Math.round((b+g)*.62),vy=b+Math.round(g/2),my=by-vy;put('tl',lx,my);put('tr',lx+2*hx,my);put('tu',lx+hx,my-vy);put('td',lx+hx,my+vy)}   // v47 diamond: ▲ top, ◀ ▶, ▼ bottom (no two buttons' boxes touch)
  const rx=w-m-b;put('tj',rx,by);put('ta',rx-b-g,by);put('tm',rx-2*(b+g),by);put('tR',rx-(b+g)/2,by-b-g);put('tt',rx-(b+g)*1.5,by-b-g);   // v45: CLAW · TAIL · MEOW like free play
  {const left=(w-cw)/2,top=(h-ch)/2,pw=home.offsetWidth+rs.offsetWidth+8;   // v44: pills never cover the HUD (hearts/coins): side bar if there is room, else just under the HUD strip
   let px,py;if(left>=Math.max(home.offsetWidth,rs.offsetWidth)+2*m){px=m;py=m;home.style.left=px+'px';home.style.top=py+'px';rs.style.left=px+'px';rs.style.top=(py+home.offsetHeight+8)+'px'}
@@ -555,12 +597,18 @@ function drawEnts(){for(const e of ents){if(e.got)continue;const x=e.x-cam.x,y=e
  for(const e of enemies){if(!e.alive&&e.ko<=0)continue;const key='en_'+(e.spr||e.id)+(e.alive?(e.hurt>0?'_m_hurt':'_move'):'_m_ko');const x=e.x-cam.x,y=e.y-cam.y;if(x<-100||x>VW+100)continue;
   if(!drawFrame(key,e.t*10,x,y,e.face,SC*(e.sc||1),e.alive?1:e.ko)){const mv='en_'+(e.spr||e.id)+'_move',fb=[key,mv].map(k=>(F[k]||[]).findIndex(f=>ok(img(f.f)))).map((i,j)=>[[key,mv][j],i]).find(q=>q[1]>=0);   // v44d: still loading -> a loaded frame, never a box flash
    if(fb)drawFrame(fb[0],fb[1],x,y,e.face,SC*(e.sc||1),e.alive?1:e.ko);else if(!F[key]&&!F[mv]){ctx.fillStyle='#a05a3a';ctx.fillRect(x-e.w/2,y-e.h,e.w,e.h)}}}}
-function drawPaddy(){if(p.anim==='mv'&&!p.mv)p.anim=p.ground?'idle':'fall';const a=p.anim==='mv'?[p.mv.d.a,p.mv.d.fps||12]:(ANIM[p.anim]||ANIM.idle),key=a[0];const nf=(F[key]||[1]).length;let fi=p.anim==='climb'?(p.y/24):p.anim==='mv'?(p.mv.d.loop?p.mv.t*a[1]:Math.min(nf-1,p.mv.t*a[1])):LV.t*a[1];
- if(p.mv&&p.mv.d.trail)moveTrail();const blink=p.inv>0&&Math.floor(LV.t*20)%2;
+function drawPaddy(){if(p.anim==='mv'&&!p.mv)p.anim=p.ground?'idle':'fall';const a=p.anim==='mv'?[p.mv.d.a,p.mv.d.fps||12]:(ANIM[p.anim]||ANIM.idle),key=a[0];const nf=(F[key]||[1]).length;if(p.anim!==p._la){p._la=p.anim;p._at=LV.t}
+ let fi=p.anim==='climb'?(p.y/24):p.anim==='mv'?(p.mv.d.loop?p.mv.t*a[1]:Math.min(nf-1,p.mv.t*a[1])):LV.t*a[1];
+ if(p.anim!=='mv'&&a[2]){const q=a[2],n=Math.floor((LV.t-p._at)*a[1]);fi=q[a[3]?n%q.length:Math.min(q.length-1,n)]}   // v47: frame subsets (practice order)
+ if(p.mv&&p.mv.d.trail)moveTrail();const blink=p.inv>0&&Math.floor(LV.t*20)%2&&!(p.lt<(p.mvInv||0));   // v47: a move's own i-frames don't blink
  const idle=key==='idle_test_1';if(idle)fi=IDLE_SEQ[Math.floor(fi)%IDLE_SEQ.length];LV.pFrame=key+':'+(Math.floor(fi)%nf);
  if(!drawFrame(key,fi,p.x-cam.x,p.y-cam.y+(p.anim==='ledge'?BH*.45:0),p.face,SC*(PSC[key]||1),blink?.4:1,idle?1+.012*Math.sin(LV.t*2.6):1)){ctx.fillStyle='#e8c8a0';ctx.fillRect(p.x-cam.x-BW/2,p.y-cam.y-BH,BW,BH)}
  if(qs.has('hitbox')){ctx.strokeStyle='#f0f';ctx.strokeRect(p.x-cam.x-BW/2,p.y-cam.y-BH,BW,BH)}}
-function drawFx(dt){for(const f of fx){f.l-=dt;const x=f.x-cam.x,y=f.y-cam.y;ctx.globalAlpha=Math.max(0,Math.min(1,f.l*2));
+// v47: afterimages + speed lines of the double-tap moves, drawn behind Paddy
+function drawTrails(){for(const f of fx){if(f.k!=='ghost'&&f.k!=='line')continue;const x=f.x-cam.x,y=f.y-cam.y;
+  if(f.k==='ghost')drawFrame(f.key,f.fi,x,y,f.face,SC*(PSC[f.key]||1),Math.max(0,f.l/.22)*.32,1);
+  else{ctx.globalAlpha=Math.max(0,f.l/.3)*.7;ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-f.face*f.len,y);ctx.stroke();ctx.lineWidth=1;ctx.globalAlpha=1}}}
+function drawFx(dt){for(const f of fx){f.l-=dt;if(f.k==='ghost'||f.k==='line')continue;const x=f.x-cam.x,y=f.y-cam.y;ctx.globalAlpha=Math.max(0,Math.min(1,f.l*2));
   if(f.k==='say'){f.y-=40*dt;ctx.font='bold 24px sans-serif';ctx.textAlign='center';ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=5;ctx.strokeText(f.t,x,y);ctx.fillStyle=f.c;ctx.fillText(f.t,x,y);ctx.lineWidth=1}
   else if(f.k==='wave'){ctx.strokeStyle=f.c||'#bfe8ff';ctx.lineWidth=6;ctx.beginPath();const a0=f.face<0?Math.PI:0;ctx.arc(x,y,(1-f.l/.5)*f.r+20,a0-1.1,a0+1.1);ctx.stroke();ctx.lineWidth=1}
   else if(f.k==='chip'){f.vy+=G*.5*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;ctx.fillStyle='#c9b48a';ctx.fillRect(x,y,8,8)}else if(f.k==='pow'){ctx.fillStyle='#fff';ctx.font='bold 26px sans-serif';ctx.textAlign='center';ctx.fillText('POW!',x,y)}
@@ -573,16 +621,16 @@ function hud(dt){ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(10,10,420,40);ctx.
  ctx.globalAlpha=1;ctx.lineWidth=1;msgs=msgs.filter(m=>m.l>0);
  // v45: Paddy's moves card at the start of 1-1 (and for 4 s at the start of every other level)
  {const T=L.id==='silverdale_1'?10:4;if((p.lt||0)<T&&!p.done){const a=Math.min(1,(T-p.lt)*1.5);ctx.globalAlpha=a;const w=720,x=VW/2-w/2,y=112;ctx.fillStyle='rgba(20,12,36,.78)';ctx.fillRect(x,y,w,L.id==='silverdale_1'?96:40);ctx.strokeStyle='#ffd34d';ctx.lineWidth=2;ctx.strokeRect(x,y,w,L.id==='silverdale_1'?96:40);ctx.lineWidth=1;
-  ctx.fillStyle='#ffe08a';ctx.textAlign='center';ctx.font='bold 17px sans-serif';ctx.fillText('PADDY\'S MOVES:  CLAW ×3 combo · TAIL ×3 · MEOW',VW/2,y+26);
+  ctx.fillStyle='#ffe08a';ctx.textAlign='center';ctx.font='bold 17px sans-serif';ctx.fillText('PADDY\'S MOVES:  CLAW = 1-2-3 punch combo · TAIL ×3 · MEOW · double-tap ◀◀ ▶▶ ▲▲ ▼▼ (+ CLAW)',VW/2,y+26);
   if(L.id==='silverdale_1'){ctx.fillStyle='#fff';ctx.font='bold 15px sans-serif';ctx.fillText('▲ + CLAW = UPPERCUT (reaches birds!) · CLAW in the air = AIR SWIPE / SPIN',VW/2,y+52);ctx.font='bold 14px sans-serif';ctx.fillText('combos: CLAW×3 + TAIL×2 · CLAW×5 + TAIL · CLAW×3 + MEOW · TAIL×3 + CLAW×3',VW/2,y+78)}ctx.globalAlpha=1}}
  if(p.done){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(VW/2-220,VH/2-60,440,120);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 24px sans-serif';ctx.fillText('🪙 '+p.coins+' · 🧶 '+p.yarn+'/4 · '+(TOUCH?'tap ':'press N or ')+(isLast()?'for the title':'NEXT for the next level'),VW/2,VH/2+8);if(isLast()){ctx.fillStyle='#ffe14d';ctx.font='bold 30px sans-serif';ctx.fillText('🌏 WORLD 1 COMPLETE!',VW/2,VH/2-26)}}}
 let last=0;function loop(ts){const dt=Math.min(.033,(ts-(last||ts))/1000);last=ts;if(L&&!LV.pause&&hs>0){hs-=dt}else if(L&&!LV.pause){update(dt);updEnemies(dt);updKids(dt);updCars(dt);updArenas();updBoss(dt);updEnts();updCam(dt)}
- if(L){ctx.save();sky();shake=Math.max(0,shake-dt*30);if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);drawTiles();signs();drawEnts();drawBoss();drawPaddy();drawFx(dt);ctx.restore();if(artOn())artFront();hud(dt);bossHud()}requestAnimationFrame(loop)}
+ if(L){ctx.save();sky();shake=Math.max(0,shake-dt*30);if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);drawTiles();signs();drawEnts();drawBoss();drawTrails();drawPaddy();drawFx(dt);ctx.restore();if(artOn())artFront();hud(dt);bossHud()}requestAnimationFrame(loop)}
 function fit(){const s=Math.min(innerWidth/VW,innerHeight/VH);cv.style.width=VW*s+'px';cv.style.height=VH*s+'px'}addEventListener('resize',fit);fit();
 async function go(id){try{const lv=await loadLevel(id);history.replaceState(null,'','?level='+id+(qs.has('hitbox')?'&hitbox':''));init(lv)}catch(e){LV.err=String(e);console.error(e)}}
 LV.go=go;LV.p=p;LV.tile=tile;LV.state=()=>({id:L&&L.id,x:p.x/TS,y:p.y/TS,state:p.state,ground:p.ground,coins:p.coins,hp:p.hp,arena:arena&&arena.name,done:p.done,log:LV.log.slice(-20)});
 LV.teleport=(tx,ty)=>{if(arena){arena.state='idle';arena.list.forEach(e=>{e.alive=false;e.ko=0});if(arena.boss)arena.list=[];arena=null}p.x=(tx+.5)*TS;p.y=(ty+1)*TS;p.vx=p.vy=0;p.state='normal';cam.x=Math.max(0,Math.min(W*TS-VW,p.x-VW*.4))};
 LV.boss=()=>boss&&{id:boss.id,name:boss.def.name,title:boss.def.title,hp:boss.hp,max:boss.max,st:boss.st,alive:boss.alive,x:boss.x/TS,y:boss.y/TS,wTiles:boss.w/TS,hTiles:boss.h/TS,wPx:boss.w,hPx:boss.h,arena:bossA&&{state:bossA.state,x0:bossA.x0,x1:bossA.x1,trig:bossA.trig,wl:bossA.wl,wr:bossA.wr,p2:bossA.p2,adds:bossA.list.length}};LV.bossHit=n=>bossHit(n);LV.bossRaw=()=>boss;
 LV.mkEnemy=mkEnemy;LV.calm=()=>{enemies.forEach(e=>{e.alive=false;e.ko=0});arenas.forEach(a=>a.state='done');arena=null};LV.kids=()=>kids;LV.ents=()=>ents;LV.cars=()=>cars;LV.enemies=()=>enemies;LV.arenas=()=>arenas;LV.cam=cam;
-(async()=>{F=await getJSON('assets/frames.json');for(const a of Object.values(ANIM))(F[a[0]]||[]).forEach(f=>img(f.f));await go(LID);requestAnimationFrame(loop)})();
+(async()=>{F=await getJSON('assets/frames.json');for(const a of Object.values(ANIM))(F[a[0]]||[]).forEach(f=>img(f.f));for(const d of Object.values(MV))(F[d.a]||[]).forEach(f=>img(f.f));await go(LID);requestAnimationFrame(loop)})();
 })();

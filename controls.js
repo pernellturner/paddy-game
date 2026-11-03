@@ -1,14 +1,15 @@
 // ===================== TOUCH CONTROLS v18 + TRAINING ROOM =====================
 // One multi-touch controller for the whole screen (instead of per-button pointer events, which iOS Safari cancels
 // when it thinks a touch is a scroll / edge-swipe, and which can't slide from ◀ to ▶):
-//  • the left pad is a virtual d-pad: a thumb anywhere on it picks the nearest of ◀ ▶ ▼ and can slide between them
+//  • the left pad is a virtual d-pad (v47: a diamond ▲ / ◀ ▶ / ▼): a thumb anywhere on it picks the nearest arrow and can slide between them
+//    (▲ = the keyboard's ↑: jump, ↑+Claw; a slide onto an arrow is flagged PADSLIDE so it never counts as a double-tap)
 //  • action buttons have generous hit areas and stay held until that finger lifts
 //  • every touch is reconciled against e.touches, and blur / background / pagehide / cancel release everything
 //  • the page never scrolls, zooms or double-tap-zooms (touchstart/move are preventDefault'ed outside the menus)
 (function(){
 const ui=document.getElementById('ui');
 const BTN=()=>[...document.querySelectorAll('#ui .b[data-k]')].filter(b=>b.offsetWidth>0);
-const PAD=['left','right','down'];
+const PAD=['left','right','down','up'];
 // ---------- layout: big buttons sized to the screen, clear of the edges and the notch ----------
 // ---------- button settings (size / see-through), saved on this device ----------
 const SET=window.BSET={d:{sz:'s',op:'m'},load(){try{Object.assign(this.d,JSON.parse(localStorage.getItem('paddyBtns')||'{}'))}catch(_){}},save(){try{localStorage.setItem('paddyBtns',JSON.stringify(this.d))}catch(_){}},
@@ -20,7 +21,8 @@ function layout(){const cs=getComputedStyle(probe);SA={t:parseFloat(cs.paddingTo
  const put=(k,o)=>{const b=document.querySelector(`#ui .b[data-k="${k}"]`)||document.getElementById(k);if(!b)return;const z=Math.round(S*o.s);Object.assign(b.style,{width:z+'px',height:z+'px',fontSize:Math.round(Math.max(13,z*.24))+'px',left:o.l!=null?Math.round(o.l)+'px':'auto',right:o.r!=null?Math.round(o.r)+'px':'auto',bottom:o.b!=null?Math.round(o.b)+'px':'auto',top:o.t!=null?Math.round(o.t)+'px':'auto'})};
  // buttons are placed by their CENTRES (in units of S) so circles never touch, whatever the screen size
  const place=(k,d,cx,cy,side)=>{const b=document.querySelector(`#ui .b[data-k="${k}"]`);if(!b)return;const z=Math.round(S*d),o={s:d,b:mb+S*cy-z/2};if(side<0)o.l=ml+S*cx-z/2;else o.r=mr+S*cx-z/2;put(k,o)};
- place('left',1.1,.55,.72,-1);place('right',1.1,1.85,.72,-1);place('down',.88,1.2,1.85,-1);
+ // v47 diamond d-pad: ▲ on top, ◀ ▶ either side, ▼ at the bottom (same overall footprint as the old ▼ / ◀ ▶ pad)
+ place('up',.9,1.3,2.47,-1);place('left',1.1,.58,1.47,-1);place('right',1.1,2.02,1.47,-1);place('down',.9,1.3,.47,-1);   // ◀ ▶ keep their big size; no two buttons' boxes touch
  place('jump',1.2,.62,.92,1);place('attack',1.1,1.95,.6,1);place('special',.95,1.95,1.78,1);
  place('tail',.85,3.02,1.45,1);place('hunt',.8,3.06,.42,1);place('blink',.85,4.02,.95,1);place('gpow',.85,4.06,2.02,1);place('guard',.8,3.0,2.5,1);
  // top row (small): morph · mute · ?
@@ -35,7 +37,7 @@ const T=new Map(),KC={};
 function kDown(k){KC[k]=(KC[k]||0)+1;if(KC[k]===1){touchMode=true;press(k)}mark(k,true)}
 function kUp(k){if(!KC[k])return;KC[k]--;if(KC[k]<=0){KC[k]=0;release(k);mark(k,false)}}
 function mark(k,on){document.querySelectorAll(`#ui .b[data-k="${k}"]`).forEach(b=>b.classList.toggle('on',on))}
-function padKey(x,y){const R=getRects().filter(q=>PAD.includes(q.k));let best=null,bd=1e9;for(const q of R){const d=Math.hypot(x-q.x,y-q.y)/(q.k==='down'?.85:1);if(d<bd){bd=d;best=q}}return best?best.k:null}
+function padKey(x,y){const R=getRects().filter(q=>PAD.includes(q.k));let best=null,bd=1e9;for(const q of R){const d=Math.hypot(x-q.x,y-q.y);if(d<bd){bd=d;best=q}}return best?best.k:null}
 function inPad(x,y){const R=getRects().filter(q=>PAD.includes(q.k));if(!R.length)return false;const x0=Math.min(...R.map(q=>q.x-q.r))-34,x1=Math.max(...R.map(q=>q.x+q.r))+30,y0=Math.min(...R.map(q=>q.y-q.r))-34;return x>=0&&x<=x1&&y>=y0&&x>=x0-30}
 function actKey(x,y){let best=null,bd=1e9;for(const q of getRects()){if(PAD.includes(q.k))continue;const d=Math.hypot(x-q.x,y-q.y),lim=q.r+Math.max(18,q.r*.45);if(d<lim&&d/q.r<bd){bd=d/q.r;best=q}}return best?best.k:null}
 const passive=e=>!!(e.target&&e.target.closest&&e.target.closest('#moves,#fpick .scroll,#sett .scroll'));
@@ -50,7 +52,7 @@ function onStart(e){if(passive(e))return;const tapEl=e.target.closest&&e.target.
   if(inPad(x,y)){s={pad:1,k:padKey(x,y)}}else{const k=actKey(x,y);s={k}}
   T.set(t.identifier,s);if(s.k)kDown(s.k)}}
 function onMove(e){if(passive(e))return;if(e.cancelable)e.preventDefault();
- for(const t of e.changedTouches){const s=T.get(t.identifier);if(!s||!s.pad)continue;const k=padKey(t.clientX,t.clientY);if(k&&k!==s.k){if(s.k)kUp(s.k);s.k=k;kDown(k)}}}
+ for(const t of e.changedTouches){const s=T.get(t.identifier);if(!s||!s.pad)continue;const k=padKey(t.clientX,t.clientY);if(k&&k!==s.k){if(s.k)kUp(s.k);s.k=k;window.PADSLIDE=1;try{kDown(k)}finally{window.PADSLIDE=0}}}}
 function onEnd(e){for(const t of e.changedTouches){const s=T.get(t.identifier);if(!s)continue;T.delete(t.identifier);
   if(s.tap){const el=document.elementFromPoint(t.clientX,t.clientY);if(e.type==='touchend'&&el&&(el===s.tap||s.tap.contains(el))&&Math.hypot(t.clientX-s.x,t.clientY-s.y)<30){if(!['qbtn','mute','pclose','gear'].includes(s.tap.id))s.tap.click()}continue}
   if(s.k)kUp(s.k)}
