@@ -122,6 +122,7 @@ function tick(dt){
  if(prevS!==p.state&&prevS==='kcharge'&&p.state!=='claw'){A.ch=null}
  // the art for every Kitti move = the pink punch sheets
  applyVis(true);
+ if(p.state==='kdodge'){let n=0;for(let i=ghosts.length-1;i>=0&&n<40;i--,n++){const g=ghosts[i];if(!g.k48&&Math.abs(g.x-p.x)<200){g.k48=1;g.l=Math.min(g.l,.14)}}}   // thinner dodge trail
  if(['kslip','kweave','kcharge'].includes(p.state)){p.noFlick=true}
  if(p.ground)A.faces.push(p.face);if(A.faces.length>120)A.faces.shift();
  prevS=p.state}
@@ -143,10 +144,12 @@ const VIS={
  kcharge:{a:()=>A.ch&&A.ch.kind==='jab'?'bxpj':'bxph',fi:t=>A.ch&&A.ch.kind==='jab'?(t<.06?1:2):(t<.06?1:t<.12?2:3),
   r:()=>-.05*((A.ch&&A.ch.lvl)||0),s:()=>1-.04*((A.ch&&A.ch.lvl)||0)-(A.ch&&A.ch.full?.01*Math.sin(now*60):0),y:()=>0}};
 function curVis(){const V=VIS[p.state];if(!V||!on())return null;const a=typeof V.a==='function'?V.a():V.a;return FR[a]?{V,a}:null}
-function applyVis(upd){const c=curVis();if(!c)return;if(p.anim!==c.a){if(upd)setAnim(c.a,true);else p.anim=c.a}const L=FR[c.a].length;p.fi=Math.max(0,Math.min(L-1,c.V.fi(p.t)));if(upd)p.ft=p.fi}
+const SNAP=new Set(['kslip','kdodge','kweave','dash','kslide']);   // quick moves: no crossfade (it would ghost half the move)
+function applyVis(upd){const c=curVis();if(!c)return;if(SNAP.has(p.state)&&p.t<.12){p.blend=0;p.prevF=null}if(p.anim!==c.a){if(upd)setAnim(c.a,true);else p.anim=c.a}if(SNAP.has(p.state)&&p.t<.12){p.blend=0;p.prevF=null}const L=FR[c.a].length;p.fi=Math.max(0,Math.min(L-1,c.V.fi(p.t)));if(upd)p.ft=p.fi}
 function powLean(){const w=A.pow;if(!w||p.state!=='claw')return{r:0,s:1};const f=p.fi,h=w.kind==='hay';
  if(f<=3)return{r:-(h?.08:.04),s:.97};if(f<=6)return{r:h?.15:.07,s:h?.92:.9};if(f===7)return{r:h?.09:.03,s:1};return{r:0,s:1}}
-const _sq=r11Sq;r11Sq=function(){let s=_sq();try{if(on()){applyVis(false);const c=curVis();let ts=c?c.V.s(p.t):powLean().s;A.vs+=(ts-A.vs)*.45;s*=A.vs}}catch(_){}return s};
+const NOBLINK=new Set(['kslip','kweave','kcharge','kdodge','kcounter','kpl','kslide','ksweep','kpounce']);   // set right before the player is drawn (something resets it mid-frame)
+const _sq=r11Sq;r11Sq=function(){let s=_sq();try{if(on()){if(NOBLINK.has(p.state))p.noFlick=true;applyVis(false);const c=curVis();let ts=c?c.V.s(p.t):powLean().s;A.vs+=(ts-A.vs)*.45;s*=A.vs}}catch(_){}return s};
 const _rb=mRunBob;mRunBob=function(){const m=_rb();try{if(on()){const c=curVis();let tr=0,ty=0;if(c){tr=c.V.r(p.t);ty=c.V.y(p.t)}else tr=powLean().r;A.vr+=(tr-A.vr)*.4;
   if(Math.abs(A.vr)>.001||ty)return{y:(m.y||0)+ty,r:(m.r||0)+A.vr*p.face}}}catch(_){}return m};
 // ---------- charged hits: more knockback, damage, shake, flash ----------
