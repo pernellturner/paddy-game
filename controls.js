@@ -2,7 +2,8 @@
 // One multi-touch controller for the whole screen (instead of per-button pointer events, which iOS Safari cancels
 // when it thinks a touch is a scroll / edge-swipe, and which can't slide from ◀ to ▶):
 //  • the left pad is a virtual d-pad (v47: a diamond ▲ / ◀ ▶ / ▼): a thumb anywhere on it picks the nearest arrow and can slide between them
-//    (▲ = the keyboard's ↑: jump, ↑+Claw; a slide onto an arrow is flagged PADSLIDE so it never counts as a double-tap)
+//    (▲ = the keyboard's ↑: jump, ↑+Claw; a slide onto an arrow is flagged PADSLIDE so it never counts as a double-tap
+//    or a quick tap - sliding off an arrow isn't a tap either)
 //  • action buttons have generous hit areas and stay held until that finger lifts
 //  • every touch is reconciled against e.touches, and blur / background / pagehide / cancel release everything
 //  • the page never scrolls, zooms or double-tap-zooms (touchstart/move are preventDefault'ed outside the menus)
@@ -52,7 +53,7 @@ function onStart(e){if(passive(e))return;const tapEl=e.target.closest&&e.target.
   if(inPad(x,y)){s={pad:1,k:padKey(x,y)}}else{const k=actKey(x,y);s={k}}
   T.set(t.identifier,s);if(s.k)kDown(s.k)}}
 function onMove(e){if(passive(e))return;if(e.cancelable)e.preventDefault();
- for(const t of e.changedTouches){const s=T.get(t.identifier);if(!s||!s.pad)continue;const k=padKey(t.clientX,t.clientY);if(k&&k!==s.k){if(s.k)kUp(s.k);s.k=k;window.PADSLIDE=1;try{kDown(k)}finally{window.PADSLIDE=0}}}}
+ for(const t of e.changedTouches){const s=T.get(t.identifier);if(!s||!s.pad)continue;const k=padKey(t.clientX,t.clientY);if(k&&k!==s.k){window.PADSLIDE=1;try{if(s.k)kUp(s.k);s.k=k;kDown(k)}finally{window.PADSLIDE=0}}}}
 function onEnd(e){for(const t of e.changedTouches){const s=T.get(t.identifier);if(!s)continue;T.delete(t.identifier);
   if(s.tap){const el=document.elementFromPoint(t.clientX,t.clientY);if(e.type==='touchend'&&el&&(el===s.tap||s.tap.contains(el))&&Math.hypot(t.clientX-s.x,t.clientY-s.y)<30){if(!['qbtn','mute','pclose','gear'].includes(s.tap.id))s.tap.click()}continue}
   if(s.k)kUp(s.k)}

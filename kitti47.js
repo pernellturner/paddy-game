@@ -13,7 +13,8 @@
 //   down  down   = CAT SLIDE  low fast slide along the ground, ducks under attacks (brief invulnerability)
 //                  + Claw    = SLIDE SWEEP    low spinning sweep that pops the enemy up off his feet
 // Every follow-up keeps the combo counter running and the next Claw continues the punch string.
-// Art: only existing Paddy frames (dash, dashstrike, slide, pounce, launcher, tailwhip, k_m_power) with afterimages and speed lines.
+// v48: kitti48.js draws all of these with the pink punch sheets (eased motion, squash/stretch, afterimages) and adds
+// quick taps (slip / weave) + charged punches. v47 art: only existing Paddy frames (dash, dashstrike, slide, pounce, launcher, tailwhip, k_m_power) with afterimages and speed lines.
 (function(){
 if(typeof p==='undefined'||typeof press!=='function'||typeof release!=='function'||typeof tapDir!=='function')return;
 const on=()=>{try{return FORM()===0&&!(window.KITTY36&&KITTY36.on)&&!p.hunt}catch(_){return false}};
@@ -43,7 +44,7 @@ const _press=press;press=function(k){
 const _release=release;release=function(k){if(DIRS.includes(k)){const L=KD.last[k];if(L&&!L.up)L.up=rt()}return _release.apply(this,arguments)};
 const _tapDir=tapDir;tapDir=function(k){if(on())return;return _tapDir.apply(this,arguments)};   // base Paddy: detection above
 // ---- moves ----
-Object.assign(NAMES,{kcounter:'COUNTER SLASH!',kpl:'POUNCE LAUNCHER!',ksweep:'SLIDE SWEEP!',dashstrike:'DASH STRIKE!'});
+Object.assign(NAMES,{kcounter:'COUNTER CROSS!',kpl:'POUNCE UPPERCUT!',ksweep:'SLIDE BODY BLOW!',dashstrike:'DASH STRIKE!'});
 Object.assign(KB,{kpl:[70,-1150,.55,.1],ksweep:[160,-620,.35,.08]});
 if(typeof LIFT!=='undefined'&&!LIFT.includes('kpl'))LIFT.push('kpl');
 function keep(){p.keepT=.45;p.keepCombo=Math.min(7,p.combo||0)}
@@ -54,21 +55,21 @@ function lines(n,col){for(let i=0;i<n;i++)KD.lines.push({x:p.x-p.face*(30+Math.r
 function dodge(face){p.face=face;p.state='kdodge';p.t=0;acted=true;setAnim('dash',true);p.dd=-face;p.vx=-face*820;p.inv=Math.max(p.inv,.34);p.noFlick=true;p.wall=false;
  if(!p.ground)p.vy=Math.min(p.vy,-60);p.kdCool=.42;if(window.K29)K29.dodges++;say('DODGE!','#bfe8ff');if(typeof puffShadow==='function')puffShadow(p.x,p.y);
  KD.fu={k:'dodge',t:rt()};KD.n.dodge++;log('dodge')}
-function counterSlash(){const d=nearFront(330,200,200);p.state='kcounter';p.t=0;p.shot=false;p.ctg=d;acted=true;setAnim('kcounter',true);p.inv=Math.max(p.inv,.5);p.noFlick=true;
- hitstop=Math.max(hitstop,.04);shake=Math.max(shake,6);say('COUNTER SLASH!','#7fffd4',true);lines(6,'#7fffd4');KD.n.counter++;KD.fu=null;KD.post='kcounter';log('counter')}
+function counterSlash(){const d=nearFront(520,200,200);p.state='kcounter';p.t=0;p.shot=false;p.ctg=d;acted=true;setAnim('kcounter',true);p.inv=Math.max(p.inv,.5);p.noFlick=true;
+ hitstop=Math.max(hitstop,.04);shake=Math.max(shake,6);say('COUNTER CROSS!','#7fffd4',true);lines(6,'#7fffd4');KD.n.counter++;KD.fu=null;KD.post='kcounter';log('counter')}
 function pounce(){p.state='kpounce';p.t=0;acted=true;setAnim('pounce',true);p.vy=-980;p.vx=p.face*520;p.ground=false;p.jumps=2;p.wall=false;p.kpUsed=true;
  shake=Math.max(shake,4);spark(p.x,p.y,12,['#fff','#ffe08a'],220);say('SKY POUNCE!','#ffe08a');KD.fu={k:'up',t:rt()};KD.n.pounce++;log('pounce')}
 function launcher(){const d=nearFront(300,140,420);p.state='kpl';p.t=0;p.shot=false;p.ctg=d;acted=true;setAnim('pawpop',true);p.vx=0;p.vy=0;p.inv=Math.max(p.inv,.25);
- say('POUNCE LAUNCHER!','#ffd070',true);KD.n.launcher++;KD.fu=null;log('launcher')}
+ say('POUNCE UPPERCUT!','#ffd070',true);KD.n.launcher++;KD.fu=null;log('launcher')}
 function slide(){p.state='kslide';p.t=0;acted=true;setAnim('slide',true);p.vx=p.face*860;p.inv=Math.max(p.inv,.3);p.noFlick=true;
  shake=Math.max(shake,3);say('CAT SLIDE!','#ffe08a');KD.fu={k:'down',t:rt()};KD.n.slide++;log('slide')}
 function sweep(){p.state='ksweep';p.t=0;p.shot=false;p.kswHit=new Set();acted=true;setAnim('tailwhip',true);p.vx=p.face*Math.max(420,Math.min(620,Math.abs(p.vx)));
- say('SLIDE SWEEP!','#ffb070',true);KD.n.sweep++;KD.fu=null;log('sweep')}
+ say('SLIDE BODY BLOW!','#ffb070',true);KD.n.sweep++;KD.fu=null;log('sweep')}
 // dash strike = a combo hit: string number carries on, the next Claw goes back into the punch string
 const _dst=dashStrike;dashStrike=function(){const r=_dst.apply(this,arguments);if(on()&&p.state==='dashstrike'){p.combo=Math.min(7,(p.combo||0)+1);if(typeof popNum==='function')popNum(p.combo,'#ff9fd0');lines(8,'#ffb0e0');KD.n.dashstrike++;KD.post='dashstrike';log('dashstrike:'+p.combo)}return r};
-const DODGE_OK=new Set(['normal','claw','land','stop','dash','hardland','slide','jcharge','dashstrike','kslide','tailwhip','swat','pawpop','airswipe','meow','kguard']);
+const DODGE_OK=new Set(['kslip','kweave','kcharge','normal','claw','land','stop','dash','hardland','slide','jcharge','dashstrike','kslide','tailwhip','swat','pawpop','airswipe','meow','kguard']);
 const UP_OK=new Set(['normal','jcharge','land','stop','dash']);
-const DOWN_OK=new Set(['normal','land','stop','slide','dash','hardland']);
+const DOWN_OK=new Set(['kweave','kslip','normal','land','stop','slide','dash','hardland']);
 let prevS='';
 function tick(dt){if(!on()){KD.req=null;KD.fu=null;return}
  const t=rt(),S=p.state;
@@ -109,7 +110,7 @@ function tick(dt){if(!on()){KD.req=null;KD.fu=null;return}
   case 'dash':case 'dashstrike':if(t%0.05<dt*1.5)lines(1,p.state==='dash'?'#ffffff':'#ffb0e0');break;
  }
  // invulnerable moves never blink (the flicker would hide the art); the game's i-frame blink comes back afterwards
- if(['kdodge','kcounter','kpl','kslide','ksweep','kpounce'].includes(p.state)){p.noFlick=true;p.kdNF=true}else if(p.kdNF){p.kdNF=false;if(!(typeof CINE!=='undefined'&&CINE.includes(p.state)))p.noFlick=false}
+ if(['kdodge','kcounter','kpl','kslide','ksweep','kpounce','kslip','kweave','kcharge'].includes(p.state)){p.noFlick=true;p.kdNF=true}else if(p.kdNF){p.kdNF=false;if(!(typeof CINE!=='undefined'&&CINE.includes(p.state)))p.noFlick=false}
  prevS=p.state}
 KD.seen=new Set();
 const _pre=r9Pre;r9Pre=function(dt){try{tick(dt)}catch(e){console.warn('kd47',e)}_pre(dt);KD.seen.add(p.state)};   // KD47.seen: every state visited (tests)
@@ -121,9 +122,9 @@ const _fx=drawFx;drawFx=function(){try{const dt=1/60;ctx.save();ctx.globalCompos
 // ---- move list rows ----
 (function(){const t=document.querySelector('#moves table');if(!t||document.getElementById('kd47row'))return;const tb=t.tBodies[0]||t;
  const R=[['🐱 KITTI PADDY DOUBLE-TAPS (base Paddy, punch combo) — tap a direction twice quickly','',''],
-  ['DODGE: backstep, can\'t be hit for a moment · then Claw = COUNTER SLASH','← ← (away from where he faces)','◀ ◀'],
+  ['DODGE: backstep, can\'t be hit for a moment · then Claw = COUNTER CROSS','← ← (away from where he faces)','◀ ◀'],
   ['DASH · then Claw = DASH STRIKE (keeps the combo going: Claw again = back into the punch combo)','→ → (the way he faces)','▶ ▶'],
-  ['SKY POUNCE: big forward leap · then Claw = POUNCE LAUNCHER (knocks him high into the air)','↑ ↑ (or W W)','▲ ▲'],
-  ['CAT SLIDE: low slide under attacks · then Claw = SLIDE SWEEP (pops him off his feet)','↓ ↓ (or S S)','▼ ▼']];
+  ['SKY POUNCE: big forward leap · then Claw = POUNCE UPPERCUT (knocks him high into the air)','↑ ↑ (or W W)','▲ ▲'],
+  ['CAT SLIDE: low slide under attacks · then Claw = SLIDE BODY BLOW (pops him off his feet)','↓ ↓ (or S S)','▼ ▼']];
  R.forEach((r,i)=>{const tr=document.createElement('tr');if(!i){tr.id='kd47row';tr.innerHTML=`<th colspan="3" style="color:#ffe08a">${r[0]}</th>`}else tr.innerHTML=`<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td>`;tb.insertBefore(tr,tb.rows[Math.min(tb.rows.length,1+i)]||null)})})();
 })();

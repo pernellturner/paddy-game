@@ -47,7 +47,8 @@ async def main():
   # ---- 2. touch: each arrow works ----
   await reset()
   for k,q in [('left',l),('right',r_),('down',d)]:
-   await tdown(q[0],q[1]);await pg.wait_for_timeout(120);v=await E(f"[!!K.{k},document.querySelector('#ui .b[data-k={k}]').classList.contains('on')]");await tup();await pg.wait_for_timeout(450)
+   # v48: a back press only turns / walks once held 0.15 s (a quick tap = slip), so hold 0.22 s here
+   await tdown(q[0],q[1]);await pg.wait_for_timeout(220);v=await E(f"[!!K.{k},document.querySelector('#ui .b[data-k={k}]').classList.contains('on')]");await tup();await pg.wait_for_timeout(450)
    check(f'touch {k} arrow presses {k}',v==[True,True],v)
   await reset();await tdown(u[0],u[1]);await pg.wait_for_timeout(100);v=await E("[!!K.up,document.querySelector('#ui .b[data-k=up]').classList.contains('on')]");await tup();ok=await seen("!p.ground&&p.vy<0",700);check('touch ▲ = up (tap = jump, like ↑ on the keyboard)',ok and v==[True,True],v);await pg.wait_for_timeout(900)
   # slide across the pad ◀ -> ▼ -> ◀ quickly: never a double-tap
@@ -57,7 +58,7 @@ async def main():
   await reset();await key('ArrowRight');await pg.wait_for_timeout(500);check('single tap → = no dash',(await N())['dash']==0 and await E("p.state")!='dash')
   await reset();await key('ArrowRight',600);await pg.wait_for_timeout(60);await key('ArrowRight');await pg.wait_for_timeout(400);check('hold → then tap → = no dash',(await N())['dash']==0,await N())
   await reset();await key('ArrowRight');await pg.wait_for_timeout(420);await key('ArrowRight');await pg.wait_for_timeout(400);check('two slow taps → = no dash',(await N())['dash']==0)
-  await reset();await key('ArrowLeft');await pg.wait_for_timeout(500);check('single tap ← = just turns, no dodge',(await N())['dodge']==0 and await E("p.face")==-1)
+  await reset();await key('ArrowLeft');await pg.wait_for_timeout(500);check('single tap ← = no dodge (v48: a quick tap is the SLIP and keeps facing right)',(await N())['dodge']==0 and await E("p.face")==1)
   await reset();await key('ArrowUp');ok=await seen("!p.ground",600);await pg.wait_for_timeout(700);check('single tap ↑ = normal jump, no pounce',ok and (await N())['pounce']==0)
   await reset();await key('ArrowDown');await pg.wait_for_timeout(400);check('single tap ↓ = crouch, no slide',(await N())['slide']==0)
   await reset();await key('ArrowDown',700);await pg.wait_for_timeout(50);await key('ArrowDown');await pg.wait_for_timeout(300);check('hold ↓ then tap ↓ = no slide',(await N())['slide']==0)
