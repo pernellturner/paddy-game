@@ -7,7 +7,7 @@
 //   the chin), the explosion through contact, follow-through and a quick recovery; plus a body dip / rise on the toes, squash /
 //   stretch (<=4%) and a short motion smear on the drive.
 // OLD: exactly as before (↑ + Claw = the old leaping uppercut sheet, 7th punch = the old 11-frame timing).
-// Switch: the "UPPERCUT: NEW / OLD" button in the Practice Room bar, or the Y key. Story mode (level.html) never loads this file.
+// Switch: the "UPPERCUT: NEW / OLD" button in the Practice Room bar, or the \ (backslash) key. Story mode (level.html) never loads this file.
 (function(){
 if(typeof p==='undefined'||!window.P33||typeof uppercut!=='function')return;
 const U=window.UC49={mode:(()=>{try{return localStorage.getItem('uc49')||'new'}catch(_){return 'new'}})(),n:{newUp:0},log:[]};
@@ -23,7 +23,9 @@ let built=false;
 function vi(ft){let i=0;for(let k=0;k<U.seq.length;k++)if(ft>=U.seq[k][1])i=k;return i}
 // ---- ↑ + Claw on the ground = the boxer uppercut ----
 const _up=uppercut;uppercut=function(){
- if(!act()||!p.ground||p.wall)return _up.apply(this,arguments);
+ const fl=typeof floorAt==='function'?floorAt(p.x):GROUND,justJ=!p.ground&&p.vy<0&&now-(p.lastJump||-9)<.25&&fl-p.y<110;
+ if(!act()||!(p.ground||justJ)||p.wall)return _up.apply(this,arguments);
+ if(justJ){p.y=fl;p.ground=true;p.jumps=0;p.vy=0}   // ↑ is also jump: an ↑ + Claw that just left the ground stays a ground uppercut
  p.state='normal';p.combo=p.keepT>0?p.keepCombo:(p.combo||0);p.keepT=0;p.cool=0;startClaw();
  if(p.state!=='claw')return;
  setAnim('bxpu',true);p.ft=p.fi=2;p.vx=0;p.vy=0;
@@ -44,13 +46,19 @@ const _sq=r11Sq;r11Sq=function(){let s=_sq();try{if(!built)built=build();if(on()
   const m=motion(ft);smS+=(m.s-smS)*.5;s*=smS;U.last=[i,+ft.toFixed(2)]}else smS+=(1-smS)*.5}catch(_){}return s};
 const _rb=mRunBob;mRunBob=function(){const o=_rb();try{if(sw){const m=motion(p.ft);smY+=(m.y-smY)*.5;smR+=(m.r-smR)*.5;return{y:(o.y||0)+smY,r:(o.r||0)+smR*p.face}}else{smY*=.5;smR*=.5}}catch(_){}return o};
 const _fx=drawFx;drawFx=function(){if(sw){p.anim=sw.a;p.fi=sw.fi;sw=null}_fx()};   // restore before anything else reads them
+// ---- logic extras in NEW mode: step in on the drive (a real uppercut steps under the guard), quick recovery ----
+let stepped=0;
+const _pre=r9Pre;r9Pre=function(dt){_pre(dt);try{if(!on()){stepped=0;return}const ft=p.ft;
+ if(ft>=2.4&&ft<4.2&&stepped<48){let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<105&&Math.abs(d.y-p.y)<200)near=true}
+  if(!near){const dx=Math.min(48-stepped,300*dt);stepped+=dx;p.x+=p.face*dx;if(typeof clampX==='function')p.x=clampX(p.x)}}
+ if(ft>=9.5&&!P33.q){p.state='normal';p.combo=0;p.cool=.04;P33.a=null;stepped=0}}catch(e){console.warn('uc49',e)}};
 // ---- the A/B switch ----
 function setMode(m){U.mode=m;try{localStorage.setItem('uc49',m)}catch(_){}const b=document.getElementById('pruc');if(b){b.textContent='UPPERCUT: '+m.toUpperCase();b.classList.toggle('cur',m==='new')}
  if(window.PRACTICE&&PRACTICE.on)say('UPPERCUT: '+m.toUpperCase(),'#ffe14d')}
 U.set=setMode;
-function addBtn(){const bar=document.getElementById('prbar');if(!bar||document.getElementById('pruc'))return!!bar;const b=document.createElement('button');b.className='tap i';b.id='pruc';b.title='compare the old / new uppercut (Y)';
+function addBtn(){const bar=document.getElementById('prbar');if(!bar||document.getElementById('pruc'))return!!bar;const b=document.createElement('button');b.className='tap i';b.id='pruc';b.title='compare the old / new uppercut (\\ key)';
  b.style.fontSize='calc(clamp(11px,3.1vh,15px)*var(--prs,1))';const r=document.getElementById('prreset');bar.insertBefore(b,r||null);
  b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();setMode(U.mode==='new'?'old':'new');b.blur()});setMode(U.mode);return true}
 if(!addBtn()){const iv=setInterval(()=>{if(addBtn())clearInterval(iv)},500)}
-addEventListener('keydown',e=>{if(e.code==='KeyY'&&!e.repeat&&window.PRACTICE&&PRACTICE.on){setMode(U.mode==='new'?'old':'new')}});
+addEventListener('keydown',e=>{if(e.code==='Backslash'&&!e.repeat&&window.PRACTICE&&PRACTICE.on){setMode(U.mode==='new'?'old':'new')}});
 })();
