@@ -18,7 +18,8 @@ const N=[{f:'p/k_uc49_n0',ax:88,ay:214,w:159,h:220,rx:22},{f:'p/k_uc49_n1',ax:93
 function build(){const O=(F&&F.k_pw_upper)||[];if(O.length<11)return false;
  // step: [frame, ft where it starts]
  U.seq=[[O[0],0],[O[1],.5],[O[2],1.2],[O[3],2.2],[N[0],2.8],[N[1],3.3],[O[4],4],[O[5],4.6],[O[6],5.4],[O[7],6.3],[O[8],7.3],[O[9],8.3],[O[10],9.3]];
- FR.uc49=U.seq.map(s=>s[0]);try{window.queueFrames&&queueFrames(N.map(n=>n.f),true)}catch(_){}return true}
+ FR.uc49=U.seq.map(s=>s[0]);if(typeof A!=='undefined')A.uc49=['k_uc49',null,12,0];   // every FR key needs an A entry (loadForm reads A[k][0])
+ try{window.queueFrames&&queueFrames(N.map(n=>n.f),true)}catch(_){}return true}
 let built=false;
 function vi(ft){let i=0;for(let k=0;k<U.seq.length;k++)if(ft>=U.seq[k][1])i=k;return i}
 // ---- ↑ + Claw on the ground = the boxer uppercut ----
