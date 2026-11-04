@@ -26,3 +26,8 @@ Sprites cut from source sheets in src/ via src/extract.py + src/build.py.
   pounce launcher = power uppercut, counter = cross, slide sweep = power body) with eased motion, squash/stretch, lean and afterimages; no crossfade
   or i-frame blink on the quick moves.
 - Test: `tests/t48_kitti_taps.py` (844x390 touch + keyboard).
+
+## v49 — Practice Room uppercut A/B
+- New boxer uppercut for base practice Paddy (↑+Claw on the ground, and the on-beat 7th punch): dip/load, 2 new drive frames made from his own k_pw_upper pixels (rotated about the rear foot), contact, follow-through, quick recovery, 48px step-in.
+- Toggle: "UPPERCUT: NEW/OLD" button in the Practice bar, or the \ key. Defaults to NEW and is remembered (localStorage 'uc49'). Story (level.html) still uses the old move.
+- Test: tests/t49_uppercut_ab.py
