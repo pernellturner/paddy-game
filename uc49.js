@@ -14,10 +14,11 @@ const U=window.UC49={mode:(()=>{try{return localStorage.getItem('uc49')||'new'}c
 const act=()=>{try{return !!(window.PRACTICE&&PRACTICE.on)&&U.mode==='new'&&FORM()===0&&!(window.KITTY36&&KITTY36.on)&&!p.hunt}catch(_){return false}};
 U.active=act;
 // ---- frames: the old sheet + the 2 new drive frames ----
-const N=[{f:'p/k_uc49_n0',ax:88,ay:214,w:159,h:220,rx:22},{f:'p/k_uc49_n1',ax:93,ay:228,w:147,h:235,rx:22}];
-function build(){const O=(F&&F.k_pw_upper)||[];if(O.length<11)return false;
+// v50 (6 Nov 2026): Pernell's approved 4-frame boxer uppercut (paddy4b): ready -> load -> drive -> extension
+const N=[{f:'p/k_uc50_0',ax:61,ay:215,w:167,h:214,rx:22},{f:'p/k_uc50_1',ax:64,ay:215,w:192,h:214,rx:22},{f:'p/k_uc50_2',ax:49,ay:215,w:158,h:214,rx:22},{f:'p/k_uc50_3',ax:25,ay:215,w:120,h:214,rx:22}];
+function build(){
  // step: [frame, ft where it starts]
- U.seq=[[O[0],0],[O[1],.5],[O[2],1.2],[O[3],2.2],[N[0],2.8],[N[1],3.3],[O[4],4],[O[5],4.6],[O[6],5.4],[O[7],6.3],[O[8],7.3],[O[9],8.3],[O[10],9.3]];
+ U.seq=[[N[0],0],[N[1],2.2],[N[2],2.9],[N[3],3.8],[N[0],8.3]];   // hit window (punch33 bxpu) ~4-6 lands on the extension
  FR.uc49=U.seq.map(s=>s[0]);if(typeof A!=='undefined')A.uc49=['k_uc49',null,12,0];   // every FR key needs an A entry (loadForm reads A[k][0])
  try{window.queueFrames&&queueFrames(N.map(n=>n.f),true)}catch(_){}return true}
 let built=false;
@@ -43,7 +44,7 @@ function motion(ft){   // y: + = up; r: lean (+ = forward); s: squash/stretch (s
  return{y:-6*dip+9*rise,r:-.035*dip+.03*sm(e(2.8,3.6,ft))*(1-sm(e(4.4,5.6,ft))),s:1-.035*dip+.035*rise*(1-sm(e(5,7,ft)))}}
 const _sq=r11Sq;r11Sq=function(){let s=_sq();try{if(!built)built=build();if(on()){const ft=p.ft,i=vi(ft);sw={a:p.anim,fi:p.fi};p.anim='uc49';p.fi=i;
   // short motion smear on the drive: the previous step under the current one
-  if(i>=4&&i<=7){p.fPrev=U.seq[i-1][0];p.fB=.045*Math.max(0,1-(ft-U.seq[i][1])/.6)*1.2}
+  if(i>=2&&i<=3){p.fPrev=U.seq[i-1][0];p.fB=.045*Math.max(0,1-(ft-U.seq[i][1])/.6)*1.2}
   const m=motion(ft);smS+=(m.s-smS)*.5;s*=smS;U.last=[i,+ft.toFixed(2)]}else smS+=(1-smS)*.5}catch(_){}return s};
 const _rb=mRunBob;mRunBob=function(){const o=_rb();try{if(sw){const m=motion(p.ft);smY+=(m.y-smY)*.5;smR+=(m.r-smR)*.5;return{y:(o.y||0)+smY,r:(o.r||0)+smR*p.face}}else{smY*=.5;smR*=.5}}catch(_){}return o};
 const _fx=drawFx;drawFx=function(){if(sw){p.anim=sw.a;p.fi=sw.fi;sw=null}_fx()};   // restore before anything else reads them
