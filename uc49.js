@@ -17,31 +17,36 @@ U.active=act;
 // v51 (6 Nov 2026): Pernell playtest — size-normalized 7-frame boxer uppercut (ready → crouch → load → hips →
 //   bent drive → straight-arm vertical → bent peak/back). Slower timings so jab→jab→uppercut reads. Same fist
 //   orientation; more body dip/rise in motion(). OLD + story unchanged.
-const N=[
- {f:'p/k_uc51_0',ax:61,ay:220,w:171,h:219,rx:22}, // ready
- {f:'p/k_uc51_1',ax:61,ay:215,w:171,h:214,rx:22}, // crouch-in
- {f:'p/k_uc51_2',ax:56,ay:215,w:170,h:214,rx:22}, // deep load inward fist
- {f:'p/k_uc51_3',ax:52,ay:220,w:171,h:219,rx:22}, // hips/legs start drive
- {f:'p/k_uc51_4',ax:50,ay:227,w:167,h:226,rx:22}, // bent-elbow drive
- {f:'p/k_uc51_5',ax:40,ay:215,w:118,h:214,rx:22}, // straight-arm vertical (same fist)
- {f:'p/k_uc51_6',ax:36,ay:279,w:157,h:278,rx:22}  // bent peak / more back
-];
+// v52 (6 Nov 2026): Pernell - no little hop, deeper crouch, quick explosive rise; 5 in-between frames (k_uc52_12/23/34/45/56 =
+//   anchor-aligned half blends of the neighbouring approved frames) and the straight-arm / peak frames re-scaled (k_uc52_5 x1.25,
+//   k_uc52_6 x0.82) so Paddy stays one size through the move. Same inward fist + straight-arm beat.
+//   POWER UPPERCUT (kitti48 kind 'up'): hold up+Claw (or hold Claw then up) = crouch wind-up, let go = the power sequence.
+// N: r ready, c crouch-in, l deep load (inward fist), h hips drive, d bent-elbow drive, s straight-arm, k bent peak; c2/l3/h4/d5/s6 = in-betweens
+const N={
+ r:{f:'p/k_uc51_0',ax:61,ay:220,w:171,h:219,rx:22},
+ c:{f:'p/k_uc51_1',ax:61,ay:215,w:171,h:214,rx:22},
+ c2:{f:'p/k_uc52_12',ax:61,ay:215,w:175,h:216,rx:22},
+ l:{f:'p/k_uc51_2',ax:56,ay:215,w:170,h:214,rx:22},
+ l3:{f:'p/k_uc52_23',ax:56,ay:220,w:175,h:221,rx:22},
+ h:{f:'p/k_uc51_3',ax:52,ay:220,w:171,h:219,rx:22},
+ h4:{f:'p/k_uc52_34',ax:52,ay:227,w:171,h:228,rx:22},
+ d:{f:'p/k_uc51_4',ax:50,ay:227,w:167,h:226,rx:22},
+ d5:{f:'p/k_uc52_45',ax:50,ay:269,w:167,h:270,rx:22},
+ s:{f:'p/k_uc52_5',ax:50,ay:269,w:148,h:268,rx:22},
+ s6:{f:'p/k_uc52_56',ax:50,ay:269,w:149,h:270,rx:22},
+ k:{f:'p/k_uc52_6',ax:30,ay:229,w:129,h:228,rx:22}
+};
 function build(){
- // step: [frame, ft where it starts] — stretched so jab→jab→uppercut is readable (FPS=12)
- // startup sets ft=2; hit window (bxpu) ~4-6 lands on straight-arm + peak
- U.seq=[
-  [N[0],0],
-  [N[1],1.6],
-  [N[2],2.5],
-  [N[3],3.5],
-  [N[4],4.3],
-  [N[5],4.9],   // straight-arm in hit window
-  [N[6],5.7],   // bent peak follow-through
-  [N[0],9.2]
- ];
- FR.uc49=U.seq.map(s=>s[0]);if(typeof A!=='undefined')A.uc49=['k_uc49',null,12,0];
- try{window.queueFrames&&queueFrames(N.map(n=>n.f),true)}catch(_){}return true}
+ // [frame, ft where it starts] (FPS=12). startup sets ft=2; bxpu hit window = fi 4-6. Long crouch, then a very fast rise.
+ U.seqTap=[[N.r,0],[N.c,1.2],[N.c2,1.7],[N.l,2.1],[N.l3,3.25],[N.h,3.45],[N.h4,3.65],[N.d,3.85],[N.d5,4.1],[N.s,4.3],[N.s6,5.1],[N.k,5.4],[N.r,9.0]];
+ // power: starts from the held deep load (ft 2), longer hang at the top
+ U.seqPow=[[N.r,0],[N.l,1.0],[N.l3,3.2],[N.h,3.4],[N.h4,3.6],[N.d,3.8],[N.d5,4.05],[N.s,4.25],[N.s6,5.6],[N.k,5.9],[N.r,9.6]];
+ U.seq=U.seqTap;const all=[...new Set(Object.values(N))];
+ FR.uc49=all;U.idx=f=>all.indexOf(f);if(typeof A!=='undefined')A.uc49=['k_uc49',null,12,0];
+ try{window.queueFrames&&queueFrames(all.map(n=>n.f),true)}catch(_){}return true}
 let built=false;
+const isPow=()=>!!(window.KD48&&KD48.pow&&KD48.pow.kind==='up');
+const isCh=()=>p.state==='kcharge'&&!!(window.KD48&&KD48.ch&&KD48.ch.kind==='up');
 function vi(ft){let i=0;for(let k=0;k<U.seq.length;k++)if(ft>=U.seq[k][1])i=k;return i}
 // ---- ↑ + Claw on the ground = the boxer uppercut ----
 const _up=uppercut;uppercut=function(){
@@ -56,24 +61,27 @@ const _up=uppercut;uppercut=function(){
  say('UPPERCUT!','#ffe14d');U.n.newUp++;U.log.push('newup')};
 // ---- draw: swap in the new sequence + body motion (logic, hits and timing stay punch33's) ----
 let sw=null,smY=0,smR=0,smS=1;
-const on=()=>act()&&p.state==='claw'&&p.anim==='bxpu'&&built;
-function motion(ft){   // y: + = up; r: lean (+ = forward); s: squash/stretch (scale y) — more body in the throw
- const e=(a,b,x)=>Math.max(0,Math.min(1,(x-a)/(b-a))),sm=x=>x*x*(3-2*x);
- const dip=sm(e(.4,2.4,ft))*(1-sm(e(3.2,4.4,ft)));          // deeper/longer sink into the legs
- const rise=sm(e(4.0,5.4,ft))*(1-sm(e(7.2,9.4,ft)));        // hips drive up through straight+peak, settle later
- return{y:-10*dip+14*rise,r:-.045*dip+.04*sm(e(3.6,4.6,ft))*(1-sm(e(5.2,6.6,ft))),s:1-.045*dip+.05*rise*(1-sm(e(6,8.2,ft)))}}
-const _sq=r11Sq;r11Sq=function(){let s=_sq();try{if(!built)built=build();if(on()){const ft=p.ft,i=vi(ft);sw={a:p.anim,fi:p.fi};p.anim='uc49';p.fi=i;
+const on=()=>act()&&built&&((p.state==='claw'&&p.anim==='bxpu')||isCh());
+function motion(ft){   // y: + = up; r: lean (+ = forward); s: squash/stretch. v52: NO hop (y never goes above 0) - deep crouch, explosive rise
+ const e=(a,b,x)=>Math.max(0,Math.min(1,(x-a)/(b-a))),sm=x=>x*x*(3-2*x),P=isPow();
+ if(isCh()){const L=(KD48.ch&&KD48.ch.lvl)||0,t=Math.min(1,p.t/.25);return{y:-(16+8*L)*sm(t),r:-.05-.03*L,s:1-.06*sm(t)-.02*L}}
+ const D=P?24:18,r0=P?3.2:3.25;
+ const dip=(P?1:sm(e(.3,2.1,ft)))*(1-sm(e(r0,r0+.75,ft)));      // sink into the legs, then snap out of it in ~60 ms
+ const st=sm(e(r0+.3,r0+1.1,ft))*(1-sm(e(6.4,8.6,ft)));          // stretch tall on the drive (legs/hips), no lift
+ return{y:-D*dip,r:-.05*dip+.05*sm(e(r0,r0+.6,ft))*(1-sm(e(5,6.6,ft))),s:1-.06*dip+(P?.05:.035)*st}}
+const _sq=r11Sq;r11Sq=function(){let s=_sq();try{if(!built)built=build();if(on()){U.seq=isPow()?U.seqPow:U.seqTap;const ch=isCh(),ft=ch?0:p.ft,i=ch?-1:vi(ft);sw={a:p.anim,fi:p.fi};p.anim='uc49';
+  const cf=ch?(p.t<.08?N.c:p.t<.16?N.c2:N.l):U.seq[i][0];p.fi=U.idx(cf);if(ch){p.fB=0;const m=motion(0);smS+=(m.s-smS)*.5;s*=smS;U.last=['ch',+p.t.toFixed(2)];return s}
   // short motion smear on the drive: the previous step under the current one
-  if(i>=3&&i<=6){p.fPrev=U.seq[i-1][0];p.fB=.05*Math.max(0,1-(ft-U.seq[i][1])/.7)*1.15}
+  if(i>=4&&i<=U.seq.length-3){p.fPrev=U.seq[i-1][0];p.fB=.03*Math.max(0,1-(ft-U.seq[i][1])/.35)}   // short smear on the fast rise only
   const m=motion(ft);smS+=(m.s-smS)*.5;s*=smS;U.last=[i,+ft.toFixed(2)]}else smS+=(1-smS)*.5}catch(_){}return s};
 const _rb=mRunBob;mRunBob=function(){const o=_rb();try{if(sw){const m=motion(p.ft);smY+=(m.y-smY)*.5;smR+=(m.r-smR)*.5;return{y:(o.y||0)+smY,r:(o.r||0)+smR*p.face}}else{smY*=.5;smR*=.5}}catch(_){}return o};
 const _fx=drawFx;drawFx=function(){if(sw){p.anim=sw.a;p.fi=sw.fi;sw=null}_fx()};   // restore before anything else reads them
 // ---- logic extras in NEW mode: step in on the drive (a real uppercut steps under the guard), quick recovery ----
 let stepped=0;
 const _pre=r9Pre;r9Pre=function(dt){_pre(dt);try{if(!on()){stepped=0;return}const ft=p.ft;
- if(ft>=3.2&&ft<5.4&&stepped<56){let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<105&&Math.abs(d.y-p.y)<200)near=true}
+ if(ft>=3.2&&ft<5.4&&stepped<56&&p.state==='claw'){let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<105&&Math.abs(d.y-p.y)<200)near=true}
   if(!near){const dx=Math.min(56-stepped,260*dt);stepped+=dx;p.x+=p.face*dx;if(typeof clampX==='function')p.x=clampX(p.x)}}
- if(ft>=10.4&&!P33.q){p.state='normal';p.combo=0;p.cool=.05;P33.a=null;stepped=0}}catch(e){console.warn('uc49',e)}};
+ if(ft>=(isPow()?11:10.4)&&!P33.q){p.state='normal';p.combo=0;p.cool=.05;P33.a=null;stepped=0}}catch(e){console.warn('uc49',e)}};
 // ---- the A/B switch ----
 function setMode(m){U.mode=m;try{localStorage.setItem('uc49',m)}catch(_){}const b=document.getElementById('pruc');if(b){b.textContent='UPPERCUT: '+m.toUpperCase();b.classList.toggle('cur',m==='new')}
  if(window.PRACTICE&&PRACTICE.on)say('UPPERCUT: '+m.toUpperCase(),'#ffe14d')}

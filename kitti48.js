@@ -64,8 +64,13 @@ function power(kind,lvl){A.n[kind==='hay'?'haymaker':'powerjab']++;const a=kind=
  if(!forcePunch(a,3))return;A.pow={a,kind,lvl,t:rt(),hit:new Set(),lunge:0,nm0:NAMES[a]};NAMES[a]=kind==='hay'?'HAYMAKER!!':'POWER JAB!!';
  say(kind==='hay'?(lvl>=1?'MEGA HAYMAKER!!':'HAYMAKER!!'):(lvl>=1?'MEGA POWER JAB!!':'POWER JAB!!'),kind==='hay'?'#ff9a3c':'#ffe14d',true);
  shake=Math.max(shake,6+6*lvl);ghost(.22,1);log('power:'+kind+':'+lvl.toFixed(2))}
+// v52: POWER UPPERCUT — the charged version of the boxer uppercut (bxpu). tap = the normal uppercut (uc49 / punch33)
+function powerUp(lvl,light){A.n.powerup=(A.n.powerup||0)+1;p.state='normal';p.combo=A.combo||0;p.keepT=0;p.cool=0;startClaw();
+ if(!forcePunch('bxpu',2))return;if(light){say('UPPERCUT!','#ffe14d');return}
+ A.pow={a:'bxpu',kind:'up',lvl,t:rt(),hit:new Set(),lunge:0,nm0:NAMES.bxpu};NAMES.bxpu=lvl>=1?'MEGA POWER UPPERCUT!!':'POWER UPPERCUT!!';
+ say(NAMES.bxpu,'#ffe14d',true);shake=Math.max(shake,8+6*lvl);ghost(.22,1);log('power:up:'+lvl.toFixed(2))}
 function startCharge(kind){A.combo=curCombo();A.ch={kind,t0:A.H.attack?A.H.attack.t:rt(),lvl:0,full:false,rel:null,ctx:A.H.attack&&A.H.attack.ctx};
- p.state='kcharge';p.t=0;acted=true;p.vx=0;say('WIND-UP…','#ffb070');setAnim(kind==='hay'?'bxph':'bxpj',true);if(P33){P33.q=null;P33.a=null}A.n.charge++;log('charge:'+kind)}
+ p.state='kcharge';p.t=0;acted=true;p.vx=0;say('WIND-UP…','#ffb070');setAnim(kind==='up'?'bxpu':kind==='hay'?'bxph':'bxpj',true);if(P33){P33.q=null;P33.a=null}A.n.charge++;log('charge:'+kind)}
 function endPow(){if(A.pow){NAMES[A.pow.a]=A.pow.nm0;A.pow=null}}
 // ---------- per frame ----------
 let prevS='';
@@ -83,10 +88,10 @@ function tick(dt){
  // charge: Claw still held 0.15 s after the punch it started (before that punch lands) = wind-up instead
  const h=A.H.attack;
  if(h&&h.down&&!h.cvt&&t-h.t>=CH0&&p.ground&&!p.wall){
-  const pre=p.state==='claw'&&PS[p.anim]&&p.anim!=='bxrec'&&p.fi<3&&!A.pow;
+  const pre=p.state==='claw'&&PS[p.anim]&&p.anim!=='bxrec'&&(p.fi<3||(p.anim==='bxpu'&&p.fi<4&&!P33.hitDone))&&!A.pow;   // v52: the ↑+Claw uppercut starts at its frame 2, so it can still turn into the power wind-up
   if(pre||['normal','stop','land','kslip','kweave'].includes(p.state)){h.cvt=true;const cvA=pre?p.anim:null;
    if(pre){p.combo=Math.max(0,p.combo-1);if(window.W31&&W31.names.length)W31.names.pop();if(P33.str&&P33.str.length)P33.str.pop()}   // that punch never landed
-   startCharge(h.fwd?'jab':'hay');if(A.ch)A.ch.cvA=cvA}
+   startCharge((K.up||cvA==='bxpu')?'up':h.fwd?'jab':'hay');if(A.ch)A.ch.cvA=cvA}
   else if(p.state!=='claw')h.cvt=true}
  // tap + Claw
  if(P.attack&&p.ground){const c=A.ctx&&t-A.ctx.t<.35?A.ctx.k:null;
@@ -97,7 +102,8 @@ function tick(dt){
    if(u>=1){p.state='normal';p.vx=0;p.noFlick=false;keep(A.combo);A.ctx={k:'slip',t}}break}
   case 'kweave':{const T=.3,u=Math.min(1,p.t/T);p.vx=p.face*26*Math.PI/2*Math.sin(Math.PI*u)/T;holdCounter();if(t%.04<dt*1.5)ghost(.14,0);
    if(u>=1){p.state='normal';p.vx=0;p.noFlick=false;keep(A.combo);A.ctx={k:'weave',t}}break}
-  case 'kcharge':{const c=A.ch;if(!c||!p.ground){p.state='normal';A.ch=null;break}p.vx*=Math.pow(.001,dt);holdCounter();
+  case 'kcharge':{const c=A.ch;if(!c||!p.ground){p.state='normal';A.ch=null;break}
+   if(K.up&&c.kind==='hay'){c.kind='up';say('POWER UPPERCUT…','#ffe14d');log('charge:up')}delete P.jump;delete P.up;   // v52: hold Claw + ↑ (or hold ↑+Claw) = power uppercut wind-up; ↑ never jumps out of the wind-upp.vx*=Math.pow(.001,dt);holdCounter();
    const held=t-c.t0;c.lvl=Math.max(0,Math.min(1,(held-CHP)/(CHF-CHP)));shake=Math.max(shake,held>CHP?1+2.5*c.lvl:.5);
    if(!c.full&&c.lvl>=1){c.full=true;ghost(.22,1);say('FULL POWER!','#fff2b0');waves.push({x:p.x,y:p.y-90,r:20,l:.6,big:true});flashT=Math.max(flashT,.04);log('charged')}
    if(c.full&&t%.3<dt*1.5)ghost(.12,1);
@@ -106,7 +112,7 @@ function tick(dt){
    if(c.rel==null&&!(A.H.attack&&A.H.attack.down))c.rel=held;
    if(held>=CHMAX&&c.rel==null)c.rel=held;
    if(c.rel!=null){A.ch=null;p.noFlick=false;
-    if(c.rel<CHP){A.n.lighttap++;const a=c.cvA||(c.ctx==='weave'?'bxlh':c.ctx==='slip'?'bxj2':null);punch(a,null)}else power(c.kind,c.lvl)}
+    if(c.rel<CHP){A.n.lighttap++;if(c.kind==='up'){powerUp(0,true);break}const a=c.cvA||(c.ctx==='weave'?'bxlh':c.ctx==='slip'?'bxj2':null);punch(a,null)}else if(c.kind==='up')powerUp(c.lvl);else power(c.kind,c.lvl)}
    break}
  }
  // slip jab: step back in (eased) so the counter reaches what he slipped
@@ -115,10 +121,10 @@ function tick(dt){
  // charged punch in flight: lunge, lean, afterimages
  if(A.pow){const w=A.pow;if(p.state!=='claw'||p.anim!==w.a)endPow();
   else{if(t%.03<dt*1.5&&p.fi>=3&&p.fi<=6)ghost(.2,0);
-   const max=w.kind==='hay'?70:95,sp=w.kind==='hay'?560:820;
+   const max=w.kind==='up'?40:w.kind==='hay'?70:95,sp=w.kind==='hay'?560:820;
    if(p.fi>=3&&p.fi<=5&&w.lunge<max){let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<100&&Math.abs(d.y-p.y)<160)near=true}
     if(!near){const dx=Math.min(max-w.lunge,sp*dt);w.lunge+=dx;p.x+=p.face*dx;if(typeof clampX==='function')p.x=clampX(p.x)}}
-   if(p.fi>=4&&p.fi<=6&&!w.arc){w.arc=1;A.arcs.push({x:p.x,y:p.y,face:p.face,kind:w.kind,l:1,lvl:w.lvl})}}}
+   if(p.fi>=4&&p.fi<=6&&!w.arc&&w.kind!=='up'){w.arc=1;A.arcs.push({x:p.x,y:p.y,face:p.face,kind:w.kind,l:1,lvl:w.lvl})}}}
  if(prevS!==p.state&&prevS==='kcharge'&&p.state!=='claw'){A.ch=null}
  // the art for every Kitti move = the pink punch sheets
  applyVis(true);
@@ -141,12 +147,12 @@ const VIS={
  kpounce:{a:'bxpj',fi:t=>t<.05?2:4,r:()=>-.35*Math.max(-1,Math.min(1,-p.vy/1000)),s:()=>1.04,y:()=>0},
  kpl:{a:'bxpu',fi:t=>t<.12?3:t<.17?4:t<.24?5:t<.34?6:t<.44?7:8,r:()=>0,s:t=>t<.12?.94:1.05,y:()=>0},
  kcounter:{a:'bxx',fi:t=>t<.06?1:t<.11?2:t<.2?3:t<.3?4:t<.38?5:6,r:t=>t<.25?.06:0,s:t=>t>.11&&t<.2?.94:1,y:()=>0},
- kcharge:{a:()=>A.ch&&A.ch.kind==='jab'?'bxpj':'bxph',fi:t=>A.ch&&A.ch.kind==='jab'?(t<.06?1:2):(t<.06?1:t<.12?2:3),
+ kcharge:{a:()=>A.ch&&A.ch.kind==='jab'?'bxpj':A.ch&&A.ch.kind==='up'?'bxpu':'bxph',fi:t=>A.ch&&A.ch.kind==='up'?(t<.08?1:t<.2?2:3):A.ch&&A.ch.kind==='jab'?(t<.06?1:2):(t<.06?1:t<.12?2:3),
   r:()=>-.05*((A.ch&&A.ch.lvl)||0),s:()=>1-.04*((A.ch&&A.ch.lvl)||0)-(A.ch&&A.ch.full?.01*Math.sin(now*60):0),y:()=>0}};
 function curVis(){const V=VIS[p.state];if(!V||!on())return null;const a=typeof V.a==='function'?V.a():V.a;return FR[a]?{V,a}:null}
 const SNAP=new Set(['kslip','kdodge','kweave','dash','kslide']);   // quick moves: no crossfade (it would ghost half the move)
 function applyVis(upd){const c=curVis();if(!c)return;if(SNAP.has(p.state)&&p.t<.12){p.blend=0;p.prevF=null}if(p.anim!==c.a){if(upd)setAnim(c.a,true);else p.anim=c.a}if(SNAP.has(p.state)&&p.t<.12){p.blend=0;p.prevF=null}const L=FR[c.a].length;p.fi=Math.max(0,Math.min(L-1,c.V.fi(p.t)));if(upd)p.ft=p.fi}
-function powLean(){const w=A.pow;if(!w||p.state!=='claw')return{r:0,s:1};const f=p.fi,h=w.kind==='hay';
+function powLean(){const w=A.pow;if(!w||p.state!=='claw')return{r:0,s:1};if(w.kind==='up')return{r:0,s:1};const f=p.fi,h=w.kind==='hay';
  if(f<=3)return{r:-(h?.08:.04),s:.97};if(f<=6)return{r:h?.15:.07,s:h?.92:.9};if(f===7)return{r:h?.09:.03,s:1};return{r:0,s:1}}
 const NOBLINK=new Set(['kslip','kweave','kcharge','kdodge','kcounter','kpl','kslide','ksweep','kpounce']);   // set right before the player is drawn (something resets it mid-frame)
 const _sq=r11Sq;r11Sq=function(){let s=_sq();try{if(on()){if(NOBLINK.has(p.state))p.noFlick=true;applyVis(false);const c=curVis();let ts=c?c.V.s(p.t):powLean().s;A.vs+=(ts-A.vs)*.45;s*=A.vs}}catch(_){}return s};
@@ -154,8 +160,8 @@ const _rb=mRunBob;mRunBob=function(){const m=_rb();try{if(on()){const c=curVis()
   if(Math.abs(A.vr)>.001||ty)return{y:(m.y||0)+ty,r:(m.r||0)+A.vr*p.face}}}catch(_){}return m};
 // ---------- charged hits: more knockback, damage, shake, flash ----------
 const _hd=hitDummy;hitDummy=function(d,move,dir){const w=A.pow;const r=_hd.apply(this,arguments);
- try{if(w&&on()&&move===w.a&&d&&!w.hit.has(d)){w.hit.add(d);const L=w.lvl,h=w.kind==='hay';
-  d.hp-=1+(L>=1?1:0);if(d.hp<1)d.hp=1;d.vx=dir*(h?520:440)*(1+.6*L);d.vy=Math.min(d.vy,h?-(430+260*L):-(240+140*L));d.fl=Math.max(d.fl||0,h?.5:.35);
+ try{if(w&&on()&&move===w.a&&d&&!w.hit.has(d)){w.hit.add(d);const L=w.lvl,h=w.kind==='hay',u=w.kind==='up';
+  d.hp-=1+(L>=1?1:0);if(d.hp<1)d.hp=1;d.vx=dir*(h?520:440)*(1+.6*L);d.vy=Math.min(d.vy,h?-(430+260*L):-(240+140*L));d.fl=Math.max(d.fl||0,h?.5:.35);if(u){d.hp-=L>=1?1:0;if(d.hp<1)d.hp=1;d.vx=dir*(90+60*L);d.vy=Math.min(d.vy,-(820+380*L));d.fl=Math.max(d.fl,.6)}
   hitstop=Math.max(hitstop,.11+.05*L);shake=Math.max(shake,14+8*L);flashT=Math.max(flashT,.07);
   const x=d.x-dir*30,y=d.y-(h?120:105);waves.push({x,y,r:20,l:1,big:true});waves.push({x,y,r:6,l:.8,big:true});
   for(let i=0;i<26;i++){const an=(dir>0?0:Math.PI)+(Math.random()-.5)*2.6,v=260+Math.random()*560;sparks.push({x,y,vx:Math.cos(an)*v,vy:Math.sin(an)*v,l:.4,c:i%3?(h?'#ff9a3c':'#ffe14d'):'#fff'})}
@@ -180,6 +186,7 @@ function drawMine(){ctx.save();ctx.globalCompositeOperation='lighter';
   ['SLIP: quick lean-back step · then Claw = SLIP JAB','tap ← (away)','tap ◀'],
   ['WEAVE: bob-and-weave under a punch · then Claw = WEAVE HOOK','tap ↓','tap ▼'],
   ['HAYMAKER: HOLD Claw to wind up (glows), let go = huge overhand · tap toward first = POWER JAB','hold X','hold CLAW'],
+  ['POWER UPPERCUT: HOLD ↑ + Claw (or hold Claw, then ↑) — deep crouch wind-up, let go = explosive uppercut · tap ↑ + Claw = normal uppercut','hold ↑+X','hold ▲+CLAW'],
   ['Chain freely: tap, Claw, tap, Claw … the combo keeps counting','','']];
  let ref=at;R.forEach((r,i)=>{const tr=document.createElement('tr');if(!i){tr.id='kd48row';tr.innerHTML=`<th colspan="3" style="color:#ffb070">${r[0]}</th>`}else tr.innerHTML=`<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td>`;
   tb.insertBefore(tr,ref?ref:tb.rows[Math.min(tb.rows.length,1+i)]||null)})})();
