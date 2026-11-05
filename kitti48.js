@@ -66,22 +66,32 @@ function power(kind,lvl){A.n[kind==='hay'?'haymaker':'powerjab']++;const a=kind=
  if(!forcePunch(a,3))return;A.pow={a,kind,lvl,t:rt(),hit:new Set(),lunge:0,nm0:NAMES[a]};NAMES[a]=kind==='hay'?'HAYMAKER!!':'POWER JAB!!';
  say(kind==='hay'?(lvl>=1?'MEGA HAYMAKER!!':'HAYMAKER!!'):(lvl>=1?'MEGA POWER JAB!!':'POWER JAB!!'),kind==='hay'?'#ff9a3c':'#ffe14d',true);
  shake=Math.max(shake,6+6*lvl);ghost(.22,1);log('power:'+kind+':'+lvl.toFixed(2))}
-// v53: POWER UPPERCUT — hold ↑+Claw (or hold Claw, then ↑) past 0.3 s. Tap stays the normal uppercut.
-// Release starts already in the deep crouch (ft 2.5) so the rise is the pay-off, and the hit still lands on fi 4–6.
+// v54: POWER UPPERCUT — same hold (0.3 s). The swing itself starts at frame 0 so the deepest crouch
+// plays again before the hit (fi 4). A tap still starts at frame 2 and never shows that coil.
 function powerUp(lvl,light){A.n.powerup=(A.n.powerup||0)+1;p.state='normal';p.combo=A.combo||0;p.keepT=0;p.cool=0;startClaw();
  if(!forcePunch('bxpu',2))return;if(light){say('UPPERCUT!','#ffe14d');return}
- p.ft=lvl>=.8?2.5:lvl>=.35?2.15:1.8;p.fi=2;   // already in the crouch he held; a full charge releases from the deepest pose
+ p.ft=0;p.fi=0;
  A.pow={a:'bxpu',kind:'up',lvl,t:rt(),hit:new Set(),lunge:0,nm0:NAMES.bxpu};NAMES.bxpu=lvl>=1?'MEGA POWER UPPERCUT!!':'POWER UPPERCUT!!';
- say(NAMES.bxpu,'#ffe14d',true);shake=Math.max(shake,8+6*lvl);ghost(.22,1);log('power:up:'+lvl.toFixed(2));
+ say(NAMES.bxpu,'#ffe14d',true);shake=Math.max(shake,14+8*lvl);flashT=Math.max(flashT,.06);ghost(.28,1);log('power:up:'+lvl.toFixed(2));
+ for(let i=0;i<12;i++)puffs.push({x:p.x+(Math.random()-.5)*70,y:p.y,vx:(Math.random()-.5)*180,vy:-30-Math.random()*50,r:8,l:.4,dark:1});
  if(window.UC49&&UC49.n)UC49.n.power=(UC49.n.power||0)+1}
+function dashUpper(){if(p.state==='kduc')return;p.state='kduc';p.t=0;p.shot=false;p.kducHit=new Set();acted=true;p.ground=true;p.vy=0;
+ p.vx=p.face*Math.max(520,Math.min(760,Math.abs(p.vx)||640));p.combo=Math.min(7,(p.combo||0)+1);
+ if(typeof popNum==='function')popNum(p.combo,'#ffe14d');say('DASH UPPERCUT!','#ffe14d',true);A.n.dashup=(A.n.dashup||0)+1;log('dashup');
+ if(window.W31){W31.names.push('kduc');if(W31.names.length>24)W31.names.shift()}
+ if(window.KD47){KD47.post='kduc';if(KD47.lines)for(let i=0;i<8;i++)KD47.lines.push({x:p.x-p.face*(20+Math.random()*70),y:p.y-30-Math.random()*90,len:80,face:p.face,l:1,col:'#ffe14d'})}}
+function groundPound(){if(p.state==='kpound')return;p.state='kpound';p.t=0;p.shot=false;acted=true;p.vx*=.25;say('GROUND POUND!','#ffe9a8',true);A.n.pound=(A.n.pound||0)+1;log('pound');
+ if(window.W31){W31.names.push('kpound');if(W31.names.length>24)W31.names.shift()}}
+const _ds=dashStrike;dashStrike=function(){if(newUp()&&p.ground&&!p.wall){dashUpper();return}return _ds.apply(this,arguments)};
 function startCharge(kind){A.combo=curCombo();A.ch={kind,t0:A.H.attack?A.H.attack.t:rt(),lvl:0,full:false,rel:null,ctx:A.H.attack&&A.H.attack.ctx};
- p.state='kcharge';p.t=0;acted=true;p.vx=0;say('WIND-UP…','#ffb070');setAnim(kind==='up'?'bxpu':kind==='hay'?'bxph':'bxpj',true);if(P33){P33.q=null;P33.a=null}A.n.charge++;log('charge:'+kind)}
+ p.state='kcharge';p.t=0;acted=true;p.vx=0;say(kind==='up'?'POWER UPPERCUT…':'WIND-UP…',kind==='up'?'#ffe14d':'#ffb070');setAnim(kind==='up'?'bxpu':kind==='hay'?'bxph':'bxpj',true);if(P33){P33.q=null;P33.a=null}A.n.charge++;log('charge:'+kind)}
 function endPow(){if(A.pow){NAMES[A.pow.a]=A.pow.nm0;A.pow=null}}
 // ---------- per frame ----------
 let prevS='';
 function tick(dt){
  if(!on()){A.req=null;if(p.state==='kcharge')p.state='normal';endPow();return}
  const t=rt();
+ if(newUp()&&P.attack&&!p.ground&&!p.wall&&!p.hunt&&(P.down||K.down)&&!['kpound','ledge','respawn','hurt','bunny'].includes(p.state)){delete P.attack;delete P.down;groundPound()}
  // a suppressed back press held past the tap time = a real turn / walk
  for(const k of LR){const h=A.H[k];if(h&&h.sup){if(!h.down){h.sup=false;continue}
   if(t-h.t>=TAP||!p.ground||!SUP_OK.has(p.state)){h.sup=false;K[k]=1;P[k]=1;BUF[k]=now}}}
@@ -113,13 +123,24 @@ function tick(dt){
    const held=t-c.t0;c.lvl=Math.max(0,Math.min(1,(held-CHP)/(CHF-CHP)));shake=Math.max(shake,held>CHP?1+2.5*c.lvl:.5);
    if(!c.full&&c.lvl>=1){c.full=true;ghost(.22,1);say('FULL POWER!','#fff2b0');waves.push({x:p.x,y:p.y-90,r:20,l:.6,big:true});flashT=Math.max(flashT,.04);log('charged')}
    if(c.full&&t%.3<dt*1.5)ghost(.12,1);
-   const gx=p.x+(c.kind==='hay'?-p.face*30:p.face*40),gy=p.y-(c.kind==='hay'?120:112);
+   const gx=p.x+(c.kind==='hay'?-p.face*30:p.face*(c.kind==='up'?6:40)),gy=p.y-(c.kind==='hay'?120:c.kind==='up'?32:112);
    if(t%.03<dt*1.5)for(let i=0;i<2;i++){const an=Math.random()*6.28,r=70+Math.random()*40;sparks.push({x:gx+Math.cos(an)*r,y:gy+Math.sin(an)*r,vx:-Math.cos(an)*r*4,vy:-Math.sin(an)*r*4,l:.22,c:c.full?'#fff':(c.kind==='hay'?'#ff9a3c':'#ffe14d')})}
    if(c.rel==null&&!(A.H.attack&&A.H.attack.down))c.rel=held;
    if(held>=CHMAX&&c.rel==null)c.rel=held;
+   if(c.kind==='up'&&t%.08<dt*1.5)puffs.push({x:p.x+(Math.random()-.5)*46,y:p.y,vx:(Math.random()-.5)*80,vy:-20,r:6,l:.28,dark:1});
    if(c.rel!=null){A.ch=null;p.noFlick=false;
     if(c.rel<CHP){A.n.lighttap++;if(c.kind==='up'){powerUp(0,true);break}const a=c.cvA||(c.ctx==='weave'?'bxlh':c.ctx==='slip'?'bxj2':null);punch(a,null)}else if(c.kind==='up')powerUp(c.lvl);else power(c.kind,c.lvl)}
    break}
+  case 'kduc':{p.vy=0;p.ground=true;p.vx*=Math.pow(.4,dt);
+   if(p.t>=.1&&p.t<.28)for(const d of dummies){if(!d.alive||d.benched||p.kducHit.has(d))continue;const g=(d.x-p.x)*p.face;if(g>-36&&g<160&&Math.abs(d.y-p.y)<190){p.kducHit.add(d);C.atk++;hitDummy(d,'bxpu',p.face);d.vy=Math.min(d.vy,-980);d.vx=p.face*180;d.fl=Math.max(d.fl||0,.6);shake=Math.max(shake,12);waves.push({x:d.x,y:d.y-90,r:18,l:.9,big:true});say('DASH UPPERCUT!','#ffe14d',true);log('dashup:hit')}}
+   if(window.KD47&&t%.05<dt*1.5)KD47.lines.push({x:p.x-p.face*30,y:p.y-50-Math.random()*40,len:70,face:p.face,l:1,col:'#ffe14d'});
+   if(p.t>.5){p.state='normal';p.vx=p.face*160;p.keepT=.45;p.keepCombo=Math.min(7,p.combo||0)}break}
+  case 'kpound':{if(p.t<.1)p.vy=Math.min(60,Math.max(-100,p.vy));else if(!p.ground){p.vy=1750;p.vx*=Math.pow(.25,dt)}
+   if(p.ground&&p.t>.06&&!p.shot){p.shot=true;p.vy=0;shake=Math.max(shake,18);flashT=Math.max(flashT,.1);waves.push({x:p.x,y:p.y,r:22,l:1,big:true});waves.push({x:p.x,y:p.y,r:8,l:.8,big:true});
+    for(let i=0;i<16;i++)puffs.push({x:p.x+(Math.random()-.5)*120,y:p.y,vx:(Math.random()-.5)*260,vy:-20-Math.random()*70,r:9,l:.5,dark:1});
+    C.atk++;for(const d of dummies){if(!d.alive||d.benched)continue;if(Math.abs(d.x-p.x)<175&&d.y>p.y-240&&d.y<p.y+30){hitDummy(d,'bxpb',Math.sign(d.x-p.x)||p.face);d.vx=(d.x>=p.x?1:-1)*320;d.vy=Math.min(d.vy,-480);d.fl=Math.max(d.fl||0,.4)}}
+    say('GROUND POUND!','#ffe9a8',true);log('pound:hit')}
+   if(p.shot&&p.t>.42)p.state='normal';break}
  }
  // slip jab: step back in (eased) so the counter reaches what he slipped
  if(A.step>0){if(p.state!=='claw'||p.fi>4)A.step=0;else{let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<150&&Math.abs(d.y-p.y)<160)near=true}
@@ -130,12 +151,12 @@ function tick(dt){
    const max=w.kind==='up'?40:w.kind==='hay'?70:95,sp=w.kind==='hay'?560:820;
    if(p.fi>=3&&p.fi<=5&&w.lunge<max){let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<100&&Math.abs(d.y-p.y)<160)near=true}
     if(!near){const dx=Math.min(max-w.lunge,sp*dt);w.lunge+=dx;p.x+=p.face*dx;if(typeof clampX==='function')p.x=clampX(p.x)}}
-   if(p.fi>=4&&p.fi<=6&&!w.arc&&w.kind!=='up'){w.arc=1;A.arcs.push({x:p.x,y:p.y,face:p.face,kind:w.kind,l:1,lvl:w.lvl})}}}
+   if(p.fi>=4&&p.fi<=6&&!w.arc){w.arc=1;A.arcs.push({x:p.x,y:p.y,face:p.face,kind:w.kind,l:1,lvl:w.lvl})}}}
  if(prevS!==p.state&&prevS==='kcharge'&&p.state!=='claw'){A.ch=null}
  // the art for every Kitti move = the pink punch sheets
  applyVis(true);
  if(p.state==='kdodge'){let n=0;for(let i=ghosts.length-1;i>=0&&n<40;i--,n++){const g=ghosts[i];if(!g.k48&&Math.abs(g.x-p.x)<200){g.k48=1;g.l=Math.min(g.l,.14)}}}   // thinner dodge trail
- if(['kslip','kweave','kcharge'].includes(p.state)){p.noFlick=true}
+ if(['kslip','kweave','kcharge','kduc','kpound'].includes(p.state)){p.noFlick=true}
  if(p.ground)A.faces.push(p.face);if(A.faces.length>120)A.faces.shift();
  prevS=p.state}
 A.seen=new Set();A.anims=new Set();
@@ -154,13 +175,15 @@ const VIS={
  kpl:{a:'bxpu',fi:t=>t<.12?3:t<.17?4:t<.24?5:t<.34?6:t<.44?7:8,r:()=>0,s:t=>t<.12?.94:1.05,y:()=>0},
  kcounter:{a:'bxx',fi:t=>t<.06?1:t<.11?2:t<.2?3:t<.3?4:t<.38?5:6,r:t=>t<.25?.06:0,s:t=>t>.11&&t<.2?.94:1,y:()=>0},
  kcharge:{a:()=>A.ch&&A.ch.kind==='jab'?'bxpj':A.ch&&A.ch.kind==='up'?'bxpu':'bxph',fi:t=>A.ch&&A.ch.kind==='up'?(t<.08?1:t<.2?2:3):A.ch&&A.ch.kind==='jab'?(t<.06?1:2):(t<.06?1:t<.12?2:3),
-  r:()=>A.ch&&A.ch.kind==='up'?0:-.05*((A.ch&&A.ch.lvl)||0),s:()=>A.ch&&A.ch.kind==='up'?1:(1-.04*((A.ch&&A.ch.lvl)||0)-(A.ch&&A.ch.full?.01*Math.sin(now*60):0)),y:()=>0}};
+  r:()=>A.ch&&A.ch.kind==='up'?0:-.05*((A.ch&&A.ch.lvl)||0),s:()=>A.ch&&A.ch.kind==='up'?1:(1-.04*((A.ch&&A.ch.lvl)||0)-(A.ch&&A.ch.full?.01*Math.sin(now*60):0)),y:()=>0},
+ kduc:{a:'bxpu',fi:t=>t<.08?3:t<.16?4:t<.28?5:6,r:()=>.08,s:()=>1,y:()=>0},
+ kpound:{a:()=>p.shot?'bxpb':'bxlh',fi:t=>p.shot?3:(t<.12?1:t<.22?2:3),r:()=>.1,s:()=>1,y:()=>0}};
 function curVis(){const V=VIS[p.state];if(!V||!on())return null;const a=typeof V.a==='function'?V.a():V.a;return FR[a]?{V,a}:null}
 const SNAP=new Set(['kslip','kdodge','kweave','dash','kslide']);   // quick moves: no crossfade (it would ghost half the move)
 function applyVis(upd){const c=curVis();if(!c)return;if(SNAP.has(p.state)&&p.t<.12){p.blend=0;p.prevF=null}if(p.anim!==c.a){if(upd)setAnim(c.a,true);else p.anim=c.a}if(SNAP.has(p.state)&&p.t<.12){p.blend=0;p.prevF=null}const L=FR[c.a].length;p.fi=Math.max(0,Math.min(L-1,c.V.fi(p.t)));if(upd)p.ft=p.fi}
 function powLean(){const w=A.pow;if(!w||p.state!=='claw')return{r:0,s:1};if(w.kind==='up')return{r:0,s:1};const f=p.fi,h=w.kind==='hay';
  if(f<=3)return{r:-(h?.08:.04),s:.97};if(f<=6)return{r:h?.15:.07,s:h?.92:.9};if(f===7)return{r:h?.09:.03,s:1};return{r:0,s:1}}
-const NOBLINK=new Set(['kslip','kweave','kcharge','kdodge','kcounter','kpl','kslide','ksweep','kpounce']);   // set right before the player is drawn (something resets it mid-frame)
+const NOBLINK=new Set(['kslip','kweave','kcharge','kdodge','kcounter','kpl','kslide','ksweep','kpounce','kduc','kpound']);   // set right before the player is drawn (something resets it mid-frame)
 const _sq=r11Sq;r11Sq=function(){let s=_sq();try{if(on()){if(NOBLINK.has(p.state))p.noFlick=true;applyVis(false);const c=curVis();let ts=c?c.V.s(p.t):powLean().s;A.vs+=(ts-A.vs)*.45;s*=A.vs}}catch(_){}return s};
 const _rb=mRunBob;mRunBob=function(){const m=_rb();try{if(on()){const c=curVis();let tr=0,ty=0;if(c){tr=c.V.r(p.t);ty=c.V.y(p.t)}else tr=powLean().r;A.vr+=(tr-A.vr)*.4;
   if(Math.abs(A.vr)>.001||ty)return{y:(m.y||0)+ty,r:(m.r||0)+A.vr*p.face}}}catch(_){}return m};
@@ -175,13 +198,15 @@ const _hd=hitDummy;hitDummy=function(d,move,dir){const w=A.pow;const r=_hd.apply
 // ---------- fx: charge glow, haymaker arc, power-jab streak ----------
 const _fx=drawFx;drawFx=function(){try{if(on())drawMine()}catch(e){if(!A.fxErr){A.fxErr=String(e);console.warn('kd48fx',e)}}_fx()};
 function drawMine(){ctx.save();ctx.globalCompositeOperation='lighter';
- const c=A.ch;if(p.state==='kcharge'&&c){const gx=p.x+(c.kind==='hay'?-p.face*30:p.face*40),gy=p.y-(c.kind==='hay'?120:112),pl=.5+.5*Math.sin(now*(c.full?30:14));
-  const R=12+20*c.lvl+4*pl,col=c.kind==='hay'?'255,150,60':'255,225,80';const g=ctx.createRadialGradient(gx,gy,2,gx,gy,R*1.6);
+ const c=A.ch;if(p.state==='kcharge'&&c){const up=c.kind==='up',gx=p.x+(c.kind==='hay'?-p.face*30:p.face*(up?8:40)),gy=p.y-(c.kind==='hay'?120:up?26:112),pl=.5+.5*Math.sin(now*(c.full?30:14));
+  const R=(up?22:12)+(up?34:20)*c.lvl+4*pl,col=c.kind==='hay'?'255,150,60':'255,225,80';const g=ctx.createRadialGradient(gx,gy,2,gx,gy,R*1.6);
   g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(.18,`rgba(${col},${.5+.35*c.lvl})`);g.addColorStop(1,`rgba(${col},0)`);ctx.fillStyle=g;ctx.beginPath();ctx.arc(gx,gy,R*1.6,0,6.283);ctx.fill();
   if(c.full){ctx.strokeStyle=`rgba(255,255,255,${.5+.4*pl})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(gx,gy,R*1.9+8*pl,0,6.283);ctx.stroke()}}
  for(const a of A.arcs){a.l-=1/60*3.2;if(a.l<=0)continue;ctx.save();ctx.translate(a.x,a.y);ctx.scale(a.face,1);const al=Math.max(0,a.l);
   if(a.kind==='hay'){// big looping overhand: from high behind his head, over the top, down through the target
    for(let i=0;i<4;i++){ctx.strokeStyle=i===0?`rgba(255,240,200,${al*.7})`:`rgba(255,${160-i*25},40,${al*.55})`;ctx.lineWidth=(20-i*4)*(1+.3*a.lvl)*al;ctx.beginPath();ctx.arc(10,-100,92+i*7+12*a.lvl,-2.6,.45);ctx.stroke()}}
+  else if(a.kind==='up'){for(let i=0;i<5;i++){ctx.strokeStyle=i===0?`rgba(255,255,230,${al*.85})`:`rgba(255,${210-i*18},60,${al*.6})`;ctx.lineWidth=(22-i*3)*(1+.45*a.lvl)*al;ctx.beginPath();ctx.arc(36,-20,78+i*10+16*a.lvl,-2.55,-.35);ctx.stroke()}
+   ctx.fillStyle=`rgba(255,236,140,${al*.45})`;ctx.beginPath();ctx.moveTo(28,-150);ctx.lineTo(70+30*a.lvl,-230);ctx.lineTo(8,-168);ctx.closePath();ctx.fill()}
   else{for(let i=0;i<4;i++){ctx.strokeStyle=i===0?`rgba(255,250,220,${al*.75})`:`rgba(255,225,80,${al*.55})`;ctx.lineWidth=(14-i*3)*(1+.3*a.lvl)*al;ctx.beginPath();ctx.moveTo(-60,-112+i*3);ctx.lineTo(230+60*a.lvl,-112);ctx.stroke()}
    ctx.fillStyle=`rgba(255,240,170,${al*.5})`;ctx.beginPath();ctx.moveTo(170,-112);ctx.lineTo(260+60*a.lvl,-150);ctx.lineTo(260+60*a.lvl,-74);ctx.closePath();ctx.fill()}
   ctx.restore()}
@@ -192,7 +217,9 @@ function drawMine(){ctx.save();ctx.globalCompositeOperation='lighter';
   ['SLIP: quick lean-back step · then Claw = SLIP JAB','tap ← (away)','tap ◀'],
   ['WEAVE: bob-and-weave under a punch · then Claw = WEAVE HOOK','tap ↓','tap ▼'],
   ['HAYMAKER: HOLD Claw to wind up (glows), let go = huge overhand · tap toward first = POWER JAB','hold X','hold CLAW'],
-  ['POWER UPPERCUT (Practice Room, UPPERCUT set to NEW): HOLD ↑ + Claw, or hold Claw then ↑ — longer crouch, let go = a bigger uppercut. Tap ↑ + Claw = normal uppercut','hold ↑+X','hold ▲+CLAW'],
+  ['POWER UPPERCUT (Practice Room, UPPERCUT NEW): HOLD ↑ + Claw — he coils deeper, then a big gold uppercut. Tap ↑ + Claw = the quicker uppercut, feet stay down','hold ↑+X','hold ▲+CLAW'],
+  ['DASH UPPERCUT: dash, then Claw — he slides in and uppercuts them into the air','→ → then X','▶ ▶ then CLAW'],
+  ['GROUND POUND: in the air (jump, pounce, or after a launcher), ↓ + Claw — he hammers straight down','in air: ↓+X','in air: ▼+CLAW'],
   ['Chain freely: tap, Claw, tap, Claw … the combo keeps counting','','']];
  let ref=at;R.forEach((r,i)=>{const tr=document.createElement('tr');if(!i){tr.id='kd48row';tr.innerHTML=`<th colspan="3" style="color:#ffb070">${r[0]}</th>`}else tr.innerHTML=`<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td>`;
   tb.insertBefore(tr,ref?ref:tb.rows[Math.min(tb.rows.length,1+i)]||null)})})();
