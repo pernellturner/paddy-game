@@ -1,0 +1,265 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Paddy"><meta name="theme-color" content="#1a0f2e"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icon-180.png"><link rel="icon" href="assets/s1_05.png"><title>Paddy — Scenario Run Test</title>
+<style>
+@font-face{font-family:'Bangers';src:url(fonts/Bangers.woff2) format('woff2');font-display:block}
+@font-face{font-family:'Kanji';src:url(fonts/Kanji.woff2?v=9) format('woff2');font-display:block}
+html,body{margin:0;height:100%;min-height:100%;min-height:-webkit-fill-available;overflow:hidden;background:#0d1226;overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;font-family:system-ui,sans-serif}
+canvas{display:block;position:fixed;left:0;top:0;right:0;bottom:0;width:100%;height:100%;background:#0d1226}
+#ui{position:fixed;inset:0;pointer-events:none}
+.b{position:absolute;pointer-events:auto;width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.8);color:#fff;font:bold 15px system-ui;display:flex;align-items:center;justify-content:center;text-shadow:0 1px 2px #0008}
+.b.lit{background:rgba(255,200,80,.6)}
+.b.on{background:rgba(255,255,255,.7);color:#246}
+#lbl{position:fixed;top:max(8px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));background:#0006;color:#fff;padding:4px 10px;border-radius:8px;font:600 14px system-ui}
+#oldhelp{position:fixed;text-align:left!important;left:max(10px,env(safe-area-inset-left));right:auto!important;top:44px!important;font-size:11px!important;line-height:1.3;background:#0004;padding:4px 8px;border-radius:8px;top:max(8px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));color:#fff;font:12px system-ui;text-align:right;text-shadow:0 1px 2px #000a}
+.b.s{width:52px;height:52px;font-size:13px}.b.t{width:40px;height:40px;font-size:18px}
+#hint{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);color:#fff9;font:12px system-ui}
+@media (pointer:coarse){#hint{display:none}}
+#moves{display:none;position:fixed;inset:0;background:#0009;z-index:5;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+body.ov #moves{display:block}
+#moves .box{max-width:760px;margin:12px auto;background:#1e2a44;color:#fff;border-radius:14px;padding:10px 16px;font:13px system-ui;position:relative}
+#moves h2{margin:4px 0 8px;font:28px Bangers,Impact,sans-serif;letter-spacing:1px;color:#ffe14d}
+#moves table{border-collapse:collapse;width:100%}#moves td,#moves th{padding:3px 6px;border-bottom:1px solid #fff2;text-align:left;vertical-align:top}
+#moves th{color:#9fd8ff}#moves button{font:600 14px system-ui;margin:3px;padding:6px 10px;border-radius:8px;border:0;background:#ffe14d;color:#222}
+#mclose{position:absolute;right:10px;top:8px;font-size:18px!important}.tip{opacity:.7}
+#rot{display:none;position:fixed;inset:0;background:#246;color:#fff;font:600 20px system-ui;align-items:center;justify-content:center;text-align:center;flex-direction:column;gap:14px;padding:0 18px}
+#rotor{font-size:15px;opacity:.8}#rotw1{font:26px Bangers,"Luckiest Guy",Impact,sans-serif;letter-spacing:1.5px;color:#fff;border:0;border-radius:999px;padding:.4em 1.2em;min-height:52px;background:linear-gradient(#9be36a,#2f8f3a);box-shadow:0 .18em 0 #1d5e24,0 .4em .9em #0006;text-shadow:0 2px 0 #1d5e24;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}#rotw1:active{transform:translateY(.12em) scale(.97)}
+@media (pointer:coarse){#oldhelp{display:none}}
+@media (orientation:portrait) and (pointer:coarse){.b.s{width:52px;height:52px;font-size:13px}.b.t{width:40px;height:40px;font-size:18px}
+#hint{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);color:#fff9;font:12px system-ui}
+@media (pointer:coarse){#hint{display:none}}
+#moves{display:none;position:fixed;inset:0;background:#0009;z-index:5;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+body.ov #moves{display:block}
+#moves .box{max-width:760px;margin:12px auto;background:#1e2a44;color:#fff;border-radius:14px;padding:10px 16px;font:13px system-ui;position:relative}
+#moves h2{margin:4px 0 8px;font:28px Bangers,Impact,sans-serif;letter-spacing:1px;color:#ffe14d}
+#moves table{border-collapse:collapse;width:100%}#moves td,#moves th{padding:3px 6px;border-bottom:1px solid #fff2;text-align:left;vertical-align:top}
+#moves th{color:#9fd8ff}#moves button{font:600 14px system-ui;margin:3px;padding:6px 10px;border-radius:8px;border:0;background:#ffe14d;color:#222}
+#mclose{position:absolute;right:10px;top:8px;font-size:18px!important}.tip{opacity:.7}
+#rot{display:flex}}
+#clist h3{margin:6px 0 4px;font:24px Bangers,Impact,sans-serif;letter-spacing:1px;color:#7fffd4}
+#clist .tabs{display:flex;gap:6px;margin:6px 0}#clist .tab{background:#2d3d63!important;color:#fff!important;flex:1}
+#clist table{margin-bottom:10px}#clist .seq{white-space:nowrap}#clist tr.ult td{background:#ffe14d22}
+.ck{display:inline-block;width:22px;height:22px;line-height:22px;border-radius:50%;text-align:center;color:#fff;font:15px Bangers,Impact,sans-serif;margin:1px;border:2px solid #fff8}
+#pclose{display:none}body.prac #pclose{display:flex}
+</style><style>#ui .b.gpow{background:radial-gradient(circle,#fff3b0 0%,#ffd23a 55%,#c98a00 100%);color:#3a2400;font-weight:800;box-shadow:0 0 14px #ffd23acc;line-height:1}#ui .b.gpow small{display:block;font-size:.5em;letter-spacing:.5px}#ui .b.gpow.max{filter:saturate(.4) brightness(1.2)}</style>
+</head><body>
+<canvas id="c"></canvas>
+<div style="position:absolute;opacity:0;font-family:Bangers">.</div><div style="position:absolute;opacity:0;font-family:Kanji">斬侍風桜必殺一閃返し気月</div><div id="lbl">idle</div>
+<div id="hint">press ? for moves</div>
+<div id="ui">
+ <div class="b" data-k="left"  style="left:calc(16px + env(safe-area-inset-left));bottom:24px">◀</div>
+ <div class="b" data-k="right" style="left:calc(96px + env(safe-area-inset-left));bottom:24px">▶</div>
+ <div class="b" data-k="up"    style="left:calc(56px + env(safe-area-inset-left));bottom:168px;width:56px;height:56px">▲</div>
+ <div class="b" data-k="down"  style="left:calc(56px + env(safe-area-inset-left));bottom:96px;width:56px;height:56px">▼</div>
+ <div class="b" data-k="attack"  style="right:calc(96px + env(safe-area-inset-right));bottom:24px">Claw</div>
+ <div class="b" data-k="jump"    style="right:calc(16px + env(safe-area-inset-right));bottom:56px;width:72px;height:72px">Jump</div>
+ <div class="b" data-k="special" style="right:calc(100px + env(safe-area-inset-right));bottom:100px">Meow</div>
+ <div class="b s" data-k="hunt" style="right:calc(176px + env(safe-area-inset-right));bottom:44px">Hunt</div>
+ <div class="b s" data-k="tail" style="right:calc(176px + env(safe-area-inset-right));bottom:108px">Tail</div>
+ <div class="b s gpow" data-k="gpow" style="display:none;right:calc(236px + env(safe-area-inset-right));bottom:108px">⚡<small>POWER</small></div>
+ <div class="b s" data-k="guard" style="right:calc(176px + env(safe-area-inset-right));bottom:172px">🛡</div>
+ <div class="b s" data-k="blink" style="right:calc(236px + env(safe-area-inset-right));bottom:44px">Blink</div>
+ <div class="b s t" data-k="morph" style="right:calc(64px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🥷</div>
+ <div class="b s t" id="mute" style="right:calc(120px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🔊</div>
+ <div class="b s" id="pclose" style="left:calc(12px + env(safe-area-inset-left));top:96px;width:auto;height:30px;border-radius:15px;padding:0 12px;font-size:13px">✕ stop practice</div>
+<div class="b s t" id="qbtn" style="right:calc(8px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">?</div>
+</div>
+<div id="moves"><div class="box"><button id="mclose">✕</button><h2>Paddy's moves</h2>
+<div id="clist"></div>
+<table>
+<tr><th>Move</th><th>Keyboard</th><th>iPhone</th></tr>
+<tr><td>Walk</td><td>← → / A D</td><td>hold ◀ ▶</td></tr>
+<tr><td>Run (start + skid stop)</td><td>hold Shift + ← →</td><td>keep holding ◀ ▶</td></tr>
+<tr><td>Jump / Double jump</td><td>tap Space / ↑ / W (again in air)</td><td>tap Jump (again in air)</td></tr>
+<tr><td>SUPER LEAP (spinning, hits on the way up)</td><td>hold Space / ↑ / W, release</td><td>hold Jump, release</td></tr>
+<tr><td>Lands on his feet (flip)</td><td>fall from high up</td><td>fall from high up</td></tr>
+<tr><td>Hard landing</td><td>end of a dive bomb</td><td>same</td></tr>
+<tr><td>Crouch / Slide</td><td>↓ (while running = slide)</td><td>▼ (while running = slide)</td></tr>
+<tr><td>🌟 GOLDEN FURY: ⚡ POWER UP (Fury 1 → God)</td><td>G</td><td>⚡ POWER button</td></tr>
+<tr><td>🌟 Fly / air juggle (Golden Fury)</td><td>Jump in the air = fly (hold to rise, ↓ sink) · Claw = air combo · ↓+Claw = SPIKE · Tail = smash HIGHER · Blink = chase · Meow = SKY SHATTER</td><td>same buttons (▼ + Claw = spike)</td></tr>
+<tr><td>Dash</td><td>double-tap ← or →</td><td>double-tap ◀ or ▶</td></tr>
+<tr><td>Winged dash</td><td>dash after a double jump</td><td>same</td></tr>
+<tr><td>Wall climb / Ledge grab (brick walls on BOTH sides of the arena)</td><td>hold ← or → at a wall, climb to the top</td><td>hold ◀ or ▶ at a wall</td></tr>
+<tr><td>Wall jump</td><td>Jump, or the opposite arrow, while on the wall</td><td>Jump, or the opposite arrow, on the wall</td></tr>
+<tr><td>WALL KICK &amp; MANTLE (Samurai, Knight, Pirate)</td><td>Jump while touching a wall in the air · hold toward the wall near the top to pull yourself up</td><td>same with Jump / ◀ ▶</td></tr>
+<tr><td>Punch strings: each tap is its own punch, 1 JAB → 2 CROSS → 3 LEFT HOOK → 4 BODY SHOT → 1 … (build your own: 1-2, 1-1-2, 1-2-3-4)</td><td>X / J; hold → for a JAB (twice = 1-1), hold ↓ mid-string for a BODY SHOT</td><td>Claw; hold ▶ for a JAB, hold ▼ mid-string for a BODY SHOT</td></tr>
+<tr><td><b>Turn mid-combo</b> (keeps the same combo and the next hit, onto enemies behind you)</td><td>tap the other arrow during the combo</td><td>tap the other ◀ / ▶ during the combo</td></tr>
+<tr><td><b>SKY SWIPE</b> (upward combo hit for birds and anything above)</td><td>hold ↑ / W during a combo (X in the air with ↑ too)</td><td>hold Jump + Claw during a combo</td></tr>
+<tr><td><b>DODGE</b> (quick dash, can't be hit, afterimage)</td><td>tap B (or O) · with ←/→ to pick the way</td><td>tap 🛡 (with ◀/▶ to pick the way)</td></tr>
+<tr><td><b>BLOCK</b> (takes much less damage, the enemy bounces off)</td><td>hold B</td><td>hold 🛡</td></tr>
+<tr><td><b>COUNTER!</b> (slow-mo strike back)</td><td>block or dodge right as a hit is about to land</td><td>tap / press 🛡 right as a hit lands</td></tr>
+<tr><td>8-hit power build: from the 3rd punch, press on the beat (ring turns green) → POWER JAB → POWER HOOK → POWER BODY → POWER UPPERCUT (pops him up) → 8th press = BUNNY KICK BARRAGE grab, or the aerial finisher in the air (other forms keep their own extensions)</td><td>press X as each punch pulls back</td><td>same timing on Claw</td></tr>
+<tr><td><b>BUNNY KICK BARRAGE</b> (perfect 8th hit: the music stops, the screen goes dark &amp; widescreen, grab, 6 big kicks, slow-mo sky launch - press any button after the launch to skip; land the 8th hit <b>in the air / mid-juggle</b> for the AERIAL finisher: air grab, spin, SPIKE into the ground)</td><td>keep the perfect timing through hit 7 → 8</td><td>same on Claw</td></tr>
+<tr><td>Finisher</td><td>F (also during a claw combo)</td><td>—</td></tr>
+<tr><td>Shadow Blink (teleport, keeps the combo going)</td><td>N or Ctrl</td><td>Blink</td></tr>
+<tr><td><b>BLINK BARGE</b></td><td>dash (double-tap ←/→), then N or Ctrl straight away</td><td>double-tap ◀/▶, then Blink</td></tr>
+<tr><td>Dash strike</td><td>claw during / right after a dash</td><td>same</td></tr>
+<tr><td>Uppercut</td><td>hold ↑ / W + X</td><td>hold Jump + Claw</td></tr>
+<tr><td>Air swipe</td><td>X in the air</td><td>Claw in the air</td></tr>
+<tr><td>Cartwheel Claw (air spin)</td><td>X after a double jump</td><td>Claw after a double jump</td></tr>
+<tr><td>Dive bomb</td><td>↓ in the air</td><td>▼ in the air</td></tr>
+<tr><td>Dive claw</td><td>↓ + ←/→ in the air (or X while diving)</td><td>▼ + ◀/▶ in the air</td></tr>
+<tr><td>Hunt mode / Stalk (every form)</td><td>Q / V</td><td>Hunt</td></tr>
+<tr><td>Butt-wiggle + Pounce</td><td>X in hunt mode</td><td>Claw in hunt mode</td></tr>
+<tr><th colspan="3" style="color:#9fe8ff">🐾 STEALTH vs BIG BRUNO THE BRAWLER (Hunt mode, any form)</th></tr>
+<tr><td>Slip out of sight: in Hunt, hide behind the bush or the crates, climb onto a wall top, or get far away → he says “huh?” and a <b>?</b> (or <b>zzz</b> when he dozes) appears with a <b>detection meter</b>. If he can see you the meter fills; full = <b>!</b> and he's back on you. Moving fast or leaving Hunt fills it quicker.</td><td colspan="2">Q / V (Hunt button) to sneak</td></tr>
+<tr><td><b>SNEAK POUNCE</b> (from behind: leap on his helmet, bonk-bonk-bonk, he face-plants)</td><td>Hunt, creep up behind him (or while he dozes) · X</td><td>Hunt · Claw</td></tr>
+<tr><td><b>AMBUSH POUNCE</b> (from hiding: a huge leap out of the bush or crates, four bonks)</td><td>Hunt behind the bush / crates (“hidden”) · X</td><td>Hunt · Claw</td></tr>
+<tr><td><b>SILENT TAIL TRIP</b> (he trips and lies flat for free hits)</td><td>Hunt, close to him while he hasn't seen you · T / L</td><td>Hunt · Tail</td></tr>
+<tr><td><b>SKY DROP TAKEDOWN</b> (from a wall top or while climbing, plunge onto him) – a normal DROP ATTACK if he's watching</td><td>X on a wall top or wall when he's below · or ↓ in the air right above him</td><td>Claw · or ▼ in the air</td></tr>
+<tr><td>TAIL SPIN chain: Tail Spin → Double Tail Spin → TAIL SPIN LAUNCHER (pulls nearby enemies in, knocks them away; 3rd one launches you both up)</td><td>T / L ×3 (in rhythm)</td><td>Tail ×3</td></tr>
+<tr><td>Meow (small sound wave)</td><td>tap C / K</td><td>tap Meow</td></tr>
+<tr><td>SONIC MEOW!! (longer hold = bigger)</td><td>hold C / K, release</td><td>hold Meow, release</td></tr>
+<tr><td>Paw Pop (launcher: pops the Rottweiler up)</td><td>↓ + X</td><td>▼ + Claw</td></tr>
+<tr><td>Swat</td><td>R</td><td>Swat button in this list</td></tr>
+<tr><td><b>Air combos &amp; JUGGLES</b></td><td>launch with Uppercut, Super Leap or Paw Pop, then jump and chain X (air swipes, air spin), ↓+←/→ dive claw — each air hit lifts you both higher — keep going and you rise past the clouds, sunset and into SPACE (altitude meter on the right)</td><td>same with Jump / Claw / ▼</td></tr>
+<tr><td>Hiss</td><td>↓ + C (or E)</td><td>▼ + Meow</td></tr>
+<tr><td>Zoomies</td><td>Z</td><td>button below</td></tr>
+<tr><th colspan="3" style="color:#ffe08a">🐱 KITTY PADDY STYLE (optional: base Paddy fights as Kitty Paddy – swats, bonks and pounces; switch it on with the 🐱 KITTY STYLE button at the top of the combo list, or 0)</th></tr>
+<tr><td>Turn KITTY STYLE on / off (off = classic base Paddy, exactly as before; remembered)</td><td>0</td><td>🐱 KITTY STYLE button (combo list)</td></tr>
+<tr><td>Freestyle string – every tap is the next hit: SWAT → BONK → ANKLE SWIPE → HEAD-BONK → swat …</td><td>X X X X …</td><td>Claw Claw Claw …</td></tr>
+<tr><td>SWAT (a second one in a row = TAIL WHIP, the 1′ of 1-1-2) · butt-wiggle POUNCE · ROCKET LEAP launcher</td><td>→ + X · ↓ + X · ↑ / Space + X</td><td>▶ + Claw · ▼ + Claw · ▲/Jump + Claw</td></tr>
+<tr><td>PAW SLAM · COUNTER SWIPE (parry + up-swipe)</td><td>T · C</td><td>Tail · Meow</td></tr>
+<tr><td><b>NINE LIVES</b> – 8-hit timed string: hits 1–3 any rhythm, then press as each hit lands (green ring); hit 7 becomes the Pounce, the 8th on the beat = finisher</td><td>X ×8 on the beat</td><td>Claw ×8 on the beat</td></tr>
+<tr><td>Air juggle: Rocket Leap, then AIR SWAT → BUNNY KICK → DIVE SPIKE (spikes him and lands)</td><td>↑ + X, then X X X (↓ + X in the air = Dive Spike)</td><td>▲ + Claw, then Claw ×3</td></tr>
+<tr><td>ZOOMIES dash-in (in the air: AIR ZOOMIES straight to him) – cancels any move</td><td>N / Ctrl / Z · double-tap ← / →</td><td>Blink / Zoomies · double-tap ◀ / ▶</td></tr>
+<tr><td>BLOCK (puffed-up Halloween cat) · DODGE (spring back) · block or dodge right as a hit lands = COUNTER, Claw while blocking = counter swipe</td><td>hold B · O</td><td>hold 🛡 · tap 🛡</td></tr>
+<tr><th colspan="3" style="color:#c9a7ff">🥷 NINJA PADDY (quick, sneaky, low – empty-paw strikes)</th></tr>
+<tr><td>Change form: Paddy → Ninja → Samurai → Knight → Pirate → Paddy (morph mid-combo = Transform Strike)</td><td>M (cycles) · 3 = Ninja · 4 = Samurai · 5 = Knight · 6 = Pirate (same key again = back to Paddy)</td><td>top-right form button (shows the next form)</td></tr>
+<tr><td>Ninja creep, Jump, FLIP (2nd jump), TRIPLE FLIP (3rd jump) · BACKFLIP · WALL RUN / WALL KICK</td><td>← → · Space / ↑ up to 3 times · ↓ + Space · hold ← / → into a wall</td><td>◀ ▶ · Jump · ▼ + Jump · hold ◀ / ▶ into a wall</td></tr>
+<tr><td>Freestyle string – every tap is the next hit: PALM STRIKE → SHUTO CHOP → SNAP KICK → ELBOW STRIKE → palm …</td><td>X X X X …</td><td>Claw Claw Claw …</td></tr>
+<tr><td>PALM (a second one in a row = TWIN PALM, the 1′ of 1-1-2) · LOW SWEEP · RISING LAUNCHER</td><td>→ + X · ↓ + X · ↑ + X</td><td>▶ + Claw · ▼ + Claw · ▲/Jump + Claw</td></tr>
+<tr><td>FLYING KNEE · COUNTER PALM (parry + strike)</td><td>T · C</td><td>Tail · Meow</td></tr>
+<tr><td><b>CRESCENT MOON KICK</b> – 8-hit timed string: hits 1–3 any rhythm, then press as each hit lands (green ring); hit 7 becomes the Low Sweep, the 8th on the beat = finisher</td><td>X ×8 on the beat</td><td>Claw ×8 on the beat</td></tr>
+<tr><td>Air juggle: launcher, then AIR PALM → SIDE KICK → AXE SPIKE (spikes him and lands)</td><td>↑ + X, then X X X (↓ in the air = Axe Spike)</td><td>▲ + Claw, then Claw ×3</td></tr>
+<tr><td>BLINK dash-in (in the air: AIR BLINK straight to him) – cancels any move</td><td>N / Ctrl · double-tap ← / →</td><td>Blink · double-tap ◀ / ▶</td></tr>
+<tr><td>BLOCK · DODGE (back-hop) · block or dodge right as a hit lands = COUNTER, Claw while blocking = counter palm</td><td>hold B · O</td><td>hold 🛡 · tap 🛡</td></tr>
+<tr><td>Mix it up</td><td colspan="2">every light, heavy, blink and counter cancels into any other right after it hits; turn round mid-combo with ← / →; after 3 clean on-beat hits, Tail / Meow / Blink open the ninja link routes below</td></tr>
+<tr><th colspan="3" style="color:#ff6b6b">⚔️ SAMURAI PADDY (black &amp; red armour, katana at the hip) — grounded iaido: every cut is drawn from the scabbard and sheathed again</th></tr>
+<tr><td>Become Samurai Paddy (draws his sword · 侍 SAMURAI)</td><td>4 (or M twice)</td><td>form button until ⚔️</td></tr>
+<tr><td>Walk, Jump, FLIP (2nd jump)</td><td>← → · Space / ↑ twice</td><td>◀ ▶ · Jump twice</td></tr>
+<tr><td>Freestyle string – every tap is the next draw-cut: NUKITSUKE → KIRIAGE → SHIN CUT → TSUKI thrust → nukitsuke …</td><td>X X X X …</td><td>Claw Claw Claw …</td></tr>
+<tr><td>NUKITSUKE (a second one in a row = HILT STRIKE, the 1′ of 1-1-2) · KESA-GIRI diagonal cleave · RISING CUT launcher</td><td>→ + X · ↓ + X · ↑ + X</td><td>▶ + Claw · ▼ + Claw · ▲/Jump + Claw</td></tr>
+<tr><td>ICHIMONJI horizontal sweep · COUNTER CUT (parry + head cut)</td><td>T · C</td><td>Tail · Meow</td></tr>
+<tr><td><b>ISSEN — ONE FLASH</b> – 8-hit timed string: hits 1–3 any rhythm, then press as each cut lands (green ring); hit 7 becomes the Kesa-giri, the 8th on the beat = finisher (coil, flash step, leap, cleave, *click*)</td><td>X ×8 on the beat</td><td>Claw ×8 on the beat</td></tr>
+<tr><td>Air juggle: Rising Cut, then AIR YOKOGIRI → AIR KIRIAGE → KABUTO-WARI (spikes him and lands)</td><td>↑ + X, then X X X (↓ in the air = Kabuto-wari)</td><td>▲ + Claw, then Claw ×3</td></tr>
+<tr><td>iai FLASH STEP dash-in (in the air: AIR FLASH STEP straight to him) – cancels any move</td><td>N / Ctrl · double-tap ← / →</td><td>Blink · double-tap ◀ / ▶</td></tr>
+<tr><td>BLOCK (blade wall) · DODGE (lean-back hop) · block or dodge right as a hit lands = COUNTER, Claw while blocking = counter cut</td><td>hold B · O</td><td>hold 🛡 · tap 🛡</td></tr>
+<tr><td>Mix it up</td><td colspan="2">every cut, heavy, flash step and counter cancels into any other right after it hits; turn round mid-combo with ← / →; after 3 clean on-beat hits, Tail / Meow / Blink open the samurai link routes</td></tr>
+<tr><th colspan="3" style="color:#ffd34d">🛡️ KNIGHT PADDY (silver plate, blue plume &amp; cape, sword and kite shield) — heavy, planted, the shield is part of every move</th></tr>
+<tr><td>Become Knight Paddy (raises his sword · heraldic crest)</td><td>5 (or M three times)</td><td>form button until 🛡️</td></tr>
+<tr><td>Walk, Jump, SHIELD VAULT (2nd jump)</td><td>← → · Space / ↑ twice</td><td>◀ ▶ · Jump twice</td></tr>
+<tr><td>Freestyle string – every tap is the next strike: SHIELD JAB → THRUST → FOREHAND CUT → SHIELD UPPERCUT → shield jab …</td><td>X X X X …</td><td>Claw Claw Claw …</td></tr>
+<tr><td>SHIELD JAB (a second one in a row = LOW CUT, the 1′ of 1-1-2) · OVERHEAD CLEAVE · SHIELD LAUNCHER</td><td>→ + X · ↓ + X · ↑ + X</td><td>▶ + Claw · ▼ + Claw · ▲/Jump + Claw</td></tr>
+<tr><td>SHIELD CHARGE · COUNTER CUT (shield parry + step-in cut)</td><td>T · C</td><td>Tail · Meow</td></tr>
+<tr><td><b>BASTION</b> – 8-hit timed string: hits 1–3 any rhythm, then press as each hit lands (green ring); hit 7 becomes the Overhead Cleave, the 8th on the beat = finisher (gather, shield charge, leap, one-knee ground smash, salute)</td><td>X ×8 on the beat</td><td>Claw ×8 on the beat</td></tr>
+<tr><td>Air juggle: Shield Launcher, then AIR SLASH → AIR SHIELD BASH → PLUNGE (spikes him and lands)</td><td>↑ + X, then X X X (↓ in the air = Plunge)</td><td>▲ + Claw, then Claw ×3</td></tr>
+<tr><td>CHARGE STEP dash-in (in the air: AIR CHARGE STEP straight to him) – cancels any move</td><td>N / Ctrl · double-tap ← / →</td><td>Blink · double-tap ◀ / ▶</td></tr>
+<tr><td>BLOCK (shield square) · DODGE (hop back behind the shield) · block or dodge right as a hit lands = COUNTER, Claw while blocking = counter cut</td><td>hold B · O</td><td>hold 🛡 · tap 🛡</td></tr>
+<tr><td>Knight combos (after 3 clean on-beat hits, or 3 Shield Charges): Lance of Light · Holy Nova · Shield Breaker · Crest of Valour · Castle Crusher · Greatsword Gale · Royal Charge · <b>ULTIMATE: ROYAL JUDGEMENT</b></td><td colspan="2">every strike cancels into any other right after it hits; turn round mid-combo with ← / →</td></tr>
+<tr><th colspan="3" style="color:#2ec4d6">⚓ PIRATE PADDY (tricorn, navy vest, crimson sash, cutlass) — a swaggering swashbuckler on sea legs: cutlass, boot and hilt</th></tr>
+<tr><td>Become Pirate Paddy (AHOY! parrot, splash and coins)</td><td>6 (or M four times)</td><td>form button until ⚓</td></tr>
+<tr><td>Walk (sea-legs swagger), Jump, ROPE SWING (2nd jump) → somersault</td><td>← → · Space / ↑ twice</td><td>◀ ▶ · Jump twice</td></tr>
+<tr><td>Freestyle string – every tap is the next strike: FLICK → BACKHAND → BOOT KICK → HILT PUNCH → flick …</td><td>X X X X …</td><td>Claw Claw Claw …</td></tr>
+<tr><td>FLICK (a second one in a row = DRUNKEN LURCH, the 1′ of 1-1-2) · CORKSCREW · SCOOP launcher</td><td>→ + X · ↓ + X · ↑ + X</td><td>▶ + Claw · ▼ + Claw · ▲/Jump + Claw</td></tr>
+<tr><td>FLÈCHE (flying lunge) · RIPOSTE (parry + step-in thrust)</td><td>T · C</td><td>Tail · Meow</td></tr>
+<tr><td><b>JOLLY ROGER</b> – 8-hit timed string: hits 1–3 any rhythm, then press as each hit lands (green ring); hit 7 becomes the Corkscrew, the 8th on the beat = finisher (overhead twirl, flèche dash, leap, crashing down-slash, blade and hat to the sky)</td><td>X ×8 on the beat</td><td>Claw ×8 on the beat</td></tr>
+<tr><td>Air juggle: Scoop, then AIR SLASH → AIR BOOT KICK → CROW'S NEST drop (spikes him and lands)</td><td>↑ + X, then X X X (↓ in the air = Crow's Nest)</td><td>▲ + Claw, then Claw ×3</td></tr>
+<tr><td>DECK ROLL dash-in (in the air: AIR ROLL straight to him) – cancels any move</td><td>N / Ctrl · double-tap ← / →</td><td>Blink · double-tap ◀ / ▶</td></tr>
+<tr><td>BLOCK (hanging guard) · DODGE (limbo lean-back) · block or dodge right as a hit lands = COUNTER, Claw while blocking = riposte</td><td>hold B · O</td><td>hold 🛡 · tap 🛡</td></tr>
+<tr><td>Pirate combos (after 3 clean on-beat hits, or 3 Flèches): Barrel Blitz · Point Blank Pop · Anchors Aweigh · Broadside · Swashbuckle Swing · Whirlpool · Treasure Storm · <b>ULTIMATE: CAPTAIN'S TIDAL WAVE</b> (C C C T C B M M)</td><td colspan="2">see the in-game Combo List (⚓ tab) for the exact buttons and practice mode</td></tr>
+<tr><th colspan="3" style="color:#ffd34d">🏆 LEGENDS · six late-game forms (unlock them by playing; or tap "TRY ALL NOW" in ? → Combo List → 🏆 LEGENDS, or open the game with ?legends)</th></tr>
+<tr><td>🤠 GUNSLINGER PADDY (beat Big Bruno once): cool, low, wide-stance gunfighter with two cartoon pop-gun revolvers · Claw string QUICK-DRAW → CROSS-DRAW → PISTOL-WHIP → SPUR KICK (→X twice = COAT SWING) · ↓X FAN THE HAMMER · ↑X HIGH NOON UPPERCUT, then AIR DOUBLE SHOT → AIR HEEL KICK → DEADEYE DROP · T KNEE SLIDE · Meow GUN-BUTT COUNTER · Blink LIGHTNING DASH · hold/tap 🛡 = coat block / duck · 8 on the beat = <b>HIGH NOON</b> finisher · after 3 clean hits: Big Iron, Rune Cannon … <b>ULTIMATE: DEADEYE JUDGEMENT</b></td><td>7 · X / T / C / N / B / O</td><td>🔄 form button · Claw / Tail / Meow / Blink / 🛡</td></tr>
+<tr><td>✨ LIGHT PADDY (300 EXP): calm, flowing light monk with one lime-green light blade and open-palm pushes · Claw string FALLING CUT → RISING ARC → SPIN CUT → PALM PUSH (→X twice = TWIRL THRUST) · ↓X SPIN ARC · ↑X RISING LIGHT, then AIR FALLING SLASH → AIR SPIN SWEEP → FALLING STAR · T DOUBLE PALM PUSH · Meow BLADE PARRY · Blink GLIDE DASH · hold/tap 🛡 = blade block / duck · 8 on the beat = <b>DAWN BLOOM</b> finisher · after 3 clean hits: Force Push / Pull &amp; Slice, Saber Boomerang … <b>ULTIMATE: SUNBURST SABER</b></td><td>8 · X / T / C / N / B / O</td><td>🔄 form button · Claw / Tail / Meow / Blink / 🛡</td></tr>
+<tr><td>⚡ POWER BLADE PADDY (land any ultimate): heavy, powerful greatsword fighter with a cyber gauntlet · Claw string OVERHEAD CHOP → RISING UPSWING → SPIN CUT → GAUNTLET PUNCH (→X twice = POMMEL THRUST) · ↓X SPIN CLEAVE · ↑X RISING BREAKER, then AIR CHOP → AIR SPIN SWEEP → PLUNGE · T GROUND SLAM · Meow BLADE PARRY · Blink POWER DASH · hold/tap 🛡 = broadside block / duck · 8 on the beat = <b>POWER SURGE</b> finisher · after 3 clean hits: Snatch, Buster Slam, Shock Splitter … <b>ULTIMATE: EARTHSHATTER MAX</b></td><td>9 · X / T / C / N / B / O</td><td>🔄 form button · Claw / Tail / Meow / Blink / 🛡</td></tr>
+<tr><td>🗡️ CRIMSON BLADE PADDY (beat Big Bruno 3 times): cocky, stylish swordsman with a huge crimson greatsword held one-handed · Claw string FOREHAND SLASH → RISING SLASH → BOOT KICK → SPIN CUT → CLEAVE (→X twice = BOOT KICK, then X = rising slash) · ↓X STINGER · ↑X HIGH TIME, then AIR SLASH → AIR SPIN SLASH → HELM BREAKER · T CRIMSON DRIVE · Meow FLICK PARRY · Blink LOW DASH · hold/tap 🛡 = broadside block / limbo dodge · 8 on the beat = <b>CRIMSON SHOWTIME</b> finisher · after 3 clean hits: Million Stab, Stinger, High Time … <b>ULTIMATE: CRIMSON STORM</b></td><td>X / T / C / N / B / O</td><td>🔄 form button · Claw / Tail / Meow / Blink / 🛡</td></tr>
+<tr><td>🌙 SHADOW REAPER (3 stealth takedowns): moon scythe, Crescent Waves, Moon Wheel, Harvest Hook · <b>ULTIMATE: ECLIPSE HARVEST</b> (T T T M C M B)</td><td>-</td><td>🔄 form button</td></tr>
+<tr><td>🦇 SHADE (1500 EXP): masked assassin, Blink = BAT POOF, hold Meow = AFTERIMAGE clones, Shadow Legion · <b>ULTIMATE: THOUSAND SHADOWS</b> (C C C B M B M)</td><td>=</td><td>🔄 form button</td></tr>
+<tr><th colspan="3" style="color:#7fe8ff">🌌 MYTHIC · eight forms above the Legends (unlock them later in the game; or tap "Try all Mythics now" in ? → Combo List → 🌌 MYTHIC, or open the game with ?mythic)</th></tr>
+<tr><td>🌩️ STORM TITAN (beat Big Bruno 5 times): thunder hammer, lightning from hit 4, CHAIN LIGHTNING, SKYFALL HAMMER · <b>ULTIMATE: WRATH OF THE STORM</b> (C C C T M B M)</td><td>numpad 1</td><td>🔄 form button</td></tr>
+<tr><td>🐉 DRAGON EMPEROR (3000 EXP): jade spear, golden spirit dragons, DRAGON WHIRLWIND · <b>ULTIMATE: HEAVENLY DRAGON EMPEROR</b> (C C C M M B T)</td><td>numpad 2</td><td>🔄 form button</td></tr>
+<tr><td>🔥 PHOENIX (land 10 ultimates): twin flame swords, glide (hold jump), WING BURST, PHOENIX DIVE · <b>ULTIMATE: REBIRTH SUPERNOVA</b> (C C C T T M B)</td><td>numpad 3</td><td>🔄 form button</td></tr>
+<tr><td>❄️ FROST MONARCH (beat Big Bruno 8 times): hits freeze, ICE WALL, BLIZZARD, GLACIER CRASH · <b>ULTIMATE: ETERNAL WINTER</b> (C C C M T B M)</td><td>numpad 4</td><td>🔄 form button</td></tr>
+<tr><td>🤖 MECHA PADDY (5000 EXP): energy blade, homing MISSILE BARRAGE, GIGA BEAM · <b>ULTIMATE: FINAL OVERDRIVE</b> (C C C T T M M)</td><td>numpad 5</td><td>🔄 form button</td></tr>
+<tr><td>🌊 TIDECALLER (8 stealth takedowns): trident, WHIRLPOOL, TIDAL WAVE, SEA SERPENT · <b>ULTIMATE: OCEAN'S WRATH</b> (T T T M M B C)</td><td>numpad 6</td><td>🔄 form button</td></tr>
+<tr><td>⏱️ CHRONO PADDY (land 25 ultimates): clock blades, TIME STOP, REWIND, GEAR STORM · <b>ULTIMATE: ZERO HOUR</b> (C C C M B M B)</td><td>numpad 7</td><td>🔄 form button</td></tr>
+<tr><td>🦁 BEAST KING (beat Big Bruno 12 times): spirit claws, KING'S ROAR, SPIRIT LION charge · <b>ULTIMATE: KING OF BEASTS</b> (C C C T M M B)</td><td>numpad 8 · P cycles Mythics</td><td>🔄 form button</td></tr>
+<tr><td>✴️ ASCENDED · the one God form</td><td colspan="2">🔒 locked – unlocks by beating the Survival Tower (coming soon)</td></tr>
+<tr><th colspan="3" style="color:#ffe14d">⚡ COMBO STRINGS (C = Claw, T = Tail, M = Morph, each within ~¾ s — inputs show at the bottom)</th></tr>
+<tr><td>TRANSFORM STRIKE (morph mid-combo or mid-air: flashy hit, combo keeps going)</td><td>M during a combo / juggle</td><td>🥷 during a combo</td></tr>
+<tr><td>TAIL TWISTER (Paddy) · STAR VOLLEY (Ninja) · TRIPLE WIND (Samurai, T = Guard)</td><td>T T T</td><td>Tail ×3</td></tr>
+<tr><td>TAIL SPIN SLAM (Paddy) · SHADOW CLONE BARRAGE (Ninja) · PARRY BREAKER (Samurai)</td><td>C C C T T</td><td>Claw ×3, Tail ×2</td></tr>
+<tr><td>CLAW CYCLONE (Paddy) · NINJA TORNADO (Ninja) · SAKURA CYCLONE (Samurai)</td><td>T T T C C C</td><td>Tail ×3, Claw ×3</td></tr>
+<tr><td>PHANTOM PARADE · PHANTOM IAIDO (if it ends on Samurai: three flash-dashes through him)</td><td>C C M C C</td><td>Claw ×2, 🥷, Claw ×2</td></tr>
+<tr><td>SHAPESHIFT STAR STORM</td><td>C C C C M T T</td><td>Claw ×4, 🥷, Tail ×2</td></tr>
+<tr><td>BLADE DANCE (Samurai only · 斬)</td><td>C T C T C</td><td>Claw, Tail, Claw, Tail, Claw</td></tr>
+<tr><td>HUNDRED PETALS (Samurai only · 桜)</td><td>C C T T C C</td><td>Claw ×2, Tail ×2, Claw ×2</td></tr>
+<tr><td><b>FINISH HIM!!</b> (cinematic finisher)</td><td>T T T (launch) T T T M M</td><td>Tail ×6, 🥷 ×2</td></tr>
+<tr><th colspan="3" style="color:#ffb070">🐶 THE ARMOURED ROTTWEILER (training partner)</th></tr>
+<tr><td>What he does</td><td colspan="2">plods towards you, then: a BIG PUNCH (glows red with a “!” first – lots of time to dodge or guard), a BITE (licks his lips first), or a BARK (a little shockwave that makes you dizzy for a moment – jump over it). Hitting him interrupts him. He's slow and only does small damage.</td></tr>
+<tr><td>Juggle him</td><td colspan="2">launch him with any launcher and keep him up with air hits – he tumbles around in his armour</td></tr>
+<tr><td>Knock him out</td><td colspan="2">empty his health bar → cartoon K.O. with dizzy stars, he sits up confused, wags his tail happily and gets back up with full health</td></tr>
+<tr><td>Silly dog stuff</td><td colspan="2">leave him alone and he sniffs his own bum, scratches behind his ear, chases his tail or does a goofy howl</td></tr>
+<tr><td>Nine lives</td><td colspan="2">paw icons top-left; 3 hurts = lose a life, then a gentle respawn</td></tr>
+<tr><td>Hurt / Victory</td><td>H / Y (victory also after a 10+ combo)</td><td>buttons below</td></tr>
+<tr><td>Idle: groom, stretch, sit &amp; tail flick, sniff, loaf</td><td colspan="2">stand still ~4 seconds</td></tr>
+</table>
+<p>Try now: <button data-try="zoomies">Zoomies</button><button data-try="hiss">Hiss</button><button data-try="swat">Swat</button><button data-try="victory">Victory</button><button data-try="hurtTest">Hurt</button></p>
+<p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
+<p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p></div></div>
+<div id="rot"><div>🔄 Turn your phone sideways to play with Paddy</div><div id="rotor">or play the World 1 levels right now:</div><button id="rotw1" type="button">🌳 PLAY WORLD 1</button></div>
+<script src="game.js?v=44d"></script>
+<script src="mission.js?v=44a"></script>
+<script src="smooth.js?v=32a"></script>
+<script src="darkside.js?v=20g"></script>
+<script src="poses.js?v=20d"></script>
+<script src="item5.js?v=20e"></script>
+<script src="poses2.js?v=20f"></script>
+<script src="styles.js?v=20b"></script>
+<script src="chain.js?v=26a"></script>
+<script src="force2.js?v=20g"></script>
+<script src="gunslinger.js?v=40a"></script>
+<script src="crimson.js?v=43a"></script>
+<script src="finishers.js?v=20h"></script>
+<script src="swords.js?v=26a"></script>
+<script src="skybreaker.js?v=25a"></script>
+<script src="neonwraith.js?v=26a"></script>
+<script src="goldenfury.js?v=26a"></script>
+<script src="transform.js?v=35a"></script>
+<script>
+const ov=v=>{document.body.classList.toggle('ov',v);if(window.CTRL)CTRL.reset();for(const k in K)K[k]=0;document.querySelectorAll('.b.on').forEach(b=>b.classList.remove('on'))};
+document.getElementById('qbtn').addEventListener('pointerdown',e=>{e.preventDefault();ov(true)});
+document.getElementById('mclose').addEventListener('click',()=>ov(false));
+document.getElementById('moves').addEventListener('click',e=>{if(e.target.id==='moves')ov(false)});
+document.querySelectorAll('[data-try]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();b.blur();ov(false);P[b.dataset.try]=1;BUF[b.dataset.try]=now}));
+const mb=document.getElementById('mute');const ms=()=>mb.textContent=muted?'🔇':'🔊';ms();mb.addEventListener('pointerdown',e=>{e.preventDefault();muted=!muted;localStorage.setItem('paddyMute',muted?'1':'0');ms();if(!muted)meowSound(0)});
+addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.classList.contains('ov'))}else if(e.key==='Escape')ov(false)});
+lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
+</script>
+<script src="controls.js?v=48"></script>
+<script src="en.js?v=44d"></script>
+<script src="story.js?v=45a"></script>
+<script src="sfx.js?v=43a"></script>
+<script src="formfx.js?v=30a"></script>
+<script src="routefx26.js?v=26a"></script>
+<script src="combo26.js?v=26a"></script>
+<script src="kitty29.js?v=43a"></script>
+<script src="fin30.js?v=33a"></script>
+<script src="punch33.js?v=33a"></script>
+<script src="practice34.js?v=43a"></script>
+<script src="ninja35.js?v=35a"></script>
+<script src="kitty36.js?v=36a"></script>
+<script src="samurai37.js?v=37a"></script>
+<script src="knight38.js?v=38a"></script>
+<script src="pirate39.js?v=39a"></script>
+<script src="gunslinger40.js?v=40a"></script>
+<script src="light41.js?v=41a"></script>
+<script src="power42.js?v=42a"></script>
+<script src="crimson43.js?v=43a"></script>
+<script src="juggle44.js?v=44b"></script>
+<script src="dev44.js?v=45a"></script>
+<script src="kitti47.js?v=48"></script>
+<script src="kitti48.js?v=54"></script>
+<script src="p53_frames.js?v=54"></script>
+<script src="uc49.js?v=54"></script>
+<script src="punch52.js?v=54"></script><script src="scenario_run55.js?v=55"></script></body></html>
