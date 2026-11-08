@@ -44,11 +44,15 @@ const rx=(a,i)=>{const L=fr(a);const f=L[Math.max(0,Math.min(L.length-1,i))];ret
 const POWER={jab:'bxpj',cross:'bxph',hook:'bxph',body:'bxpb'};   // the cross has no power sheet: it becomes the power hook
 const NEXT={'':'bxj1',jab:'bxx',cross:'bxlh',hook:'bxrb',body:'bxj1',upper:'bxj1',rec:'bxj1'};
 function pick(inp,n,beat){const lastK=P33.last?PD[P33.last][1]:'';let a;
- if(inp.down)a='bxrb';else if(inp.fwd)a=(lastK==='jab'&&P33.last==='bxj1')?'bxj2':'bxj1';else a=NEXT[lastK]||'bxj1';
- if(n===7&&beat)return 'bxpu';                         // hit 7 on the beat: the power uppercut
- if(n>=4&&n<=6&&beat)return POWER[PD[a][1]]||a;        // hits 4-6 on the beat: the power version of the punch you threw
+ if(inp.down)a='bxrb';
+ else if(inp.up)a=(lastK==='hook'||lastK==='upper')?'bxpu':'bxlh';
+ else if(inp.back)a='bxx';
+ else if(inp.fwd)a=(P33.last==='bxj1')?'bxj2':'bxj1';
+ else a=lastK==='jab'?'bxx':'bxj1';
+ if(!inp.down&&!inp.up&&!inp.back&&!inp.fwd&&n===7&&beat)return 'bxpu';
+ if(n>=4&&n<=6&&beat&&!inp.up&&!inp.down)return POWER[PD[a][1]]||a;
  return a}
-function readInp(){const f=p.face>0?K.right:K.left;return{down:!!K.down,fwd:!!f}}
+function readInp(){const fwd=p.face>0?K.right:K.left,back=p.face>0?K.left:K.right;return{down:!!K.down&&!K.up,up:!!K.up,fwd:!!fwd&&!back,back:!!back&&!fwd}}
 // ---- start a punch (wraps startClaw so the game's own opener goes through here too) ----
 let pend=null;   // {a, s} set by our continuation; null = the game opened a fresh string
 const _sc=startClaw;startClaw=function(){if(!base())return _sc.apply(this,arguments);
@@ -88,10 +92,10 @@ function tick(dt){if(!base()){P33.on=false;return}
   if(a==='bxrec'){P33.q={t:now,inp:readInp(),beat:false,fresh:true}}
   else{const on=fi>=D[4]&&!P33.early;if(fi<D[4])P33.early=true;   // on the beat = one press, on or after the impact frame; mashing before the hit doesn't count
    P33.q={t:now,inp:readInp(),beat:on}}}
- if(a==='bxrec'){if(P33.q){P33.q=null;p.combo=0;pend=null;startClaw();return}
+ if(a==='bxrec'){if(P33.q){const inp=P33.q.inp;P33.q=null;pend={a:pick(inp,p.combo+1,false),s:1};startClaw();return}
   if(ft>=3){p.state='normal';p.combo=0;p.cool=.04;P33.a=null}return}
  const q=P33.q;
- if(q&&ft>=D[6]+1){   // cancel point reached: throw the next punch from its frame 2
+ if(q&&fi>=D[5]){   // chain as soon as the hit has landed, so a free string does not stall in the recovery
   P33.q=null;const n=p.combo+1;
   if(p.combo>=3)P33.beat=P33.beat&&q.beat;
   if(a==='bxpu'){if(P33.beat&&q.beat){say('PERFECT!','#7fffd4',true);bunnyKick();return}}

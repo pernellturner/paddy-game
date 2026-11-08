@@ -9,20 +9,17 @@ const CX=window.CX={plan:null, recent:null, air:null, grab:null, pose:null,
 const BOX=0.55, FOOT=[210,408];
 let moves=null, loaded=false;
 const POSE={
-  feint:{spr:'weave', frames:[1,2,3,4,5,4], dx:22, dy:48, sq:0.72, rot:0.16, say:'FEINT!'},
-  lean:{spr:'slip', frames:[1,2,3,4,5,4], dx:-96, dy:10, sq:0.9, rot:-0.28, say:'LEAN BACK!'},
-  step:{spr:'dash_forward', frames:[1,2,3,4,5,6], dx:128, dy:-4, sq:1.1, rot:0.14, say:'STEP IN!'},
-  bob:{spr:'slip', frames:[1,2,3,4,3,1], dx:18, dy:-92, sq:1.22, rot:-0.05, say:'BOB!'},
-  low:{spr:'weave', frames:[2,3,4,5,4,3], dx:48, dy:62, sq:0.66, rot:0.22, say:'LOW WEAVE!'},
-  deep:{spr:'back_step', frames:[1,2,3,4,5,6], dx:-150, dy:16, sq:0.84, rot:-0.34, say:'DEEP LEAN!'},
-  long:{spr:'dash_forward', frames:[1,2,3,4,5,6], dx:190, dy:-8, sq:1.16, rot:0.18, say:'LONG STEP!'},
-  high:{spr:'dash_forward', frames:[1,3,4,5,3], dx:24, dy:-110, sq:1.26, rot:-0.08, say:'HIGH BOB!'},
-  heldw:{spr:'weave', frames:[2,3,4,5], dx:40, dy:54, sq:0.7, rot:0.2, hold:1, say:'HELD WEAVE!'},
-  heldl:{spr:'slip', frames:[1,2,3,4,5], dx:-120, dy:12, sq:0.86, rot:-0.32, hold:1, say:'HELD LEAN!'},
-  helds:{spr:'dash_forward', frames:[1,2,3,4,5], dx:160, dy:0, sq:1.12, rot:0.16, hold:1, say:'HELD STEP!'},
-  heldb:{spr:'weave', frames:[3,4,5,4], dx:12, dy:-70, sq:1.18, rot:-0.1, hold:1, say:'HELD BOB!'},
-  diagf:{spr:'dash_forward', frames:[2,3,4,5,6], dx:120, dy:40, sq:0.8, rot:0.24, say:'SLIP STEP!'},
-  diagb:{spr:'back_step', frames:[2,3,4,5,6], dx:-120, dy:42, sq:0.78, rot:-0.26, say:'FADE STEP!'}
+  feint:{spr:'weave', frames:[2,3,4,5,4], dx:8, dy:0, sq:1, rot:0, say:'CROUCH!'},
+  lean:{spr:'back_step', frames:[1,2,3,4,5,6], dx:-120, dy:0, sq:1, rot:0, say:'SLIDE BACK!'},
+  step:{spr:'dash_forward', frames:[1,2,3,4,5,6], dx:130, dy:0, sq:1, rot:0, say:'STEP IN!'},
+  low:{spr:'weave', frames:[3,4,5,6,5,4], dx:6, dy:0, sq:1, rot:0, say:'DEEP CROUCH!'},
+  deep:{spr:'back_step', frames:[2,3,4,5,6,5], dx:-170, dy:0, sq:1, rot:0, say:'LONG SLIDE!'},
+  long:{spr:'dash_forward', frames:[1,2,3,4,5,6], dx:190, dy:0, sq:1, rot:0, say:'LONG STEP!'},
+  heldw:{spr:'weave', frames:[4,5,6,5], dx:0, dy:0, sq:1, rot:0, hold:1, say:'CROUCH!'},
+  heldl:{spr:'back_step', frames:[3,4,5,6], dx:-140, dy:0, sq:1, rot:0, hold:1, say:'SLIDE BACK!'},
+  helds:{spr:'dash_forward', frames:[2,3,4,5], dx:150, dy:0, sq:1, rot:0, hold:1, say:'STEP IN!'},
+  diagf:{spr:'dash_forward', frames:[2,3,4,5,6], dx:110, dy:0, sq:1, rot:0, say:'SLIP STEP!'},
+  diagb:{spr:'back_step', frames:[2,3,4,5,6], dx:-130, dy:0, sq:1, rot:0, say:'FADE STEP!'}
 };
 function loadImage(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error(src));im.src=src})}
 (async function(){
@@ -56,7 +53,7 @@ function show(id, face){
   if(arena()){w.state='ctap'; w.t=0; w.ground=true; w.noFlick=true}
   else {w.state='od'; w.vy=0}
   sayTo(spec.say, '#fff');
-  const nmap={feint:'feint',lean:'lean',step:'step',bob:'bob',low:'feint',deep:'lean',long:'step',high:'bob',heldw:'feint',heldl:'lean',helds:'step',heldb:'bob',diagf:'diag',diagb:'diag'};
+  const nmap={feint:'feint',lean:'lean',step:'step',low:'feint',deep:'lean',long:'step',heldw:'feint',heldl:'lean',helds:'step',diagf:'diag',diagb:'diag'};
   const nk=nmap[id]; if(nk) CX.n[nk]=(CX.n[nk]||0)+1;
 }
 function ease(u){u=Math.max(0,Math.min(1,u)); return u*u*(3-2*u)}
@@ -110,8 +107,7 @@ function paintPose(c, x, y){
     c.globalAlpha=alpha==null?1:alpha;
     c.translate(px, py+(pose.dy||0));
     c.rotate((pose.rot||0)*(pose.face||1));
-    const sy=pose.sq||1, sx=sy<1?1+(1-sy)*0.6:1;
-    c.scale((pose.face||1)*BOX*sx, BOX*sy);
+    c.scale((pose.face||1)*BOX, BOX);
     c.drawImage(img, -FOOT[0], -FOOT[1]);
     c.restore();
   };
@@ -157,19 +153,20 @@ function kindOf(k, face){
 }
 function playKind(kind, n, hold){
   const face=(who()&&who().face)||1;
+  if(kind==='up') return;
   const recentDown=CX._downAt&&rt()-CX._downAt<0.22;
   if(kind==='fwd'&&recentDown){show('diagf', face); CX._key=null; return}
   if(kind==='back'&&recentDown){show('diagb', face); CX._key=null; return}
   if(kind==='down') CX._downAt=rt();
   if(hold){
-    show(kind==='down'?'heldw':kind==='back'?'heldl':kind==='fwd'?'helds':'heldb', face);
+    show(kind==='down'?'heldw':kind==='back'?'heldl':'helds', face);
     return;
   }
   if(n>=3){
-    show(kind==='down'?'low':kind==='back'?'deep':kind==='fwd'?'long':'high', face);
+    show(kind==='down'?'low':kind==='back'?'deep':'long', face);
     return;
   }
-  show(kind==='down'?'feint':kind==='back'?'lean':kind==='fwd'?'step':'bob', face);
+  show(kind==='down'?'feint':kind==='back'?'lean':'step', face);
 }
 function noteTap(k, face){
   const n=(TAP[k]=(TAP[k]||0)+1);
@@ -225,8 +222,7 @@ function clawPlan(){
   const k=CX.recent.k;
   if(k==='step'||k==='long'||k==='helds'||k==='diagf') CX.plan={n:2, say:'JAB JAB!', hook:false};
   else if(k==='lean'||k==='deep'||k==='heldl'||k==='diagb') CX.plan={n:2, say:'LEFT RIGHT!', hook:false};
-  else if(k==='feint'||k==='low'||k==='heldw') CX.plan={n:3, say:'HOOKS!', hook:true};
-  else if(k==='bob'||k==='high'||k==='heldb') CX.plan={n:1, say:'BOB PUNCH!', hook:false};
+  else if(k==='feint'||k==='low'||k==='heldw') CX.plan={n:2, say:'BODY!', hook:false};
   if(CX.plan) sayTo(CX.plan.say,'#ffe14d');
   CX.recent=null;
 }
@@ -265,7 +261,8 @@ function arenaTick(dt){
   if(!P.attack) CX._ate=false;
   const q=window.KD47&&KD47.req;
   if(q&&q.k==='down'&&!p.ground){KD47.req=null; startSlam()}
-  if(q&&q.k==='up'){KD47.req=null; delete P.jump; startFly()}
+  if(q&&q.k==='up'&&q.ground){KD47.req=null; delete P.jump; startFly()}
+  else if(q&&q.k==='up'){KD47.req=null}
   if(CX.air==='fly'&&P.attack&&p.t>.12&&p.t<.5){delete P.attack; tryGrab()}
   if(CX.air==='slam'){
     p.vy=Math.max(p.vy,1500); p.vx*=.92;
@@ -302,10 +299,10 @@ function tryGrab(){
     if(d.y<GROUND-30&&Math.abs(d.x-p.x)<170&&Math.abs(d.y-p.y)<200) best=d;
   }
   if(!best) return;
-  CX.n.grab++; CX.grab=best;
-  best.vy=980; best.vx=p.face*80; best.fl=0.15; best.y=Math.min(best.y+20, GROUND);
+  CX.n.grab++; CX.grab=best; CX.grabT=rt();
+  best.vx=0; best.vy=40; best.fl=0.05; best.x=p.x+p.face*78; best.y=Math.min(GROUND-8, p.y+10);
   sayTo('GOTCHA!','#7fffd4');
-  p.vy=Math.min(p.vy,200);
+  p.vy=Math.min(p.vy,80); p.vx=0;
 }
 
 if(arena()&&typeof r9Pre==='function'){
@@ -329,7 +326,7 @@ if(arena()&&typeof r9Pre==='function'){
 CX.claimLevel=function(q){
   if(!CX.p) return false;
   const who=CX.p;
-  if(q.k==='up'){CX.want='fly'; return true}
+  if(q.k==='up'&&q.ground){CX.want='fly'; return true}
   if(q.k==='down'&&!who.ground){CX.want='slam'; return true}
   return false;
 };

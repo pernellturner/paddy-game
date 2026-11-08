@@ -43,7 +43,7 @@ function keep(){
 }
 
 function hitNow(power){
-  if(arena()&&typeof areaHit==='function') areaHit(p.x+p.face*50, p.y-50, power?190:150, power?'pawpop':'swat');
+  if(arena()&&typeof areaHit==='function') areaHit(p.x+p.face*50, p.y-50, power?190:150, 'pounce');
   else if(MM.api&&MM.api.hitEnemy){
     const w=MM.api.p;
     for(const e of MM.api.enemies||[]){
@@ -69,7 +69,7 @@ function doPounce(kind){
   else if(kind==='fwd') beginArena('pounce','pounce','LEAP SWIPE!',{vy:-520,vx:860,paws:2});
   else if(kind==='back') beginArena('pounce','swat','BACK SWIPE!',{vy:-300,vx:-480,paws:2});
   else if(kind==='flurry') beginArena('pounce','swat','PAW FLURRY!',{vy:-260,vx:280,paws:4});
-  else beginArena('pounce','pounce','POUNCE!',{vy:-460,vx:560,paws:2});
+  else beginArena('pounce','pounce','POUNCE!',{vy:-680,vx:520,paws:2});
 }
 function doTail(kind){
   delete P.tail;
@@ -152,9 +152,8 @@ function arenaTick(){
     if(hits()>=8&&/BT$/.test(s)&&d==='down'){delete P.attack; beginArena('dive','dive','AMBUSH SLAM',{vy:1100,paws:2,power:true}); title('ULTIMATE','AMBUSH SLAM'); push('S'); return}
     if(hits()>=8&&/PB$/.test(s)){delete P.attack; beginArena('pawpop','pawpop','GRAB SLAM',{vy:-640,vx:160,paws:2,power:true}); title('ULTIMATE','GRAB SLAM'); push('S'); return}
     if(!K.up){
-      if(d==='fwd'){p._mmLunge=1; say('LUNGE JAB!','#fff'); push('J')}
-      else if(d==='back'){p._mmHook=1; say('COUNTER HOOK!','#bfe8ff'); push('J')}
-      else if(d==='down'){K.down=0; say('BODY SHOT!','#ffb040'); push('J'); p._mmBody=1}
+      if(d==='fwd'){p._mmLunge=1; push('J')}
+      else if(d==='back'){p._mmHook=1; push('J')}
       else push('J');
     } else push('U');
   }
@@ -172,8 +171,29 @@ function arenaTick(){
   if(p.state==='mcharge'){doPounce('alone')}
 }
 function pawFx(){
-  try{if(typeof spark==='function') spark(p.x+p.face*70, p.y-48, 16, ['#fff','#ffe9a8','#ffd070'], 320)}catch(e){}
-  try{if(typeof slash==='function') slash('fwd','#ffe9a8')}catch(e){}
+  try{if(typeof spark==='function') spark(p.x+p.face*86, p.y-58, 10, ['#fff','#ffe9a8'], 220)}catch(e){}
+  MM.paws=(MM.paws||0)+1; MM.pawT=rt();
+}
+function drawPaws(c, x, y, face){
+  if(!MM.pawT||rt()-MM.pawT>0.32) return;
+  const age=rt()-MM.pawT;
+  c.save();
+  c.translate(x+(face||1)*90, y-70);
+  c.scale(face||1, 1);
+  c.globalAlpha=Math.max(0, 1-age*2.6);
+  for(let i=0;i<2;i++){
+    c.save();
+    c.translate(i?22:-6, i?-16:10);
+    c.rotate(i?-0.5:0.4);
+    c.fillStyle='#fff8ee';
+    c.beginPath(); c.ellipse(0, 0, 26, 18, 0, 0, 6.28); c.fill();
+    c.strokeStyle='#7a4a32'; c.lineWidth=3;
+    c.stroke();
+    c.fillStyle='#f0c2a4';
+    for(const [dx,dy] of [[-10,-12],[0,-15],[10,-12]]){c.beginPath(); c.arc(dx, dy, 5, 0, 6.28); c.fill()}
+    c.restore();
+  }
+  c.restore();
 }
 function drawBanner(c, x, y){
   const b=MM.banner; if(!b||rt()-b.t>1.35) return;
@@ -229,6 +249,7 @@ MM.drawLevel=function(ctx2, cam){
   if(!MM.api||!MM.api.p) return;
   const w=MM.api.p;
   drawTail(ctx2, w.x-cam.x, w.y-cam.y, w.face||1);
+  drawPaws(ctx2, w.x-cam.x, w.y-cam.y, w.face||1);
   drawBanner(ctx2, w.x-cam.x, w.y-cam.y);
 };
 
@@ -239,15 +260,14 @@ if(arena()&&typeof r9Pre==='function'){
   update=function(dt){
     const r=_up.apply(this, arguments);
     try{
-      if(p._mmLunge&&p.state==='claw'&&p.t<0.16){p.vx=p.face*620}
-      if(p._mmLunge&&p.t>=0.16) p._mmLunge=0;
-      if(p._mmBody&&p.state==='claw'&&p.ground){p.y=Math.min(p.y+18, (typeof floorAt==='function'?floorAt(p.x):p.y)); if(p.t>0.2) p._mmBody=0}
-      if(p._mmHook&&p.state==='claw'&&typeof setAnim==='function'&&FR.bxlh){setAnim('bxlh', true); if(window.P33) P33.a='bxlh'; p._mmHook=0}
+      if(p._mmLunge&&p.state==='claw'&&p.t<0.16){p.vx=p.face*620; if(!p._mmSaid){p._mmSaid=1; say('LUNGE JAB!','#fff')}}
+      if(p._mmLunge&&p.t>=0.16){p._mmLunge=0; p._mmSaid=0}
+      if(p._mmHook&&p.state==='claw'&&typeof setAnim==='function'&&FR.bxlh){setAnim('bxlh', true); if(window.P33) P33.a='bxlh'; say('COUNTER HOOK!','#bfe8ff'); p._mmHook=0}
     }catch(e){}
     return r;
   };
   const _fx=drawFx;
-  drawFx=function(){try{drawTail(ctx, p.x, p.y, p.face); drawBanner(ctx, p.x, p.y)}catch(e){} return _fx.apply(this, arguments)};
+  drawFx=function(){try{drawTail(ctx, p.x, p.y, p.face); drawPaws(ctx, p.x, p.y, p.face); drawBanner(ctx, p.x, p.y)}catch(e){} return _fx.apply(this, arguments)};
 }
 
 MM.level=function(dt, api){MM.api=api};

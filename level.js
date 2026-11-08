@@ -18,7 +18,7 @@
 //   ◀◀/▶▶ away = DODGE (+CLAW COUNTER SLASH) · toward = DASH (+CLAW DASH STRIKE, counts as a CLAW in the string) ·
 //   ▲▲ SKY POUNCE (+CLAW POUNCE LAUNCHER) · ▼▼ CAT SLIDE (+CLAW SLIDE SWEEP). D-pad is a diamond (▲ top, ◀ ▶, ▼ bottom).
 (function(){
-const TS=48,VW=960,VH=540,SC=0.8,G=2600,JV=835,DJV=760,WALK=250,RUN=370,BW=72,BH=168;
+const TS=48,VW=960,VH=540,SC=0.8,G=2600,JV=960,DJV=820,WALK=250,RUN=370,BW=72,BH=168;
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const qs=new URLSearchParams(location.search);const LEVELS=['silverdale_1','silverdale_2','silverdale_3','silverdale_4','silverdale_5','silverdale_6','silverdale_7'];
 const LID=qs.get('level')||'silverdale_1';
@@ -29,10 +29,10 @@ const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Arrow
 // v47 double-tap: two short presses (each let go within 0.25 s, the 2nd within 0.3 s of the 1st); back/forward = vs his facing at the 1st tap
 const DT=LV.dt={last:{},req:null,log:[]},DTK=['left','right','up','down'];
 function dtap(k){if(!DTK.includes(k))return false;const t=performance.now()/1000,L0=DT.last[k];
- if(L0&&L0.up&&t-L0.t<.3&&L0.up-L0.t<.25){DT.last[k]=null;const f=L0.face;DT.req={k:k==='left'||k==='right'?((k==='right'?1:-1)===f?'fwd':'back'):k,face:f,t};DT.log.push('dtap:'+DT.req.k);return true}
- DT.last[k]={t,up:0,face:p.face};return false}
+ if(L0&&L0.up&&t-L0.t<.3&&L0.up-L0.t<.25){DT.last[k]=null;const f=L0.face;DT.req={k:k==='left'||k==='right'?((k==='right'?1:-1)===f?'fwd':'back'):k,face:f,t,ground:!!L0.ground};DT.log.push('dtap:'+DT.req.k);return true}
+ DT.last[k]={t,up:0,face:p.face,ground:!!p.ground};return false}
 function dtrel(k){const L0=DT.last[k];if(L0&&!L0.up)L0.up=performance.now()/1000}
-function keyDown(k){if(!K[k]){const d=dtap(k);if(!(d&&k==='up'))P[k]=1}K[k]=1}   // the 2nd ▲ of a double-tap is the pounce, not a double jump
+function keyDown(k){if(!K[k]){const d=dtap(k);if(!(d&&k==='up'&&DT.req&&DT.req.ground))P[k]=1}K[k]=1}   // two quick ups from the ground become the air punch; up in the air still double-jumps
 function keyUp(k){K[k]=0;dtrel(k)}
 addEventListener('keydown',e=>{const k=KEYMAP[e.code];if(!k)return;e.preventDefault();if(e.repeat){K[k]=1;return}keyDown(k)});
 addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)keyUp(k)});
@@ -143,11 +143,12 @@ function update(dt){LV.t+=dt;p.t+=dt;if(window.CX&&CX.level)CX.level(dt,{K:K,P:P
    if(performance.now()/1000-q.t<.25&&!busy){
     if(q.k==='back'){p.face=q.face;startMove('dodge')}
     else if(q.k==='fwd'){p.face=q.face;startMove('dash')}
-    else if(q.k==='up'){if(!p.kpUsed&&!p.wallDir)startMove('pounce');else P.jump=1}
+    else if(q.k==='up'&&q.ground){if(!p.kpUsed&&!p.wallDir)startMove('flypunch');else P.jump=1}
+    else if(q.k==='up'&&!p.ground)P.jump=1
     else if(q.k==='down'&&p.ground)startMove('slide');
     if(p.mv&&p.mv.d.dtap)DT.log.push(p.mv.id)}}}
   if(p.ground&&!(p.mv&&p.mv.id==='pounce'))p.kpUsed=false;
-  if(p.state==='normal'){const sp=(K.run||p.power>0?RUN:WALK)*(p.power>0?1.15:1);const want=dir*sp*(p.mv&&p.ground?.2:1);if(!(p.mv&&p.mv.d.vx))p.vx+=(want-p.vx)*Math.min(1,dt*(p.ground?14:6));if(dir&&!p.mv)p.face=dir;
+  if(p.state==='normal'){const sp=(K.run||p.power>0?RUN:WALK)*(p.power>0?1.15:1);const want=dir*sp*(p.mv&&p.ground?.2:1);if(!(p.mv&&p.mv.d.vx))p.vx+=(want-p.vx)*Math.min(1,dt*(p.ground?14:6));if(dir&&!p.mv&&p.state!=='od'){if(dir===p.face)p._faceT=0;else{p._faceT=(p._faceT||0)+dt;if(p._faceT>0.34)p.face=dir}}else if(!dir)p._faceT=0;
    if(K.up&&!p.mv&&trunkAt(p.x,p.y)>=0){p.climbX=trunkAt(p.x,p.y);p.state='climb';p.vx=0;p.vy=0;P.up=0;LV.log.push('climb')}
    else if(P.up)P.jump=1;   // ↑ = jump away from a trunk
    if(P.down&&p.ground){const c0=Math.floor((p.x-BW/2+4)/TS),c1=Math.floor((p.x+BW/2-5)/TS),r=Math.round(p.y/TS);let one=false;for(let c=c0;c<=c1;c++){if(ONE.has(tile(c,r)))one=true}
@@ -196,8 +197,8 @@ const MV={
  tail1:{a:'tailwhip',fps:16,dur:.3,hits:[.08],rx:135,bk:120,up:140,dn:10,kb:300,say:'TAIL WHIP!',c:'#ffd0a0',trail:'#fff7e0'},
  tail2:{a:'tailwhip',fps:18,dur:.3,hits:[.08],rx:140,bk:125,up:145,dn:10,kb:340,say:'DOUBLE WHIP!',c:'#ffb870',trail:'#ffd0a0'},
  tail3:{a:'tailwhip',fps:18,dur:.38,hits:[.1],rx:145,bk:130,up:160,dn:10,kb:160,launch:-820,say:'TAIL LAUNCHER!',c:'#ff9a2e',trail:'#ffb870',shake:6},
- meow:{a:'o_pounce',fps:14,dur:.48,hits:[.16,.3],rx:175,bk:20,up:170,dn:30,kb:520,launch:-360,vx:540,vy:-460,say:'POUNCE!',c:'#ffe9a8',air:1},
- pouncefar:{a:'o_pounce',fps:14,dur:.55,hits:[.2,.34],rx:230,bk:20,up:180,dn:30,kb:640,launch:-420,vx:820,vy:-520,say:'LEAP SWIPE!',c:'#fff',air:1},
+ meow:{a:'pounce',fps:12,dur:.5,hits:[.18,.32],rx:175,bk:20,up:170,dn:30,kb:520,launch:-360,vx:540,vy:-460,say:'POUNCE!',c:'#ffe9a8',air:1},
+ pouncefar:{a:'pounce',fps:12,dur:.55,hits:[.2,.34],rx:230,bk:20,up:180,dn:30,kb:640,launch:-420,vx:820,vy:-520,say:'LEAP SWIPE!',c:'#fff',air:1},
  pounceup:{a:'swat',fps:14,dur:.42,hits:[.16],rx:160,bk:20,up:240,dn:10,kb:180,launch:-980,vy:-640,say:'POP POUNCE!',c:'#ffe9a8',air:1},
  flurry:{a:'swat',fps:18,dur:.5,hits:[.06,.16,.28,.4],rx:170,bk:30,up:150,dn:20,kb:360,vx:220,say:'PAW FLURRY!',c:'#fff'},
  tailtrip:{a:'tailwhip',fps:16,dur:.36,hits:[.1],rx:160,bk:50,up:90,dn:10,kb:700,launch:-220,vx:280,say:'TAIL TRIP!',c:'#ffd0a0'},
@@ -336,7 +337,7 @@ const TCSS=document.createElement('style');TCSS.textContent=`#tc{position:fixed;
 #tc #tnext{display:none;left:50%;transform:translateX(-50%);font-size:26px;background:linear-gradient(#9be36a,#2f8f3a);border-color:#fff;box-shadow:0 4px 0 #1d5e24}
 #tc.done #tnext{display:flex}#tc.nopad .pad{display:none}`;document.head.appendChild(TCSS);
 const tc=document.createElement('div');tc.id='tc';if(!TOUCH)tc.classList.add('nopad');
-const TB=[['tl','◀','left'],['tr','▶','right'],['tu','▲','up'],['td','▼','down'],['tj','JUMP','jump'],['ta','CLAW','attack'],['tt','TAIL','tail'],['tm','POUNCE','meow'],['tR','RUN','run']];
+const TB=[['tl','◀','left'],['tr','▶','right'],['tu','▲','up'],['td','▼','down'],['ta','CLAW','attack'],['tt','TAIL','tail'],['tm','POUNCE','meow'],['tR','RUN','run']];
 for(const [id,t,k] of TB){const b=document.createElement('button');b.id=id;b.className='pad';b.textContent=t;b.dataset.k=k;b.setAttribute('aria-label',k);
  const dn=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}keyDown(k);b.classList.add('on')},up=e=>{e.preventDefault();if(K[k])keyUp(k);b.classList.remove('on')};
  b.addEventListener('pointerdown',dn);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up);b.addEventListener('contextmenu',e=>e.preventDefault());tc.appendChild(b)}
@@ -350,7 +351,7 @@ function layoutTC(){const w=innerWidth,h=innerHeight,s=Math.min(w/VW,h/VH),cw=VW
  // bottom-anchored clusters: d-pad left, actions right (they sit in the side bars on wide phones and under the picture on tall ones)
  const by=h-m-b,lx=m+Math.max(0,(Math.min(sideW,b*2.3)-b*2-g)/2);
  {const hx=Math.round((b+g)*.62),vy=b+Math.round(g/2),my=by-vy;put('tl',lx,my);put('tr',lx+2*hx,my);put('tu',lx+hx,my-vy);put('td',lx+hx,my+vy)}   // v47 diamond: ▲ top, ◀ ▶, ▼ bottom (no two buttons' boxes touch)
- const rx=w-m-b;put('tj',rx,by);put('ta',rx-b-g,by);put('tm',rx-2*(b+g),by);put('tR',rx-(b+g)/2,by-b-g);put('tt',rx-(b+g)*1.5,by-b-g);   // v45: CLAW · TAIL · MEOW like free play
+ const rx=w-m-b;put('ta',rx,by);put('tm',rx-(b+g),by);put('tR',rx-(b+g)/2,by-b-g);put('tt',rx-(b+g)*1.5,by-b-g);
  {const left=(w-cw)/2,top=(h-ch)/2,pw=home.offsetWidth+rs.offsetWidth+8;   // v44: pills never cover the HUD (hearts/coins): side bar if there is room, else just under the HUD strip
   let px,py;if(left>=Math.max(home.offsetWidth,rs.offsetWidth)+2*m){px=m;py=m;home.style.left=px+'px';home.style.top=py+'px';rs.style.left=px+'px';rs.style.top=(py+home.offsetHeight+8)+'px'}
   else if(top>=home.offsetHeight+2*m){px=m;py=top-home.offsetHeight-m;home.style.left=px+'px';home.style.top=py+'px';rs.style.left=(px+home.offsetWidth+8)+'px';rs.style.top=py+'px'}   // tall phone: in the bar above the picture

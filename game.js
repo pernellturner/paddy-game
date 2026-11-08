@@ -187,7 +187,7 @@ function update(dt){
  case 'jcharge': {p.vx*=Math.pow(.05,dt);const JB=1;
   if(P.attack&&!p.hunt){uppercut();break}
   if(p.t>.25){if(p.anim!=='jcharge')setAnim('jcharge');p.jc=Math.min(1,(p.t-.25)/1);if(p.t%.04<dt)sparks.push({x:p.x+(Math.random()-.5)*90,y:p.y-Math.random()*20,vx:(Math.random()-.5)*60,vy:-120-Math.random()*120,l:.4,c:p.jc>=1?'#ffe14d':'#bfe8ff'})}
-  if(!K.jump||p.t>4){ if(p.t<.25){p.state='normal';p.vy=(p.hunt?-560:-720)*JB;p.ground=false;p.jumps=1;p.lastJump=now;setAnim('jump')}
+  if(!K.jump||p.t>4){ if(p.t<.25){p.state='normal';p.vy=(p.hunt?-560:-880)*JB;p.ground=false;p.jumps=1;p.lastJump=now;setAnim('jump')}
    else{const c=p.jc;act('superleap','leapspin');p.vy=-(880+300*c)*JB;p.vx=p.face*Math.abs(p.vx);p.ground=false;p.jumps=1;p.lastJump=now;p.leapC=c;shake=6+8*c;
     waves.push({x:p.x,y:p.y,r:10,l:1,big:true});spark(p.x,p.y,20,['#fff','#bfe8ff','#ffe14d'],400);say('SUPER LEAP!','#bfe8ff',true);}
    p.jc=0} } break;
@@ -216,9 +216,9 @@ function update(dt){
    else{p.vy=into?-190:35;
     const cf=FR.climb[p.fi]||FR.climb[0];if(p.y-cf.ay*SC<WT-20&&into){p.lx0=p.x+40*ws;p.lside=ws;p.ly0=p.y;p.wall=false;act('ledge','ledge',{say:'LEDGE GRAB!',c:'#ffe08a'});p.x=p.lx0}}}
   else if(N){}
-  else if(P.jump&&p.ground&&(dir||Math.abs(p.vx)>120)){p.vy=(p.hunt?-560:-720);p.ground=false;p.jumps=1;p.lastJump=now;setAnim('jump',true);acted=true;delete P.jump} // running jump leaves at once (no momentum loss)
+  else if(P.jump&&p.ground&&(dir||Math.abs(p.vx)>120)){p.vy=(p.hunt?-560:-880);p.ground=false;p.jumps=1;p.lastJump=now;setAnim('jump',true);acted=true;delete P.jump} // running jump leaves at once (no momentum loss)
   else if(P.jump&&p.ground){act('jcharge','crouch');p.jc=0}
-  else if(P.jump&&!p.ground&&p.jumps<2){acted=true;p.vy=-650*JB;p.jumps=2;p.dj=.45;setAnim('djump');p.anim='djump';p.ft=0;say('DOUBLE JUMP!');extend();spark(p.x,p.y,10,'#fff',150)}
+  else if(P.jump&&!p.ground&&p.jumps<2){acted=true;p.vy=-820*JB;p.jumps=2;p.dj=.45;setAnim('djump');p.anim='djump';p.ft=0;say('DOUBLE JUMP!');extend();spark(p.x,p.y,10,'#fff',150)}
   if(p.state!=='normal'){}
   else if(p.uf){ufMoves(dir)}
   else if(p.xf){xMoves(dir)}

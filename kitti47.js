@@ -28,15 +28,15 @@ function detect(k){const t=rt(),L=KD.last[k];
  if(window.PADSLIDE){KD.last[k]=null;return false}          // a thumb sliding onto this arrow is not a tap
  const dbl=!!(L&&L.up&&t-L.t<KD.win&&L.up-L.t<KD.hold);
  if(L)KD.gaps.push([k,+(t-L.t).toFixed(3),L.up?+(L.up-L.t).toFixed(3):-1]);if(KD.gaps.length>20)KD.gaps.shift();
- if(!dbl){KD.last[k]={t,up:0,face:p.face,st:p.state};return false}
+ if(!dbl){KD.last[k]={t,up:0,face:p.face,st:p.state,ground:!!p.ground};return false}
  KD.last[k]=null;
- if(k==='left'||k==='right'){const d=k==='right'?1:-1;KD.req={k:d===L.face?'fwd':'back',face:L.face,dir:k,t}}
- else KD.req={k,face:L.face,t};
+ if(k==='left'||k==='right'){const d=k==='right'?1:-1;KD.req={k:d===L.face?'fwd':'back',face:L.face,dir:k,t,ground:!!L.ground}}
+ else KD.req={k,face:L.face,t,ground:!!L.ground};
  log('dtap:'+KD.req.k);return true}
 const _press=press;press=function(k){
  if(DIRS.includes(k)&&on()){const fresh=k==='up'?!K.up:!K[k];
   if(fresh&&detect(k)){
-   if(k==='up'){K.up=1;return}                              // the 2nd ↑ becomes the pounce, not a double jump
+   if(k==='up'&&KD.req&&KD.req.ground){K.up=1;return}       // two quick ups from the ground: the air punch, not a double jump
    const r=_press.apply(this,arguments);
    if(KD.req&&KD.req.k==='fwd'){P.dash=k;BUF.dash=now}         // forward: the normal dash (and dash strike out of a combo)
    return r}}
