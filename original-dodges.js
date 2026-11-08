@@ -57,8 +57,9 @@ function sayMove(name, fly){
 }
 function seqOf(name, ms){
   const frames=FAST[name];
-  if(frames) return frames.map(fi=>[fi, ms||0.036]);
+  if(frames&&frames.length) return frames.map(fi=>[fi, ms||0.036]);
   const spec=PUNCH[name];
+  if(!spec||!spec.steps||!spec.steps.length) return [[0,0.05]];
   return spec.steps.map(([fi,t])=>[fi, t/1000]);
 }
 function begin(kind, name, face, opt){
