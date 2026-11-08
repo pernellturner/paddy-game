@@ -64,7 +64,7 @@ function seqOf(name, ms){
 function begin(kind, name, face, opt){
   if(!moves||!moves[name]) return;
   opt=opt||{};
-  const seq=seqOf(name, kind==='dodge'?0.04:0.036);
+  const seq=seqOf(name, kind==='dodge'?0.055:0.036);
   const spec=PUNCH[name];
   act={kind, name, imgs:moves[name].imgs, seq, si:0, fi:seq[0][0], ft:0, t:0,
     face:face||1, hitFi:spec?spec.hit:-1, stop:spec?spec.stop:0, fly:!!(spec&&spec.fly&&opt.fly),
@@ -111,7 +111,7 @@ function stepAct(dt){
     if(act.fi===act.hitFi) landHit();
   }
   if(act.kind==='dash') act.vx=act.dir*(act.fwd?900:820);
-  else if(act.kind==='dodge') act.vx=act.name==='slip'?-act.face*220:act.face*30;
+  else if(act.kind==='dodge') act.vx=act.name==='slip'?-act.face*280:(act.name==='weave'?act.face*140:act.face*80);
   else if(act.kind==='punch') act.vx=act.face*(act.t<0.12?380:60);
 }
 function finishAct(){
@@ -281,10 +281,13 @@ function paint(x, y, c){
   if(!c||!act||!act.imgs) return;
   const img=act.imgs[Math.min(act.fi, act.imgs.length-1)];
   if(!img||!img.naturalWidth) return;
-  const bob=act.name==='weave'?Math.sin(act.t*18)*10:0;
+  const weave=act.name==='weave', slip=act.name==='slip';
+  const bob=weave?Math.sin(Math.min(1,act.t/0.28)*Math.PI)*42:slip?8:0;
+  const sy=weave?0.78:slip?0.92:1, sx=weave?1.08:1;
   c.save();
   c.translate(x, y+bob);
-  c.scale((act.face||1)*BOX, BOX);
+  c.rotate((weave?0.18:slip?-0.2:0)*(act.face||1));
+  c.scale((act.face||1)*BOX*sx, BOX*sy);
   c.drawImage(img, -foot[0], -foot[1]);
   c.restore();
 }
