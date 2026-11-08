@@ -25,7 +25,7 @@ const LID=qs.get('level')||'silverdale_1';
 const LV=window.LV={ready:false,log:[],events:[],t:0};
 let F={},IMG={},L=null,S=null,W=0,H=0;
 const K={},P={};
-const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',Space:'jump',KeyZ:'jump',KeyX:'attack',KeyJ:'attack',KeyC:'tail',KeyT:'tail',KeyV:'meow',KeyM:'meow',ShiftLeft:'run',ShiftRight:'run',KeyN:'next',KeyR:'restart',Digit1:'hundred',KeyU:'hundred'};
+const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',Space:'jump',KeyZ:'jump',KeyX:'attack',KeyJ:'attack',KeyC:'tail',KeyT:'tail',KeyV:'meow',KeyM:'meow',ShiftLeft:'run',ShiftRight:'run',KeyN:'next',KeyR:'restart'};
 // v47 double-tap: two short presses (each let go within 0.25 s, the 2nd within 0.3 s of the 1st); back/forward = vs his facing at the 1st tap
 const DT=LV.dt={last:{},req:null,log:[]},DTK=['left','right','up','down'];
 function dtap(k){if(!DTK.includes(k))return false;const t=performance.now()/1000,L0=DT.last[k];
@@ -330,7 +330,7 @@ const TCSS=document.createElement('style');TCSS.textContent=`#tc{position:fixed;
 #tc #tnext{display:none;left:50%;transform:translateX(-50%);font-size:26px;background:linear-gradient(#9be36a,#2f8f3a);border-color:#fff;box-shadow:0 4px 0 #1d5e24}
 #tc.done #tnext{display:flex}#tc.nopad .pad{display:none}`;document.head.appendChild(TCSS);
 const tc=document.createElement('div');tc.id='tc';if(!TOUCH)tc.classList.add('nopad');
-const TB=[['tl','◀','left'],['tr','▶','right'],['tu','▲','up'],['td','▼','down'],['tj','JUMP','jump'],['ta','CLAW','attack'],['tt','TAIL','tail'],['tm','MEOW','meow'],['tR','RUN','run'],['t100','100','hundred']];
+const TB=[['tl','◀','left'],['tr','▶','right'],['tu','▲','up'],['td','▼','down'],['tj','JUMP','jump'],['ta','CLAW','attack'],['tt','TAIL','tail'],['tm','MEOW','meow'],['tR','RUN','run']];
 for(const [id,t,k] of TB){const b=document.createElement('button');b.id=id;b.className='pad';b.textContent=t;b.dataset.k=k;b.setAttribute('aria-label',k);
  const dn=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}keyDown(k);b.classList.add('on')},up=e=>{e.preventDefault();if(K[k])keyUp(k);b.classList.remove('on')};
  b.addEventListener('pointerdown',dn);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up);b.addEventListener('contextmenu',e=>e.preventDefault());tc.appendChild(b)}
@@ -344,7 +344,7 @@ function layoutTC(){const w=innerWidth,h=innerHeight,s=Math.min(w/VW,h/VH),cw=VW
  // bottom-anchored clusters: d-pad left, actions right (they sit in the side bars on wide phones and under the picture on tall ones)
  const by=h-m-b,lx=m+Math.max(0,(Math.min(sideW,b*2.3)-b*2-g)/2);
  {const hx=Math.round((b+g)*.62),vy=b+Math.round(g/2),my=by-vy;put('tl',lx,my);put('tr',lx+2*hx,my);put('tu',lx+hx,my-vy);put('td',lx+hx,my+vy)}   // v47 diamond: ▲ top, ◀ ▶, ▼ bottom (no two buttons' boxes touch)
- const rx=w-m-b;put('tj',rx,by);put('ta',rx-b-g,by);put('tm',rx-2*(b+g),by);put('tR',rx-(b+g)/2,by-b-g);put('tt',rx-(b+g)*1.5,by-b-g);put('t100',rx-(b+g)*2.6,by-b-g);   // v45: CLAW · TAIL · MEOW · 100
+ const rx=w-m-b;put('tj',rx,by);put('ta',rx-b-g,by);put('tm',rx-2*(b+g),by);put('tR',rx-(b+g)/2,by-b-g);put('tt',rx-(b+g)*1.5,by-b-g);   // v45: CLAW · TAIL · MEOW like free play
  {const left=(w-cw)/2,top=(h-ch)/2,pw=home.offsetWidth+rs.offsetWidth+8;   // v44: pills never cover the HUD (hearts/coins): side bar if there is room, else just under the HUD strip
   let px,py;if(left>=Math.max(home.offsetWidth,rs.offsetWidth)+2*m){px=m;py=m;home.style.left=px+'px';home.style.top=py+'px';rs.style.left=px+'px';rs.style.top=(py+home.offsetHeight+8)+'px'}
   else if(top>=home.offsetHeight+2*m){px=m;py=top-home.offsetHeight-m;home.style.left=px+'px';home.style.top=py+'px';rs.style.left=(px+home.offsetWidth+8)+'px';rs.style.top=py+'px'}   // tall phone: in the bar above the picture
@@ -607,7 +607,7 @@ function drawEnts(){for(const e of ents){if(e.got)continue;const x=e.x-cam.x,y=e
  for(const e of enemies){if(!e.alive&&e.ko<=0)continue;const key='en_'+(e.spr||e.id)+(e.alive?(e.hurt>0?'_m_hurt':'_move'):'_m_ko');const x=e.x-cam.x,y=e.y-cam.y;if(x<-100||x>VW+100)continue;
   if(!drawFrame(key,e.t*10,x,y,e.face,SC*(e.sc||1),e.alive?1:e.ko)){const mv='en_'+(e.spr||e.id)+'_move',fb=[key,mv].map(k=>(F[k]||[]).findIndex(f=>ok(img(f.f)))).map((i,j)=>[[key,mv][j],i]).find(q=>q[1]>=0);   // v44d: still loading -> a loaded frame, never a box flash
    if(fb)drawFrame(fb[0],fb[1],x,y,e.face,SC*(e.sc||1),e.alive?1:e.ko);else if(!F[key]&&!F[mv]){ctx.fillStyle='#a05a3a';ctx.fillRect(x-e.w/2,y-e.h,e.w,e.h)}}}}
-function drawPaddy(){if(window.OD&&OD.paintLevel&&OD.paintLevel(ctx,cam))return;if(p.anim==='mv'&&!p.mv)p.anim=p.ground?'idle':'fall';const a=p.anim==='mv'?[p.mv.d.a,p.mv.d.fps||12]:(ANIM[p.anim]||ANIM.idle),key=a[0];const nf=(F[key]||[1]).length;if(p.anim!==p._la){p._la=p.anim;p._at=LV.t}
+function drawPaddy(){if(window.CX&&CX.paintLevel&&CX.paintLevel(ctx,cam))return;if(window.OD&&OD.paintLevel&&OD.paintLevel(ctx,cam))return;if(p.anim==='mv'&&!p.mv)p.anim=p.ground?'idle':'fall';const a=p.anim==='mv'?[p.mv.d.a,p.mv.d.fps||12]:(ANIM[p.anim]||ANIM.idle),key=a[0];const nf=(F[key]||[1]).length;if(p.anim!==p._la){p._la=p.anim;p._at=LV.t}
  let fi=p.anim==='climb'?(p.y/24):p.anim==='mv'?(p.mv.d.loop?p.mv.t*a[1]:Math.min(nf-1,p.mv.t*a[1])):LV.t*a[1];
  if(p.anim!=='mv'&&a[2]){const q=a[2],n=Math.floor((LV.t-p._at)*a[1]);fi=q[a[3]?n%q.length:Math.min(q.length-1,n)]}   // v47: frame subsets (practice order)
  if(p.mv&&p.mv.d.trail)moveTrail();const blink=p.inv>0&&Math.floor(LV.t*20)%2&&!(p.lt<(p.mvInv||0));   // v47: a move's own i-frames don't blink

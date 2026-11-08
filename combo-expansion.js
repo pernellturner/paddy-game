@@ -1,12 +1,133 @@
-// Combo expansion for the original game (practice arena + story levels).
-// Layers on the dashes, Blink, tail spin and claw strings. Does not edit punch33.js.
+// Visible tap poses for the original game. Holding Claw still charges.
+// Approved sheets: assets/sprites/boxing_v1/approved_play/
 (function(){
 const arena=()=>{try{return typeof FORM==='function'&&typeof p!=='undefined'&&typeof dummies!=='undefined'}catch(e){return false}};
 function base(){try{return !arena()||(FORM()===0&&!(window.KITTY36&&KITTY36.on)&&!p.hunt)}catch(e){return !arena()}}
 function rt(){return performance.now()/1000}
-const CX=window.CX={armed:false, plan:null, recent:null, taps:{}, air:null, grab:null, n:{arm:0,feint:0,lean:0,step:0,bob:0,slam:0,fly:0,grab:0,blink:0,tail:0}};
-function say(t,c){try{if(typeof say==='function'&&arena()) window.say(t,c||'#fff')}catch(e){}
-  try{if(CX.msg) CX.msg(t,c||'#fff')}catch(e){}}
+const CX=window.CX={plan:null, recent:null, air:null, grab:null, pose:null,
+  n:{feint:0,lean:0,step:0,bob:0,slam:0,fly:0,grab:0,blink:0,tail:0,diag:0}};
+const BOX=0.55, FOOT=[210,408];
+let moves=null, loaded=false;
+const POSE={
+  feint:{spr:'weave', frames:[1,2,3,4,5,4], dx:22, dy:48, sq:0.72, rot:0.16, say:'FEINT!'},
+  lean:{spr:'slip', frames:[1,2,3,4,5,4], dx:-96, dy:10, sq:0.9, rot:-0.28, say:'LEAN BACK!'},
+  step:{spr:'dash_forward', frames:[1,2,3,4,5,6], dx:128, dy:-4, sq:1.1, rot:0.14, say:'STEP IN!'},
+  bob:{spr:'slip', frames:[1,2,3,4,3,1], dx:18, dy:-92, sq:1.22, rot:-0.05, say:'BOB!'},
+  low:{spr:'weave', frames:[2,3,4,5,4,3], dx:48, dy:62, sq:0.66, rot:0.22, say:'LOW WEAVE!'},
+  deep:{spr:'back_step', frames:[1,2,3,4,5,6], dx:-150, dy:16, sq:0.84, rot:-0.34, say:'DEEP LEAN!'},
+  long:{spr:'dash_forward', frames:[1,2,3,4,5,6], dx:190, dy:-8, sq:1.16, rot:0.18, say:'LONG STEP!'},
+  high:{spr:'dash_forward', frames:[1,3,4,5,3], dx:24, dy:-110, sq:1.26, rot:-0.08, say:'HIGH BOB!'},
+  heldw:{spr:'weave', frames:[2,3,4,5], dx:40, dy:54, sq:0.7, rot:0.2, hold:1, say:'HELD WEAVE!'},
+  heldl:{spr:'slip', frames:[1,2,3,4,5], dx:-120, dy:12, sq:0.86, rot:-0.32, hold:1, say:'HELD LEAN!'},
+  helds:{spr:'dash_forward', frames:[1,2,3,4,5], dx:160, dy:0, sq:1.12, rot:0.16, hold:1, say:'HELD STEP!'},
+  heldb:{spr:'weave', frames:[3,4,5,4], dx:12, dy:-70, sq:1.18, rot:-0.1, hold:1, say:'HELD BOB!'},
+  diagf:{spr:'dash_forward', frames:[2,3,4,5,6], dx:120, dy:40, sq:0.8, rot:0.24, say:'SLIP STEP!'},
+  diagb:{spr:'back_step', frames:[2,3,4,5,6], dx:-120, dy:42, sq:0.78, rot:-0.26, say:'FADE STEP!'}
+};
+function loadImage(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error(src));im.src=src})}
+(async function(){
+  try{
+    const r=await fetch('assets/sprites/boxing_v1/approved_play/animation.json');
+    if(!r.ok) throw new Error('animation '+r.status);
+    const pack=await r.json();
+    if(pack.foot) FOOT[0]=pack.foot[0], FOOT[1]=pack.foot[1];
+    moves={};
+    for(const name in pack.moves){
+      const imgs=[];
+      for(const rel of pack.moves[name].frames) imgs.push(await loadImage('assets/sprites/boxing_v1/approved_play/'+rel));
+      moves[name]={imgs};
+    }
+    loaded=true;
+  }catch(err){console.error('tap sprites failed', err)}
+})();
+function sayTo(t,c){
+  try{if(typeof window.say==='function'&&arena()) window.say(t,c||'#fff')}catch(e){}
+  try{if(CX.msg) CX.msg(t,c||'#fff')}catch(e){}
+}
+function who(){return arena()?p:(CX.p||null)}
+function show(id, face){
+  const spec=POSE[id]; if(!spec) return;
+  const w=who(); if(!w) return;
+  if(arena()&&window.OD&&OD.move&&OD.move()) return;
+  const imgs=moves&&moves[spec.spr]&&moves[spec.spr].imgs;
+  CX.pose={id, spec, face:face||w.face||1, t:0, x0:w.x, y0:w.y, imgs:imgs||null, trail:[], hold:!!spec.hold, key:CX._key||null};
+  CX.recent={k:id, t:rt(), face:CX.pose.face};
+  w.face=CX.pose.face; w.vx=0; w.vy=0;
+  if(arena()){w.state='ctap'; w.t=0; w.ground=true; w.noFlick=true}
+  else {w.state='od'; w.vy=0}
+  sayTo(spec.say, '#fff');
+  const nmap={feint:'feint',lean:'lean',step:'step',bob:'bob',low:'feint',deep:'lean',long:'step',high:'bob',heldw:'feint',heldl:'lean',helds:'step',heldb:'bob',diagf:'diag',diagb:'diag'};
+  const nk=nmap[id]; if(nk) CX.n[nk]=(CX.n[nk]||0)+1;
+}
+function ease(u){u=Math.max(0,Math.min(1,u)); return u*u*(3-2*u)}
+function stepPose(dt){
+  const pose=CX.pose; if(!pose) return;
+  const w=who(); if(!w){CX.pose=null; return}
+  pose.t+=dt;
+  const dur=pose.hold?0.7:0.5;
+  let u=pose.t/dur;
+  if(pose.hold){
+    const down=pose.key&&(arena()?K[pose.key]:CX.held&&CX.held.has(pose.key));
+    if(down&&pose.t<0.55) u=Math.min(0.62, pose.t/0.34);
+    else if(!down&&pose.t<0.5) pose.t=Math.max(pose.t, 0.5);
+  }
+  if(u>=1||pose.t>0.7){
+    const buf=pose.buf; CX.pose=null;
+    if(arena()){w.state='normal'; w.t=0; w.noFlick=false; w.vx=w.face*40}
+    else {w.state='normal'; w.vx=0}
+    if(buf&&arena()) P.attack=1;
+    return;
+  }
+  const spec=pose.spec;
+  const peak=pose.hold?Math.min(1,u/0.55):Math.sin(Math.min(1,u)*Math.PI);
+  const slide=pose.hold?ease(Math.min(1,u/0.45)):ease(Math.min(1,u/0.7));
+  pose.dx=spec.dx*slide*(spec.dx<0||idForward(pose.id)?1:1);
+  pose.dy=spec.dy*peak;
+  pose.sq=1+(spec.sq-1)*peak;
+  pose.rot=spec.rot*peak;
+  const fr=spec.frames;
+  pose.fi=fr[Math.min(fr.length-1, Math.floor(Math.min(0.999,u)*fr.length))];
+  w.face=pose.face;
+  w.vx=0; w.vy=0;
+  if(arena()){w.state='ctap'; w.ground=true; if(typeof floorAt==='function') w.y=floorAt(w.x)}
+  else {w.state='od'; w.y=pose.y0}
+  const nx=pose.x0+pose.dx*(pose.face>0||spec.dx<0?1:1);
+  const travel=spec.dx*(pose.face||1);
+  w.x=pose.x0+travel*slide;
+  if(arena()&&typeof clampX==='function') w.x=clampX(w.x);
+  if(pose.t- (pose.trailT||0)>0.045){pose.trailT=pose.t; pose.trail.push({x:w.x,y:w.y,dy:pose.dy,fi:pose.fi,a:0.45}); if(pose.trail.length>4) pose.trail.shift()}
+  if(arena()&&P.attack){pose.buf=true; if(pose.t>0.16) pose.t=Math.max(pose.t, dur-0.08)}
+}
+function idForward(id){return id==='step'||id==='long'||id==='helds'||id==='diagf'}
+function paintPose(c, x, y){
+  const pose=CX.pose; if(!pose||!c) return false;
+  const imgs=pose.imgs;
+  const drawOne=(fi, px, py, alpha, sq)=>{
+    if(!imgs) return;
+    const img=imgs[Math.max(0, Math.min(imgs.length-1, fi||0))];
+    if(!img||!img.naturalWidth) return;
+    c.save();
+    c.globalAlpha=alpha==null?1:alpha;
+    c.translate(px, py+(pose.dy||0));
+    c.rotate((pose.rot||0)*(pose.face||1));
+    const sy=pose.sq||1, sx=sy<1?1+(1-sy)*0.6:1;
+    c.scale((pose.face||1)*BOX*sx, BOX*sy);
+    c.drawImage(img, -FOOT[0], -FOOT[1]);
+    c.restore();
+  };
+  for(const g of pose.trail){g.a*=0.82; drawOne(g.fi, g.x, g.y, g.a*0.55)}
+  if(imgs) drawOne(pose.fi, x, y, 1);
+  else {
+    c.save(); c.translate(x, y+(pose.dy||0)); c.rotate((pose.rot||0)*(pose.face||1));
+    c.fillStyle='#ffe9a8'; c.fillRect(-18, -90*(pose.sq||1), 36, 90*(pose.sq||1)); c.restore();
+  }
+  return true;
+}
+CX.paintLevel=function(ctx2, cam){
+  if(!CX.pose||!CX.p) return false;
+  return paintPose(ctx2, CX.p.x-cam.x, CX.p.y-cam.y);
+};
+
 function green(){
   try{
     if(arena()){
@@ -26,111 +147,89 @@ function keepCombo(){
   p.keepCombo=n; p.keepT=0.85; p.combo=n;
   if(typeof C!=='undefined'&&C.n>0) C.t=Math.max(C.t,0.9);
 }
-function arm(){
-  CX.armed=true; CX.n.arm++;
-  say('100 POWER!','#ffe14d');
-  if(arena()&&typeof flashT!=='undefined') flashT=Math.max(flashT,.08);
+const TAP={};
+const heldKeys=CX.held=new Set();
+function kindOf(k, face){
+  if(k==='down') return 'down';
+  if(k==='up') return 'up';
+  const dir=k==='right'?1:k==='left'?-1:0;
+  return dir===face?'fwd':'back';
 }
-function spend(){
-  if(!CX.armed) return false;
-  CX.armed=false;
-  if(arena()&&typeof hitstop!=='undefined') hitstop=Math.max(hitstop,.05);
-  if(arena()&&typeof shake!=='undefined') shake=Math.max(shake,8);
-  return true;
-}
-
-// ---------- 100 button ----------
-function addButton(){
-  const ui=document.getElementById('ui');
-  if(!ui||document.getElementById('b100')) return;
-  const b=document.createElement('div');
-  b.className='b s'; b.id='b100'; b.dataset.k='hundred'; b.textContent='100';
-  b.title='Charge the next punch';
-  b.style.cssText='right:calc(300px + env(safe-area-inset-right));bottom:108px;background:#ffe14d;color:#3a2400;font-weight:800';
-  ui.appendChild(b);
-  if(window.CTRL&&CTRL.layout) CTRL.layout();
-}
-if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', addButton);
-else addButton();
-document.addEventListener('keydown', e=>{
-  if(e.repeat) return;
-  if(e.code==='Digit1'||e.code==='KeyU'){
-    if(typeof press==='function') press('hundred');
-    else arm();
+function playKind(kind, n, hold){
+  const face=(who()&&who().face)||1;
+  const recentDown=CX._downAt&&rt()-CX._downAt<0.22;
+  if(kind==='fwd'&&recentDown){show('diagf', face); CX._key=null; return}
+  if(kind==='back'&&recentDown){show('diagb', face); CX._key=null; return}
+  if(kind==='down') CX._downAt=rt();
+  if(hold){
+    show(kind==='down'?'heldw':kind==='back'?'heldl':kind==='fwd'?'helds':'heldb', face);
+    return;
   }
-}, true);
-document.addEventListener('keyup', e=>{
-  if((e.code==='Digit1'||e.code==='KeyU')&&typeof release==='function') release('hundred');
-}, true);
+  if(n>=3){
+    show(kind==='down'?'low':kind==='back'?'deep':kind==='fwd'?'long':'high', face);
+    return;
+  }
+  show(kind==='down'?'feint':kind==='back'?'lean':kind==='fwd'?'step':'bob', face);
+}
+function noteTap(k, face){
+  const n=(TAP[k]=(TAP[k]||0)+1);
+  clearTimeout(TAP['z'+k]); clearTimeout(TAP['s'+k]);
+  TAP['z'+k]=setTimeout(()=>{TAP[k]=0}, 480);
+  const kind=kindOf(k, face);
+  if(n>=2){CX.hold={k, t:rt(), face, used:false}; CX._key=k; return n}
+  CX._key=k;
+  TAP['s'+k]=setTimeout(()=>{if((TAP[k]||0)===1&&!(arena()?K[k]:heldKeys.has(k))) playKind(kind, 1, false)}, 190);
+  return n;
+}
+function onTapRelease(k){
+  if(!base()) return;
+  if(window.KD48&&KD48.H&&KD48.H[k]&&KD48.H[k].dt) return;
+  if(window.KD47&&KD47.req) return;
+  if(window.KD48) KD48.req=null;
+  const face=(who()&&who().face)||1;
+  const n=noteTap(k, face);
+  if(n>=3){clearTimeout(TAP['z'+k]); TAP[k]=0; playKind(kindOf(k, face), 3, false)}
+}
 
 if(arena()&&typeof press==='function'){
   const _press=press;
   press=function(k){
-    if(k==='hundred'){arm(); return}
     const before=window.KD47&&KD47.req;
     const r=_press.apply(this, arguments);
-    try{if(base()&&window.KD47&&KD47.req&&KD47.req!==before) CX.hold={k, t:rt(), face:p.face, used:false}}catch(e){}
-    return r;
-  };
-  const _hd=hitDummy;
-  hitDummy=function(d,move,dir){
-    const r=_hd.apply(this, arguments);
-    try{if(spend()&&d){d.vx=(d.vx||0)*1.8; d.vy=Math.min(d.vy||0,-520); d.fl=Math.max(d.fl||0,.45);
-      say('CHARGED!','#ffe14d');}}catch(e){}
+    try{if(base()&&window.KD47&&KD47.req&&KD47.req!==before){CX.hold={k, t:rt(), face:p.face, used:false}; CX._key=k}}catch(e){}
     return r;
   };
   const _rel=release;
   release=function(k){
-    const t0=rt();
     const was=K[k];
     const r=_rel.apply(this, arguments);
-    try{if(base()&&was&&['left','right','up','down'].includes(k)) onTapRelease(k, t0)}catch(e){if(!onTapRelease.err){onTapRelease.err=1;console.warn('cx tap',e)}}
+    try{if(base()&&was&&['left','right','up','down'].includes(k)) onTapRelease(k)}catch(e){if(!onTapRelease.err){onTapRelease.err=1;console.warn('cx tap',e)}}
     return r;
   };
 }
-
-const TAP={left:0,right:0,up:0,down:0};
-function onTapRelease(k, tPress){
-  const dur=rt()-((window.KD48&&KD48.H&&KD48.H[k]&&KD48.H[k].t)||tPress);
-  if(dur>0.18) return;
-  if(window.KD48&&KD48.H&&KD48.H[k]&&KD48.H[k].dt) return;
-  if(window.KD47&&KD47.req) return;
-  if(window.KD48) KD48.req=null;
-  const face=p.face||1;
-  const dir=k==='right'?1:k==='left'?-1:0;
-  const kind=k==='down'?'down':k==='up'?'up':dir===face?'fwd':'back';
-  const n=(TAP[k]=(TAP[k]||0)+1);
-  clearTimeout(TAP['t'+k]);
-  TAP['t'+k]=setTimeout(()=>{TAP[k]=0}, 450);
-  if(n>=3){triple(kind, face); return}
-  single(kind, face);
-}
-function single(kind, face){
-  CX.recent={k:kind, t:rt(), face};
-  if(kind==='down'){CX.n.feint++; if(typeof startFeint==='undefined'){p.vx=0; if(typeof setAnim==='function') setAnim('crouch', true); say('FEINT!','#ffe9a8')} }
-  else if(kind==='back'){CX.n.lean++; p.vx=-face*160; if(typeof setAnim==='function') setAnim('bxpj' in (FR||{})?'bxpj':'crouch', true); say('LEAN BACK!','#bfe8ff')}
-  else if(kind==='fwd'){CX.n.step++; p.vx=face*280; p.face=face; say('STEP IN!','#fff')}
-  else if(kind==='up'&&p.ground){CX.n.bob++; if(p.state==='jcharge'||(p.state==='normal'&&p.t<.12)){p.vy=0; p.ground=true} say('BOB!','#fff'); p.vx*=.4}
-}
-function triple(kind, face){
-  CX.recent={k:'3'+kind, t:rt(), face};
-  if(kind==='down'){say('LOW WEAVE!','#ffe08a'); p.vx=face*60; p.inv=Math.max(p.inv||0,.2)}
-  else if(kind==='back'){say('DEEP LEAN!','#bfe8ff'); p.vx=-face*240}
-  else if(kind==='fwd'){say('LONG STEP!','#fff'); p.vx=face*420}
-  else {say('HIGH BOB!','#fff'); if(p.ground){p.vy=-360; p.ground=false; p.jumps=1}}
-}
+const KEYS={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down'};
+document.addEventListener('keydown', e=>{
+  const k=KEYS[e.code]; if(!k||e.repeat||arena()) return;
+  heldKeys.add(k); CX._key=k;
+  const face=(CX.p&&CX.p.face)||1;
+  const n=noteTap(k, face);
+  if(n>=3){clearTimeout(TAP['z'+k]); TAP[k]=0; playKind(kindOf(k, face), 3, false)}
+}, true);
+document.addEventListener('keyup', e=>{
+  const k=KEYS[e.code]; if(!k) return;
+  heldKeys.delete(k);
+}, true);
 
 function clawPlan(){
-  if(!CX.recent||rt()-CX.recent.t>0.45) return;
+  if(!CX.recent||rt()-CX.recent.t>0.55) return;
   const k=CX.recent.k;
-  if(k==='fwd') CX.plan={n:2, say:'JAB JAB!', hook:false};
-  else if(k==='back'||k==='3back') CX.plan={n:2, say:'LEFT RIGHT!', hook:false};
-  else if(k==='down'||k==='3down') CX.plan={n:3, say:'HOOKS!', hook:true};
-  else if(k==='up') CX.plan={n:1, say:'BOB PUNCH!', hook:false};
-  if(CX.plan) say(CX.plan.say,'#ffe14d');
+  if(k==='step'||k==='long'||k==='helds'||k==='diagf') CX.plan={n:2, say:'JAB JAB!', hook:false};
+  else if(k==='lean'||k==='deep'||k==='heldl'||k==='diagb') CX.plan={n:2, say:'LEFT RIGHT!', hook:false};
+  else if(k==='feint'||k==='low'||k==='heldw') CX.plan={n:3, say:'HOOKS!', hook:true};
+  else if(k==='bob'||k==='high'||k==='heldb') CX.plan={n:1, say:'BOB PUNCH!', hook:false};
+  if(CX.plan) sayTo(CX.plan.say,'#ffe14d');
   CX.recent=null;
 }
-
 function blinkBehind(){
   const kc=Math.max(p.combo||0, p.keepCombo||0);
   let best=null, bd=1e9;
@@ -142,35 +241,28 @@ function blinkBehind(){
   if(typeof puffShadow==='function') puffShadow(p.x,p.y);
   p.combo=kc; p.keepCombo=kc; p.keepT=0.9; p.state='normal'; p.vx=0;
   if(typeof C!=='undefined'&&C.n>0) C.t=Math.max(C.t,0.9);
-  say('BLINK BEHIND!','#c9a7ff'); CX.n.blink++;
+  sayTo('BLINK BEHIND!','#c9a7ff'); CX.n.blink++;
   p.blinkCool=0.35;
 }
 function tailFinisher(){
   const kc=Math.max(p.combo||0, p.keepCombo||0);
   if(typeof tailWhip==='function') tailWhip(3);
   p.keepCombo=kc; p.keepT=1; CX.n.tail++;
-  say('TAIL SPIN!','#ff9a2e');
+  sayTo('TAIL SPIN!','#ff9a2e');
 }
-
 let prev='';
-function arenaTick(){
+function arenaTick(dt){
   if(!base()) return;
-  if(P.hundred){delete P.hundred; arm()}
-  if(CX.hold&&!CX.hold.used&&K[CX.hold.k]&&rt()-CX.hold.t>0.18&&rt()-CX.hold.t<0.55){
-    CX.hold.used=true; CX.recent={k:'hold'+CX.hold.k, t:rt(), face:CX.hold.face};
-    const dir=CX.hold.k==='right'?1:CX.hold.k==='left'?-1:0;
-    if(CX.hold.k==='down'){say('HELD WEAVE!','#ffe08a'); p.inv=Math.max(p.inv||0,.32); p.vx=(p.face||1)*40}
-    else if(CX.hold.k==='up'){say('HELD BOB!','#fff'); if(p.ground) p.vy=-220}
-    else if(dir&&dir!==CX.hold.face){say('HELD LEAN!','#bfe8ff'); p.vx=-CX.hold.face*200; p.face=CX.hold.face}
-    else {say('HELD STEP!','#fff'); p.vx=(CX.hold.face||1)*360}
+  if(CX.hold&&!CX.hold.used&&K[CX.hold.k]&&rt()-CX.hold.t>0.16&&rt()-CX.hold.t<0.75){
+    if(!(window.OD&&OD.move&&OD.move())){CX.hold.used=true; CX._key=CX.hold.k; playKind(kindOf(CX.hold.k, CX.hold.face), 2, true)}
   }
+  stepPose(dt||0);
   const g=green();
-  if(g&&P.blink){delete P.blink; blinkBehind()}
-  else if(g&&P.tail&&p.state!=='tailwhip'){delete P.tail; tailFinisher()}
+  if(g&&P.blink&&!CX.pose){delete P.blink; blinkBehind()}
+  else if(g&&P.tail&&p.state!=='tailwhip'&&!CX.pose){delete P.tail; tailFinisher()}
   else if(g&&(P.special||P.dash||P.attack)){keepCombo()}
-  if(P.attack&&!CX._ate){clawPlan(); CX._ate=true}
+  if(P.attack&&!CX._ate&&!CX.pose){clawPlan(); CX._ate=true}
   if(!P.attack) CX._ate=false;
-  // airborne double-tap down = ground slam; double-tap up = flying punch
   const q=window.KD47&&KD47.req;
   if(q&&q.k==='down'&&!p.ground){KD47.req=null; startSlam()}
   if(q&&q.k==='up'){KD47.req=null; delete P.jump; startFly()}
@@ -182,28 +274,26 @@ function arenaTick(){
   if(CX.air==='fly'&&p.ground&&p.t>.35){CX.air=null; p.state='normal'}
   if(prev==='claw'&&p.state!=='claw'&&CX.plan&&CX.plan.n>1){
     CX.plan.n--;
-    p.combo=Math.max(0,(p.combo||1)-0); p.keepT=0.4; p.keepCombo=p.combo;
+    p.keepT=0.4; p.keepCombo=p.combo;
     if(typeof startClaw==='function') startClaw();
     if(CX.plan.hook&&p.state==='claw'&&typeof setAnim==='function'&&FR.bxlh){setAnim('bxlh', true); if(window.P33) P33.a='bxlh'}
   }
-  if(CX.armed&&p.state==='normal'){/* gold hint stays until the hit */}
   prev=p.state;
 }
 function startSlam(){
   CX.air='slam'; CX.n.slam++; p.state='dive'; p.t=0; p.vy=1500; p.ground=false;
   if(typeof setAnim==='function') setAnim('dive', true);
-  say('GROUND SLAM!','#ffe9a8');
+  sayTo('GROUND SLAM!','#ffe9a8');
 }
 function landSlam(){
   if(typeof impact==='function') impact(true);
-  say('HAMMER!','#ffe14d');
-  if(CX.armed) spend();
+  sayTo('HAMMER!','#ffe14d');
   for(const d of dummies){if(!d.alive||d.benched) continue; if(Math.abs(d.x-p.x)<200){d.vy=Math.min(d.vy||0,-200); d.vx=(d.x>=p.x?1:-1)*700; d.fl=Math.max(d.fl||0,.3)}}
 }
 function startFly(){
   CX.air='fly'; CX.n.fly++; p.state='normal'; p.ground=false; p.vy=-860; p.vx=p.face*260; p.jumps=2; p.t=0;
   if(typeof setAnim==='function') setAnim('jump', true);
-  say('FLYING PUNCH!','#fff');
+  sayTo('FLYING PUNCH!','#fff');
 }
 function tryGrab(){
   let best=null;
@@ -214,24 +304,28 @@ function tryGrab(){
   if(!best) return;
   CX.n.grab++; CX.grab=best;
   best.vy=980; best.vx=p.face*80; best.fl=0.15; best.y=Math.min(best.y+20, GROUND);
-  say('GOTCHA!','#7fffd4');
+  sayTo('GOTCHA!','#7fffd4');
   p.vy=Math.min(p.vy,200);
 }
 
 if(arena()&&typeof r9Pre==='function'){
   const _pre=r9Pre;
-  r9Pre=function(dt){try{arenaTick()}catch(e){if(!arenaTick.err){arenaTick.err=1;console.warn('cx',e)}} return _pre.apply(this, arguments)};
-  const _fx=drawFx;
-  drawFx=function(){
-    try{if(CX.armed){ctx.save(); ctx.globalCompositeOperation='lighter';
-      const g=ctx.createRadialGradient(p.x,p.y-80,6,p.x,p.y-80,50);
-      g.addColorStop(0,'rgba(255,225,80,.8)'); g.addColorStop(1,'rgba(255,200,40,0)');
-      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y-80,50,0,6.28); ctx.fill(); ctx.restore()}}catch(e){}
-    return _fx.apply(this, arguments);
+  r9Pre=function(dt){try{arenaTick(dt)}catch(e){if(!arenaTick.err){arenaTick.err=1;console.warn('cx',e)}} return _pre.apply(this, arguments)};
+  const _up=update;
+  update=function(dt){
+    const r=_up.apply(this, arguments);
+    try{if(CX.pose){p.vy=0; p.ground=true; p.state='ctap'; if(typeof floorAt==='function') p.y=floorAt(p.x)}}catch(e){}
+    return r;
   };
+  const _df=drawFrame;
+  drawFrame=function(f,x,y,face,alpha){
+    if(CX.pose&&Math.abs((x||0)-p.x)<80&&Math.abs((y||0)-(p.y||0))<80) return;
+    return _df.apply(this, arguments);
+  };
+  const _fx=drawFx;
+  drawFx=function(){try{if(CX.pose) paintPose(ctx, p.x, p.y)}catch(e){if(!paintPose.err){paintPose.err=1;console.warn('cx draw',e)}} return _fx.apply(this, arguments)};
 }
 
-// ---------- story levels ----------
 CX.claimLevel=function(q){
   if(!CX.p) return false;
   const who=CX.p;
@@ -240,28 +334,27 @@ CX.claimLevel=function(q){
   return false;
 };
 CX.level=function(dt, api){
-  CX.p=api.p; CX.msg=api.msg; CX.enemies=api.enemies; CX.hitEnemy=api.hitEnemy;
-  const K=api.K, P=api.P, who=api.p;
-  if(P.hundred){P.hundred=0; arm()}
-  if(CX.want==='fly'&&api.startMove){CX.want=null; api.startMove('flypunch'); CX.n.fly++; CX.air='fly'}
-  if(CX.want==='slam'&&api.startMove){CX.want=null; api.startMove('slam'); CX.n.slam++; CX.air='slam'}
-  if(CX.air==='fly'&&P.attack&&who.mv&&who.mv.id==='flypunch'&&who.mv.t>.12&&who.mv.t<.42){
+  CX.p=api.p; CX.msg=api.msg; CX.enemies=api.enemies;
+  const P=api.P, w=api.p;
+  if(CX.hold&&!CX.hold.used&&heldKeys.has(CX.hold.k)&&rt()-CX.hold.t>0.16&&rt()-CX.hold.t<0.7){
+    CX.hold.used=true; CX._key=CX.hold.k; playKind(kindOf(CX.hold.k, CX.hold.face), 2, true);
+  }
+  stepPose(dt);
+  if(CX.pose){w.state='od'; w.vy=0; w.face=CX.pose.face}
+  if(CX.want==='fly'&&api.startMove&&!CX.pose){CX.want=null; api.startMove('flypunch'); CX.n.fly++; CX.air='fly'}
+  if(CX.want==='slam'&&api.startMove&&!CX.pose){CX.want=null; api.startMove('slam'); CX.n.slam++; CX.air='slam'}
+  if(CX.air==='fly'&&P.attack&&w.mv&&w.mv.id==='flypunch'&&w.mv.t>.12&&w.mv.t<.42){
     P.attack=0;
     for(const e of api.enemies||[]){
       if(!e.alive) continue;
-      if(e.y<who.y-10&&Math.abs(e.x-who.x)<190){
-        e.vy=1100; e.vx=who.face*120; e.hurt=0.55; CX.grab=e; CX.n.grab++;
+      if(e.y<w.y-10&&Math.abs(e.x-w.x)<190){
+        e.vy=1100; e.vx=w.face*120; e.hurt=0.55; CX.grab=e; CX.n.grab++;
         if(api.msg) api.msg('GOTCHA!','#7fffd4');
       }
     }
   }
-  if(CX.armed){
-    for(const e of api.enemies||[]){
-      if(e.alive&&e.hurt>0.2&&!e._cx){e._cx=1; e.vx=(e.vx||0)*1.7; e.vy=Math.min(e.vy||0,-180); if(api.msg) api.msg('CHARGED!','#ffe14d')}
-      if(e.hurt<=0) e._cx=0;
-    }
-    if(!who.mv) {/* stays armed until a hit */}
-  }
 };
 CX.green=green;
+CX.poseName=function(){return CX.pose?CX.pose.id:''};
+CX.sprites=function(){return loaded};
 })();
