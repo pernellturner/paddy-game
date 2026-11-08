@@ -6,8 +6,10 @@
 const BOX=0.5;
 const PUNCH={
   jab:{steps:[[1,55],[3,40],[4,80],[6,45]], hit:4, stop:0.03, fly:1},
-  uppercut_left:{steps:[[2,70],[4,45],[6,90],[8,55]], hit:6, stop:0.045, fly:1},
-  uppercut_right:{steps:[[3,70],[5,45],[7,90],[10,55]], hit:7, stop:0.045, fly:1}
+  uppercut_left:{steps:[[0,100],[2,80],[4,60],[6,170],[8,110],[10,80]], hit:6, stop:0.05, fly:1},
+  uppercut_right:{steps:[[0,100],[2,80],[5,60],[7,170],[9,110],[11,80]], hit:7, stop:0.05, fly:1},
+  upper_quick_l:{steps:[[2,50],[4,45],[6,150],[8,80]], hit:6, stop:0.04, fly:1},
+  upper_quick_r:{steps:[[3,50],[5,45],[7,150],[10,80]], hit:7, stop:0.04, fly:1}
 };
 const FAST={
   dash_forward:[1,2,3,4,5,6],
@@ -98,16 +100,36 @@ function startPunch(name, opt){
   opt=opt||{};
   const face=(opt.level&&lvl?lvl.p.face:p.face);
   begin('punch', name, face, {level:!!opt.level, fly:opt.fly!==false&&!!PUNCH[name].fly, vx:face*(opt.fly?420:80), y0:opt.level&&lvl?lvl.p.y:undefined, dir:face});
-  act.fly=opt.fly===true?'room':(opt.fly||false);
+  if(act) act.fly=opt.fly===true?'room':(opt.fly||false);
+}
+function showWind(face, level){
+  if(act&&act.kind==='wind'){act.face=face||act.face; return}
+  begin('wind','uppercut_left', face||1, {level:!!level, vx:0, fly:false, y0:level&&lvl?lvl.p.y:undefined});
+  if(!act) return;
+  act.kind='wind'; act.seq=[[0,0.09],[1,0.09],[2,0.12]]; act.si=0; act.fi=0; act.hitFi=-1; act.vx=0;
+}
+function throwUpper(face, charged, level){
+  const name=nextUpper();
+  if(level&&lvl) lvl.p.face=face||lvl.p.face;
+  startPunch(name, {fly:false, level:!!level});
+  if(!act) return;
+  act.face=face||act.face;
+  const seq=name==='uppercut_right'
+    ?(charged?[[5,0.06],[7,0.2],[9,0.1],[11,0.08]]:[[3,0.05],[5,0.05],[7,0.16],[10,0.08]])
+    :(charged?[[4,0.06],[6,0.2],[8,0.1],[10,0.08]]:[[2,0.05],[4,0.05],[6,0.16],[8,0.08]]);
+  act.seq=seq; act.si=0; act.fi=seq[0][0]; act.hitFi=name==='uppercut_right'?(charged?7:7):6; act.ft=0; act.didHit=false;
 }
 function stepAct(dt){
   if(!act) return;
   act.t+=dt; act.ft+=dt;
   const step=act.seq[act.si];
   const dur=step?step[1]:0.05;
-  if(act.ft>=dur){
+    if(act.ft>=dur){
     act.ft=0; act.si++;
-    if(act.si>=act.seq.length){finishAct(); return}
+    if(act.si>=act.seq.length){
+      if(act.kind==='wind'){act.si=0; act.fi=act.seq[0][0]; return}
+      finishAct(); return;
+    }
     act.fi=act.seq[act.si][0];
     if(act.fi===act.hitFi) landHit();
   }
@@ -119,7 +141,7 @@ function finishAct(){
   const done=act; act=null;
   const who=done.level&&lvl?lvl.p:p;
   if(done.kind==='dash'||done.kind==='dodge') follow={kind:done.kind, t:now(), fwd:!!done.fwd};
-  if(done.kind==='punch'&&/^uppercut/.test(done.name)) chainUpper=true;
+  if(done.kind==='punch'&&/^upper/.test(done.name)) chainUpper=false;
   if(done.level){who.state='normal'; who.vx=0; who.vy=0}
   else{who.state='normal'; who.t=0; who.vx=who.face*160; who.noFlick=false}
   if(done.buf&&done.kind==='punch'&&!done.level){who.keepCombo=who.combo||0; who.keepT=0.35}
@@ -223,8 +245,8 @@ function preArena(){
   }
   if(feint) stepFeint();
   else if(!act&&inCombo()&&P.special) startFeint();
-  if(!act&&chainUpper){chainUpper=false; if(K.up&&K.attack&&p.ground&&!p.wall) startPunch(nextUpper(), {fly:false})}
-  const upClaw=K.up&&K.attack&&p.ground&&!p.wall&&!act&&!feint&&!link;
+  if(!act&&chainUpper) chainUpper=false;
+  const upClaw=!(window.PL&&PL.owns)&&K.up&&K.attack&&p.ground&&!p.wall&&!act&&!feint&&!link;
   if(upClaw){
     delete P.attack; delete P.jump; upWait=true;
     const h=window.KD48&&KD48.H&&KD48.H.attack;
@@ -282,13 +304,9 @@ function paint(x, y, c){
   if(!c||!act||!act.imgs) return;
   const img=act.imgs[Math.min(act.fi, act.imgs.length-1)];
   if(!img||!img.naturalWidth) return;
-  const weave=act.name==='weave', slip=act.name==='slip';
-  const bob=weave?Math.sin(Math.min(1,act.t/0.28)*Math.PI)*42:slip?8:0;
-  const sy=weave?0.78:slip?0.92:1, sx=weave?1.08:1;
   c.save();
-  c.translate(x, y+bob);
-  c.rotate((weave?0.18:slip?-0.2:0)*(act.face||1));
-  c.scale((act.face||1)*BOX*sx, BOX*sy);
+  c.translate(x, y);
+  c.scale((act.face||1)*BOX, BOX);
   c.drawImage(img, -foot[0], -foot[1]);
   c.restore();
 }
@@ -319,15 +337,16 @@ window.OD={
       return;
     }
     if(follow&&P.attack&&now()-follow.t<0.4){P.attack=0; startPunch(follow.kind==='dash'?nextFly():'jab', {fly:follow.kind==='dash'?'room':'counter', level:true}); follow=null; return}
-    if(!act&&chainUpper){chainUpper=false; if(K.up&&K.attack&&who.ground){startPunch(nextUpper(), {fly:false, level:true}); return}}
-    if(who.ground&&K.up&&K.attack&&who.state==='normal'&&!(who.mv&&who.mv.id==='upper')){
-      if(!wait) wait={t:now()};
+    if(!act&&chainUpper) chainUpper=false;
+    if(act&&act.level&&act.kind==='wind'){
+      if(K.up&&K.attack){stepAct(dt); who.state='od'; who.vx=0; who.vy=0; who.face=act.face; return}
+      const face=act.face, held=now()-(act.windT||now()); act=null;
+      who.face=face; throwUpper(face, held>=0.2, true); return;
+    }
+    if(who.ground&&K.up&&K.attack&&!act&&(who.state==='normal'||who.state==='od')&&!(who.mv&&who.mv.id==='upper')){
       if(P.attack) P.attack=0;
-      if(now()-wait.t>=0.12){wait=null; startPunch(nextUpper(), {fly:false, level:true})}
-    }else if(wait){
-      const short=now()-wait.t<0.12, letGo=!K.attack;
-      wait=null;
-      if(short&&letGo&&who.ground) oldUpper=true;
+      showWind(who.face, true); if(act) act.windT=now();
+      return;
     }
   },
   levelAttack(){
@@ -335,6 +354,8 @@ window.OD={
     if(act&&act.level){if(lvl.P&&lvl.P.attack&&act.kind==='punch'){act.buf=true; lvl.P.attack=0} return true}
     return false;
   },
+  wind:showWind,
+  cast:throwUpper,
   holdUpper(){return wait&&loaded?'wait':null},
   takeOldUpper(){if(!oldUpper) return false; oldUpper=false; return true},
   driveLevel(){if(act&&act.level&&lvl){lvl.p.vx=act.vx; lvl.p.vy=0}},
