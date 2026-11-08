@@ -1,0 +1,127 @@
+{
+  "version": 2,
+  "status": "review_only_not_game_ready",
+  "canvas": {
+    "width": 384,
+    "height": 384
+  },
+  "baseline_y": 342,
+  "body_scale": 1,
+  "body_anchor": {
+    "landmark": "front paw centre",
+    "x": 244,
+    "y": 332
+  },
+  "loop_ms": 920,
+  "strip": {
+    "file": "jab_strip.png",
+    "columns": 8,
+    "rows": 1,
+    "frame_width": 384,
+    "frame_height": 384
+  },
+  "frames": [
+    {
+      "file": "frame_01_guard.png",
+      "phase": "guard",
+      "duration_ms": 280,
+      "source": "03_panel_01",
+      "scale": 1,
+      "translation_px": [
+        65,
+        54
+      ],
+      "front_foot_anchor_x": 244
+    },
+    {
+      "file": "frame_02_load.png",
+      "phase": "load",
+      "duration_ms": 80,
+      "source": "03_panel_10",
+      "scale": 1,
+      "translation_px": [
+        53,
+        56
+      ],
+      "front_foot_anchor_x": 244
+    },
+    {
+      "file": "frame_03_load_hold.png",
+      "phase": "load_hold",
+      "duration_ms": 50,
+      "source": "03_panel_10",
+      "scale": 1,
+      "translation_px": [
+        53,
+        56
+      ],
+      "front_foot_anchor_x": 244
+    },
+    {
+      "file": "frame_04_extension.png",
+      "phase": "extension",
+      "duration_ms": 50,
+      "source": "03_panel_11",
+      "scale": 1,
+      "translation_px": [
+        62,
+        56
+      ],
+      "front_foot_anchor_x": 244
+    },
+    {
+      "file": "frame_05_impact.png",
+      "phase": "impact",
+      "duration_ms": 110,
+      "source": "03_panel_03",
+      "scale": 1,
+      "translation_px": [
+        58,
+        65
+      ],
+      "front_foot_anchor_x": 244
+    },
+    {
+      "file": "frame_06_recoil.png",
+      "phase": "recoil",
+      "duration_ms": 60,
+      "source": "03_panel_11",
+      "scale": 1,
+      "translation_px": [
+        62,
+        56
+      ],
+      "front_foot_anchor_x": 244
+    },
+    {
+      "file": "frame_07_return.png",
+      "phase": "return",
+      "duration_ms": 90,
+      "source": "03_panel_04",
+      "scale": 1,
+      "translation_px": [
+        64,
+        62
+      ],
+      "front_foot_anchor_x": 244
+    },
+    {
+      "file": "frame_08_guard.png",
+      "phase": "guard",
+      "duration_ms": 200,
+      "source": "03_panel_01",
+      "scale": 1,
+      "translation_px": [
+        65,
+        54
+      ],
+      "front_foot_anchor_x": 244
+    }
+  ],
+  "limitations": [
+    "Five unique drawn poses, with load held and extension reused on recoil; not eight newly drawn temporal poses.",
+    "Rear-paw stance changes between guard and load; front paw is anchored.",
+    "Load-to-extension needs a genuine anatomical in-between; the held load is not a genuine turn-start pose.",
+    "No reliable left/right-hand label is assigned from these generated perspectives."
+  ]
+}
