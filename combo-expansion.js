@@ -193,7 +193,7 @@ if(arena()&&typeof press==='function'){
   press=function(k){
     const before=window.KD47&&KD47.req;
     const r=_press.apply(this, arguments);
-    try{if(base()&&window.KD47&&KD47.req&&KD47.req!==before){CX.hold={k, t:rt(), face:p.face, used:false}; CX._key=k}}catch(e){}
+    try{if(base()&&window.KD47&&KD47.req&&KD47.req!==before){clearTimeout(TAP['s'+k]); TAP[k]=2; CX.hold={k, t:rt(), face:p.face, used:!!(KD47.req.k==='back')}; CX._key=k}}catch(e){}
     return r;
   };
   const _rel=release;

@@ -43,7 +43,14 @@ function keep(){
 }
 
 function hitNow(power){
+  const boost=MM.boost||0;
   if(arena()&&typeof areaHit==='function') areaHit(p.x+p.face*50, p.y-50, power?190:150, 'pounce');
+  if(arena()&&boost&&typeof dummies!=='undefined'){
+    for(const d of dummies){
+      if(!d||!d.alive) continue;
+      if(Math.abs(d.x-p.x)<200){d.vx+=p.face*boost*480; d.vy-=boost*220}
+    }
+  }
   else if(MM.api&&MM.api.hitEnemy){
     const w=MM.api.p;
     for(const e of MM.api.enemies||[]){
@@ -62,14 +69,64 @@ function beginArena(state, anim, name, opt){
   MM.h1=MM.h2=false;
   keep();
 }
-function doPounce(kind){
-  delete P.special;
+function firePounce(k, opt){
+  opt=opt||{};
+  const tap=k<0.12;
+  const u=Math.min(1, k/0.8);
+  try{ if(typeof P!=='undefined'&&P) delete P.special }catch(e){}
   push('P');
-  if(kind==='up') beginArena('pawpop','pawpop','POP POUNCE!',{vy:-680,vx:180,paws:1,power:true});
-  else if(kind==='fwd') beginArena('pounce','pounce','LEAP SWIPE!',{vy:-520,vx:860,paws:2});
-  else if(kind==='back') beginArena('pounce','swat','BACK SWIPE!',{vy:-300,vx:-480,paws:2});
-  else if(kind==='flurry') beginArena('pounce','swat','PAW FLURRY!',{vy:-260,vx:280,paws:4});
-  else beginArena('pounce','pounce','POUNCE!',{vy:-680,vx:520,paws:2});
+  if(opt.level&&MM.api&&MM.api.startMove){
+    const w=MM.api.p, go=MM.api.startMove;
+    go(opt.dub?'flurry':opt.dir==='fwd'?'pouncefar':opt.dir==='up'?'pounceup':'meow');
+    if(w.mv&&w.mv.d){
+      const src=w.mv.d;
+      const d=Object.assign({}, src, {
+        vx:180+u*680,
+        vy:-240-u*500,
+        kb:320+Math.round(u*560),
+        launch:-160-u*380,
+        say:tap?'POUNCE!':'BIG POUNCE!'
+      });
+      w.mv.d=d; w.vy=d.vy; w.vx=(w.face||1)*d.vx; w.ground=false;
+    }
+    if(opt.chord){w.buf='attack'; w.bufT=.4}
+    MM.glow=0; MM.boost=u;
+    return;
+  }
+  const kind=opt.dub?'flurry':opt.dir;
+  const big=0.75+u*0.9;
+  if(kind==='up') beginArena('pawpop','pawpop',tap?'POP POUNCE!':'BIG POP!',{vy:-420-u*360,vx:120+u*160,paws:1,power:u>0.45});
+  else if(kind==='fwd') beginArena('pounce','pounce',tap?'LEAP SWIPE!':'BIG LEAP!',{vy:-280-u*320,vx:(240+u*620)*big,paws:tap?1:2,power:u>0.45});
+  else if(kind==='back') beginArena('pounce','pounce',tap?'BACK SWIPE!':'BIG BACK SWIPE!',{vy:-180-u*180,vx:-(160+u*420),paws:tap?1:2,power:u>0.4});
+  else if(kind==='flurry') beginArena('pounce','pounce',tap?'PAW FLURRY!':'BIG FLURRY!',{vy:-200-u*220,vx:160+u*280,paws:tap?2:4,power:true});
+  else beginArena('pounce','pounce',tap?'POUNCE!':'BIG POUNCE!',{vy:-260-u*460,vx:200+u*640,paws:tap?1:2,power:u>0.45});
+  MM.boost=u;
+  if(opt.chord) MM.thenClaw=true;
+}
+function chargePounce(keys){
+  if(!MM.pcharge) return false;
+  try{ if(typeof P!=='undefined'&&P&&P.special) delete P.special }catch(e){}
+  if(MM.api&&MM.api.P) MM.api.P.meow=0;
+  const age=rt()-MM.pcharge.t;
+  const u=Math.min(1, age/0.8);
+  MM.glow=u;
+  const held=!!(keys&&keys.special||keys&&keys.meow);
+  if(held){
+    if(arena()){
+      if(p.state==='normal'||p.state==='mcharge'||p.state==='land'){
+        if(typeof setAnim==='function') setAnim('crouch');
+        p.vx*=0.4;
+      }
+      p.rot=Math.sin(rt()*30)*0.06*Math.max(0.25,u);
+    }
+    return true;
+  }
+  const raw=age;
+  const spec=MM.pcharge;
+  MM.pcharge=null; MM.glow=0;
+  if(arena()) p.rot=0;
+  firePounce(raw, spec);
+  return true;
 }
 function doTail(kind){
   delete P.tail;
@@ -117,8 +174,7 @@ function routeButton(which){
   if(hits()>=8&&/JJP$/.test(s)&&d==='up'&&which==='claw'){title('ULTIMATE','SKY SLAM'); beginArena('pawpop','pawpop','SKY SLAM',{vy:-720,vx:200,paws:2,power:true}); push('U'); return true}
   if(hits()>=8&&/BT$/.test(s)&&which==='claw'&&d==='down'){title('ULTIMATE','AMBUSH SLAM'); beginArena('dive','dive','AMBUSH SLAM',{vy:1200,paws:2,power:true}); push('S'); return true}
   if(which==='pounce'){
-    if(chord){MM.thenClaw=true}
-    doPounce(dub?'flurry':d==='fwd'?'fwd':d==='up'?'up':d==='back'?'back':'alone');
+    firePounce(0.2, {dir:d, dub:dub, chord:chord});
     return true;
   }
   if(which==='tail'){
@@ -138,8 +194,13 @@ function arenaTick(){
   if(!base()) return;
   if(P.special){
     const moon=K.down&&!K.up&&!doubled()&&!tierOf();
-    if(!moon){if(!routeButton('pounce')) doPounce(dir()||'alone')}
+    if(!moon&&!MM.pcharge){
+      if(tierOf()&&doubled()) routeButton('pounce');
+      else MM.pcharge={t:rt(), face:p.face, dir:dir(), dub:doubled(), chord:!!K.attack};
+    }
+    delete P.special;
   }
+  if(MM.pcharge&&!MM.pcharge.level) chargePounce(K);
   else if(P.tail&&p.state!=='tailwhip'){if(!routeButton('tail')){} }
   else if(P.blink){
     const d=dir();
@@ -160,39 +221,27 @@ function arenaTick(){
   if(!P.attack) MM._claw=false;
   if(MM.tag&&p.state){
     const age=rt()-MM.tag.t;
-    if(!MM.h1&&age>0.12){MM.h1=1; hitNow(MM.tag.power); pawFx()}
-    if(!MM.h2&&MM.tag.paws>1&&age>0.26){MM.h2=1; hitNow(MM.tag.power); pawFx()}
-    if(!MM.h3&&MM.tag.paws>3&&age>0.4){MM.h3=1; hitNow(true); pawFx()}
+    if(!MM.h1&&age>0.12){MM.h1=1; hitNow(MM.tag.power||MM.boost>0.4)}
+    if(!MM.h2&&MM.tag.paws>1&&age>0.26){MM.h2=1; hitNow(MM.tag.power||MM.boost>0.4)}
+    if(!MM.h3&&MM.tag.paws>3&&age>0.4){MM.h3=1; hitNow(true)}
   }
   if(MM.thenClaw&&(p.state==='normal'||p.state==='land')&&rt()-(MM.tag&&MM.tag.t||0)>0.28){
     MM.thenClaw=false; if(typeof startClaw==='function') startClaw();
   }
   if(MM.both&&rt()-MM.both>0.12&&rt()-MM.both<0.18){if(typeof puffShadow==='function') puffShadow(p.x,p.y); p.x-=p.face*200; if(typeof clampX==='function') p.x=clampX(p.x); puffShadow(p.x,p.y); hitNow(false); MM.both=0}
-  if(p.state==='mcharge'){doPounce('alone')}
+  if(p.state==='mcharge'&&!MM.pcharge){p.state='normal'; MM.pcharge={t:rt(), face:p.face, dir:dir(), dub:false, chord:false}}
 }
-function pawFx(){
-  try{if(typeof spark==='function') spark(p.x+p.face*86, p.y-58, 10, ['#fff','#ffe9a8'], 220)}catch(e){}
-  MM.paws=(MM.paws||0)+1; MM.pawT=rt();
-}
-function drawPaws(c, x, y, face){
-  if(!MM.pawT||rt()-MM.pawT>0.32) return;
-  const age=rt()-MM.pawT;
+function drawCharge(c, x, y){
+  const g=MM.glow||0;
+  if(g<0.04) return;
   c.save();
-  c.translate(x+(face||1)*90, y-70);
-  c.scale(face||1, 1);
-  c.globalAlpha=Math.max(0, 1-age*2.6);
-  for(let i=0;i<2;i++){
-    c.save();
-    c.translate(i?22:-6, i?-16:10);
-    c.rotate(i?-0.5:0.4);
-    c.fillStyle='#fff8ee';
-    c.beginPath(); c.ellipse(0, 0, 26, 18, 0, 0, 6.28); c.fill();
-    c.strokeStyle='#7a4a32'; c.lineWidth=3;
-    c.stroke();
-    c.fillStyle='#f0c2a4';
-    for(const [dx,dy] of [[-10,-12],[0,-15],[10,-12]]){c.beginPath(); c.arc(dx, dy, 5, 0, 6.28); c.fill()}
-    c.restore();
-  }
+  c.globalCompositeOperation='lighter';
+  const R=28+34*g;
+  const grd=c.createRadialGradient(x, y-46, 2, x, y-46, R);
+  grd.addColorStop(0, 'rgba(255,226,140,'+(0.2+0.5*g)+')');
+  grd.addColorStop(1, 'rgba(255,170,40,0)');
+  c.fillStyle=grd;
+  c.beginPath(); c.arc(x, y-46, R, 0, 6.28); c.fill();
   c.restore();
 }
 function drawBanner(c, x, y){
@@ -249,7 +298,7 @@ MM.drawLevel=function(ctx2, cam){
   if(!MM.api||!MM.api.p) return;
   const w=MM.api.p;
   drawTail(ctx2, w.x-cam.x, w.y-cam.y, w.face||1);
-  drawPaws(ctx2, w.x-cam.x, w.y-cam.y, w.face||1);
+  drawCharge(ctx2, w.x-cam.x, w.y-cam.y);
   drawBanner(ctx2, w.x-cam.x, w.y-cam.y);
 };
 
@@ -260,17 +309,21 @@ if(arena()&&typeof r9Pre==='function'){
   update=function(dt){
     const r=_up.apply(this, arguments);
     try{
-      if(p._mmLunge&&p.state==='claw'&&p.t<0.16){p.vx=p.face*620; if(!p._mmSaid){p._mmSaid=1; say('LUNGE JAB!','#fff')}}
+      if(MM.pcharge&&!MM.pcharge.level&&K.special){if(typeof setAnim==='function') setAnim('crouch'); p.rot=Math.sin(rt()*30)*0.06*Math.max(0.25, MM.glow||0)}
+      else if(p.rot&&!(MM.pcharge)) p.rot=0;
       if(p._mmLunge&&p.t>=0.16){p._mmLunge=0; p._mmSaid=0}
       if(p._mmHook&&p.state==='claw'&&typeof setAnim==='function'&&FR.bxlh){setAnim('bxlh', true); if(window.P33) P33.a='bxlh'; say('COUNTER HOOK!','#bfe8ff'); p._mmHook=0}
     }catch(e){}
     return r;
   };
   const _fx=drawFx;
-  drawFx=function(){try{drawTail(ctx, p.x, p.y, p.face); drawPaws(ctx, p.x, p.y, p.face); drawBanner(ctx, p.x, p.y)}catch(e){} return _fx.apply(this, arguments)};
+  drawFx=function(){try{drawTail(ctx, p.x, p.y, p.face); drawCharge(ctx, p.x, p.y); drawBanner(ctx, p.x, p.y)}catch(e){} return _fx.apply(this, arguments)};
 }
 
-MM.level=function(dt, api){MM.api=api};
+MM.level=function(dt, api){
+  MM.api=api;
+  if(MM.pcharge&&MM.pcharge.level) chargePounce(api.K||{});
+};
 MM.takeLevel=function(){
   if(!MM.api||!MM.api.P||!MM.api.startMove) return false;
   const P=MM.api.P, go=MM.api.startMove, d=dir(), dub=doubled(), chord=!!P.attack;
@@ -278,9 +331,7 @@ MM.takeLevel=function(){
   if(P.meow){
     P.meow=0;
     if(t&&dub){title(t==='ULTIMATE'||hits()>=12?'ULTIMATE':t, 'SUPER SWIPE'); go(t==='POWER'?'pouncefar':'flurry'); MM.spin=rt(); return true}
-    push('P');
-    if(chord){go('meow'); MM.api.p.buf='attack'; MM.api.p.bufT=.4}
-    else go(dub?'flurry':d==='fwd'?'pouncefar':d==='up'?'pounceup':'meow');
+    MM.pcharge={t:rt(), face:MM.api.p.face, dir:d, dub:dub, chord:chord, level:true};
     return true;
   }
   if(P.tail){

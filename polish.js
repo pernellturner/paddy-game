@@ -8,21 +8,30 @@ function base(){try{return arena()&&FORM()===0&&!(window.KITTY36&&KITTY36.on)&&!
 function now(){return performance.now()/1000}
 function say(t,c){try{if(typeof window.say==='function') window.say(t,c||'#fff',true)}catch(e){}}
 
-function faceFix(dt){
+function faceFix(){
   if(!base()) return;
-  if(window.CX&&CX.pose){p.face=CX.pose.face; PL.rest=p.face; return}
-  const mv=window.OD&&OD.move&&OD.move();
-  if(mv==='back_step'||mv==='slip'){PL.rest=p.face; return}
+  if(!PL.rest) PL.rest=p.face||1;
   const dir=(K.right?1:0)-(K.left?1:0);
-  if(p.state==='claw'||p.state==='pounce'||p.state==='od'||p.state==='ctap'||p.state==='kdodge'){
-    if(PL.rest) p.face=PL.rest;
-    return;
+  const mv=window.OD&&OD.move&&OD.move();
+  if(mv==='back_step'){p.face=PL.rest; return}
+  if(dir && dir!==PL.rest) p.face=PL.rest;
+  else if(!dir) PL.rest=p.face||PL.rest;
+}
+function backGate(){
+  if(!base()||!window.KD47||!window.OD||!OD.backDash) return;
+  const q=KD47.req;
+  if(q&&q.k==='back'&&!PL.back){
+    KD47.req=null;
+    PL.back={t:now(), face:q.face||p.face||1, key:q.dir};
   }
-  if(!dir||dir===PL.rest){PL.holdT=0; PL.holdDir=0; if(dir===PL.rest) PL.rest=p.face; return}
-  if(PL.holdDir!==dir){PL.holdDir=dir; PL.holdT=0}
-  PL.holdT+=dt;
-  if(PL.holdT<0.34) p.face=PL.rest;
-  else PL.rest=p.face;
+  if(!PL.back) return;
+  const b=PL.back, age=now()-b.t, held=b.key&&K[b.key];
+  if(held&&age>=0.14){PL.back=null; OD.backDash(b.face); say('BACK DASH!','#fff')}
+  else if(!held){
+    PL.back=null;
+    p.face=-(b.face||1); PL.rest=p.face;
+    say('TURN!','#fff');
+  }
 }
 
 function pounceFrames(){
@@ -113,11 +122,11 @@ if(arena()&&typeof r9Pre==='function'){
   const _hd=typeof hitDummy==='function'?hitDummy:null;
   if(_hd) hitDummy=function(d,move,dir){const r=_hd.apply(this,arguments); if(d&&d.vy<-820) d.vy=-820; return r};
   const _pre=r9Pre;
-  r9Pre=function(dt){try{upper()}catch(e){if(!upper.err){upper.err=1;console.warn('pl',e)}} return _pre.apply(this, arguments)};
+  r9Pre=function(dt){try{upper(); backGate()}catch(e){if(!upper.err){upper.err=1;console.warn('pl',e)}} return _pre.apply(this, arguments)};
   const _up=update;
   update=function(dt){
     const r=_up.apply(this, arguments);
-    try{faceFix(dt); pounceFrames(); keepDummy()}catch(e){if(!faceFix.err){faceFix.err=1;console.warn('pl up',e)}}
+    try{faceFix(); pounceFrames(); keepDummy()}catch(e){if(!faceFix.err){faceFix.err=1;console.warn('pl up',e)}}
     return r;
   };
   const _fx=drawFx;
