@@ -25,7 +25,7 @@ const LID=qs.get('level')||'silverdale_1';
 const LV=window.LV={ready:false,log:[],events:[],t:0};
 let F={},IMG={},L=null,S=null,W=0,H=0;
 const K={},P={};
-const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',Space:'jump',KeyZ:'jump',KeyX:'attack',KeyJ:'attack',KeyC:'tail',KeyT:'tail',KeyV:'meow',KeyM:'meow',ShiftLeft:'run',ShiftRight:'run',KeyN:'next',KeyR:'restart'};
+const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',Space:'jump',KeyZ:'jump',KeyX:'attack',KeyJ:'attack',KeyC:'tail',KeyT:'tail',KeyV:'meow',KeyM:'meow',ShiftLeft:'run',ShiftRight:'run',KeyN:'next',KeyR:'restart',Digit1:'hundred',KeyU:'hundred'};
 // v47 double-tap: two short presses (each let go within 0.25 s, the 2nd within 0.3 s of the 1st); back/forward = vs his facing at the 1st tap
 const DT=LV.dt={last:{},req:null,log:[]},DTK=['left','right','up','down'];
 function dtap(k){if(!DTK.includes(k))return false;const t=performance.now()/1000,L0=DT.last[k];
@@ -125,7 +125,7 @@ function stepOff(dir){// a branch / roof / fence next to the trunk near the feet
 function tryLedge(){if(p.ground||p.vy<-200)return false;const dir=K.right?1:K.left?-1:0;if(!dir)return false;
  const c=Math.floor((p.x+dir*(BW/2+6))/TS);const top=p.y-BH;for(let r=Math.floor((top-10)/TS);r<=Math.floor((top+BH*.45)/TS);r++){
   if(tile(c,r)==='L'&&!solidAt(c,r-1)&&!solidAt(c,r-2)&&!solidAt(c,r-3)){p.state='ledge';p.t=0;p.face=dir;p.hang={c,r};p.vx=p.vy=0;p.x=c*TS+(dir>0?-BW/2:TS+BW/2);p.y=r*TS+BH*.55;LV.log.push('ledge');return true}}return false}
-function update(dt){LV.t+=dt;p.t+=dt;if(window.OD&&OD.levelTick)OD.levelTick(dt,{K:K,P:P,p:p,enemies:enemies,boss:boss,hitEnemy:hitEnemy,bossHit:bossHit,msg:msg});p.lt=(p.lt||0)+dt;p.inv=Math.max(0,p.inv-dt);p.drop=Math.max(0,p.drop-dt);p.power=Math.max(0,p.power-dt);p.atk=Math.max(0,p.atk-dt);
+function update(dt){LV.t+=dt;p.t+=dt;if(window.CX&&CX.level)CX.level(dt,{K:K,P:P,p:p,enemies:enemies,hitEnemy:hitEnemy,msg:msg,startMove:startMove});if(window.OD&&OD.levelTick)OD.levelTick(dt,{K:K,P:P,p:p,enemies:enemies,boss:boss,hitEnemy:hitEnemy,bossHit:bossHit,msg:msg});p.lt=(p.lt||0)+dt;p.inv=Math.max(0,p.inv-dt);p.drop=Math.max(0,p.drop-dt);p.power=Math.max(0,p.power-dt);p.atk=Math.max(0,p.atk-dt);
  if(P.restart){init(L)}if(P.next&&p.done&&!(window.CUT&&CUT.playing))nextLevel();
  const dir=(K.right?1:0)-(K.left?1:0);
  if(p.done){p.vx=0;p.vy+=G*dt;moveY(dt);p.anim='victory';return}
@@ -139,7 +139,7 @@ function update(dt){LV.t+=dt;p.t+=dt;if(window.OD&&OD.levelTick)OD.levelTick(dt,
  }else if(p.state==='ledge'){p.anim='ledge';if(P.jump||K.up||p.t>.35){const h=p.hang;p.x=(h.c+.5)*TS+p.face*0;p.y=h.r*TS;unembed();p.state='normal';p.ground=true;p.vy=0;LV.log.push('pullup')}else if(K.down){p.state='normal';p.vy=100}
  }else{
   if(p.state==='hurt'&&(p.t>.35||p.ground&&p.t>.12))p.state='normal';
-  if(p.state==='normal'&&DT.req){const q=DT.req;DT.req=null;if(!(window.OD&&OD.claimLevel&&OD.claimLevel(q))){const busy=p.mv&&(p.mv.d.fin||p.mv.d.dive||p.mv.d.dtap);   // v47 double-tap moves
+  if(p.state==='normal'&&DT.req){const q=DT.req;DT.req=null;if(window.CX&&CX.claimLevel&&CX.claimLevel(q)){}else if(!(window.OD&&OD.claimLevel&&OD.claimLevel(q))){const busy=p.mv&&(p.mv.d.fin||p.mv.d.dive||p.mv.d.dtap);   // v47 double-tap moves
    if(performance.now()/1000-q.t<.25&&!busy){
     if(q.k==='back'){p.face=q.face;startMove('dodge')}
     else if(q.k==='fwd'){p.face=q.face;startMove('dash')}
@@ -184,6 +184,8 @@ const MV={
  // v47 Kitti double-taps (dtap) and their + CLAW follow-ups (existing Paddy frames)
  dodge:{a:'dash',fps:14,dur:.3,hits:[],vx:-760,inv:.34,say:'DODGE!',c:'#bfe8ff',dtap:'back',ghost:1},
  feint:{a:'o_roar',fps:16,dur:.14,hits:[],vx:200,say:'FEINT!',c:'#ffe9a8'},
+ slam:{a:'kt_m_diveclaw',fps:14,dur:.42,hits:[.16],rx:170,bk:90,up:90,dn:30,kb:760,launch:-180,vy:1500,say:'GROUND SLAM!',c:'#ffe9a8',air:1,dive:1,shake:8},
+ flypunch:{a:'k_ps_jab1',fps:16,dur:.5,hits:[.26],rx:165,bk:20,up:220,dn:50,kb:420,launch:-480,vy:-860,vx:300,say:'FLYING PUNCH!',c:'#fff',air:1},
  dash:{a:'dash',fps:14,dur:.26,hits:[],vx:900,say:'DASH!',c:'#ffffff',dtap:'fwd',ghost:1},
  pounce:{a:'pounce',fps:6,dur:.6,hits:[],air:1,vy:-980,vx:520,say:'SKY POUNCE!',c:'#ffe08a',dtap:'up',ghost:1},
  slide:{a:'slide',fps:12,dur:.42,hits:[],vx:820,inv:.3,say:'CAT SLIDE!',c:'#ffe08a',dtap:'down',ghost:1},
@@ -328,7 +330,7 @@ const TCSS=document.createElement('style');TCSS.textContent=`#tc{position:fixed;
 #tc #tnext{display:none;left:50%;transform:translateX(-50%);font-size:26px;background:linear-gradient(#9be36a,#2f8f3a);border-color:#fff;box-shadow:0 4px 0 #1d5e24}
 #tc.done #tnext{display:flex}#tc.nopad .pad{display:none}`;document.head.appendChild(TCSS);
 const tc=document.createElement('div');tc.id='tc';if(!TOUCH)tc.classList.add('nopad');
-const TB=[['tl','◀','left'],['tr','▶','right'],['tu','▲','up'],['td','▼','down'],['tj','JUMP','jump'],['ta','CLAW','attack'],['tt','TAIL','tail'],['tm','MEOW','meow'],['tR','RUN','run']];
+const TB=[['tl','◀','left'],['tr','▶','right'],['tu','▲','up'],['td','▼','down'],['tj','JUMP','jump'],['ta','CLAW','attack'],['tt','TAIL','tail'],['tm','MEOW','meow'],['tR','RUN','run'],['t100','100','hundred']];
 for(const [id,t,k] of TB){const b=document.createElement('button');b.id=id;b.className='pad';b.textContent=t;b.dataset.k=k;b.setAttribute('aria-label',k);
  const dn=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}keyDown(k);b.classList.add('on')},up=e=>{e.preventDefault();if(K[k])keyUp(k);b.classList.remove('on')};
  b.addEventListener('pointerdown',dn);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up);b.addEventListener('contextmenu',e=>e.preventDefault());tc.appendChild(b)}
@@ -342,7 +344,7 @@ function layoutTC(){const w=innerWidth,h=innerHeight,s=Math.min(w/VW,h/VH),cw=VW
  // bottom-anchored clusters: d-pad left, actions right (they sit in the side bars on wide phones and under the picture on tall ones)
  const by=h-m-b,lx=m+Math.max(0,(Math.min(sideW,b*2.3)-b*2-g)/2);
  {const hx=Math.round((b+g)*.62),vy=b+Math.round(g/2),my=by-vy;put('tl',lx,my);put('tr',lx+2*hx,my);put('tu',lx+hx,my-vy);put('td',lx+hx,my+vy)}   // v47 diamond: ▲ top, ◀ ▶, ▼ bottom (no two buttons' boxes touch)
- const rx=w-m-b;put('tj',rx,by);put('ta',rx-b-g,by);put('tm',rx-2*(b+g),by);put('tR',rx-(b+g)/2,by-b-g);put('tt',rx-(b+g)*1.5,by-b-g);   // v45: CLAW · TAIL · MEOW like free play
+ const rx=w-m-b;put('tj',rx,by);put('ta',rx-b-g,by);put('tm',rx-2*(b+g),by);put('tR',rx-(b+g)/2,by-b-g);put('tt',rx-(b+g)*1.5,by-b-g);put('t100',rx-(b+g)*2.6,by-b-g);   // v45: CLAW · TAIL · MEOW · 100
  {const left=(w-cw)/2,top=(h-ch)/2,pw=home.offsetWidth+rs.offsetWidth+8;   // v44: pills never cover the HUD (hearts/coins): side bar if there is room, else just under the HUD strip
   let px,py;if(left>=Math.max(home.offsetWidth,rs.offsetWidth)+2*m){px=m;py=m;home.style.left=px+'px';home.style.top=py+'px';rs.style.left=px+'px';rs.style.top=(py+home.offsetHeight+8)+'px'}
   else if(top>=home.offsetHeight+2*m){px=m;py=top-home.offsetHeight-m;home.style.left=px+'px';home.style.top=py+'px';rs.style.left=(px+home.offsetWidth+8)+'px';rs.style.top=py+'px'}   // tall phone: in the bar above the picture

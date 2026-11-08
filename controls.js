@@ -25,7 +25,7 @@ function layout(){const cs=getComputedStyle(probe);SA={t:parseFloat(cs.paddingTo
  // v47 diamond d-pad: ▲ on top, ◀ ▶ either side, ▼ at the bottom (same overall footprint as the old ▼ / ◀ ▶ pad)
  place('up',.9,1.3,2.47,-1);place('left',1.1,.58,1.47,-1);place('right',1.1,2.02,1.47,-1);place('down',.9,1.3,.47,-1);   // ◀ ▶ keep their big size; no two buttons' boxes touch
  place('jump',1.2,.62,.92,1);place('attack',1.1,1.95,.6,1);place('special',.95,1.95,1.78,1);
- place('tail',.85,3.02,1.45,1);place('hunt',.8,3.06,.42,1);place('blink',.85,4.02,.95,1);place('gpow',.85,4.06,2.02,1);place('guard',.8,3.0,2.5,1);
+ place('tail',.85,3.02,1.45,1);place('hunt',.8,3.06,.42,1);place('blink',.85,4.02,.95,1);place('gpow',.85,4.06,2.02,1);place('guard',.8,3.0,2.5,1);place('hundred',.8,4.15,2.15,1);
  // top row (small): morph · mute · ?
  const tz=Math.round(Math.max(34,Math.min(50,H*.13)*Math.min(1,SZ+.15))),tb=(id,i)=>{const b=document.querySelector(id);if(!b)return;Object.assign(b.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',right:Math.round(mr+i*(tz+12))+'px',top:mt+'px',bottom:'auto',left:'auto'})};
  tb('#qbtn',0);tb('#ui .b[data-k=morph]',1);tb('#mute',2);{const g=document.getElementById('gear');if(g)Object.assign(g.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',left:ml+'px',top:mt+'px',right:'auto',bottom:'auto'})}

@@ -249,6 +249,7 @@ function postArena(dt){
   stepAct(dt);
   if(!act) return;
   p.state='od'; p.vx=act.vx; p.vy=0; p.ground=true;
+  if(act.name==='back_step') p.face=act.face;
   if(act.fi===act.hitFi) landHit();
 }
 
@@ -310,7 +311,7 @@ window.OD={
     if(act&&act.level){
       if(P.attack&&(act.kind==='dash'||act.kind==='dodge')){P.attack=0; startPunch(act.kind==='dash'?nextFly():'jab', {fly:act.kind==='dash'?'room':'counter', level:true})}
       stepAct(dt);
-      if(act&&act.level){who.state='od'; who.vx=act.vx; who.vy=0; if(act.fi===act.hitFi) landHit()}
+      if(act&&act.level){who.state='od'; who.vx=act.vx; who.vy=0; if(act.name==='back_step') who.face=act.face; if(act.fi===act.hitFi) landHit()}
       return;
     }
     if(follow&&P.attack&&now()-follow.t<0.4){P.attack=0; startPunch(follow.kind==='dash'?nextFly():'jab', {fly:follow.kind==='dash'?'room':'counter', level:true}); follow=null; return}
