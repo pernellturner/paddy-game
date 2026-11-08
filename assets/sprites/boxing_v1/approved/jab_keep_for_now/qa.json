@@ -1,0 +1,101 @@
+{
+  "gif_frames": 8,
+  "frames": [
+    {
+      "file": "frame_01_guard.png",
+      "alpha_bbox": [
+        65,
+        54,
+        277,
+        342
+      ],
+      "opaque_foot_y": 340,
+      "gif_ms": 280,
+      "blue_eye_pixels_gif": 31
+    },
+    {
+      "file": "frame_02_load.png",
+      "alpha_bbox": [
+        53,
+        56,
+        270,
+        342
+      ],
+      "opaque_foot_y": 340,
+      "gif_ms": 80,
+      "blue_eye_pixels_gif": 33
+    },
+    {
+      "file": "frame_03_load_hold.png",
+      "alpha_bbox": [
+        53,
+        56,
+        270,
+        342
+      ],
+      "opaque_foot_y": 340,
+      "gif_ms": 50,
+      "blue_eye_pixels_gif": 33
+    },
+    {
+      "file": "frame_04_extension.png",
+      "alpha_bbox": [
+        62,
+        56,
+        317,
+        342
+      ],
+      "opaque_foot_y": 341,
+      "gif_ms": 50,
+      "blue_eye_pixels_gif": 30
+    },
+    {
+      "file": "frame_05_impact.png",
+      "alpha_bbox": [
+        58,
+        65,
+        370,
+        342
+      ],
+      "opaque_foot_y": 340,
+      "gif_ms": 110,
+      "blue_eye_pixels_gif": 32
+    },
+    {
+      "file": "frame_06_recoil.png",
+      "alpha_bbox": [
+        62,
+        56,
+        317,
+        342
+      ],
+      "opaque_foot_y": 341,
+      "gif_ms": 60,
+      "blue_eye_pixels_gif": 30
+    },
+    {
+      "file": "frame_07_return.png",
+      "alpha_bbox": [
+        64,
+        62,
+        282,
+        342
+      ],
+      "opaque_foot_y": 340,
+      "gif_ms": 90,
+      "blue_eye_pixels_gif": 30
+    },
+    {
+      "file": "frame_08_guard.png",
+      "alpha_bbox": [
+        65,
+        54,
+        277,
+        342
+      ],
+      "opaque_foot_y": 340,
+      "gif_ms": 200,
+      "blue_eye_pixels_gif": 31
+    }
+  ]
+}

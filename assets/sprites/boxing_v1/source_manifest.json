@@ -1,0 +1,818 @@
+[
+  {
+    "id": "test1:1",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 1,
+    "panel_crop": [
+      5,
+      5,
+      379,
+      336
+    ],
+    "scale": 0.9395973154362416,
+    "placement": [
+      150,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:2",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 2,
+    "panel_crop": [
+      389,
+      5,
+      763,
+      336
+    ],
+    "scale": 1.1336032388663968,
+    "placement": [
+      131,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:3",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 3,
+    "panel_crop": [
+      773,
+      5,
+      1147,
+      336
+    ],
+    "scale": 1.238938053097345,
+    "placement": [
+      124,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:4",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 4,
+    "panel_crop": [
+      1157,
+      5,
+      1531,
+      336
+    ],
+    "scale": 1.0218978102189782,
+    "placement": [
+      168,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:5",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 5,
+    "panel_crop": [
+      5,
+      346,
+      379,
+      678
+    ],
+    "scale": 1.0294117647058822,
+    "placement": [
+      171,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:6",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 6,
+    "panel_crop": [
+      389,
+      346,
+      763,
+      678
+    ],
+    "scale": 1.0294117647058822,
+    "placement": [
+      172,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:7",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 7,
+    "panel_crop": [
+      773,
+      346,
+      1147,
+      678
+    ],
+    "scale": 1.0294117647058822,
+    "placement": [
+      168,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:8",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 8,
+    "panel_crop": [
+      1157,
+      346,
+      1531,
+      678
+    ],
+    "scale": 1.0294117647058822,
+    "placement": [
+      157,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:9",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 9,
+    "panel_crop": [
+      5,
+      688,
+      379,
+      1019
+    ],
+    "scale": 0.9523809523809523,
+    "placement": [
+      162,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:10",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 10,
+    "panel_crop": [
+      389,
+      688,
+      763,
+      1019
+    ],
+    "scale": 0.9333333333333333,
+    "placement": [
+      151,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:11",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 11,
+    "panel_crop": [
+      773,
+      688,
+      1147,
+      1019
+    ],
+    "scale": 0.9333333333333333,
+    "placement": [
+      157,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test1:12",
+    "source": "scenario/jab_test1/images/twelve_numbered_frames_show_fluffy_cat_standing_two-asset_h97hMnVYukCQ38gZwrV4bEZk.png",
+    "panel": 12,
+    "panel_crop": [
+      1157,
+      688,
+      1531,
+      1019
+    ],
+    "scale": 0.9333333333333333,
+    "placement": [
+      153,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:1",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 1,
+    "panel_crop": [
+      5,
+      5,
+      379,
+      336
+    ],
+    "scale": 0.9556313993174061,
+    "placement": [
+      108,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:2",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 2,
+    "panel_crop": [
+      389,
+      5,
+      763,
+      336
+    ],
+    "scale": 0.9556313993174061,
+    "placement": [
+      105,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:3",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 3,
+    "panel_crop": [
+      773,
+      5,
+      1147,
+      336
+    ],
+    "scale": 0.9491525423728814,
+    "placement": [
+      105,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:4",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 4,
+    "panel_crop": [
+      1157,
+      5,
+      1531,
+      336
+    ],
+    "scale": 0.9459459459459459,
+    "placement": [
+      152,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:5",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 5,
+    "panel_crop": [
+      5,
+      346,
+      379,
+      678
+    ],
+    "scale": 0.9459459459459459,
+    "placement": [
+      152,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:6",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 6,
+    "panel_crop": [
+      389,
+      346,
+      763,
+      678
+    ],
+    "scale": 0.9523809523809523,
+    "placement": [
+      109,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:7",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 7,
+    "panel_crop": [
+      773,
+      346,
+      1147,
+      678
+    ],
+    "scale": 0.9491525423728814,
+    "placement": [
+      110,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:8",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 8,
+    "panel_crop": [
+      1157,
+      346,
+      1531,
+      678
+    ],
+    "scale": 0.9491525423728814,
+    "placement": [
+      109,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:9",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 9,
+    "panel_crop": [
+      5,
+      688,
+      379,
+      1019
+    ],
+    "scale": 0.9302325581395349,
+    "placement": [
+      161,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:10",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 10,
+    "panel_crop": [
+      389,
+      688,
+      763,
+      1019
+    ],
+    "scale": 0.9271523178807947,
+    "placement": [
+      160,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:11",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 11,
+    "panel_crop": [
+      773,
+      688,
+      1147,
+      1019
+    ],
+    "scale": 0.9302325581395349,
+    "placement": [
+      162,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test2:12",
+    "source": "scenario/jab_test2_left/jab_test2_spritesheet.png",
+    "panel": 12,
+    "panel_crop": [
+      1157,
+      688,
+      1531,
+      1019
+    ],
+    "scale": 0.9395973154362416,
+    "placement": [
+      115,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:1",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 1,
+    "panel_crop": [
+      5,
+      5,
+      379,
+      336
+    ],
+    "scale": 0.9180327868852459,
+    "placement": [
+      147,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:2",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 2,
+    "panel_crop": [
+      389,
+      5,
+      763,
+      336
+    ],
+    "scale": 0.9893992932862191,
+    "placement": [
+      145,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:3",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 3,
+    "panel_crop": [
+      773,
+      5,
+      1147,
+      336
+    ],
+    "scale": 1.1067193675889329,
+    "placement": [
+      113,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:4",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 4,
+    "panel_crop": [
+      1157,
+      5,
+      1531,
+      336
+    ],
+    "scale": 1.1965811965811965,
+    "placement": [
+      86,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:5",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 5,
+    "panel_crop": [
+      5,
+      346,
+      379,
+      678
+    ],
+    "scale": 1.0144927536231885,
+    "placement": [
+      201,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:6",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 6,
+    "panel_crop": [
+      389,
+      346,
+      763,
+      678
+    ],
+    "scale": 1.0218978102189782,
+    "placement": [
+      186,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:7",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 7,
+    "panel_crop": [
+      773,
+      346,
+      1147,
+      678
+    ],
+    "scale": 1.0071942446043165,
+    "placement": [
+      186,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:8",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 8,
+    "panel_crop": [
+      1157,
+      346,
+      1531,
+      678
+    ],
+    "scale": 1.0144927536231885,
+    "placement": [
+      169,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:9",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 9,
+    "panel_crop": [
+      5,
+      688,
+      379,
+      1019
+    ],
+    "scale": 0.9824561403508771,
+    "placement": [
+      169,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:10",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 10,
+    "panel_crop": [
+      389,
+      688,
+      763,
+      1019
+    ],
+    "scale": 0.9688581314878892,
+    "placement": [
+      141,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:11",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 11,
+    "panel_crop": [
+      773,
+      688,
+      1147,
+      1019
+    ],
+    "scale": 0.9427609427609428,
+    "placement": [
+      147,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test3:12",
+    "source": "scenario/jab_test3_left/jab_test3_left_spritesheet.png",
+    "panel": 12,
+    "panel_crop": [
+      1157,
+      688,
+      1531,
+      1019
+    ],
+    "scale": 0.9395973154362416,
+    "placement": [
+      148,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:1",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 1,
+    "panel_crop": [
+      5,
+      5,
+      379,
+      336
+    ],
+    "scale": 0.9427609427609428,
+    "placement": [
+      147,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:2",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 2,
+    "panel_crop": [
+      389,
+      5,
+      763,
+      336
+    ],
+    "scale": 0.9929078014184397,
+    "placement": [
+      166,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:3",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 3,
+    "panel_crop": [
+      773,
+      5,
+      1147,
+      336
+    ],
+    "scale": 1.0526315789473684,
+    "placement": [
+      180,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:4",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 4,
+    "panel_crop": [
+      1157,
+      5,
+      1531,
+      336
+    ],
+    "scale": 1.0408921933085502,
+    "placement": [
+      203,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:5",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 5,
+    "panel_crop": [
+      5,
+      346,
+      379,
+      678
+    ],
+    "scale": 1.037037037037037,
+    "placement": [
+      199,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:6",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 6,
+    "panel_crop": [
+      389,
+      346,
+      763,
+      678
+    ],
+    "scale": 1.0108303249097472,
+    "placement": [
+      180,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:7",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 7,
+    "panel_crop": [
+      773,
+      346,
+      1147,
+      678
+    ],
+    "scale": 0.9523809523809523,
+    "placement": [
+      146,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:8",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 8,
+    "panel_crop": [
+      1157,
+      346,
+      1531,
+      678
+    ],
+    "scale": 0.9556313993174061,
+    "placement": [
+      144,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:9",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 9,
+    "panel_crop": [
+      5,
+      688,
+      379,
+      1019
+    ],
+    "scale": 0.9395973154362416,
+    "placement": [
+      146,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:10",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 10,
+    "panel_crop": [
+      389,
+      688,
+      763,
+      1019
+    ],
+    "scale": 0.9364548494983278,
+    "placement": [
+      146,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:11",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 11,
+    "panel_crop": [
+      773,
+      688,
+      1147,
+      1019
+    ],
+    "scale": 0.9395973154362416,
+    "placement": [
+      147,
+      44
+    ],
+    "mirrored": false
+  },
+  {
+    "id": "test4:12",
+    "source": "scenario/jab_test4_right/spritesheet.png",
+    "panel": 12,
+    "panel_crop": [
+      1157,
+      688,
+      1531,
+      1019
+    ],
+    "scale": 0.9395973154362416,
+    "placement": [
+      147,
+      44
+    ],
+    "mirrored": false
+  }
+]
