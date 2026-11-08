@@ -67,7 +67,10 @@ if(arena()&&typeof press==='function'){
   const _press=press;
   press=function(k){
     if(k==='hundred'){arm(); return}
-    return _press.apply(this, arguments);
+    const before=window.KD47&&KD47.req;
+    const r=_press.apply(this, arguments);
+    try{if(base()&&window.KD47&&KD47.req&&KD47.req!==before) CX.hold={k, t:rt(), face:p.face, used:false}}catch(e){}
+    return r;
   };
   const _hd=hitDummy;
   hitDummy=function(d,move,dir){
@@ -153,6 +156,14 @@ let prev='';
 function arenaTick(){
   if(!base()) return;
   if(P.hundred){delete P.hundred; arm()}
+  if(CX.hold&&!CX.hold.used&&K[CX.hold.k]&&rt()-CX.hold.t>0.18&&rt()-CX.hold.t<0.55){
+    CX.hold.used=true; CX.recent={k:'hold'+CX.hold.k, t:rt(), face:CX.hold.face};
+    const dir=CX.hold.k==='right'?1:CX.hold.k==='left'?-1:0;
+    if(CX.hold.k==='down'){say('HELD WEAVE!','#ffe08a'); p.inv=Math.max(p.inv||0,.32); p.vx=(p.face||1)*40}
+    else if(CX.hold.k==='up'){say('HELD BOB!','#fff'); if(p.ground) p.vy=-220}
+    else if(dir&&dir!==CX.hold.face){say('HELD LEAN!','#bfe8ff'); p.vx=-CX.hold.face*200; p.face=CX.hold.face}
+    else {say('HELD STEP!','#fff'); p.vx=(CX.hold.face||1)*360}
+  }
   const g=green();
   if(g&&P.blink){delete P.blink; blinkBehind()}
   else if(g&&P.tail&&p.state!=='tailwhip'){delete P.tail; tailFinisher()}
