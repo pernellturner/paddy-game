@@ -298,7 +298,7 @@ if(arena()&&typeof r9Pre==='function'){
   const _draw=draw;
   draw=function(){window.__odCover=!!(act&&!act.level&&loaded); const r=_draw.apply(this, arguments); window.__odCover=false; return r};
   const _fx=drawFx;
-  drawFx=function(){try{if(act&&!act.level) paint(p.x, p.y, ctx)}catch(e){if(!paint.err){paint.err=1;console.warn('od draw',e)}} _fx.apply(this, arguments)};
+  drawFx=function(){try{if(act&&!act.level&&!window.__pbLead) paint(p.x, p.y, ctx)}catch(e){if(!paint.err){paint.err=1;console.warn('od draw',e)}} _fx.apply(this, arguments)};
 }
 function paint(x, y, c){
   if(!c||!act||!act.imgs) return;

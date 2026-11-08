@@ -18,6 +18,7 @@ const PUNCH={
 const DIRS=['left','right','up','down'];
 const LABEL={jab:'JAB!',uppercut_left:'LEFT UPPERCUT!',uppercut_right:'RIGHT UPPERCUT!',dash_forward:'DASH!',back_step:'BACK STEP!',slip:'SLIP!',weave:'WEAVE!'};
 let loaded=false, moves=null, foot=[210,408], guard=null;
+let breathImgs=null, g2wImgs=null, breathT=0, intro=null, wasWeave=false;
 let act=null, mode='guard', blend=null, queue=null, comboN=0;
 let charge=0, punchAt=0, punchHeld=false;
 const own={left:false,right:false,up:false,down:false};
@@ -47,6 +48,11 @@ function loadImage(src){
     }
     guard=moves.jab.imgs[0];
     loaded=true;
+    const pad=i=>String(i).padStart(2,'0');
+    const breath=[], lead=[];
+    for(let i=0;i<28;i++) breath.push(await loadImage(base+'breath/frame_'+pad(i)+'.webp'));
+    for(let i=0;i<5;i++) lead.push(await loadImage(base+'guard_to_weave/frame_'+pad(i)+'.png'));
+    breathImgs=breath; g2wImgs=lead;
   }catch(err){
     bootErr=err&&err.message?err.message:String(err);
     console.error('practice boxing sprites failed to load', err);
@@ -230,16 +236,65 @@ function sync(dt, x0){
   }
 }
 function hiding(){return on()&&(!!act||mode!=='run'||!!blend)}
+// Practice Room only. The breathing loop replaces the static guard while he is idle.
+// Any key drops it the same frame, so the breath never adds input lag.
+const BREATH_DT=0.143, LEAD_DT=0.04, JAB=0.5*1.0282;
+function inRoom(){
+  try{return !!(window.PRACTICE&&PRACTICE.on)&&typeof FORM==='function'&&FORM()===0&&!(window.KITTY36&&KITTY36.on)&&!p.hunt}catch(e){return false}
+}
+function guardIdle(){
+  if(!p.ground) return false;
+  if(p.state&&p.state!=='normal'&&p.state!=='land'&&p.state!=='stop') return false;
+  if(window.CX&&CX.pose) return false;
+  if(window.OD&&OD.move&&OD.move()) return false;
+  if(Math.abs(p.vx||0)>30) return false;
+  if(typeof K!=='undefined'&&(K.left||K.right||K.up||K.down||K.attack||K.jump||K.special||K.tail||K.blink)) return false;
+  return true;
+}
+function tickBreath(dt){
+  if(!inRoom()||!breathImgs){intro=null; wasWeave=false; return}
+  const weaving=!!(window.OD&&OD.move&&OD.move()==='weave');
+  if(weaving&&!wasWeave&&g2wImgs) intro={t:0};
+  wasWeave=weaving;
+  if(intro){
+    intro.t+=dt;
+    const other=typeof K!=='undefined'&&(K.attack||K.jump||K.special||K.tail||K.blink||K.up||K.left||K.right);
+    if(other||intro.t>=g2wImgs.length*LEAD_DT) intro=null;
+  }
+  if(!intro&&guardIdle()) breathT+=dt;
+  window.__pbLead=!!intro;
+}
+function covering(){return inRoom()&&breathImgs&&(!!intro||guardIdle())}
+function drawApproved(img, scale){
+  if(!img||!img.naturalWidth) return;
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.scale((p.face||1)*scale, scale);
+  ctx.drawImage(img, -foot[0], -foot[1]);
+  ctx.restore();
+}
+function paintBreath(){
+  if(!covering()) return;
+  if(intro&&g2wImgs){
+    const i=Math.min(g2wImgs.length-1, Math.floor(intro.t/LEAD_DT));
+    drawApproved(g2wImgs[i], JAB);
+    return;
+  }
+  const i=Math.floor(breathT/BREATH_DT)%breathImgs.length;
+  drawApproved(breathImgs[i], JAB);
+}
 
 const _drawFrame=drawFrame;
 drawFrame=function(f,x,y,face,alpha){
   if(hiding()&&Math.abs(x-p.x)<4&&Math.abs(y-p.y)<8) return;
   if(hiding()&&Math.abs(x-(p.prevX||p.x))<4&&Math.abs(y-(p.prevY||p.y))<8) return;
+  if(covering()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<30) return;
   return _drawFrame.apply(this, arguments);
 };
 const _hud=drawHUD;
 drawHUD=function(){
   if(hiding()){try{paint()}catch(e){if(!paint.err){paint.err=1;console.error('practice boxing draw', e)}}}
+  else if(covering()){try{paintBreath()}catch(e){if(!paintBreath.err){paintBreath.err=1;console.error('breath', e)}}}
   return _hud.apply(this, arguments);
 };
 const _update=update;
@@ -248,6 +303,7 @@ update=function(dt){
   if(on()) steal();
   const r=_update.apply(this, arguments);
   if(on()){try{sync(dt, x0)}catch(e){if(!sync.err){sync.err=1;console.error('practice boxing', e)}}}
+  else {try{tickBreath(dt)}catch(e){if(!tickBreath.err){tickBreath.err=1;console.error('breath', e)}}}
   return r;
 };
 const _start=startClaw;
@@ -326,6 +382,7 @@ document.addEventListener('pointercancel', ()=>{if(punchHeld) punchUp(); DIRS.fo
 window.PB={
   get ready(){return loaded},
   get err(){return bootErr},
+  get breath(){return !!(breathImgs&&breathImgs.length===28&&g2wImgs&&g2wImgs.length===5)},
   on, move:()=>act?act.name:'',
   frame:()=>act?act.fi:-1,
   phase:()=>act?'act':mode,
