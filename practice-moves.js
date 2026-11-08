@@ -24,9 +24,9 @@ const own={left:false,right:false,up:false,down:false};
 const tapMem={};
 let pending=null, lastLR=1, bootErr=null;
 
-function on(){
-  try{return loaded&&window.PRACTICE&&PRACTICE.on&&FORM()===0&&!(window.KITTY36&&KITTY36.on)&&!p.hunt}catch(e){return false}
-}
+// The original practice room keeps its own punches. The approved moves are added
+// by original-dodges.js, on the original inputs, in both the practice room and the levels.
+function on(){return false}
 function smooth(u){u=Math.max(0,Math.min(1,u));return u*u*(3-2*u)}
 function loadImage(src){
   return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error(src));im.src=src});

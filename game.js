@@ -1772,7 +1772,7 @@ function r12Arena(){
   const ex=s<0?x+w-3:x;ctx.fillStyle='rgba(255,190,120,.25)';ctx.fillRect(ex,WT,3,GROUND-WT);
   ctx.fillStyle='#8d7f95';ctx.fillRect(x-(s<0?20:6),WT-8,w+26,12);ctx.fillStyle='#b9aac2';ctx.fillRect(x-(s<0?20:6),WT-8,w+26,3);
   ctx.globalAlpha=.55;ctx.fillStyle='#ffe9b0';ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.fillText('▲ climb',x+w/2,WT+40);ctx.globalAlpha=1;ctx.textAlign='left'}}
-function r12Props(){for(const o of PROPS){const f=(FR[o.k]||[])[0],im=f&&IMG[f.f];if(!imgOK(im))continue;
+function r12Props(){const practiceClear=(window.PRACTICE&&PRACTICE.on)||(window.TRAIN&&TRAIN.TR&&TRAIN.TR.on)||!p.hunt;if(practiceClear)return;for(const o of PROPS){const f=(FR[o.k]||[])[0],im=f&&IMG[f.f];if(!imgOK(im))continue;
   const near=Math.abs(p.x-o.x)<o.hw+40&&p.y>GROUND-200,dn=dummies.some(d=>Math.abs(d.x-o.x)<o.hw+90&&d.y>GROUND-250);
   ctx.save();ctx.globalAlpha=p.hidden&&near?.72:dn?.6:near?.86:1;ctx.translate(o.x,GROUND+8);ctx.scale(o.s,o.s);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}
  if(p.hidden){fancy('hidden',p.x,p.y-150,18,0,1,.65+.2*Math.sin(now*4),'#9fffb0')}}

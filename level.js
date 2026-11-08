@@ -125,7 +125,7 @@ function stepOff(dir){// a branch / roof / fence next to the trunk near the feet
 function tryLedge(){if(p.ground||p.vy<-200)return false;const dir=K.right?1:K.left?-1:0;if(!dir)return false;
  const c=Math.floor((p.x+dir*(BW/2+6))/TS);const top=p.y-BH;for(let r=Math.floor((top-10)/TS);r<=Math.floor((top+BH*.45)/TS);r++){
   if(tile(c,r)==='L'&&!solidAt(c,r-1)&&!solidAt(c,r-2)&&!solidAt(c,r-3)){p.state='ledge';p.t=0;p.face=dir;p.hang={c,r};p.vx=p.vy=0;p.x=c*TS+(dir>0?-BW/2:TS+BW/2);p.y=r*TS+BH*.55;LV.log.push('ledge');return true}}return false}
-function update(dt){LV.t+=dt;p.t+=dt;p.lt=(p.lt||0)+dt;p.inv=Math.max(0,p.inv-dt);p.drop=Math.max(0,p.drop-dt);p.power=Math.max(0,p.power-dt);p.atk=Math.max(0,p.atk-dt);
+function update(dt){LV.t+=dt;p.t+=dt;if(window.OD&&OD.levelTick)OD.levelTick(dt,{K:K,P:P,p:p,enemies:enemies,boss:boss,hitEnemy:hitEnemy,bossHit:bossHit,msg:msg});p.lt=(p.lt||0)+dt;p.inv=Math.max(0,p.inv-dt);p.drop=Math.max(0,p.drop-dt);p.power=Math.max(0,p.power-dt);p.atk=Math.max(0,p.atk-dt);
  if(P.restart){init(L)}if(P.next&&p.done&&!(window.CUT&&CUT.playing))nextLevel();
  const dir=(K.right?1:0)-(K.left?1:0);
  if(p.done){p.vx=0;p.vy+=G*dt;moveY(dt);p.anim='victory';return}
@@ -139,13 +139,13 @@ function update(dt){LV.t+=dt;p.t+=dt;p.lt=(p.lt||0)+dt;p.inv=Math.max(0,p.inv-dt
  }else if(p.state==='ledge'){p.anim='ledge';if(P.jump||K.up||p.t>.35){const h=p.hang;p.x=(h.c+.5)*TS+p.face*0;p.y=h.r*TS;unembed();p.state='normal';p.ground=true;p.vy=0;LV.log.push('pullup')}else if(K.down){p.state='normal';p.vy=100}
  }else{
   if(p.state==='hurt'&&(p.t>.35||p.ground&&p.t>.12))p.state='normal';
-  if(p.state==='normal'&&DT.req){const q=DT.req;DT.req=null;const busy=p.mv&&(p.mv.d.fin||p.mv.d.dive||p.mv.d.dtap);   // v47 double-tap moves
+  if(p.state==='normal'&&DT.req){const q=DT.req;DT.req=null;if(!(window.OD&&OD.claimLevel&&OD.claimLevel(q))){const busy=p.mv&&(p.mv.d.fin||p.mv.d.dive||p.mv.d.dtap);   // v47 double-tap moves
    if(performance.now()/1000-q.t<.25&&!busy){
     if(q.k==='back'){p.face=q.face;startMove('dodge')}
     else if(q.k==='fwd'){p.face=q.face;startMove('dash')}
     else if(q.k==='up'){if(!p.kpUsed&&!p.wallDir)startMove('pounce');else P.jump=1}
     else if(q.k==='down'&&p.ground)startMove('slide');
-    if(p.mv&&p.mv.d.dtap)DT.log.push(p.mv.id)}}
+    if(p.mv&&p.mv.d.dtap)DT.log.push(p.mv.id)}}}
   if(p.ground&&!(p.mv&&p.mv.id==='pounce'))p.kpUsed=false;
   if(p.state==='normal'){const sp=(K.run||p.power>0?RUN:WALK)*(p.power>0?1.15:1);const want=dir*sp*(p.mv&&p.ground?.2:1);if(!(p.mv&&p.mv.d.vx))p.vx+=(want-p.vx)*Math.min(1,dt*(p.ground?14:6));if(dir&&!p.mv)p.face=dir;
    if(K.up&&!p.mv&&trunkAt(p.x,p.y)>=0){p.climbX=trunkAt(p.x,p.y);p.state='climb';p.vx=0;p.vy=0;P.up=0;LV.log.push('climb')}
@@ -158,7 +158,7 @@ function update(dt){LV.t+=dt;p.t+=dt;p.lt=(p.lt||0)+dt;p.inv=Math.max(0,p.inv-dt
    if(!K.jump&&!K.up&&p.vy<-300&&!(p.mv&&p.mv.d.vy))p.vy+=G*dt*.9;   // short hop when jump is let go
    if(P.jump&&p.mv&&!p.mv.d.air)p.mv=null;   // a jump cancels a ground move
    moveInput()}
-  if(p.state!=='climb'&&p.state!=='ledge'){p.vy=Math.min(p.vy+G*dt,1500);moveX(dt);moveY(dt);if(p.state==='normal')tryLedge()}
+  if(p.state!=='climb'&&p.state!=='ledge'){if(p.state==='od'&&window.OD&&OD.driveLevel){OD.driveLevel();p.vy=0}else p.vy=Math.min(p.vy+G*dt,1500);moveX(dt);if(p.state==='od'&&window.OD&&OD.pinLevel)OD.pinLevel();else moveY(dt);if(p.state==='normal')tryLedge()}
   if(p.ground&&tile(Math.floor(p.x/TS),Math.round(p.y/TS))!=='^')p.safe={x:p.x,y:p.y};
   if(boxHits(p.x,p.y,BW-20,BH-20,(c,r)=>tile(c,r)==='~'))water();
   p.anim=p.state==='hurt'?'hurt':p.mv?'mv':!p.ground?(p.wallDir&&p.vy>0?'wall':p.jumps===2&&p.vy<0?'djump':p.vy<-260?'jump':p.vy<200?'apex':'fall'):Math.abs(p.vx)>RUN*.8?'run':Math.abs(p.vx)>30?'walk':'idle'}
@@ -183,6 +183,7 @@ const MV={
  body:{a:'k_ps_rbody',fps:20,dur:.3,hits:[.12],rx:150,bk:20,up:140,dn:10,kb:300,say:'BODY SHOT!',c:'#ffb040',lunge:120,shake:4},
  // v47 Kitti double-taps (dtap) and their + CLAW follow-ups (existing Paddy frames)
  dodge:{a:'dash',fps:14,dur:.3,hits:[],vx:-760,inv:.34,say:'DODGE!',c:'#bfe8ff',dtap:'back',ghost:1},
+ feint:{a:'o_roar',fps:16,dur:.14,hits:[],vx:200,say:'FEINT!',c:'#ffe9a8'},
  dash:{a:'dash',fps:14,dur:.26,hits:[],vx:900,say:'DASH!',c:'#ffffff',dtap:'fwd',ghost:1},
  pounce:{a:'pounce',fps:6,dur:.6,hits:[],air:1,vy:-980,vx:520,say:'SKY POUNCE!',c:'#ffe08a',dtap:'up',ghost:1},
  slide:{a:'slide',fps:12,dur:.42,hits:[],vx:820,inv:.3,say:'CAT SLIDE!',c:'#ffe08a',dtap:'down',ghost:1},
@@ -206,7 +207,14 @@ const MV={
 for(const d of Object.values(MV))d.fps=d.fps||12;
 let hs=0,shake=0;   // hitstop (s) + screen shake (px)
 const FU={back:'counter',fwd:'dstrike',up:'plaunch',down:'sweep'},FU_IDS=new Set(Object.values(FU));
+function clawing(){return !!((p.mv&&/^(claw|body|upper)/.test(p.mv.id))||((p.chainT||0)>0&&/C/.test(p.seq||'')))}
 function moveInput(){
+ if(window.OD&&OD.takeOldUpper&&OD.takeOldUpper()){startMove('upper');return}
+ if(window.OD&&OD.levelAttack&&OD.levelAttack())return;
+ if(P.meow&&p.mv&&p.mv.id==='feint'){P.meow=0;return}
+ if((P.meow||p.buf==='feint')&&clawing()){
+  if(p.mv&&p.mv.id!=='feint'&&p.mv.t<p.mv.d.dur*0.4){p.buf='feint';p.bufT=.45;P.meow=0;return}
+  P.meow=0;p.buf=null;startMove('feint');return}
  if(P.attack){const q=p.mv&&p.mv.d.dtap?p.mv.d.dtap:(p.dtEnd&&p.lt-p.dtEnd.t<.3?p.dtEnd.k:null);   // + CLAW right after a double-tap move
   if(q){p.dtEnd=null;P.attack=0;p.buf=null;const id=FU[q];if(id==='dstrike')p.seq=(p.seq+'C').slice(-8);startMove(id);DT.log.push('fu:'+id);return}}
  if(p.mv&&p.mv.t<p.mv.d.dur*.55){for(const k of ['attack','tail','meow'])if(P[k]){p.buf=k;p.bufT=.3}return}   // buffered until the move can cancel
@@ -215,7 +223,7 @@ function moveInput(){
  let id=null;
  if(!p.ground&&k==='attack'&&K.up&&p.airN===0&&p.vy<0&&(p.lt-(p.jumpT||-9))<.35)id='upper';   // ▲ is also jump here: ▲ + CLAW right after take-off = UPPERCUT
  else if(!p.ground){if(k==='attack'){if(K.down)id='dive';else if(p.airN===0)id='airswipe';else if(p.airN<3)id='airspin'}else if(k==='tail'){if(p.airN<3)id='airspin'}else if(p.meowCool<=0)id='meow';if(id&&id!=='meow')p.airN++}
- else if(k==='attack'&&K.up)id='upper';
+ else if(k==='attack'&&K.up){if(!(window.OD&&OD.holdUpper&&OD.holdUpper()==='wait'))id='upper'}
  else if(k==='attack'&&K.down){id='body';p.seq=(p.seq+'C').slice(-8)}   // v47: ▼ + CLAW = BODY SHOT (as in practice)
  else{const s=p.seq+(k==='attack'?'C':k==='tail'?'T':'M');
   if(k==='attack'){if(/TTTCCC$/.test(s))id='cyclone';else{const n=(s.match(/C+$/)[0]).length;id=n<=5?'claw'+n:'claw1';if(n>5)p.seq=''}}
@@ -597,7 +605,7 @@ function drawEnts(){for(const e of ents){if(e.got)continue;const x=e.x-cam.x,y=e
  for(const e of enemies){if(!e.alive&&e.ko<=0)continue;const key='en_'+(e.spr||e.id)+(e.alive?(e.hurt>0?'_m_hurt':'_move'):'_m_ko');const x=e.x-cam.x,y=e.y-cam.y;if(x<-100||x>VW+100)continue;
   if(!drawFrame(key,e.t*10,x,y,e.face,SC*(e.sc||1),e.alive?1:e.ko)){const mv='en_'+(e.spr||e.id)+'_move',fb=[key,mv].map(k=>(F[k]||[]).findIndex(f=>ok(img(f.f)))).map((i,j)=>[[key,mv][j],i]).find(q=>q[1]>=0);   // v44d: still loading -> a loaded frame, never a box flash
    if(fb)drawFrame(fb[0],fb[1],x,y,e.face,SC*(e.sc||1),e.alive?1:e.ko);else if(!F[key]&&!F[mv]){ctx.fillStyle='#a05a3a';ctx.fillRect(x-e.w/2,y-e.h,e.w,e.h)}}}}
-function drawPaddy(){if(p.anim==='mv'&&!p.mv)p.anim=p.ground?'idle':'fall';const a=p.anim==='mv'?[p.mv.d.a,p.mv.d.fps||12]:(ANIM[p.anim]||ANIM.idle),key=a[0];const nf=(F[key]||[1]).length;if(p.anim!==p._la){p._la=p.anim;p._at=LV.t}
+function drawPaddy(){if(window.OD&&OD.paintLevel&&OD.paintLevel(ctx,cam))return;if(p.anim==='mv'&&!p.mv)p.anim=p.ground?'idle':'fall';const a=p.anim==='mv'?[p.mv.d.a,p.mv.d.fps||12]:(ANIM[p.anim]||ANIM.idle),key=a[0];const nf=(F[key]||[1]).length;if(p.anim!==p._la){p._la=p.anim;p._at=LV.t}
  let fi=p.anim==='climb'?(p.y/24):p.anim==='mv'?(p.mv.d.loop?p.mv.t*a[1]:Math.min(nf-1,p.mv.t*a[1])):LV.t*a[1];
  if(p.anim!=='mv'&&a[2]){const q=a[2],n=Math.floor((LV.t-p._at)*a[1]);fi=q[a[3]?n%q.length:Math.min(q.length-1,n)]}   // v47: frame subsets (practice order)
  if(p.mv&&p.mv.d.trail)moveTrail();const blink=p.inv>0&&Math.floor(LV.t*20)%2&&!(p.lt<(p.mvInv||0));   // v47: a move's own i-frames don't blink
