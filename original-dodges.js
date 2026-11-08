@@ -19,7 +19,7 @@ const FAST={
 };
 const LABEL={jab:'BIG JAB!',uppercut_left:'LEFT UPPERCUT!',uppercut_right:'RIGHT UPPERCUT!',dash_forward:'DASH!',back_step:'BACK DASH!',weave:'WEAVE!',slip:'SLIP!'};
 let loaded=false, moves=null, foot=[210,408], bootErr=null;
-let act=null, follow=null, wait=null, feint=null, upN=0, flyN=0, oldUpper=false, link=false, chainUpper=false, upWait=false;
+let act=null, follow=null, wait=null, feint=null, upN=0, flyN=0, oldUpper=false, link=false, chainUpper=false, upWait=false, backWait=null;
 const notes=[];
 function note(s){notes.push(s); if(notes.length>24) notes.shift()}
 let lvl=null;
@@ -79,10 +79,29 @@ function begin(kind, name, face, opt){
   else{who.state='od'; who.t=0; who.ground=true}
   sayMove(name, act.fly);
 }
+function stepBack(){
+  if(!backWait) return;
+  const keys=backWait.level&&lvl?lvl.K:(typeof K!=='undefined'?K:{});
+  const who=backWait.level&&lvl?lvl.p:p;
+  const held=!!(backWait.key&&keys&&keys[backWait.key]);
+  const age=now()-backWait.t;
+  if(held&&age>=0.14){
+    const f=backWait.face, lv=backWait.level;
+    backWait=null;
+    startDash(false, f, lv);
+    try{if(lv&&lvl.msg) lvl.msg('BACK DASH!','#fff'); else if(typeof say==='function') say('BACK DASH!','#fff')}catch(e){}
+  }else if(!held){
+    const f=backWait.face, lv=backWait.level;
+    backWait=null;
+    if(who){who.face=-(f||1); if(window.PL) PL.rest=who.face}
+    try{if(lv&&lvl.msg) lvl.msg('TURN!','#fff'); else if(typeof say==='function') say('TURN!','#fff')}catch(e){}
+  }
+}
 function startDash(fwd, face, level){
   const dir=fwd?face:-face;
   const speed=fwd?900:-820;
   begin('dash', fwd?'dash_forward':'back_step', face, {level, vx:dir>0?Math.abs(speed):-Math.abs(speed), dir, y0:level&&lvl?lvl.p.y:undefined, fwd});
+  if(!act) return;
   act.fwd=!!fwd;
   if(!level&&typeof sparks!=='undefined'){
     for(let i=0;i<6;i++) sparks.push({x:p.x-dir*20, y:p.y-40-Math.random()*80, vx:-dir*(200+Math.random()*200), vy:(Math.random()-.5)*40, l:.25, c:'#fff'});
@@ -227,11 +246,11 @@ function preArena(){
   if(p.state==='hurt'||p.state==='respawn'){act=null; feint=null; wait=null; return}
   if(window.KD47&&KD47.req&&!act&&!feint){
     const q=KD47.req;
-    if(q.k==='fwd'||q.k==='back'||q.k==='down'){
+    if(q.k==='fwd'||q.k==='down'){
       KD47.req=null; delete P.dash;
       const claw=!!(K.attack);
       if(q.k==='down'||claw) startDodge(q.k==='down'?'weave':'slip', q.face, false);
-      else startDash(q.k==='fwd', q.face, false);
+      else startDash(true, q.face, false);
     }
   }
   if(P.attack) note('atk '+p.state+' a='+(act?act.kind:'-')+' f='+(follow?follow.kind:'-')+' age='+(follow?(now()-follow.t).toFixed(2):'-'));
@@ -315,13 +334,16 @@ window.OD={
   get ready(){return loaded},
   get err(){return bootErr},
   move(){return act?act.name:(feint?'feint':'')},
+  backDash(face, level){startDash(false, face||1, !!level)},
+  backPending(){return !!backWait},
   trace(){return notes.slice()},
   claimLevel(q){
     if(!loaded||!lvl||!q) return false;
     if(q.k!=='fwd'&&q.k!=='back'&&q.k!=='down') return false;
+    if(q.k==='back'){backWait={t:now(), face:q.face||1, key:q.key||(q.face>0?'left':'right'), level:true}; return true}
     const claw=!!(lvl.K&&lvl.K.attack);
     if(q.k==='down'||claw) startDodge(q.k==='down'?'weave':'slip', q.face, true);
-    else startDash(q.k==='fwd', q.face, true);
+    else startDash(true, q.face, true);
     if(lvl.P){delete lvl.P.down; delete lvl.P.attack}
     return true;
   },
@@ -329,7 +351,8 @@ window.OD={
     lvl=api;
     if(!loaded||!lvl||!lvl.p) return;
     const K=lvl.K, P=lvl.P, who=lvl.p;
-    if(who.state==='hurt'||who.state==='climb'||who.state==='ledge'){if(act&&act.level) act=null; return}
+    if(who.state==='hurt'||who.state==='climb'||who.state==='ledge'){if(act&&act.level) act=null; backWait=null; return}
+    stepBack();
     if(act&&act.level){
       if(P.attack&&(act.kind==='dash'||act.kind==='dodge')){P.attack=0; startPunch(act.kind==='dash'?nextFly():'jab', {fly:act.kind==='dash'?'room':'counter', level:true})}
       stepAct(dt);

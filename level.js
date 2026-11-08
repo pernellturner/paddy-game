@@ -29,7 +29,7 @@ const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Arrow
 // v47 double-tap: two short presses (each let go within 0.25 s, the 2nd within 0.3 s of the 1st); back/forward = vs his facing at the 1st tap
 const DT=LV.dt={last:{},req:null,log:[]},DTK=['left','right','up','down'];
 function dtap(k){if(!DTK.includes(k))return false;const t=performance.now()/1000,L0=DT.last[k];
- if(L0&&L0.up&&t-L0.t<.3&&L0.up-L0.t<.25){DT.last[k]=null;const f=L0.face;DT.req={k:k==='left'||k==='right'?((k==='right'?1:-1)===f?'fwd':'back'):k,face:f,t,ground:!!L0.ground};DT.log.push('dtap:'+DT.req.k);return true}
+ if(L0&&L0.up&&t-L0.t<.3&&L0.up-L0.t<.25){DT.last[k]=null;const f=L0.face;DT.req={k:k==='left'||k==='right'?((k==='right'?1:-1)===f?'fwd':'back'):k,face:f,t,ground:!!L0.ground,key:k};DT.log.push('dtap:'+DT.req.k);return true}
  DT.last[k]={t,up:0,face:p.face,ground:!!p.ground};return false}
 function dtrel(k){const L0=DT.last[k];if(L0&&!L0.up)L0.up=performance.now()/1000}
 function keyDown(k){if(!K[k]){const d=dtap(k);if(!(d&&k==='up'&&DT.req&&DT.req.ground))P[k]=1}K[k]=1}   // two quick ups from the ground become the air punch; up in the air still double-jumps
@@ -41,7 +41,7 @@ async function getJSON(u){const r=await fetch(u+'?v='+Date.now());if(!r.ok)throw
 async function loadLevel(id){for(const base of ['levels/','levels-dev/']){try{return await getJSON(base+id+'.json')}catch(_){}}throw new Error('level '+id+' not found')}
 // v47: the same sheets / frames as the free-play practice room's base Paddy (k_run, k_jump rise/apex/fall/land, hurt) - [sheet, fps, frames?, loop?]
 const ANIM={idle:['idle_test_1',4],walk:['o_walk',11],run:['k_run',15],jump:['k_jump',8,[1,2],0],apex:['k_jump',1,[3],0],fall:['k_jump',1,[4],0],land:['k_jump',1,[5],0],djump:['doublejump',14],
- climb:['o_climb',8],wall:['walljump',10],ledge:['ledge',7],hurt:['hurt',5,[0,1,2,3,5],0],attack:['clawcombo',22],victory:['victory',7]};
+ climb:['o_climb',8],wall:['walljump',10],ledge:['ledge',7],hurt:['hurt',5,[0,1,2,3,5],0],attack:['clawcombo',22],victory:['victory',7],crouch:['o_crouch',1]};
 // v45b: one consistent Paddy. Every sheet was drawn at SC, but the sheets were painted at different sizes (land/fall/jump/climb
 // smaller, roar/victory/air spins bigger), so Paddy grew and shrank between moves. PSC rescales each sheet so his body matches
 // idle_test_1 at SC (the free-play / s4.png size). IDLE_SEQ = free play's idle order: frames 2 and 3 have a different face
@@ -148,7 +148,7 @@ function update(dt){LV.t+=dt;p.t+=dt;if(window.CX&&CX.level)CX.level(dt,{K:K,P:P
     else if(q.k==='down'&&p.ground)startMove('slide');
     if(p.mv&&p.mv.d.dtap)DT.log.push(p.mv.id)}}}
   if(p.ground&&!(p.mv&&p.mv.id==='pounce'))p.kpUsed=false;
-  if(p.state==='normal'){const sp=(K.run||p.power>0?RUN:WALK)*(p.power>0?1.15:1);const want=dir*sp*(p.mv&&p.ground?.2:1);if(!(p.mv&&p.mv.d.vx))p.vx+=(want-p.vx)*Math.min(1,dt*(p.ground?14:6));if(dir&&!p.mv&&p.state!=='od'){if(dir===p.face)p._faceT=0;else{p._faceT=(p._faceT||0)+dt;if(p._faceT>0.34)p.face=dir}}else if(!dir)p._faceT=0;
+  if(p.state==='normal'){const sp=(K.run||p.power>0?RUN:WALK)*(p.power>0?1.15:1);const want=dir*sp*(p.mv&&p.ground?.2:1);if(!(p.mv&&p.mv.d.vx))p.vx+=(want-p.vx)*Math.min(1,dt*(p.ground?14:6));
    if(K.up&&!p.mv&&trunkAt(p.x,p.y)>=0){p.climbX=trunkAt(p.x,p.y);p.state='climb';p.vx=0;p.vy=0;P.up=0;LV.log.push('climb')}
    else if(P.up)P.jump=1;   // ↑ = jump away from a trunk
    if(P.down&&p.ground){const c0=Math.floor((p.x-BW/2+4)/TS),c1=Math.floor((p.x+BW/2-5)/TS),r=Math.round(p.y/TS);let one=false;for(let c=c0;c<=c1;c++){if(ONE.has(tile(c,r)))one=true}
@@ -162,7 +162,7 @@ function update(dt){LV.t+=dt;p.t+=dt;if(window.CX&&CX.level)CX.level(dt,{K:K,P:P
   if(p.state!=='climb'&&p.state!=='ledge'){if(p.state==='od'&&window.OD&&OD.driveLevel){OD.driveLevel();p.vy=0}else p.vy=Math.min(p.vy+G*dt,1500);moveX(dt);if(p.state==='od'&&window.OD&&OD.pinLevel)OD.pinLevel();else moveY(dt);if(p.state==='normal')tryLedge()}
   if(p.ground&&tile(Math.floor(p.x/TS),Math.round(p.y/TS))!=='^')p.safe={x:p.x,y:p.y};
   if(boxHits(p.x,p.y,BW-20,BH-20,(c,r)=>tile(c,r)==='~'))water();
-  p.anim=p.state==='hurt'?'hurt':p.mv?'mv':!p.ground?(p.wallDir&&p.vy>0?'wall':p.jumps===2&&p.vy<0?'djump':p.vy<-260?'jump':p.vy<200?'apex':'fall'):Math.abs(p.vx)>RUN*.8?'run':Math.abs(p.vx)>30?'walk':'idle'}
+  p.anim=p.state==='hurt'?'hurt':p.mv?'mv':!p.ground?(p.wallDir&&p.vy>0?'wall':p.jumps===2&&p.vy<0?'djump':p.vy<-260?'jump':p.vy<200?'apex':'fall'):(window.MM&&MM.glow>0?'crouch':Math.abs(p.vx)>RUN*.8?'run':Math.abs(p.vx)>30?'walk':'idle')}
  // v45 moves: hits enemies, birds, the boss, breakables and item blocks (moveHit)
  updMove(dt);
  // checkpoints / goal
