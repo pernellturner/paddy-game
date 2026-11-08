@@ -5,6 +5,16 @@
 if(typeof FORM!=='function'||typeof drawFrame!=='function'||typeof update!=='function'||typeof drawHUD!=='function')return;
 const BOX=0.5;
 const CHAIN=['jab','uppercut_left','uppercut_right'];
+// Original Practice punches (punch33) run at 12 fps: a fresh jab reaches its hit
+// on the 4th drawing (~1/4 s), a combo punch skips the guard and hits ~1/6 s
+// later, the hit frame is not frozen again on top of hit-stop, and a buffered
+// press cancels the recovery. These schedules use the same approved drawings,
+// with the duplicate guards and extra crouches skipped so the snap matches.
+const PUNCH={
+  jab:{steps:[[1,70],[3,50],[4,85],[6,55]], hit:4, stop:0.03},
+  uppercut_left:{steps:[[2,70],[4,45],[6,90],[8,55]], hit:6, stop:0.045},
+  uppercut_right:{steps:[[3,70],[5,45],[7,90],[10,55]], hit:7, stop:0.045}
+};
 const DIRS=['left','right','up','down'];
 const LABEL={jab:'JAB!',uppercut_left:'LEFT UPPERCUT!',uppercut_right:'RIGHT UPPERCUT!',dash_forward:'DASH!',back_step:'BACK STEP!',slip:'SLIP!',weave:'WEAVE!'};
 let loaded=false, moves=null, foot=[210,408], guard=null;
@@ -96,13 +106,16 @@ function startMove(name, opt){
   const from=snapshot();
   const m=moves[name];
   const face=opt.face||p.face;
-  act={name, imgs:m.imgs, ms:m.ms.slice(), impact:m.impact, reach:m.reach, fi:0, ft:0, t:0,
-    charged:!!opt.charged, travel:opt.travel||0, origin:p.x, face, claw:!!opt.claw, didHit:false, didChain:false,
-    hop:name.indexOf('uppercut')===0};
-  act.ms[0]=Math.min(act.ms[0], name==='jab'||act.hop?0.05:0.06);
-  if(opt.charged){const i=[...m.impact][0]; if(i!=null) act.ms[i]=(act.ms[i]||0.08)+0.09}
-  act.total=act.ms.reduce((s,v)=>s+v,0);
-  blend={from, t:0, dur:0.1};
+  const spec=PUNCH[name];
+  let seq=spec?spec.steps.map(([fi,ms])=>[fi, ms/1000]):m.ms.slice(0,-1).map((s,i)=>[i, i===0?Math.min(s,0.06):s]);
+  let stop=spec?spec.stop:0;
+  if(spec&&opt.charged){seq=seq.map(([fi,s])=>[fi, fi===spec.hit?s+0.035:s]); stop=0.05}
+  act={name, imgs:m.imgs, seq, si:0, fi:seq[0][0], ft:0, t:0, reach:m.reach,
+    hitFi:spec?spec.hit:-1, stop, charged:!!opt.charged, travel:opt.travel||0, origin:p.x, face,
+    claw:!!opt.claw, didHit:false, didChain:false, hop:name.indexOf('uppercut')===0};
+  act.total=seq.reduce((s,st)=>s+st[1],0);
+  // Combo punches cut in. A crossfade here is the mushy startup the old room skips.
+  blend=spec?null:{from, t:0, dur:0.08};
   p.face=face; p.vx=0; p.vy=0;
   if(typeof say==='function') say((opt.charged?'CHARGED ':'')+ (LABEL[name]||name), opt.charged?'#ffe14d':'#fff');
 }
@@ -138,12 +151,12 @@ function rootAt(u){
   if(!act) return 0;
   if(act.name==='dash_forward'||act.name==='back_step'||act.name==='slip') return act.travel*smooth(Math.min(1, u/0.72));
   if(!act.travel) return 0;
-  const hit=Math.max(0.28, ([...act.impact][0]||2)/Math.max(1, act.ms.length));
-  if(u<hit) return act.travel*smooth(u/hit);
-  return act.travel*(1-smooth((u-hit)/Math.max(0.2, 1-hit)));
+  const hitU=0.45;
+  if(u<hitU) return act.travel*smooth(u/hitU);
+  return act.travel*(1-smooth((u-hitU)/Math.max(0.2, 1-hitU)));
 }
 function tryHit(){
-  if(!act||act.didHit||!act.impact.has(act.fi)||typeof hitDummy!=='function') return;
+  if(!act||act.didHit||act.fi!==act.hitFi||typeof hitDummy!=='function') return;
   const reach=(act.reach[act.fi]||90)*BOX+(act.charged?28:18);
   const fist=p.x+p.face*reach;
   for(const d of dummies){
@@ -151,10 +164,11 @@ function tryHit(){
     const facing=p.face===Math.sign(d.x-p.x)||Math.abs(d.x-p.x)<100;
     if(!facing||fist<d.x-110||p.x+p.face*30>d.x+70) continue;
     act.didHit=true;
-    const move=act.hop?(act.charged?'bxpu':'bxpu'):(act.charged?'bxph':'bxj1');
+    const move=act.hop?'bxpu':(act.charged?'bxx':'bxj1');
     hitDummy(d, move, p.face);
-    if(act.hop) d.vy=Math.min(d.vy, act.charged?-720:-520);
-    if(typeof hitstop!=='undefined') hitstop=Math.max(hitstop, act.charged?0.07:0.05);
+    if(act.hop) d.vy=Math.min(d.vy, act.charged?-640:-480);
+    // punch33 adds a long freeze for its own power uppercut. This punch uses the short jab/cross stop instead.
+    if(typeof hitstop!=='undefined') hitstop=act.stop||0.03;
     break;
   }
 }
@@ -171,21 +185,22 @@ function sync(dt, x0){
   }
   if(blend){blend.t+=dt; if(blend.t>=blend.dur) blend=null}
   if(act){
-    if(act.freeze>0){act.freeze-=dt; p.vx=0; p.vy=0; p.y=GROUND; p.ground=true; p.state='normal'; return}
     act.t+=dt; act.ft+=dt;
-    const dur=act.ms[act.fi]||0.08;
+    const step=act.seq[act.si];
+    const dur=step?step[1]:0.08;
     if(act.ft>=dur){
-      act.ft-=dur; act.fi++;
-      if(act.fi>=act.imgs.length-1){finishAct(); return}
+      const wasHit=step&&step[0]===act.hitFi;
+      act.ft=0; act.si++;
+      if(wasHit&&queue){const q=queue; queue=null; launchPunch(q); return}
+      if(act.si>=act.seq.length){finishAct(); return}
+      act.fi=act.seq[act.si][0];
       tryHit();
-    }else if(act.impact.has(act.fi)) tryHit();
+    }else if(act.fi===act.hitFi) tryHit();
     const u=Math.min(1, act.t/Math.max(0.05, act.total));
     p.face=act.face;
     p.state='normal'; p.vx=0; p.vy=0; p.ground=true; p.y=GROUND;
     p.x=typeof clampX==='function'?clampX(act.origin+p.face*rootAt(u)):act.origin+p.face*rootAt(u);
-    if(act.didHit&&act.freeze==null) act.freeze=act.charged?0.06:0.04;
-    if(queue&&u>0.58){const q=queue; queue=null; launchPunch(q); return}
-    if(act.claw&&!act.didChain&&u>0.62&&(act.name==='dash_forward'||act.name==='back_step'||act.name==='slip'||act.name==='weave')){
+    if(act.claw&&!act.didChain&&!queue&&u>0.55&&(act.name==='dash_forward'||act.name==='back_step'||act.name==='slip'||act.name==='weave')){
       act.didChain=true; launchPunch({charged:false});
     }
     return;
@@ -312,6 +327,7 @@ window.PB={
   get ready(){return loaded},
   get err(){return bootErr},
   on, move:()=>act?act.name:'',
+  frame:()=>act?act.fi:-1,
   phase:()=>act?'act':mode,
   hitsNote:()=>act&&act.didHit
 };
