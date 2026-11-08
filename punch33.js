@@ -48,12 +48,23 @@ function pick(inp,n,beat){const lastK=P33.last?PD[P33.last][1]:'';let a;
  if(n===7&&beat)return 'bxpu';                         // hit 7 on the beat: the power uppercut
  if(n>=4&&n<=6&&beat)return POWER[PD[a][1]]||a;        // hits 4-6 on the beat: the power version of the punch you threw
  return a}
-function readInp(){const f=p.face>0?K.right:K.left;return{down:!!K.down,fwd:!!f}}
+// Combat Lab only. A held direction that kitti48 has not copied into K yet (the back-tap slip window) still counts there.
+function keyHeld(k){if(K[k])return true;try{if(window.CLAB&&CLAB.on&&CLAB.on()&&window.KD48&&KD48.H&&KD48.H[k]&&KD48.H[k].down)return true}catch(_){}return false}
+function readInp(){const face=p.face||1,fwdK=face>0?'right':'left',backK=face>0?'left':'right';
+ const o={down:!!keyHeld('down'),fwd:!!keyHeld(fwdK)};
+ if(window.CLAB&&CLAB.on&&CLAB.on()){o.back=!!keyHeld(backK)&&!o.fwd;o.up=!!keyHeld('up')&&!o.down}
+ return o}
+// Returns an anim id when the Combat Lab wants a different punch, or null to keep pick() exactly as shipped.
+function labAlt(inp,n,beat,timed,lastA,fi){try{
+ if(!(window.CLAB&&CLAB.on&&CLAB.on()&&CLAB.pick))return null;
+ const lastK=lastA&&PD[lastA]?PD[lastA][1]:'';
+ return CLAB.pick({inp,n,beat:!!beat,timed:!!timed,lastK,last:lastA||'',fi:fi|0})||null;
+}catch(e){console.warn('labAlt',e);return null}}
 // ---- start a punch (wraps startClaw so the game's own opener goes through here too) ----
 let pend=null;   // {a, s} set by our continuation; null = the game opened a fresh string
 const _sc=startClaw;startClaw=function(){if(!base())return _sc.apply(this,arguments);
  const n=Math.min(8,p.combo+1),fresh=!pend||p.combo===0;
- let a,s;if(pend&&!fresh){a=pend.a;s=pend.s}else{P33.last='';P33.beat=true;P33.str=[];a=pick(readInp(),1,false);s=0;P33.rec=false}
+ let a,s;if(pend&&!fresh){a=pend.a;s=pend.s}else{P33.last='';P33.beat=true;P33.str=[];const inp0=readInp();a=pick(inp0,1,false);const alt0=labAlt(inp0,1,false,true,'',0);if(alt0)a=alt0;s=0;P33.rec=false}
  pend=null;const c=CLAWS[n];Object.assign(c,{a,nm:PD[a][2],col:PD[a][3],sp:PD[a][3],lunge:0,k:'flat'});
  const n0=(window.K29&&K29.imp.length)||0;const prevF=(FR[p.anim]||[])[p.fi],px=p.x;
  _sc.apply(this,arguments);
@@ -85,9 +96,9 @@ function tick(dt){if(!base()){P33.on=false;return}
  // finisher button mid-string still works
  if(P.finisher&&p.combo>=2){delete P.finisher;finisher();return}
  if(P.attack){delete P.attack;acted=true;
-  if(a==='bxrec'){P33.q={t:now,inp:readInp(),beat:false,fresh:true}}
+  if(a==='bxrec'){P33.q={t:now,inp:readInp(),beat:false,fresh:true,fi}}
   else{const on=fi>=D[4]&&!P33.early;if(fi<D[4])P33.early=true;   // on the beat = one press, on or after the impact frame; mashing before the hit doesn't count
-   P33.q={t:now,inp:readInp(),beat:on}}}
+   P33.q={t:now,inp:readInp(),beat:on,fi}}}
  if(a==='bxrec'){if(P33.q){P33.q=null;p.combo=0;pend=null;startClaw();return}
   if(ft>=3){p.state='normal';p.combo=0;p.cool=.04;P33.a=null}return}
  const q=P33.q;
@@ -96,7 +107,7 @@ function tick(dt){if(!base()){P33.on=false;return}
   if(p.combo>=3)P33.beat=P33.beat&&q.beat;
   if(a==='bxpu'){if(P33.beat&&q.beat){say('PERFECT!','#7fffd4',true);bunnyKick();return}}
   if(n>8){toRecover(a,fi);return}
-  const na=pick(q.inp,n,P33.beat&&p.combo>=3&&q.beat);
+  const beatNow=P33.beat&&p.combo>=3&&q.beat;let na=pick(q.inp,n,beatNow);const alt=labAlt(q.inp,n,beatNow,q.beat,a,q.fi||0);if(alt)na=alt;
   if(P33.beat&&q.beat&&p.combo>=3){say('PERFECT!','#7fffd4',true);waves.push({x:p.x,y:p.y-60,r:30,l:.7,big:false})}
   else if(p.combo>=3&&!q.beat)p.miss=true;   // off the beat: no route opener / power build, the string carries on
   rootJump(a,fi,na,1);pend={a:na,s:1};startClaw();return}
