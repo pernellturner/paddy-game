@@ -17,7 +17,7 @@ window.findRoute=function(f){const R=ROUTES[f]||[],s=LK.seq;if(LK.n<=1||LK.base=
  const hit=T.find(([,k])=>k===seg),r=hit&&hit[0];if(r)chainUp(f,r);return r||null};
 const _dc=drawCombo;drawCombo=function(){_dc();
  if(CHN.show>0){const a=Math.min(1,CHN.show*2),pop=1+Math.max(0,CHN.show-1.5)*1.2;fancy('x'+CHN.n+' CHAIN!',VW-125,212,40*pop,-.08,1,a,CHN.n>=5?'#ff9a2e':'#ffe14d')}
- if(MOON.hint>0&&!MOON.on){ctx.save();ctx.globalAlpha=Math.min(1,MOON.hint*3)*(.75+.25*Math.sin(now*10));fancy('▼ + MEOW = 🌙',VW-130,CHN.show>0?252:212,26,-.06,1,1,'#bfe6ff');ctx.restore()}};
+ if(MOON.hint>0&&!MOON.on&&!(window.PRACTICE&&PRACTICE.on)){ctx.save();ctx.globalAlpha=Math.min(1,MOON.hint*3)*(.75+.25*Math.sin(now*10));fancy('▼ + MEOW = 🌙',VW-130,CHN.show>0?252:212,26,-.06,1,1,'#bfe6ff');ctx.restore()}};
 // ---------- 2. MOON LAUNCHER (any form): juggle an enemy, then ▼ + MEOW ----------
 const MOON={on:false,t:0,d:null,hint:0,landed:false,stars:[]};window.MOON=MOON;
 for(let i=0;i<140;i++)MOON.stars.push({x:Math.random(),y:Math.random(),s:.5+Math.random()*2,tw:Math.random()*6});

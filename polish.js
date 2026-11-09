@@ -123,7 +123,17 @@ function drawGrab(c){
 
 if(arena()&&typeof r9Pre==='function'){
   const _hd=typeof hitDummy==='function'?hitDummy:null;
-  if(_hd) hitDummy=function(d,move,dir){const r=_hd.apply(this,arguments); if(d&&d.vy<-820) d.vy=-820; return r};
+  if(_hd) hitDummy=function(d,move,dir){
+    try{if(window.PRACTICE&&PRACTICE.on&&typeof FORM==='function'&&FORM()===0&&d&&typeof p!=='undefined'){
+      const g=(d.x-p.x)*(p.face||1);
+      if(g<-40) return;
+    }}catch(e){}
+    const n0=typeof sparks!=='undefined'?sparks.length:0;
+    const r=_hd.apply(this,arguments);
+    if(d&&d.vy<-1100) d.vy=-1100;
+    if(window.PRACTICE&&PRACTICE.on&&typeof sparks!=='undefined'&&sparks.length>n0+4) sparks.length=n0+4;
+    return r;
+  };
   const _pre=r9Pre;
   r9Pre=function(dt){try{upper(); backGate()}catch(e){if(!upper.err){upper.err=1;console.warn('pl',e)}} return _pre.apply(this, arguments)};
   const _up=update;
