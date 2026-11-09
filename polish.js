@@ -90,7 +90,7 @@ function upper(){
   if(PL.charge&&!K.attack){
     const held=now()-PL.charge.t, face=PL.charge.face;
     PL.charge=null;
-    if(held>=0.16){OD.cast(face, true, false); PL.nextUp=now(); say('BIG UPPERCUT!','#ffe14d')}
+    if(held>=0.16){OD.cast(face, true, false); PL.nextUp=now()}
     else if(now()-PL.nextUp<0.7){OD.cast(face, false, false); PL.nextUp=now()}
     else highPunch();
   }

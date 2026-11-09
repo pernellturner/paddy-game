@@ -91,13 +91,17 @@ const _upd=updDog;updDog=function(d,dt){if(d.sp)return upd(d,dt);return _upd(d,d
 const _dh=dogHit;dogHit=function(d,move,air){if(!d.sp)return _dh(d,move,air);d.hitT=now;d.bub=d.bub&&d.bub.t==='!'?d.bub:null;
  if(d.ps==='wind'||d.ps==='punch'){d.arm=1;return}            // armoured while attacking: you have to defend, not mash
  if(d.ps==='rec')return;
- const k=KB[move]||KB.claw1;if(d.role==='atk'&&fighter()){go(d,'heavy');return}if(air||d.vy<-250){if(d.ps!=='air')go(d,'air');return}
+ const k=KB[move]||KB.claw1;const launchy=(k[1]||0)<-500;
+ const floor=typeof GROUND==='number'?GROUND:470, airborne=d.ps==='air'||d.y<floor-25;
+ if(d.role==='atk'&&fighter()&&!launchy&&!airborne){go(d,'heavy');return}if(air||d.vy<-250||launchy||airborne){if(d.ps!=='air')go(d,'air');return}
  if(d.ps==='down'){if(d.downT<2.2){d.pt=Math.min(d.pt,(5-d.i0)/DART.fps);d.vy=-140}return}   // OTG bounce, but it always gets up
  const heavy=k[3]>=.07||Math.abs(k[0])>=300||k[1]<-350;if(heavy&&Math.abs(d.vx)>=560)go(d,'down',0);else go(d,heavy?'heavy':'light')};
 const _ko=startKO;startKO=function(d){if(d.sp){d.hp=d.max;return}return _ko(d)};
 const _hd=hitDummy;hitDummy=function(d,move,dir){if(!d||!d.sp||!PR.on)return _hd.apply(this,arguments);
  const wasAir=d.y<GROUND-25,r=_hd.apply(this,arguments);
- if(d.role==='atk'&&fighter()){d.fl=0;if(d.vy<0)d.vy=Math.max(d.vy,-60);d.vx=Math.max(-260,Math.min(260,d.vx))}   // the fighter stays on its spring
+ const k=KB[move]||KB.claw1, launchy=(k[1]||0)<-500;
+ const floor=typeof GROUND==='number'?GROUND:470, airborne=d.ps==='air'||d.y<floor-25;
+ if(d.role==='atk'&&fighter()&&!launchy&&!airborne){d.fl=0;if(d.vy<0)d.vy=Math.max(d.vy,-60);d.vx=Math.max(-260,Math.min(260,d.vx))}   // the fighter stays on its spring until a launcher pops it
  if(d.arm){d.arm=0;d.vx=0;if(d.y>=GROUND-1)d.vy=0;d.fl=0;d.flash=.12;d.bub={t:'!',l:Math.max(.3,WIND-d.pt),c:'#ff4040'}}
  if(d.role==='launch'&&d.y<GROUND-25)d.vx*=.4;   // juggle station: keep it over Paddy instead of carrying it into the wall
  const S=PR.s;S.hits++;S.best=Math.max(S.best,C.n);
