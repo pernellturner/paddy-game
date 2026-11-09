@@ -40,7 +40,11 @@ const _press=press;press=function(k){
  const r=_press.apply(this,arguments);
  if(window.KD47.req&&window.KD47.req!==r0)h.dt=true;               // this press completed a v47 double-tap
  if(LR.includes(k)&&!h.slide){const d=k==='right'?1:-1;
-  if(d!==p.face&&p.ground&&!p.wall&&SUP_OK.has(p.state)&&!(p.state==='claw'&&foeBehind())){h.sup=true;K[k]=0;delete P[k];BUF[k]=-9}}   // no turn yet: tap = slip, hold = turn
+  if(d!==p.face&&p.ground&&!p.wall&&SUP_OK.has(p.state)&&!(p.state==='claw'&&foeBehind())){
+    h.sup=true;
+    const launching=h.dt&&window.KD47&&KD47.req&&KD47.req.k==='back';
+    if(!launching){K[k]=0;delete P[k];BUF[k]=-9}
+  }}
  return r};
 const _release=release;release=function(k){const h=A.H[k];const r=_release.apply(this,arguments);
  if(!h||!h.down||!on())return r;h.down=false;const dur=rt()-h.t;
@@ -98,7 +102,7 @@ function tick(dt){
  const S=p.state;
  // quick taps
  const q=A.req;if(q){if(t-q.t>(p.state==='claw'?.35:.15))A.req=null;
-  else if(q.k==='slip'&&p.ground&&!p.wall&&(TAP_OK(S)||S==='kweave')&&!window.KD47.req){A.req=null;slip()}
+  else if(q.k==='slip'&&p.ground&&!p.wall&&(TAP_OK(S)||S==='kweave')&&!window.KD47.req&&!(window.PL&&PL.back)){A.req=null;slip()}
   else if(q.k==='weave'&&p.ground&&!p.wall&&(TAP_OK(S)||S==='kslip')&&!window.KD47.req){A.req=null;weave()}}
  // charge: Claw still held 0.15 s after the punch it started (before that punch lands) = wind-up instead
  const h=A.H.attack;

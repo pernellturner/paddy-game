@@ -5,11 +5,11 @@
 (function(){
 const BOX=0.5;
 const PUNCH={
-  jab:{steps:[[1,55],[3,40],[4,80],[6,45]], hit:4, stop:0.03, fly:1},
-  uppercut_left:{steps:[[0,100],[2,80],[4,60],[6,170],[8,110],[10,80]], hit:6, stop:0.05, fly:1},
-  uppercut_right:{steps:[[0,100],[2,80],[5,60],[7,170],[9,110],[11,80]], hit:7, stop:0.05, fly:1},
-  upper_quick_l:{steps:[[2,50],[4,45],[6,150],[8,80]], hit:6, stop:0.04, fly:1},
-  upper_quick_r:{steps:[[3,50],[5,45],[7,150],[10,80]], hit:7, stop:0.04, fly:1}
+  jab:{steps:[[0,40],[1,36],[2,32],[3,32],[4,70],[5,36],[6,40],[7,44]], hit:4, stop:0.03, fly:1},
+  uppercut_left:{steps:[[0,40],[1,32],[2,32],[3,32],[4,36],[5,44],[6,80],[7,44],[8,36],[9,32],[10,32],[11,36]], hit:6, stop:0.05, fly:1},
+  uppercut_right:{steps:[[0,40],[1,32],[2,32],[3,32],[4,36],[5,40],[6,44],[7,80],[8,44],[9,36],[10,32],[11,36]], hit:7, stop:0.05, fly:1},
+  upper_quick_l:{steps:[[2,32],[3,32],[4,36],[5,40],[6,72],[7,40],[8,36],[9,32]], hit:6, stop:0.04, fly:1},
+  upper_quick_r:{steps:[[3,32],[4,32],[5,36],[6,40],[7,72],[8,40],[9,36],[10,32]], hit:7, stop:0.04, fly:1}
 };
 const FAST={
   dash_forward:[1,2,3,4,5,6],
@@ -103,6 +103,7 @@ function startDash(fwd, face, level){
   begin('dash', fwd?'dash_forward':'back_step', face, {level, vx:dir>0?Math.abs(speed):-Math.abs(speed), dir, y0:level&&lvl?lvl.p.y:undefined, fwd});
   if(!act) return;
   act.fwd=!!fwd;
+  if(!level){ p.dashStart=(typeof now==='number'?now:performance.now()/1000); }
   if(!level&&typeof sparks!=='undefined'){
     for(let i=0;i<6;i++) sparks.push({x:p.x-dir*20, y:p.y-40-Math.random()*80, vx:-dir*(200+Math.random()*200), vy:(Math.random()-.5)*40, l:.25, c:'#fff'});
   }
@@ -133,10 +134,12 @@ function throwUpper(face, charged, level){
   startPunch(name, {fly:false, level:!!level});
   if(!act) return;
   act.face=face||act.face;
-  const seq=name==='uppercut_right'
-    ?(charged?[[5,0.06],[7,0.2],[9,0.1],[11,0.08]]:[[3,0.05],[5,0.05],[7,0.16],[10,0.08]])
-    :(charged?[[4,0.06],[6,0.2],[8,0.1],[10,0.08]]:[[2,0.05],[4,0.05],[6,0.16],[8,0.08]]);
-  act.seq=seq; act.si=0; act.fi=seq[0][0]; act.hitFi=name==='uppercut_right'?(charged?7:7):6; act.ft=0; act.didHit=false;
+  const right=name==='uppercut_right';
+  const seq=charged
+    ?(right?[[2,0.04],[3,0.04],[4,0.04],[5,0.045],[6,0.05],[7,0.08],[8,0.06],[9,0.05],[10,0.045],[11,0.04]]:[[1,0.04],[2,0.04],[3,0.04],[4,0.045],[5,0.05],[6,0.08],[7,0.06],[8,0.05],[9,0.045],[10,0.04]])
+    :(right?[[3,0.032],[4,0.032],[5,0.036],[6,0.04],[7,0.07],[8,0.04],[9,0.036],[10,0.032]]:[[2,0.032],[3,0.032],[4,0.036],[5,0.04],[6,0.07],[7,0.04],[8,0.036],[9,0.032]]);
+  act.seq=seq; act.si=0; act.fi=seq[0][0]; act.hitFi=right?7:6; act.ft=0; act.didHit=false;
+  if(charged){act.launch=true; try{ if(typeof texts!=='undefined') texts.length=0 }catch(e){} }
 }
 function stepAct(dt){
   if(!act) return;
@@ -180,12 +183,17 @@ function hitArena(fly){
   for(const d of dummies){
     if(!d||!d.alive||d.benched) continue;
     const dx=(d.x-p.x)*p.face;
-    if(dx<-36||dx>(room?220:180)||Math.abs((d.y||0)-(p.y||0))>220) continue;
+    const popSoon=!!(act&&act.launch);
+    if(dx<-50||dx>(room?220:popSoon?260:180)) continue;
+    if(!popSoon&&Math.abs((d.y||0)-(p.y||0))>220) continue;
+    if(popSoon&&(d.y||0)<p.y-260) continue;
     hitDummy(d, move, p.face);
-    d.vx=p.face*(room?2400:counter?1200:180);
-    d.vy=room?-420:counter?-200:-520;
-    d.fl=room?0.72:0.36;
-    if(typeof shake!=='undefined') shake=Math.max(shake, room?10:6);
+    const pop=!!(act&&act.launch);
+    d.vx=p.face*(room?1600:pop?220:counter?700:180);
+    d.vy=pop?-980:room?-360:counter?-180:-420;
+    d.fl=pop?0.85:room?0.55:0.3;
+    if(pop&&d.sp){d.ps='air'; d.pt=0; d.st='air'; d.y=Math.min(d.y, (typeof GROUND==='number'?GROUND:d.y)-4)}
+    if(typeof shake!=='undefined') shake=Math.max(shake, pop?4:room?3:2);
     break;
   }
 }
@@ -200,7 +208,7 @@ function hitLevel(fly){
     if(dx<-40||dx>reach+((e.w||40)/2)||Math.abs(e.y-p0.y)>(e.h||80)+30) continue;
     try{lvl.hitEnemy(e, dir, {kb:room?1800:counter?1000:700, launch:room?-220:-120, dmg:1})}catch(err){}
     e.vx=dir*(room?1800:counter?1000:700);
-    e.vy=room?-220:counter?-160:-120;
+    e.vy=(act&&act.launch)?-920:room?-220:counter?-160:-120;
     e.hurt=room?0.45:0.32;
     if(e.fly) e.sw={st:'stun', t:0.75};
   }
@@ -281,7 +289,7 @@ function preArena(){
     upWait=false;
     if(p.ground&&!act&&typeof uppercut==='function'){note('old upper'); uppercut()}
   }
-  if(act&&!act.level){p.state='od'; p.vx=act.vx; p.vy=0}
+  if(act&&!act.level){p.state='od'; if(!act.launch){p.vx=act.vx; p.vy=0}}
 }
 function postArena(dt){
   if(!arena()||!loaded||!base()) return;
@@ -290,6 +298,12 @@ function postArena(dt){
   if(!act||act.level) return;
   stepAct(dt);
   if(!act) return;
+  if(act.launch){
+    p.state='od';
+    if(!act.jumped){act.jumped=1; p.ground=false; p.vy=-880; p.vx=p.face*220; p.jumps=Math.max(p.jumps||0,1)}
+    if(act.fi===act.hitFi) landHit();
+    return;
+  }
   p.state='od'; p.vx=act.vx; p.vy=0; p.ground=true;
   if(act.name==='back_step') p.face=act.face;
   if(act.fi===act.hitFi) landHit();
@@ -307,7 +321,7 @@ if(arena()&&typeof r9Pre==='function'){
     return r};
   const _up=update;
   update=function(dt){const r=_up.apply(this, arguments);
-    try{if(act&&!act.level&&p.state==='od'){p.vy=0; p.ground=true; if(typeof floorAt==='function') p.y=floorAt(p.x)}}catch(e){}
+    try{if(act&&!act.level&&p.state==='od'&&!act.launch){p.vy=0; p.ground=true; if(typeof floorAt==='function') p.y=floorAt(p.x)}}catch(e){}
     return r};
   const _df=drawFrame;
   drawFrame=function(f,x,y,face,alpha){
@@ -356,7 +370,7 @@ window.OD={
     if(act&&act.level){
       if(P.attack&&(act.kind==='dash'||act.kind==='dodge')){P.attack=0; startPunch(act.kind==='dash'?nextFly():'jab', {fly:act.kind==='dash'?'room':'counter', level:true})}
       stepAct(dt);
-      if(act&&act.level){who.state='od'; who.vx=act.vx; who.vy=0; if(act.name==='back_step') who.face=act.face; if(act.fi===act.hitFi) landHit()}
+      if(act&&act.level){who.state='od'; if(act.launch){if(!act.jumped){act.jumped=1; who.ground=false; who.vy=-860; who.vx=who.face*180; who.jumps=2} } else {who.vx=act.vx; who.vy=0} if(act.name==='back_step') who.face=act.face; if(act.fi===act.hitFi) landHit()}
       return;
     }
     if(follow&&P.attack&&now()-follow.t<0.4){P.attack=0; startPunch(follow.kind==='dash'?nextFly():'jab', {fly:follow.kind==='dash'?'room':'counter', level:true}); follow=null; return}
