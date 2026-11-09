@@ -126,7 +126,7 @@ function showWind(face, level){
   if(act&&act.kind==='wind'){act.face=face||act.face; return}
   begin('wind','uppercut_left', face||1, {level:!!level, vx:0, fly:false, y0:level&&lvl?lvl.p.y:undefined});
   if(!act) return;
-  act.kind='wind'; act.seq=[[0,0.09],[1,0.09],[2,0.12]]; act.si=0; act.fi=0; act.hitFi=-1; act.vx=0;
+  act.kind='wind'; act.seq=[[0,0.08],[1,0.08],[2,2.4]]; act.si=0; act.fi=0; act.hitFi=-1; act.vx=0;
 }
 function throwUpper(face, charged, level){
   const name=nextUpper();
@@ -136,9 +136,9 @@ function throwUpper(face, charged, level){
   act.face=face||act.face;
   const right=name==='uppercut_right';
   const seq=charged
-    ?(right?[[2,0.04],[3,0.04],[4,0.04],[5,0.045],[6,0.05],[7,0.08],[8,0.06],[9,0.05],[10,0.045],[11,0.04]]:[[1,0.04],[2,0.04],[3,0.04],[4,0.045],[5,0.05],[6,0.08],[7,0.06],[8,0.05],[9,0.045],[10,0.04]])
-    :(right?[[3,0.032],[4,0.032],[5,0.036],[6,0.04],[7,0.07],[8,0.04],[9,0.036],[10,0.032]]:[[2,0.032],[3,0.032],[4,0.036],[5,0.04],[6,0.07],[7,0.04],[8,0.036],[9,0.032]]);
-  act.seq=seq; act.si=0; act.fi=seq[0][0]; act.hitFi=right?7:6; act.ft=0; act.didHit=false;
+    ?(right?[[2,0.05],[3,0.05],[4,0.045],[5,0.05],[6,0.05],[7,0.12],[8,0.1],[9,0.06],[10,0.05]]:[[2,0.05],[3,0.05],[4,0.05],[5,0.05],[6,0.13],[7,0.1],[8,0.06],[9,0.05]])
+    :(right?[[3,0.04],[4,0.04],[5,0.04],[6,0.05],[7,0.1],[8,0.05],[9,0.04],[10,0.04]]:[[2,0.04],[3,0.04],[4,0.04],[5,0.05],[6,0.1],[7,0.05],[8,0.04],[9,0.04]]);
+  act.seq=seq; act.si=0; act.fi=seq[0][0]; act.hitFi=right?7:6; act.riseFi=charged?(right?5:4):-1; act.ft=0; act.didHit=false;
   if(charged){act.launch=true; try{ if(typeof texts!=='undefined') texts.length=0 }catch(e){} }
 }
 function stepAct(dt){
@@ -149,7 +149,8 @@ function stepAct(dt){
     if(act.ft>=dur){
     act.ft=0; act.si++;
     if(act.si>=act.seq.length){
-      if(act.kind==='wind'){act.si=0; act.fi=act.seq[0][0]; return}
+      if(act.kind==='wind'){act.si=act.seq.length-1; act.fi=act.seq[act.si][0]; return}
+      if(act.launch&&p&&!p.ground){act.si=act.seq.length-1; act.fi=act.seq[act.si][0]; act.hold=1; return}
       finishAct(); return;
     }
     act.fi=act.seq[act.si][0];
@@ -189,9 +190,9 @@ function hitArena(fly){
     if(popSoon&&(d.y||0)<p.y-260) continue;
     hitDummy(d, move, p.face);
     const pop=!!(act&&act.launch);
-    d.vx=p.face*(room?1600:pop?220:counter?700:180);
-    d.vy=pop?-980:room?-360:counter?-180:-420;
-    d.fl=pop?0.85:room?0.55:0.3;
+    d.vx=p.face*(room?1600:pop?80:counter?700:180);
+    d.vy=pop?-1160:room?-360:counter?-180:-420;
+    d.fl=pop?1:room?0.55:0.3;
     if(pop&&d.sp){d.ps='air'; d.pt=0; d.st='air'; d.y=Math.min(d.y, (typeof GROUND==='number'?GROUND:d.y)-4)}
     if(typeof shake!=='undefined') shake=Math.max(shake, pop?4:room?3:2);
     break;
@@ -300,7 +301,10 @@ function postArena(dt){
   if(!act) return;
   if(act.launch){
     p.state='od';
-    if(!act.jumped){act.jumped=1; p.ground=false; p.vy=-880; p.vx=p.face*220; p.jumps=Math.max(p.jumps||0,1)}
+    if(act.fi>=(act.riseFi==null?0:act.riseFi)){
+      if(!act.jumped){act.jumped=1; p.ground=false; p.vy=-1120; p.vx=p.face*120; p.jumps=Math.max(p.jumps||0,1)}
+    }else{p.vy=0; p.ground=true; p.vx=act.face*30}
+    if(act.hold&&p.ground){finishAct(); return}
     if(act.fi===act.hitFi) landHit();
     return;
   }
@@ -321,7 +325,7 @@ if(arena()&&typeof r9Pre==='function'){
     return r};
   const _up=update;
   update=function(dt){const r=_up.apply(this, arguments);
-    try{if(act&&!act.level&&p.state==='od'&&!act.launch){p.vy=0; p.ground=true; if(typeof floorAt==='function') p.y=floorAt(p.x)}}catch(e){}
+    try{if(act&&!act.level&&p.state==='od'&&(!act.launch||!act.jumped)){p.vy=0; p.ground=true; if(typeof floorAt==='function') p.y=floorAt(p.x)}}catch(e){}
     return r};
   const _df=drawFrame;
   drawFrame=function(f,x,y,face,alpha){

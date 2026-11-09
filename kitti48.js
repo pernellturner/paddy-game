@@ -72,12 +72,14 @@ function power(kind,lvl){A.n[kind==='hay'?'haymaker':'powerjab']++;const a=kind=
  shake=Math.max(shake,6+6*lvl);ghost(.22,1);log('power:'+kind+':'+lvl.toFixed(2))}
 // v54: POWER UPPERCUT — same hold (0.3 s). The swing itself starts at frame 0 so the deepest crouch
 // plays again before the hit (fi 4). A tap still starts at frame 2 and never shows that coil.
-function powerUp(lvl,light){A.n.powerup=(A.n.powerup||0)+1;p.state='normal';p.combo=A.combo||0;p.keepT=0;p.cool=0;startClaw();
- if(!forcePunch('bxpu',2))return;if(light){say('UPPERCUT!','#ffe14d');return}
+function powerUp(lvl,light){A.n.powerup=(A.n.powerup||0)+1;p.state='normal';p.combo=A.combo||0;p.keepT=0;p.cool=0;
+ const wasUp=K.up;K.up=1;if(window.P33)P33.last='bxpu';startClaw();K.up=wasUp;
+ if(!forcePunch('bxpu',light?2:0))return;
+ try{if(typeof texts!=='undefined')texts.length=0}catch(e){}
+ if(light)return;
  p.ft=0;p.fi=0;
- A.pow={a:'bxpu',kind:'up',lvl,t:rt(),hit:new Set(),lunge:0,nm0:NAMES.bxpu};NAMES.bxpu=lvl>=1?'MEGA POWER UPPERCUT!!':'POWER UPPERCUT!!';
- say(NAMES.bxpu,'#ffe14d',true);shake=Math.max(shake,14+8*lvl);flashT=Math.max(flashT,.06);ghost(.28,1);log('power:up:'+lvl.toFixed(2));
- for(let i=0;i<12;i++)puffs.push({x:p.x+(Math.random()-.5)*70,y:p.y,vx:(Math.random()-.5)*180,vy:-30-Math.random()*50,r:8,l:.4,dark:1});
+ A.pow={a:'bxpu',kind:'up',lvl,t:rt(),hit:new Set(),lunge:0,nm0:NAMES.bxpu,rose:0,pop:0};NAMES.bxpu='UPPERCUT!';
+ shake=Math.max(shake,4+2*lvl);log('power:up:'+lvl.toFixed(2));
  if(window.UC49&&UC49.n)UC49.n.power=(UC49.n.power||0)+1}
 function dashUpper(){if(p.state==='kduc')return;p.state='kduc';p.t=0;p.shot=false;p.kducHit=new Set();acted=true;p.ground=true;p.vy=0;
  p.vx=p.face*Math.max(520,Math.min(760,Math.abs(p.vx)||640));p.combo=Math.min(7,(p.combo||0)+1);
@@ -88,7 +90,7 @@ function groundPound(){if(p.state==='kpound')return;p.state='kpound';p.t=0;p.sho
  if(window.W31){W31.names.push('kpound');if(W31.names.length>24)W31.names.shift()}}
 const _ds=dashStrike;dashStrike=function(){if(newUp()&&p.ground&&!p.wall){dashUpper();return}return _ds.apply(this,arguments)};
 function startCharge(kind){A.combo=curCombo();A.ch={kind,t0:A.H.attack?A.H.attack.t:rt(),lvl:0,full:false,rel:null,ctx:A.H.attack&&A.H.attack.ctx};
- p.state='kcharge';p.t=0;acted=true;p.vx=0;say(kind==='up'?'POWER UPPERCUT…':'WIND-UP…',kind==='up'?'#ffe14d':'#ffb070');setAnim(kind==='up'?'bxpu':kind==='hay'?'bxph':'bxpj',true);if(P33){P33.q=null;P33.a=null}A.n.charge++;log('charge:'+kind)}
+ p.state='kcharge';p.t=0;acted=true;p.vx=0;if(kind!=='up')say('WIND-UP…','#ffb070');setAnim(kind==='up'?'bxpu':kind==='hay'?'bxph':'bxpj',true);if(P33){P33.q=null;P33.a=null}A.n.charge++;log('charge:'+kind)}
 function endPow(){if(A.pow){NAMES[A.pow.a]=A.pow.nm0;A.pow=null}}
 // ---------- per frame ----------
 let prevS='';
@@ -164,7 +166,29 @@ function tick(dt){
  if(p.ground)A.faces.push(p.face);if(A.faces.length>120)A.faces.shift();
  prevS=p.state}
 A.seen=new Set();A.anims=new Set();
+if(typeof window.say==='function'&&!window.say._ucQuiet){
+ const _say=window.say;
+ window.say=function(t,c,big){
+  try{if(A.pow&&A.pow.kind==='up'&&p&&p.state==='claw')return}catch(e){}
+  return _say.apply(this, arguments);
+ };
+ window.say._ucQuiet=1;
+}
 const _pre=r9Pre;r9Pre=function(dt){try{tick(dt)}catch(e){console.warn('kd48',e)}_pre(dt);A.seen.add(p.state);A.anims.add(p.state+':'+p.anim)};   // KD48.seen / anims: for tests
+const _upd=update;update=function(dt){const r=_upd.apply(this,arguments);
+ try{
+  const w=A.pow;
+  if(w&&w.kind==='up'&&p.state==='claw'&&p.anim==='bxpu'){
+   if(!w.rose&&p.ft>=2.55){w.rose=1;p.ground=false;p.vy=-1120;p.jumps=Math.max(p.jumps||0,1)}
+   if(!w.pop&&p.fi>=4&&p.fi<=6){w.pop=1;
+    for(const d of dummies){if(!d||!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;
+     if(g>-50&&g<190&&d.y>p.y-240&&d.y<p.y+40){d.vy=-1160;d.vx=p.face*70;d.fl=Math.max(d.fl||0,.95);
+      if(d.sp){d.ps='air';d.pt=0;d.st='air';d.y=Math.min(d.y,(typeof GROUND==='number'?GROUND:d.y)-6)}}}}
+   if(typeof sparks!=='undefined'&&sparks.length>4)sparks.splice(0,sparks.length-4);
+   if(typeof slashes!=='undefined')slashes.length=0;
+  }
+ }catch(e){}
+ return r};
 // ---------- the pink-sheet look for each move: [anim, frame(t), lean(t), squash(t), lift(t)] ----------
 const sn=x=>Math.sin(Math.PI*Math.max(0,Math.min(1,x)));
 const VIS={

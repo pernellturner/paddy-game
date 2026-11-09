@@ -74,7 +74,7 @@ let sw=null,smY=0,smR=0;
 const on=()=>act()&&built&&((p.state==='claw'&&p.anim==='bxpu')||isCh()||p.state==='kduc');
 const _sq=r11Sq;r11Sq=function(){let s=_sq();try{if(!built)built=build();if(on()){U.seq=isPow()?U.seqPow:U.seqTap;const ch=isCh(),dash=p.state==='kduc',ft=ch||dash?0:p.ft,i=ch||dash?-1:vi(ft);sw={a:p.anim,fi:p.fi};p.anim='uc49';
   const cf=dash?dashFrame():ch?chargeFrame():U.seq[i][0];p.fi=U.idx(cf);p.fB=0;
-  if(isPow()&&!ch&&cf&&(cf===U.N.s||cf===U.N.d||cf===U.N.h)&&typeof ghosts!=='undefined')ghosts.push({x:p.x-p.face*18,y:p.y,f:cf,face:p.face,l:.22,blue:1});
+  if(isPow()&&!ch&&cf&&cf===U.N.s&&typeof ghosts!=='undefined'&&ghosts.length<8)ghosts.push({x:p.x-p.face*14,y:p.y,f:cf,face:p.face,l:.16,blue:0});
   U.last=[dash?'dash':ch?'ch':i,+((ch||dash?p.t:ft)).toFixed(2),cf&&cf.f];
   }else{}}catch(_){}return s};
 const _rb=mRunBob;mRunBob=function(){const o=_rb();try{if(sw){const m=motion(isCh()?0:p.ft);smY+=(m.y-smY)*.5;smR+=(m.r-smR)*.5;return{y:(o.y||0)+smY,r:(o.r||0)+smR*p.face}}else{smY*=.5;smR*=.5}}catch(_){}return o};
@@ -82,7 +82,7 @@ const _fx=drawFx;drawFx=function(){if(sw){p.anim=sw.a;p.fi=sw.fi;sw=null}_fx()};
 let stepped=0;
 const _pre=r9Pre;r9Pre=function(dt){
  // ↑ is also jump. Pressed together with Claw, that must be the uppercut — not the jump-charge hop.
- try{if(act()&&p.state==='normal'&&p.ground&&!p.wall&&!p.hunt&&(P.jump||P.attack)&&(K.up||P.jump)&&(K.attack||P.attack)){delete P.jump;delete P.attack;uppercut()}}catch(e){console.warn('uc49',e)}
+ try{if(act()&&p.ground&&!p.wall&&!p.hunt&&(p.state==='normal'||p.state==='jcharge')&&(P.jump||P.attack)&&(K.up||P.jump)&&(K.attack||P.attack)){if(p.state==='jcharge')p.state='normal';delete P.jump;delete P.attack;uppercut()}}catch(e){console.warn('uc49',e)}
  _pre(dt);try{if(!on()||isCh()){if(!on())stepped=0;return}const ft=p.ft;
  const reach=isPow()?96:56,from=isPow()?2.6:3.15,to=isPow()?4.0:4.6;
  if(ft>=from&&ft<to&&stepped<reach&&p.state==='claw'){let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<105&&Math.abs(d.y-p.y)<200)near=true}
