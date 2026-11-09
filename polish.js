@@ -79,6 +79,9 @@ function highPunch(){
 }
 function upper(){
   if(!base()||!(window.OD&&OD.wind&&OD.cast)) return;
+  // Practice Room "UPPERCUT: NEW" owns Up+Claw (the boxer sheets). Stealing it here
+  // swapped in a short hop and the punch never played.
+  if(window.UC49&&UC49.active&&UC49.active()) return;
   if(P.attack&&K.up&&p.ground&&!p.wall&&!(OD.move&&OD.move()&&OD.move()!=='wind')){
     delete P.attack; delete P.jump;
     if(!PL.charge) PL.charge={t:now(), face:p.face};
