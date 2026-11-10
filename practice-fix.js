@@ -56,11 +56,12 @@ function poseFix(){
     FR.land=G.frames.land; FR.hardland=G.frames.hard; FR.bk_land=G.frames.bk;
   }
 }
+function finitePos(d){return !!(d&&isFinite(d.x)&&isFinite(d.y))}
 function shadowPounce(){
   const face=G.air?G.air.face:attackFace();
   let best=null, bd=1e9;
   for(const d of dummies){
-    if(!d||d.benched||!d.alive) continue;
+    if(!d||d.benched||!d.alive||!finitePos(d)) continue;
     const dd=Math.abs(d.x-p.x);
     if(dd<bd){bd=dd; best=d}
   }
@@ -71,6 +72,7 @@ function shadowPounce(){
     p.face=-side;
     const fl=typeof floorAt==='function'?floorAt(p.x):p.y;
     p.y=Math.min(fl, best.y);
+    if(!isFinite(p.x)||!isFinite(p.y)){p.x=370; p.y=fl}
     p.ground=p.y>=fl-2;
     p.vy=best.y<fl-40?-40:0;
     p.vx=0;
@@ -109,8 +111,52 @@ function stepAir(){
     G.air=null;
   }
 }
+function onScreen(){
+  if(typeof scale!=='number'||typeof cv==='undefined'||!cv) return true;
+  let x=p.x, y=p.y;
+  if(typeof cine!=='undefined'&&cine&&cine.on&&isFinite(cine.z)&&cine.z>0.2){
+    x=cine.tx+(p.x-cine.fx)*cine.z;
+    y=cine.ty+(p.y-cine.fy)*cine.z;
+  }
+  const ax=(typeof offX==='number'?offX:0)+(x+(typeof camX==='number'?camX:0))*scale;
+  const ay=(typeof offY==='number'?offY:0)+(y+(typeof camY==='number'?camY:0))*scale;
+  const top=ay-160*scale, bot=ay+16*scale;
+  return ax>-70&&ax<cv.width+70&&bot>0&&top<cv.height;
+}
+function wake(){
+  const face=(p.face===1||p.face===-1)?p.face:1;
+  p.x=370; p.y=typeof GROUND==='number'?GROUND:470;
+  p.vx=0; p.vy=0; p.ground=true; p.rot=0; p.wall=false; p.blend=0; p.face=face;
+  p.state='normal'; p.t=0;
+  if(typeof setAnim==='function') setAnim('idle', true);
+  if(typeof camX!=='undefined') camX=0;
+  if(typeof camY!=='undefined') camY=0;
+  if(typeof cine!=='undefined'&&cine){cine.z=1; cine.tz=1; cine.fx=p.x; cine.fy=p.y-105; cine.on=false}
+  if(window.CX) CX.pose=null;
+  if(window.P33){P33.a=null; P33.legacy=false}
+  G.lost=0;
+}
+function rescue(){
+  if(!room()){G.lost=0; return}
+  const lostPos=!isFinite(p.x)||!isFinite(p.y)||!isFinite(p.vx)||!isFinite(p.vy)||!isFinite(p.face)||!p.face
+    ||p.x<(typeof LW==='number'?LW:40)-120||p.x>(typeof WALL_X==='number'?WALL_X:880)+120
+    ||p.y<(typeof GROUND==='number'?GROUND:470)-2400||p.y>(typeof GROUND==='number'?GROUND:470)+80;
+  if(lostPos){wake(); return}
+  if(typeof cine!=='undefined'&&cine&&(!isFinite(cine.z)||cine.z<0.25||cine.z>2.4)){cine.z=1; cine.tz=1; cine.fx=p.x; cine.fy=p.y-105}
+  if(!onScreen()){
+    G.lost=(G.lost||0)+1;
+    if(G.lost>10){
+      if(typeof camX!=='undefined') camX=0;
+      if(typeof camY!=='undefined') camY=Math.max(0, 200-p.y);
+      if(typeof cine!=='undefined'&&cine){cine.z=1; cine.tz=1; cine.fx=p.x; cine.fy=p.y-105; cine.on=false}
+      if(!onScreen()) wake();
+      G.lost=0;
+    }
+  }else G.lost=0;
+}
 function after(dt){
   poseFix();
+  rescue();
   if(room()&&p.state==='claw'&&p.anim==='bxph'&&window.KD48&&KD48.pow&&KD48.pow.kind==='hay'){
     if(G.hayX==null) G.hayX=p.x;
     const f=attackFace(), travelled=(p.x-G.hayX)*f;

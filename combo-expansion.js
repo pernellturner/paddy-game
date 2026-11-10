@@ -107,6 +107,7 @@ function paintPose(c, x, y){
     if(!img||!img.naturalWidth) return;
     c.save();
     c.globalAlpha=alpha==null?1:alpha;
+    c.globalCompositeOperation='source-over';
     c.translate(px, py+(pose.dy||0));
     c.rotate((pose.rot||0)*(pose.face||1));
     c.scale((pose.face||1)*BOX, BOX);
@@ -329,7 +330,10 @@ if(arena()&&typeof r9Pre==='function'){
   };
   const _df=drawFrame;
   drawFrame=function(f,x,y,face,alpha){
-    if(CX.pose&&Math.abs((x||0)-p.x)<80&&Math.abs((y||0)-(p.y||0))<80) return;
+    const pose=CX.pose;
+    const imgs=pose&&pose.imgs;
+    const img=imgs&&imgs[Math.max(0, Math.min(imgs.length-1, pose.fi||0))];
+    if(pose&&img&&img.naturalWidth&&Math.abs((x||0)-p.x)<80&&Math.abs((y||0)-(p.y||0))<80) return;
     return _df.apply(this, arguments);
   };
   const _fx=drawFx;

@@ -356,7 +356,10 @@ if(arena()&&typeof r9Pre==='function'){
     return r};
   const _df=drawFrame;
   drawFrame=function(f,x,y,face,alpha){
-    if(window.__odCover&&Math.abs((x||0)-p.x)<8&&Math.abs((y||0)-p.y)<14) return;
+    if(window.__odCover&&act&&act.imgs){
+      const img=act.imgs[Math.min(act.fi||0, act.imgs.length-1)];
+      if(img&&img.naturalWidth&&Math.abs((x||0)-p.x)<8&&Math.abs((y||0)-p.y)<14) return;
+    }
     return _df.apply(this, arguments);
   };
   const _draw=draw;
@@ -369,6 +372,8 @@ function paint(x, y, c){
   const img=act.imgs[Math.min(act.fi, act.imgs.length-1)];
   if(!img||!img.naturalWidth) return;
   c.save();
+  c.globalAlpha=1;
+  c.globalCompositeOperation='source-over';
   c.translate(x, y);
   c.scale((act.face||1)*BOX, BOX);
   c.drawImage(img, -foot[0], -foot[1]);

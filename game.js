@@ -415,7 +415,7 @@ function loadSprites(tries){fetch('assets/frames.json?v='+VER).then(r=>{if(!r.ok
   im.onload=()=>{if(done)return;done=true;clearTimeout(timer);if(im.decode)im.decode().catch(()=>{});finish(nm,true)};im.onerror=fail;go()}
  function pump(){while(active<6&&queue.length){active++;loadOne(queue.shift())}}
  // Knight / Pirate sprites load on demand (or quietly in the background once everything else is in)
- window.loadForm=function(pre,hi){const list=[];[pre+'_idle',pre+'_run',pre+'_rise',pre+'_apex',pre+'_fall',pre+'_land',pre+'_h1',pre+'_power',pre+'_victory'].concat(Object.keys(FR).filter(a=>String(A[a][0]).startsWith(pre+'_'))).forEach(a=>add(a,list));
+ window.loadForm=function(pre,hi){const list=[];[pre+'_idle',pre+'_run',pre+'_rise',pre+'_apex',pre+'_fall',pre+'_land',pre+'_h1',pre+'_power',pre+'_victory'].concat(Object.keys(FR).filter(a=>{const spec=A[a];return !!(spec&&String(spec[0]).startsWith(pre+'_'))})).forEach(a=>add(a,list));
   if(list.length){SPRITES.total+=list.length;queue.push(...list)}if(hi){const mine=queue.filter(n=>n.startsWith('p/'+pre+'_')),rest2=queue.filter(n=>!n.startsWith('p/'+pre+'_'));queue.length=0;queue.push(...mine,...rest2)}pump()};
  window.queueFrames=function(names,hi){const list=names.filter(n=>!seen.has(n));list.forEach(n=>seen.add(n));if(!list.length)return;SPRITES.total+=list.length;if(hi)queue.unshift(...list);else queue.push(...list);pump()};
  pump();setTimeout(startGame,6000)}).catch(e=>{console.error(e);if((tries||0)<4)setTimeout(()=>loadSprites((tries||0)+1),1500);else{lbl.textContent='could not load – please refresh';startGame()}})}

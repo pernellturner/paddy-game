@@ -149,13 +149,14 @@ function blinkTo(mode){
     if(!d.alive&&!(d.sp&&d.ps&&d.ps!=='rec'&&d.ps!=='down')) continue;
     const dd=Math.abs(d.x-p.x); if(dd<bd){bd=dd; best=d}
   }
+  if(best&&(!isFinite(best.x)||!isFinite(best.y))) best=null;
   if(mode==='barge'){
-    if(best) p.face=Math.sign(best.x-p.x)||p.face;
+    if(best) p.face=Math.sign(best.x-p.x)||p.face||1;
     if(typeof blinkBarge==='function') blinkBarge();
     else { p.vx=p.face*900; p.state='barge'; }
     if(best&&typeof hitDummy==='function') hitDummy(best, 'claw2', p.face);
   } else if(mode==='above'&&best){
-    p.face=Math.sign(best.x-p.x)||p.face;
+    p.face=Math.sign(best.x-p.x)||p.face||1;
     p.x=best.x-p.face*8; p.y=Math.max(70, best.y-150); p.vy=360; p.ground=false;
     if(typeof hitDummy==='function') hitDummy(best, 'claw1', p.face);
   } else if(mode==='behind'&&best){

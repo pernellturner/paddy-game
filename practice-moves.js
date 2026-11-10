@@ -340,9 +340,12 @@ function recoverImg(){
   if(last==='bxj1'&&moves&&moves.jab) return moves.jab.imgs[moves.jab.imgs.length-1];
   return null;
 }
+function drawable(img){return !!(img&&img.naturalWidth)}
 function drawApproved(img, scale){
-  if(!img||!img.naturalWidth) return;
+  if(!drawable(img)) return;
   ctx.save();
+  ctx.globalAlpha=1;
+  ctx.globalCompositeOperation='source-over';
   ctx.translate(p.x, p.y);
   ctx.scale((p.face||1)*scale, scale);
   ctx.drawImage(img, -foot[0], -foot[1]);
@@ -361,12 +364,15 @@ function paintBreath(){
 
 const _drawFrame=drawFrame;
 drawFrame=function(f,x,y,face,alpha){
-  if(jabbing()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<40) return;
-  if(stringing()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<40) return;
-  if(recoverImg()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<40) return;
+  // Only skip the pink sheet when the approved drawing will actually appear.
+  // Otherwise a missing frame, or a canvas left at alpha 0, makes him vanish.
+  const mine=Math.abs(x-p.x)<30&&Math.abs(y-p.y)<40;
+  if(mine&&jabbing()&&drawable(jabImage())) return;
+  if(mine&&stringing()) return;
+  if(mine&&drawable(recoverImg())) return;
   if(hiding()&&Math.abs(x-p.x)<4&&Math.abs(y-p.y)<8) return;
   if(hiding()&&Math.abs(x-(p.prevX||p.x))<4&&Math.abs(y-(p.prevY||p.y))<8) return;
-  if(covering()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<30) return;
+  if(mine&&covering()&&drawable(breathImgs&&breathImgs[0])) return;
   return _drawFrame.apply(this, arguments);
 };
 const _hud=drawHUD;
