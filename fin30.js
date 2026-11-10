@@ -61,12 +61,14 @@ const _bs=bunnyState;bunnyState=function(dt){if(!base()||!W30.on)return _bs(dt);
 const _tw=tailWhip;tailWhip=function(n){_tw.apply(this,arguments);if(!base()||p.state!=='tailwhip')return;W30.spins++;
  W30.spin={n:p.tn||n||1,dir:p.face,gr:p.ground,x:p.x,y:p.y,t0:now};whoosh(p.tn||1);vox((p.tn||1)===3?'growl':'meow',(p.tn||1)===3?.8:.3);
  say(['TAIL SPIN!','DOUBLE TAIL SPIN!','TAIL SPIN LAUNCHER!'][(p.tn||1)-1]||'TAIL SPIN!',['#ffd27a','#ffb870','#ff9a2e'][(p.tn||1)-1],true);
- const y0=p.ground?floorAt(p.x):p.y;for(let i=0;i<14;i++){const a=i/14*6.283;W30.dust.push({x:p.x+Math.cos(a)*40,y:y0+Math.sin(a)*8,vx:Math.cos(a)*(220+Math.random()*80),vy:Math.sin(a)*30-(p.ground?20:-60),r:9+Math.random()*7,l:.55,air:!p.ground})}
+ const y0=p.ground?floorAt(p.x):p.y;
+ // Practice Room: the dust cloud hides the spin. The move itself stays.
+ if(!(window.PRACTICE&&PRACTICE.on)){for(let i=0;i<14;i++){const a=i/14*6.283;W30.dust.push({x:p.x+Math.cos(a)*40,y:y0+Math.sin(a)*8,vx:Math.cos(a)*(220+Math.random()*80),vy:Math.sin(a)*30-(p.ground?20:-60),r:9+Math.random()*7,l:.55,air:!p.ground})}}
  if(W30.dust.length>60)W30.dust.splice(0,W30.dust.length-60)};
 const _hd=hitDummy;hitDummy=function(d,move,dir){const r=_hd.apply(this,arguments);
  try{if(base()&&(move==='tailwhip'||move==='tail3')&&d){W30.spinHits++;const x=d.x-(dir||1)*30,y=d.y-(d.h||130)*.55;
   for(let i=0;i<9;i++){const a=Math.random()*6.283,v=260+Math.random()*320;sparks.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-80,l:.3,c:i%3?'#ffb840':'#fff'})}
-  W30.pows.push({x,y:y-30,t:move==='tail3'?'WHOOSH!':'WHAP!',l:.8,rot:(Math.random()-.5)*.4,s:.55});if(W30.pows.length>6)W30.pows.shift();
+  if(!(window.PRACTICE&&PRACTICE.on&&move==='tail3'))W30.pows.push({x,y:y-30,t:move==='tail3'?'WHOOSH!':'WHAP!',l:.8,rot:(Math.random()-.5)*.4,s:.55});if(W30.pows.length>6)W30.pows.shift();
   shake=Math.max(shake,move==='tail3'?10:6);hitstop=Math.max(hitstop,.045)}}catch(_){}return r};
 const _pre=r9Pre;r9Pre=function(dt){_pre(dt);try{
  if(W30.on&&p.state!=='bunny')finish();
@@ -85,7 +87,8 @@ const _pre=r9Pre;r9Pre=function(dt){_pre(dt);try{
 const _fx=drawFx;drawFx=function(){_fx();try{
  const tw=base()&&p.state==='tailwhip',hasDust=W30.dust.length,hasPow=W30.pows.length;if(!tw&&!hasDust&&!hasPow&&!W30.boom)return;
  ctx.save();
- for(const o of W30.dust){ctx.globalAlpha=Math.max(0,o.l)*(o.air?.45:.6);ctx.fillStyle=o.air?'#fff3d8':'#e8d6b8';ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,6.283);ctx.fill()}
+ const hideCloud=window.PRACTICE&&PRACTICE.on;
+ if(!hideCloud)for(const o of W30.dust){ctx.globalAlpha=Math.max(0,o.l)*(o.air?.45:.6);ctx.fillStyle=o.air?'#fff3d8':'#e8d6b8';ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,6.283);ctx.fill()}
  if(tw){const s=W30.spin||{n:1},n=s.n||1,t=p.t,dir=s.dir||1,a0=t*26*dir,cx=p.x,cy=p.y-52,R=112+n*14,ry=30+n*4,u=Math.min(1,t/.08),fade=t>.36?Math.max(0,1-(t-.36)/.12):1;
   ctx.globalCompositeOperation='lighter';
   // two comet tail-whip arcs on a tilted ellipse round his waist, + one higher faint one
@@ -95,9 +98,9 @@ const _fx=drawFx;drawFx=function(){_fx();try{
   // motion streaks flung off the spin
   ctx.strokeStyle='#fff7e0';ctx.lineWidth=3;ctx.beginPath();for(let i=0;i<10;i++){const a=a0*.8+i*.628,rr=R+22+(i%3)*14,x=cx+Math.cos(a)*rr,y=cy+Math.sin(a)*rr*.32-(i%2)*18,tx=-Math.sin(a)*dir,ty=Math.cos(a)*dir*.32;
    ctx.moveTo(x,y);ctx.lineTo(x+tx*46,y+ty*46)}ctx.globalAlpha=fade*.6;ctx.stroke();
-  // ground dust ring or air vortex under him
-  const gy=s.gr?floorAt(p.x)-4:p.y+6,rr=50+t*330;ctx.globalAlpha=fade*Math.max(0,.75-t*1.2);ctx.strokeStyle=s.gr?'#ffe7c2':'#bfe8ff';ctx.lineWidth=6;ctx.beginPath();ctx.ellipse(p.x,gy,rr,rr*.16,0,0,6.283);ctx.stroke();
-  if(!s.gr){for(let k=0;k<3;k++){const r2=40+k*26,a=-a0*1.3+k;ctx.globalAlpha=fade*(.5-k*.12);ctx.lineWidth=5-k;ctx.beginPath();ctx.ellipse(p.x,p.y+14+k*16,r2,r2*.25,0,a,a+3.8);ctx.stroke()}}
+  // ground dust ring or air vortex under him — skipped in Practice, it covers the finisher
+  if(!hideCloud){const gy=s.gr?floorAt(p.x)-4:p.y+6,rr=50+t*330;ctx.globalAlpha=fade*Math.max(0,.75-t*1.2);ctx.strokeStyle=s.gr?'#ffe7c2':'#bfe8ff';ctx.lineWidth=6;ctx.beginPath();ctx.ellipse(p.x,gy,rr,rr*.16,0,0,6.283);ctx.stroke();
+  if(!s.gr){for(let k=0;k<3;k++){const r2=40+k*26,a=-a0*1.3+k;ctx.globalAlpha=fade*(.5-k*.12);ctx.lineWidth=5-k;ctx.beginPath();ctx.ellipse(p.x,p.y+14+k*16,r2,r2*.25,0,a,a+3.8);ctx.stroke()}}}
   ctx.globalCompositeOperation='source-over'}
  if(W30.boom){const b=W30.boom,u=1-b.l;ctx.globalCompositeOperation='lighter';for(let k=0;k<3;k++){ctx.globalAlpha=Math.max(0,b.l-k*.15);ctx.strokeStyle=k?'#ff9ad5':'#fff';ctx.lineWidth=(14-k*4)*b.l+2;ctx.beginPath();ctx.arc(b.x,b.y,40+u*(260+k*90),0,6.283);ctx.stroke()}
   ctx.globalAlpha=Math.max(0,b.l*.8);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(b.x,b.y,70*(1-u)+10,0,6.283);ctx.fill();ctx.globalCompositeOperation='source-over'}
@@ -164,7 +167,7 @@ function airState(dt){const A=W30.airS,t=p.t,g=p.grab&&p.grab.alive?p.grab:null;
   else if(t<1.02){setAnim(AF('spin'));const u=(t-.22)/.8;p.y=A.y0-Math.sin(Math.min(1,u)*1.57)*90;p.vy=0;if(AIRFIN_FRAMES.rot!==false)p.rot=-p.face*u*6.283*2;
    const a=u*6.283*2;hold(p.x+Math.cos(a)*p.face*78,p.y-40+Math.sin(a)*46,22);cine.tz=Math.max(cine.tz,1.2);
    const n=Math.floor(u*4);if(n>(A.spins|0)-1&&n<4){A.spins=n+1;if(g){g.hp=Math.max(4,g.hp);hitDummy(g,'bunnykick',p.face);g.vx=0;g.vy=0}W30.kicks=A.spins;const hx=g?g.x:p.x,hy=g?g.y-60:p.y-60;
-    if(n%2)W30.pows.push({x:hx,y:hy,t:['SPIN!','WHIRL!','SPIN!!','WHOOSH!'][n],l:1,rot:(Math.random()-.5)*.5,s:.8+n*.08});W30.nums.push({n:A.spins,x:hx,y:hy-50,l:1});W30.flash=Math.max(W30.flash,.6);shake=Math.max(shake,8+n*2);thump(n+1);if(n===1)vox('grunt',1,true)}
+    if(n%2&&!(window.PRACTICE&&PRACTICE.on))W30.pows.push({x:hx,y:hy,t:['SPIN!','WHIRL!','SPIN!!','WHOOSH!'][n],l:1,rot:(Math.random()-.5)*.5,s:.8+n*.08});W30.nums.push({n:A.spins,x:hx,y:hy-50,l:1});W30.flash=Math.max(W30.flash,.6);shake=Math.max(shake,8+n*2);thump(n+1);if(n===1)vox('grunt',1,true)}
    if(t%.03<dt)ghosts.push({x:p.x,y:p.y,f:(FR[p.anim]||FR.idle)[p.fi],face:p.face,l:.18,blue:1})}
   else if(t<1.16){setAnim(AF('windup'));p.rot=0;p.vy=0;hold(p.x+p.face*40,p.y+40,18);if(!A.w){A.w=1;hitstop=.12;cine.tz=1.34;say('SPIKE...','#fff',true);snd('ult_charge',{v:.4,r:1.5,gap:1})}}
   else{setAnim(AF('spike'));p.rot=0;p.vy=2600;hold(p.x+p.face*30,p.y+60,30);if(t%.02<dt)ghosts.push({x:p.x,y:p.y,f:(FR[p.anim]||FR.idle)[p.fi],face:p.face,l:.22,blue:1});
