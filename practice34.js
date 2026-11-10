@@ -132,7 +132,11 @@ function drawD(d){const hg=Math.max(0,GROUND-d.y);ctx.fillStyle='rgba(0,0,0,.2)'
   g.addColorStop(0,`rgba(255,40,30,${.4+.3*u})`);g.addColorStop(.6,`rgba(255,60,40,${.16+.1*u})`);g.addColorStop(1,'rgba(255,40,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(gx,gy,115,0,6.283);ctx.fill();
   const r=18+80*(1-d.pt/WIND);ctx.lineWidth=4;ctx.strokeStyle=`rgba(255,255,255,${.5+.5*d.pt/WIND})`;ctx.beginPath();ctx.arc(d.x+d.face*(atkArt?DART.atk.reach*FSC()*SC*.85:26+GR*.75),gy,r,0,6.283);ctx.stroke();ctx.restore()}
  const [f,mir]=frame(d);if(!f){ctx.save();ctx.fillStyle='#d7c4a8';ctx.beginPath();ctx.ellipse(d.x,d.y-70,36,48,0,0,6.28);ctx.fill();ctx.restore()}if(f){const im=IMG[f.f];ctx.save();const air=d.ps==='air'&&d.y<GROUND-2;ctx.translate(d.x,d.y+(air?(f.lf||0)*SC:0));
-  ctx.rotate(d.rot+(-d.face*d.lean*.2));const s=1+d.sq*.12+(d.ps==='wind'?d.lean*.06:0);ctx.scale((mir?-1:1)*SC/s,SC*s);ctx.drawImage(im,-f.ax,-f.ay);
+  ctx.rotate(d.rot+(-d.face*d.lean*.2));
+  const grabbed=window.CX&&CX.grab===d&&CX.grabT&&now-CX.grabT<0.7;
+  const s=grabbed?1:(1+d.sq*.12+(d.ps==='wind'?d.lean*.06:0));
+  if(grabbed) ctx.rotate(d.face*-0.22);
+  ctx.scale((mir?-1:1)*SC/s,SC*s);ctx.drawImage(im,-f.ax,-f.ay);
   if(d.flash>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,d.flash/.12)*.5;ctx.drawImage(im,-f.ax,-f.ay)}ctx.restore()}
  if(gl)glove(d,d.ext);
  if(d.hpShow<d.max-.01&&d.ps!=='down'){const w=70,y=d.y-190;ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(d.x-w/2-2,y-2,w+4,8);ctx.fillStyle='#ffb347';ctx.fillRect(d.x-w/2,y,w*Math.max(0,d.hpShow)/d.max,4);ctx.fillStyle='#7dff7a';ctx.fillRect(d.x-w/2,y,w*Math.max(0,d.hp)/d.max,4)}
@@ -191,9 +195,9 @@ function open(st){if(window.TRAIN&&TRAIN.TR.on){TRAIN.TR.on=false;document.body.
  if(window.ENW){if(ENW.W.on)ENW.W.on=false;for(let i=dummies.length-1;i>=0;i--)if(dummies[i].cr)dummies.splice(i,1);ENW.shots.length=0;ENW.kids.length=0}
  if(window.STORY&&STORY.mode&&STORY.mode!=='off'){window.STORYPAUSE=false;STORY.mode='off';document.body.classList.remove('story');try{last=performance.now()}catch(_){}}
  if(window.UNLx){UNLx.d.tryAll=true;UNLx.d.tryMyth=true}
- bench(true);PR.on=true;PR.hp0=Math.max(3,p.hp||3);p.hp=PR.hp0;document.body.classList.add('proom');setTimeout(fit,30);preload();PR.s=zero();station(st||PR.st);
+ bench(true);PR.on=true;PR.hp0=Math.max(3,p.hp||3);p.hp=PR.hp0;document.body.classList.add('proom');setTimeout(fit,30);setTimeout(()=>dispatchEvent(new Event('resize')),40);preload();PR.s=zero();station(st||PR.st);
  card('🥊 PRACTICE ROOM','dummies never break — pick a station up top','#ffe14d')}
-function close(){PR.on=false;clearSp();document.body.classList.remove('proom');bench(false);if(window.STORY&&STORY.title)STORY.title()}
+function close(){PR.on=false;clearSp();document.body.classList.remove('proom');setTimeout(()=>dispatchEvent(new Event('resize')),40);bench(false);if(window.STORY&&STORY.title)STORY.title()}
 Object.assign(PR,{open,close,station,reset:resetStats,DART,dummies:live,sheet,hints});
 addEventListener('keydown',e=>{if(!PR.on||e.repeat||document.body.classList.contains('ov')||document.body.classList.contains('fp')||document.body.classList.contains('st'))return;
  if(e.code==='KeyU'){e.preventDefault();const k=Object.keys(ST);station(k[(k.indexOf(PR.st)+1)%k.length])}else if(e.code==='KeyI'){e.preventDefault();resetStats()}});

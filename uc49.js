@@ -75,7 +75,6 @@ let sw=null,smY=0,smR=0;
 const on=()=>act()&&built&&((p.state==='claw'&&p.anim==='bxpu')||isCh()||p.state==='kduc');
 const _sq=r11Sq;r11Sq=function(){let s=_sq();try{if(!built)built=build();if(on()){U.seq=isPow()?U.seqPow:U.seqTap;const ch=isCh(),dash=p.state==='kduc',ft=ch||dash?0:p.ft,i=ch||dash?-1:vi(ft);sw={a:p.anim,fi:p.fi};p.anim='uc49';
   const cf=dash?dashFrame():ch?chargeFrame():U.seq[i][0];p.fi=U.idx(cf);p.fB=0;
-  if(isPow()&&!ch&&cf&&cf===U.N.s&&typeof ghosts!=='undefined'&&ghosts.length<8)ghosts.push({x:p.x-p.face*14,y:p.y,f:cf,face:p.face,l:.16,blue:0});
   U.last=[dash?'dash':ch?'ch':i,+((ch||dash?p.t:ft)).toFixed(2),cf&&cf.f];
   }else{}}catch(_){}return s};
 const _rb=mRunBob;mRunBob=function(){const o=_rb();try{if(sw){const m=motion(isCh()?0:p.ft);smY+=(m.y-smY)*.5;smR+=(m.r-smR)*.5;return{y:(o.y||0)+smY,r:(o.r||0)+smR*p.face}}else{smY*=.5;smR*=.5}}catch(_){}return o};

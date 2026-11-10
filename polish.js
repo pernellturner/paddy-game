@@ -29,7 +29,7 @@ function backGate(){
   if(held&&age>=0.14){PL.back=null; OD.backDash(b.face); say('BACK DASH!','#fff')}
   else if(!held){
     PL.back=null;
-    p.face=-(b.face||1); PL.rest=p.face;
+    p.face=-(b.face||1); PL.rest=p.face; PL.turn=now();
     say('TURN!','#fff');
   }
 }
@@ -144,5 +144,22 @@ if(arena()&&typeof r9Pre==='function'){
   };
   const _fx=drawFx;
   drawFx=function(){try{drawGrab(ctx)}catch(e){} return _fx.apply(this, arguments)};
+  if(typeof r11Sq==='function'){
+    const _sq=r11Sq;
+    r11Sq=function(){const s=_sq();try{if(window.PRACTICE&&PRACTICE.on&&base())return 1}catch(e){}return s};
+  }
+  if(typeof drawFrame==='function'){
+    const _df=drawFrame;
+    drawFrame=function(f,x,y,face,alpha){
+      const mine=Math.abs((x||0)-(p.x||0))<16&&Math.abs((y||0)-(p.y||0))<24;
+      const air=mine&&window.PRACTICE&&PRACTICE.on&&base()&&/^(jump|fall|apex|djump|airswipe)$/.test(p.anim||'');
+      const spin=!!(PL.turn&&now()-PL.turn<0.12&&mine);
+      if(!spin&&!air) return _df.apply(this, arguments);
+      const scx=(spin?Math.max(0.08,Math.abs(Math.cos(((now()-PL.turn)/0.12)*Math.PI))):1)*(air?.78:1);
+      const scy=air?.78:1;
+      ctx.save(); ctx.translate(x,y); ctx.scale(scx,scy); ctx.translate(-x,-y);
+      const r=_df.apply(this, arguments); ctx.restore(); return r;
+    };
+  }
 }
 })();

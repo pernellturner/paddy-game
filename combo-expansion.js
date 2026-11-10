@@ -6,7 +6,7 @@ function base(){try{return !arena()||(FORM()===0&&!(window.KITTY36&&KITTY36.on)&
 function rt(){return performance.now()/1000}
 const CX=window.CX={plan:null, recent:null, air:null, grab:null, pose:null,
   n:{feint:0,lean:0,step:0,bob:0,slam:0,fly:0,grab:0,blink:0,tail:0,diag:0}};
-const BOX=0.55, FOOT=[210,408];
+const BOX=0.46, FOOT=[210,408];
 let moves=null, loaded=false;
 const POSE={
   feint:{spr:'weave', frames:[2,3,4,5,4], dx:8, dy:0, sq:1, rot:0, say:'CROUCH!'},
@@ -84,7 +84,8 @@ function stepPose(dt){
   pose.sq=1+(spec.sq-1)*peak;
   pose.rot=spec.rot*peak;
   const fr=spec.frames;
-  pose.fi=fr[Math.min(fr.length-1, Math.floor(Math.min(0.999,u)*fr.length))];
+  const stepping=idForward(pose.id)||pose.id==='lean'||pose.id==='deep'||pose.id==='heldl'||pose.id==='diagb';
+  pose.fi=stepping?fr[Math.floor(slide*fr.length*1.6)%fr.length]:fr[Math.min(fr.length-1, Math.floor(Math.min(0.999,u)*fr.length))];
   w.face=pose.face;
   w.vx=0; w.vy=0;
   if(arena()){w.state='ctap'; w.ground=true; if(typeof floorAt==='function') w.y=floorAt(w.x)}
@@ -93,7 +94,7 @@ function stepPose(dt){
   const travel=spec.dx*(pose.face||1);
   w.x=pose.x0+travel*slide;
   if(arena()&&typeof clampX==='function') w.x=clampX(w.x);
-  if(pose.t- (pose.trailT||0)>0.045){pose.trailT=pose.t; pose.trail.push({x:w.x,y:w.y,dy:pose.dy,fi:pose.fi,a:0.45}); if(pose.trail.length>4) pose.trail.shift()}
+  if(pose.t- (pose.trailT||0)>0.045){pose.trailT=pose.t}
   if(arena()&&P.attack){pose.buf=true; if(pose.t>0.16) pose.t=Math.max(pose.t, dur-0.08)}
 }
 function idForward(id){return id==='step'||id==='long'||id==='helds'||id==='diagf'}
@@ -112,7 +113,6 @@ function paintPose(c, x, y){
     c.drawImage(img, -FOOT[0], -FOOT[1]);
     c.restore();
   };
-  for(const g of pose.trail){g.a*=0.82; drawOne(g.fi, g.x, g.y, g.a*0.55)}
   if(imgs) drawOne(pose.fi, x, y, 1);
   else {
     c.save(); c.translate(x, y+(pose.dy||0)); c.rotate((pose.rot||0)*(pose.face||1));
@@ -250,8 +250,10 @@ function tailFinisher(){
 let prev='';
 function arenaTick(dt){
   if(!base()) return;
-  if(p.ground&&CX._air) CX.landAt=rt();
+  if(p.ground&&CX._air){CX.landAt=rt(); if((CX._fall||0)>120) CX.absorb=rt()}
+  CX._fall=p.ground?0:Math.max(CX._fall||0, (typeof floorAt==='function'?floorAt(p.x):p.y)-p.y);
   CX._air=!p.ground;
+  if(CX.absorb&&(rt()-CX.absorb>0.16||P.attack||P.jump||P.dash||K.attack)) CX.absorb=0;
   if(CX.hold&&!CX.hold.used&&K[CX.hold.k]&&rt()-CX.hold.t>0.16&&rt()-CX.hold.t<0.75){
     if(!(window.OD&&OD.move&&OD.move())){CX.hold.used=true; CX._key=CX.hold.k; playKind(kindOf(CX.hold.k, CX.hold.face), 2, true)}
   }
@@ -303,7 +305,7 @@ function tryGrab(){
   }
   if(!best) return;
   CX.n.grab++; CX.grab=best; CX.grabT=rt();
-  best.vx=0; best.vy=40; best.fl=0.05; best.x=p.x+p.face*78; best.y=Math.min(GROUND-8, p.y+10);
+  best.vx=0; best.vy=40; best.fl=0.05; best.sq=0; best.x=p.x+p.face*78; best.y=Math.min(GROUND-8, p.y+10);
   sayTo('GOTCHA!','#7fffd4');
   p.vy=Math.min(p.vy,80); p.vx=0;
 }
@@ -314,7 +316,13 @@ if(arena()&&typeof r9Pre==='function'){
   const _up=update;
   update=function(dt){
     const r=_up.apply(this, arguments);
-    try{if(CX.pose){p.vy=0; p.ground=true; p.state='ctap'; if(typeof floorAt==='function') p.y=floorAt(p.x)}}catch(e){}
+    try{
+      if(p.state==='claw'&&typeof FR!=='undefined') CX._fr=(FR[p.anim]||[])[p.fi];
+      if(CX._st==='claw'&&p.state==='normal'&&!P.attack&&CX._fr){p.prevF=CX._fr;p.prevFace=p.face;p.prevX=p.x;p.prevY=p.y;p.blend=.1}
+      if(P.attack||P.jump||P.dash) CX.absorb=0;
+      CX._st=p.state;
+      if(CX.pose){p.vy=0; p.ground=true; p.state='ctap'; if(typeof floorAt==='function') p.y=floorAt(p.x)}
+    }catch(e){}
     return r;
   };
   const _df=drawFrame;

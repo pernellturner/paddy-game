@@ -243,8 +243,10 @@ function drawMine(){ctx.save();ctx.globalCompositeOperation='lighter';
   g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(.18,`rgba(${col},${.5+.35*c.lvl})`);g.addColorStop(1,`rgba(${col},0)`);ctx.fillStyle=g;ctx.beginPath();ctx.arc(gx,gy,R*1.6,0,6.283);ctx.fill();
   if(c.full){ctx.strokeStyle=`rgba(255,255,255,${.5+.4*pl})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(gx,gy,R*1.9+8*pl,0,6.283);ctx.stroke()}}
  for(const a of A.arcs){a.l-=1/60*3.2;if(a.l<=0)continue;ctx.save();ctx.translate(a.x,a.y);ctx.scale(a.face,1);const al=Math.max(0,a.l);
-  if(a.kind==='hay'){// big looping overhand: from high behind his head, over the top, down through the target
-   for(let i=0;i<4;i++){ctx.strokeStyle=i===0?`rgba(255,240,200,${al*.7})`:`rgba(255,${160-i*25},40,${al*.55})`;ctx.lineWidth=(20-i*4)*(1+.3*a.lvl)*al;ctx.beginPath();ctx.arc(10,-100,92+i*7+12*a.lvl,-2.6,.45);ctx.stroke()}}
+  if(a.kind==='hay'){
+   const room=window.PRACTICE&&PRACTICE.on;
+   const n=room?2:4, rad=room?36:92, wide=room?6:20;
+   for(let i=0;i<n;i++){ctx.strokeStyle=i===0?`rgba(255,240,200,${al*(room?.45:.7)})`:`rgba(255,${160-i*25},40,${al*.4})`;ctx.lineWidth=(wide-i*2)*(room?1:1+.3*a.lvl)*al;ctx.beginPath();ctx.arc(10,-70,rad+i*4,-2.2,-.4);ctx.stroke()}}
   else if(a.kind==='up'){for(let i=0;i<5;i++){ctx.strokeStyle=i===0?`rgba(255,255,230,${al*.85})`:`rgba(255,${210-i*18},60,${al*.6})`;ctx.lineWidth=(22-i*3)*(1+.45*a.lvl)*al;ctx.beginPath();ctx.arc(36,-20,78+i*10+16*a.lvl,-2.55,-.35);ctx.stroke()}
    ctx.fillStyle=`rgba(255,236,140,${al*.45})`;ctx.beginPath();ctx.moveTo(28,-150);ctx.lineTo(70+30*a.lvl,-230);ctx.lineTo(8,-168);ctx.closePath();ctx.fill()}
   else{for(let i=0;i<4;i++){ctx.strokeStyle=i===0?`rgba(255,250,220,${al*.75})`:`rgba(255,225,80,${al*.55})`;ctx.lineWidth=(14-i*3)*(1+.3*a.lvl)*al;ctx.beginPath();ctx.moveTo(-60,-112+i*3);ctx.lineTo(230+60*a.lvl,-112);ctx.stroke()}
