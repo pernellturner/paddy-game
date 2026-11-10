@@ -204,7 +204,7 @@ function update(dt){
   const T=false,N=p.ninja||p.sam||!!p.xf||!!p.uf,running=K.run||(touchMode&&p.holdT>.6)||N,spd=p.hunt?110:p.uf?UF[p.uf].spd:p.xf?XF[p.xf].spd:p.ninja?340:p.sam?300:260*(running?1.6:1),JB=1;
   if(K.down&&p.ground&&!p.hunt&&Math.abs(p.vx)>300&&P.down&&!T&&!N){act('slide','slide',{say:'SLIDE!'});}
   else if(K.down&&p.ground&&!p.hunt&&!T&&!N){p.vx*=.7;setAnim('crouch');}
-  else{p.vx+=(dir*spd-p.vx)*Math.min(1,dt*(p.xf===3?(p.ground?(dir?5.5:6.5):4):N?(p.ground?(dir?8:10):5):T?(p.ground?(dir?4.5:6):2.5):(p.ground?(dir?7:9):4)));if(dir&&!p.wall)p.face=dir;}
+  else{p.vx+=(dir*spd-p.vx)*Math.min(1,dt*(p.xf===3?(p.ground?(dir?5.5:6.5):4):N?(p.ground?(dir?8:10):5):T?(p.ground?(dir?4.5:6):2.5):(p.ground?(dir?7:9):4)));if(dir&&!p.wall&&!(FORM()===0&&!p.hunt))p.face=dir;}
   if(p.state==='normal'){
   if(p.ground&&!dir&&Math.abs(p.vx)>330&&!p.hunt&&!N){act('stop','stop')}
   if(p.ground&&dir&&running&&Math.abs(p.vx)<40&&!p.hunt&&!N)p.startT=.18;

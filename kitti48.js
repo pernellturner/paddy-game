@@ -74,11 +74,12 @@ function power(kind,lvl){A.n[kind==='hay'?'haymaker':'powerjab']++;const a=kind=
 // plays again before the hit (fi 4). A tap still starts at frame 2 and never shows that coil.
 function powerUp(lvl,light){A.n.powerup=(A.n.powerup||0)+1;p.state='normal';p.combo=A.combo||0;p.keepT=0;p.cool=0;
  const wasUp=K.up;K.up=1;if(window.P33)P33.last='bxpu';startClaw();K.up=wasUp;
- if(!forcePunch('bxpu',light?2:0))return;
+ if(!forcePunch('bxpu',light?2:0)){p.state='claw';if(typeof setAnim==='function')setAnim('bxpu',true);p.fi=light?2:0;p.ft=p.fi}
  try{if(typeof texts!=='undefined')texts.length=0}catch(e){}
- if(light)return;
+ const fl=typeof floorAt==='function'?floorAt(p.x):p.y;
+ if(light){p.vy=0;p.ground=true;p.y=fl;return}
  p.ft=0;p.fi=0;
- A.pow={a:'bxpu',kind:'up',lvl,t:rt(),hit:new Set(),lunge:0,nm0:NAMES.bxpu,rose:0,pop:0};NAMES.bxpu='UPPERCUT!';
+ A.pow={a:'bxpu',kind:'up',lvl,t:rt(),hit:new Set(),lunge:0,nm0:NAMES.bxpu,rose:0,pop:0};A.hang=0;NAMES.bxpu='UPPERCUT!';
  shake=Math.max(shake,4+2*lvl);log('power:up:'+lvl.toFixed(2));
  if(window.UC49&&UC49.n)UC49.n.power=(UC49.n.power||0)+1}
 function dashUpper(){if(p.state==='kduc')return;p.state='kduc';p.t=0;p.shot=false;p.kducHit=new Set();acted=true;p.ground=true;p.vy=0;
@@ -123,7 +124,8 @@ function tick(dt){
    if(u>=1){p.state='normal';p.vx=0;p.noFlick=false;keep(A.combo);A.ctx={k:'slip',t}}break}
   case 'kweave':{const T=.3,u=Math.min(1,p.t/T);p.vx=p.face*26*Math.PI/2*Math.sin(Math.PI*u)/T;holdCounter();if(t%.04<dt*1.5)ghost(.14,0);
    if(u>=1){p.state='normal';p.vx=0;p.noFlick=false;keep(A.combo);A.ctx={k:'weave',t}}break}
-  case 'kcharge':{const c=A.ch;if(!c||!p.ground){p.state='normal';A.ch=null;break}
+  case 'kcharge':{const c=A.ch;if(!c){p.state='normal';break}
+   if(!p.ground){p.ground=true;p.vy=0;p.y=typeof floorAt==='function'?floorAt(p.x):p.y}
    if(newUp()&&K.up&&c.kind==='hay'){c.kind='up';say('POWER UPPERCUT…','#ffe14d');log('charge:up')}delete P.jump;delete P.up;   // hold Claw, then ↑ = power uppercut wind-up (Practice NEW only); ↑ never jumps out of a wind-up
    p.vx*=Math.pow(.001,dt);holdCounter();
    const held=t-c.t0;c.lvl=Math.max(0,Math.min(1,(held-CHP)/(CHF-CHP)));shake=Math.max(shake,held>CHP?1+2.5*c.lvl:.5);
@@ -152,8 +154,10 @@ function tick(dt){
  if(A.step>0){if(p.state!=='claw'||p.fi>4)A.step=0;else{let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<150&&Math.abs(d.y-p.y)<160)near=true}
   if(near)A.step=0;else{const dx=Math.min(A.step,Math.max(120,A.step*14)*dt);A.step-=dx;p.x+=p.face*dx;if(typeof clampX==='function')p.x=clampX(p.x);if(t%.04<dt*1.5)ghost(.14,0)}}}
  // charged punch in flight: lunge, lean, afterimages
- if(A.pow){const w=A.pow;if(p.state!=='claw'||p.anim!==w.a)endPow();
-  else{if(t%.03<dt*1.5&&p.fi>=3&&p.fi<=6)ghost(.2,0);
+ if(A.pow){const w=A.pow;if(p.state!=='claw'||(p.anim!==w.a&&p.anim!=='uc49')){
+  if(w.kind==='up'&&!p.ground){if(!w.pop){w.pop=1;for(const d of dummies){if(!d||!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-30&&g<210){d.vy=-1160;d.vx=p.face*70;d.fl=Math.max(d.fl||0,.95);if(d.sp){d.ps='air';d.pt=0;d.st='air'}}}}}
+  else endPow();
+ }else{if(t%.03<dt*1.5&&p.fi>=3&&p.fi<=6)ghost(.2,0);
    const max=w.kind==='up'?40:w.kind==='hay'?70:95,sp=w.kind==='hay'?560:820;
    if(p.fi>=3&&p.fi<=5&&w.lunge<max){let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<100&&Math.abs(d.y-p.y)<160)near=true}
     if(!near){const dx=Math.min(max-w.lunge,sp*dt);w.lunge+=dx;p.x+=p.face*dx;if(typeof clampX==='function')p.x=clampX(p.x)}}
@@ -178,15 +182,23 @@ const _pre=r9Pre;r9Pre=function(dt){try{tick(dt)}catch(e){console.warn('kd48',e)
 const _upd=update;update=function(dt){const r=_upd.apply(this,arguments);
  try{
   const w=A.pow;
-  if(w&&w.kind==='up'&&p.state==='claw'&&p.anim==='bxpu'){
-   if(!w.rose&&p.ft>=2.55){w.rose=1;p.ground=false;p.vy=-1120;p.jumps=Math.max(p.jumps||0,1)}
-   if(!w.pop&&p.fi>=4&&p.fi<=6){w.pop=1;
-    for(const d of dummies){if(!d||!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;
-     if(g>-50&&g<190&&d.y>p.y-240&&d.y<p.y+40){d.vy=-1160;d.vx=p.face*70;d.fl=Math.max(d.fl||0,.95);
-      if(d.sp){d.ps='air';d.pt=0;d.st='air';d.y=Math.min(d.y,(typeof GROUND==='number'?GROUND:d.y)-6)}}}}
+  const fl=typeof floorAt==='function'?floorAt(p.x):p.y;
+  function popDummy(){
+   if(!w||w.pop)return;
+   w.pop=1;
+   for(const d of dummies){if(!d||!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;
+    if(g<-20||g>200||d.y<p.y-260||d.y>p.y+50)continue;
+    d.vy=-1160;d.vx=p.face*70;d.fl=Math.max(d.fl||0,.95);
+    if(d.sp){d.ps='air';d.pt=0;d.st='air';d.y=Math.min(d.y,fl-6)}}
+  }
+  if(w&&w.kind==='up'&&p.state==='claw'&&(p.anim==='bxpu'||p.anim==='uc49')){
+   if(!w.rose&&p.ft>=2.4){w.rose=1;A.hang=performance.now()/1000;p.ground=false;p.vy=-1120;p.jumps=Math.max(p.jumps||0,1)}
+   if(!w.pop&&(p.fi>=4||p.ft>=3.3)) popDummy();
    if(typeof sparks!=='undefined'&&sparks.length>4)sparks.splice(0,sparks.length-4);
    if(typeof slashes!=='undefined')slashes.length=0;
   }
+  if(A.hang&&!p.ground&&p.state==='normal'){p.anim='bxpu';p.fi=6}
+  if(A.hang&&p.ground&&p.vy>=0)A.hang=0;
  }catch(e){}
  return r};
 // ---------- the pink-sheet look for each move: [anim, frame(t), lean(t), squash(t), lift(t)] ----------
@@ -202,8 +214,8 @@ const VIS={
  kpounce:{a:'bxpj',fi:t=>t<.05?2:4,r:()=>-.35*Math.max(-1,Math.min(1,-p.vy/1000)),s:()=>1.04,y:()=>0},
  kpl:{a:'bxpu',fi:t=>t<.12?3:t<.17?4:t<.24?5:t<.34?6:t<.44?7:8,r:()=>0,s:t=>t<.12?.94:1.05,y:()=>0},
  kcounter:{a:'bxx',fi:t=>t<.06?1:t<.11?2:t<.2?3:t<.3?4:t<.38?5:6,r:t=>t<.25?.06:0,s:t=>t>.11&&t<.2?.94:1,y:()=>0},
- kcharge:{a:()=>A.ch&&A.ch.kind==='jab'?'bxpj':A.ch&&A.ch.kind==='up'?'bxpu':'bxph',fi:t=>A.ch&&A.ch.kind==='up'?(t<.08?1:t<.2?2:3):A.ch&&A.ch.kind==='jab'?(t<.06?1:2):(t<.06?1:t<.12?2:3),
-  r:()=>A.ch&&A.ch.kind==='up'?0:-.05*((A.ch&&A.ch.lvl)||0),s:()=>A.ch&&A.ch.kind==='up'?1:(1-.04*((A.ch&&A.ch.lvl)||0)-(A.ch&&A.ch.full?.01*Math.sin(now*60):0)),y:()=>0},
+ kcharge:{a:()=>A.ch&&A.ch.kind==='jab'?'bxpj':A.ch&&A.ch.kind==='up'?'bxpu':'bxph',fi:t=>{const c=A.ch;if(!c)return 1;if(c.kind==='up')return t<.08?1:t<.2?2:3;if(c.kind==='jab')return t<.06?1:2;if(t>=.12)c.cock=1;return c.cock?3:(t<.06?1:2)},
+  r:()=>A.ch&&A.ch.kind==='up'?0:-.04*((A.ch&&A.ch.lvl)||0),s:()=>1,y:()=>0},
  kduc:{a:'bxpu',fi:t=>t<.08?3:t<.16?4:t<.28?5:6,r:()=>.08,s:()=>1,y:()=>0},
  kpound:{a:()=>p.shot?'bxpb':'bxlh',fi:t=>p.shot?3:(t<.12?1:t<.22?2:3),r:()=>.1,s:()=>1,y:()=>0}};
 function curVis(){const V=VIS[p.state];if(!V||!on())return null;const a=typeof V.a==='function'?V.a():V.a;return FR[a]?{V,a}:null}
@@ -219,9 +231,9 @@ const _rb=mRunBob;mRunBob=function(){const m=_rb();try{if(on()){const c=curVis()
 const _hd=hitDummy;hitDummy=function(d,move,dir){const w=A.pow;const r=_hd.apply(this,arguments);
  try{if(w&&on()&&move===w.a&&d&&!w.hit.has(d)){w.hit.add(d);const L=w.lvl,h=w.kind==='hay',u=w.kind==='up';
   d.hp-=1+(L>=1?1:0);if(d.hp<1)d.hp=1;d.vx=dir*(h?520:440)*(1+.6*L);d.vy=Math.min(d.vy,h?-(430+260*L):-(240+140*L));d.fl=Math.max(d.fl||0,h?.5:.35);if(u){d.hp-=1+(L>=1?1:0);if(d.hp<1)d.hp=1;d.vx=dir*(120+70*L);d.vy=Math.min(d.vy,-(1100+460*L));d.fl=Math.max(d.fl,.75)}
-  hitstop=Math.max(hitstop,.11+.05*L);shake=Math.max(shake,14+8*L);flashT=Math.max(flashT,.07);
-  const x=d.x-dir*30,y=d.y-(h?120:105);waves.push({x,y,r:20,l:1,big:true});waves.push({x,y,r:6,l:.8,big:true});
-  for(let i=0;i<26;i++){const an=(dir>0?0:Math.PI)+(Math.random()-.5)*2.6,v=260+Math.random()*560;sparks.push({x,y,vx:Math.cos(an)*v,vy:Math.sin(an)*v,l:.4,c:i%3?(h?'#ff9a3c':'#ffe14d'):'#fff'})}
+  hitstop=Math.max(hitstop,.06+.02*L);shake=Math.max(shake,u?5:8+4*L);if(!u)flashT=Math.max(flashT,.05);
+  const x=d.x-dir*30,y=d.y-(h?120:u?70:105);if(!u){waves.push({x,y,r:16,l:.7,big:true})}
+  for(let i=0;i<(u?4:8);i++){const an=(dir>0?0:Math.PI)+(Math.random()-.5)*1.2,v=160+Math.random()*220;sparks.push({x,y,vx:Math.cos(an)*v,vy:Math.sin(an)*v,l:.28,c:i%2?'#fff':'#ffe14d'})}
   say(NAMES[w.a],h?'#ff9a3c':'#ffe14d',true);log('powhit:'+w.kind)}}catch(_){}return r};
 // ---------- fx: charge glow, haymaker arc, power-jab streak ----------
 const _fx=drawFx;drawFx=function(){try{if(on())drawMine()}catch(e){if(!A.fxErr){A.fxErr=String(e);console.warn('kd48fx',e)}}_fx()};

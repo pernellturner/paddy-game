@@ -54,12 +54,13 @@ function dashFrame(){const N=U.N,t=p.t;
  if(t<.05)return N.h;if(t<.1)return N.f34||N.d;if(t<.16)return N.d;if(t<.3)return N.s;if(t<.4)return N.f56||N.k;return N.k}
 // ---- ↑ + Claw on the ground = the boxer uppercut (tap). Holding is kitti48's power wind-up. ----
 const _up=uppercut;uppercut=function(){
- const fl=typeof floorAt==='function'?floorAt(p.x):GROUND,justJ=!p.ground&&p.vy<0&&now-(p.lastJump||-9)<.25&&fl-p.y<110;
- if(!act()||!(p.ground||justJ)||p.wall)return _up.apply(this,arguments);
- if(justJ){p.y=fl;p.ground=true;p.jumps=0;p.vy=0}
+ const fl=typeof floorAt==='function'?floorAt(p.x):GROUND;
+ if(!act()||p.wall)return _up.apply(this,arguments);
+ if(!p.ground&&fl-p.y>90)return;
+ p.y=fl;p.ground=true;p.vy=0;p.jumps=0;
  p.state='normal';p.combo=p.keepT>0?p.keepCombo:(p.combo||0);p.keepT=0;p.cool=0;startClaw();
  if(p.state!=='claw')return;
- setAnim('bxpu',true);p.ft=p.fi=2;p.vx=0;p.vy=0;
+ setAnim('bxpu',true);p.ft=p.fi=2;p.vx=0;p.vy=0;p.ground=true;p.y=fl;
  Object.assign(P33,{a:'bxpu',last:'bxpu',lastFi:2,s:2,trav:0,q:null,early:false,hitDone:false,face:p.face,legacy:false});
  if(window.W31&&W31.names.length)W31.names[W31.names.length-1]='bxpu';
  say('UPPERCUT!','#ffe14d');U.n.newUp++;U.log.push('newup')};
@@ -82,7 +83,15 @@ const _fx=drawFx;drawFx=function(){if(sw){p.anim=sw.a;p.fi=sw.fi;sw=null}_fx()};
 let stepped=0;
 const _pre=r9Pre;r9Pre=function(dt){
  // ↑ is also jump. Pressed together with Claw, that must be the uppercut — not the jump-charge hop.
- try{if(act()&&p.ground&&!p.wall&&!p.hunt&&(p.state==='normal'||p.state==='jcharge')&&(P.jump||P.attack)&&(K.up||P.jump)&&(K.attack||P.attack)){if(p.state==='jcharge')p.state='normal';delete P.jump;delete P.attack;uppercut()}}catch(e){console.warn('uc49',e)}
+ try{
+  const up=!!(K.up||P.jump), atk=!!(K.attack||P.attack);
+  const ready=p.state==='normal'||p.state==='jcharge'||p.state==='land';
+  if(act()&&!p.wall&&!p.hunt&&ready&&up&&atk&&(p.ground||(typeof floorAt==='function'&&floorAt(p.x)-p.y<90))){
+   if(!U.arm&&!(window.KD48&&KD48.ch)){
+    U.arm=1; p.state='normal'; delete P.jump; delete P.attack; uppercut();
+   }
+  }else if(!K.up||!K.attack) U.arm=0;
+ }catch(e){console.warn('uc49',e)}
  _pre(dt);try{if(!on()||isCh()){if(!on())stepped=0;return}const ft=p.ft;
  const reach=isPow()?96:56,from=isPow()?2.6:3.15,to=isPow()?4.0:4.6;
  if(ft>=from&&ft<to&&stepped<reach&&p.state==='claw'){let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<105&&Math.abs(d.y-p.y)<200)near=true}

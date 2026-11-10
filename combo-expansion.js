@@ -45,6 +45,7 @@ function who(){return arena()?p:(CX.p||null)}
 function show(id, face){
   const spec=POSE[id]; if(!spec) return;
   const w=who(); if(!w) return;
+  if(arena()&&(id==='feint'||id==='heldw'||id==='low')&&(w.state==='land'||(CX.landAt&&rt()-CX.landAt<0.28))) return;
   if(arena()&&window.OD&&OD.move&&OD.move()) return;
   const imgs=moves&&moves[spec.spr]&&moves[spec.spr].imgs;
   CX.pose={id, spec, face:face||w.face||1, t:0, x0:w.x, y0:w.y, imgs:imgs||null, trail:[], hold:!!spec.hold, key:CX._key||null};
@@ -249,6 +250,8 @@ function tailFinisher(){
 let prev='';
 function arenaTick(dt){
   if(!base()) return;
+  if(p.ground&&CX._air) CX.landAt=rt();
+  CX._air=!p.ground;
   if(CX.hold&&!CX.hold.used&&K[CX.hold.k]&&rt()-CX.hold.t>0.16&&rt()-CX.hold.t<0.75){
     if(!(window.OD&&OD.move&&OD.move())){CX.hold.used=true; CX._key=CX.hold.k; playKind(kindOf(CX.hold.k, CX.hold.face), 2, true)}
   }
