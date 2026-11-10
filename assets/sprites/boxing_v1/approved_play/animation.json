@@ -55,6 +55,54 @@
         91
       ]
     },
+    "cross": {
+      "frames": [
+        "cross/frame_00.png",
+        "cross/frame_01.png",
+        "cross/frame_02.png",
+        "cross/frame_03.png",
+        "cross/frame_04.png",
+        "cross/frame_05.png",
+        "cross/frame_06.png",
+        "cross/frame_07.png",
+        "cross/frame_08.png"
+      ],
+      "durations_ms": [280, 60, 50, 40, 130, 60, 70, 60, 200],
+      "impact": [4],
+      "scale": 1.0282,
+      "anchor": [210, 408]
+    },
+    "hook": {
+      "frames": [
+        "hook/frame_00.png",
+        "hook/frame_01.png",
+        "hook/frame_02.png",
+        "hook/frame_03.png",
+        "hook/frame_04.png",
+        "hook/frame_05.png",
+        "hook/frame_06.png"
+      ],
+      "durations_ms": [280, 80, 60, 130, 60, 70, 200],
+      "impact": [3],
+      "scale": 1.0282,
+      "anchor": [210, 408]
+    },
+    "string_upper": {
+      "frames": [
+        "string_upper/frame_00.png",
+        "string_upper/frame_01.png",
+        "string_upper/frame_02.png",
+        "string_upper/frame_03.png",
+        "string_upper/frame_04.png",
+        "string_upper/frame_05.png",
+        "string_upper/frame_06.png",
+        "string_upper/frame_07.png"
+      ],
+      "durations_ms": [100, 70, 110, 70, 130, 80, 80, 110],
+      "impact": [4],
+      "scale": 1.0282,
+      "anchor": [210, 408]
+    },
     "weave": {
       "frames": [
         "weave/frame_00.png",
