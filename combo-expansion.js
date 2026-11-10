@@ -181,6 +181,8 @@ function noteTap(k, face){
 }
 function onTapRelease(k){
   if(!base()) return;
+  const held=window.KD48&&KD48.H&&KD48.H[k];
+  if(held&&rt()-held.t>0.22) return;
   if(window.KD48&&KD48.H&&KD48.H[k]&&KD48.H[k].dt) return;
   if(window.KD47&&KD47.req) return;
   if(window.KD48) KD48.req=null;

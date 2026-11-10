@@ -20,7 +20,7 @@ const on=()=>{try{return FORM()===0&&!(window.KITTY36&&KITTY36.on)&&!p.hunt}catc
 // v53: the charged uppercut exists only for the Practice Room NEW uppercut. OLD and story keep the leap.
 const newUp=()=>{try{return !!(window.UC49&&UC49.active&&UC49.active())}catch(_){return false}};
 const rt=()=>performance.now()/1000;
-const TAP=.15,CH0=.15,CHP=.3,CHF=.6,CHMAX=1.6;
+const TAP=.15,CH0=.28,CHP=.3,CHF=.6,CHMAX=1.6;
 const A=window.KD48={H:{},req:null,ctx:null,lastFwd:-9,combo:0,ch:null,pow:null,n:{slip:0,weave:0,slipjab:0,weavehook:0,charge:0,haymaker:0,powerjab:0,lighttap:0},log:[],faces:[],vr:0,vs:1,arcs:[]};
 function log(s){A.log.push(s);if(A.log.length>50)A.log.shift()}
 const LR=['left','right'];
@@ -104,7 +104,7 @@ function tick(dt){
   if(t-h.t>=TAP||!p.ground||!SUP_OK.has(p.state)){h.sup=false;K[k]=1;P[k]=1;BUF[k]=now}}}
  const S=p.state;
  // quick taps
- const q=A.req;if(q){if(t-q.t>(p.state==='claw'?.35:.15))A.req=null;
+ const q=A.req;if(q){if(t-q.t>(p.state==='claw'?.4:.25))A.req=null;
   else if(q.k==='slip'&&p.ground&&!p.wall&&(TAP_OK(S)||S==='kweave')&&!window.KD47.req&&!(window.PL&&PL.back)){A.req=null;slip()}
   else if(q.k==='weave'&&p.ground&&!p.wall&&(TAP_OK(S)||S==='kslip')&&!window.KD47.req){A.req=null;weave()}}
  // charge: Claw still held 0.15 s after the punch it started (before that punch lands) = wind-up instead

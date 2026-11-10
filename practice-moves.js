@@ -292,8 +292,10 @@ function punchNow(){
   return a==='bxx'||a==='bxlh'||a==='bxsu'?a:'';
 }
 function tickString(dt){
+  const rec=inRoom()&&p&&p.state==='claw'&&(p.anim==='bxrec'||(window.P33&&P33.a==='bxrec'));
+  if(rec&&vis) return;
   const id=punchNow();
-  if(!id){vis=null; return}
+  if(!id){if(!rec)vis=null; return}
   if(!vis||vis.id!==id){
     const s=window.P33&&P33.str;
     vis={id, t:0, chained:!!(window.P33&&P33.s>0), prev:s&&s.length>1?s[s.length-2]:''};
@@ -322,7 +324,7 @@ function stringImage(){
     return frameAt(moves.hook.imgs, chained?[2,3,4,5,6]:[1,2,3,4,5,6], chained?[60,130,60,70,200]:[80,60,130,60,70,200], ms);
   }
   if(vis.id==='bxsu'&&moves.string_upper){
-    const chained=vis.chained&&vis.prev==='bxlh';
+    const chained=!!vis.chained;
     return frameAt(moves.string_upper.imgs, chained?[1,2,3,4,5,6,7]:[0,1,2,3,4,5,6,7], chained?[70,110,70,130,80,80,110]:[100,70,110,70,130,80,80,110], ms);
   }
   return null;
@@ -330,6 +332,13 @@ function stringImage(){
 function stringing(){
   const im=stringImage();
   return !!(im&&im.naturalWidth);
+}
+function recoverImg(){
+  if(!(inRoom()&&p&&p.state==='claw'&&(p.anim==='bxrec'||(window.P33&&P33.a==='bxrec')))) return null;
+  if(vis) return stringImage();
+  const last=window.P33&&P33.str&&P33.str[P33.str.length-1];
+  if(last==='bxj1'&&moves&&moves.jab) return moves.jab.imgs[moves.jab.imgs.length-1];
+  return null;
 }
 function drawApproved(img, scale){
   if(!img||!img.naturalWidth) return;
@@ -354,6 +363,7 @@ const _drawFrame=drawFrame;
 drawFrame=function(f,x,y,face,alpha){
   if(jabbing()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<40) return;
   if(stringing()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<40) return;
+  if(recoverImg()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<40) return;
   if(hiding()&&Math.abs(x-p.x)<4&&Math.abs(y-p.y)<8) return;
   if(hiding()&&Math.abs(x-(p.prevX||p.x))<4&&Math.abs(y-(p.prevY||p.y))<8) return;
   if(covering()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<30) return;
@@ -362,7 +372,7 @@ drawFrame=function(f,x,y,face,alpha){
 const _hud=drawHUD;
 drawHUD=function(){
   if(jabbing()){try{drawApproved(jabImage(), BOX)}catch(e){if(!drawApproved.jab){drawApproved.jab=1;console.error('jab draw', e)}}}
-  else if(stringing()){try{drawApproved(stringImage(), BOX)}catch(e){if(!drawApproved.str){drawApproved.str=1;console.error('string draw', e)}}}
+  else if(stringing()||recoverImg()){try{drawApproved(stringing()?stringImage():recoverImg(), BOX)}catch(e){if(!drawApproved.str){drawApproved.str=1;console.error('string draw', e)}}}
   else if(hiding()){try{paint()}catch(e){if(!paint.err){paint.err=1;console.error('practice boxing draw', e)}}}
   else if(covering()){try{paintBreath()}catch(e){if(!paintBreath.err){paintBreath.err=1;console.error('breath', e)}}}
   return _hud.apply(this, arguments);

@@ -46,7 +46,7 @@ const POWER={jab:'bxpj',cross:'bxph',hook:'bxph',body:'bxpb'};   // the cross ha
 const NEXT={'':'bxj1',jab:'bxx',cross:'bxlh',hook:'bxsu',body:'bxj1',upper:'bxj1',suc:'bxj1',rec:'bxj1'};
 function pick(inp,n,beat){const lastK=P33.last?PD[P33.last][1]:'';let a;
  if(inp.down)a='bxrb';
- else if(inp.up)a=(lastK==='hook'||lastK==='upper')?'bxpu':'bxlh';
+ else if(inp.up)a=(window.PRACTICE&&PRACTICE.on)?'bxsu':((lastK==='hook'||lastK==='upper')?'bxpu':'bxlh');
  else if(inp.back)a='bxx';
  else if(inp.fwd)a=(P33.last==='bxj1')?'bxj2':'bxj1';
  else a=NEXT[lastK]||'bxj1';
@@ -54,18 +54,27 @@ function pick(inp,n,beat){const lastK=P33.last?PD[P33.last][1]:'';let a;
  if(n>=4&&n<=6&&beat&&!inp.up&&!inp.down)return POWER[PD[a][1]]||a;
  return a}
 function readInp(){const fwd=p.face>0?K.right:K.left,back=p.face>0?K.left:K.right;return{down:!!K.down&&!K.up,up:!!K.up,fwd:!!fwd&&!back,back:!!back&&!fwd}}
+function aimed(){if(P33.aim&&rnow()-P33.aim.t<.22)return P33.aim.inp;return readInp()}
+const _aimPress=press;press=function(k){const r=_aimPress.apply(this,arguments);if(base()&&k==='attack')P33.aim={t:rnow(),inp:readInp()};return r};
 // ---- start a punch (wraps startClaw so the game's own opener goes through here too) ----
 let pend=null;   // {a, s} set by our continuation; null = the game opened a fresh string
 const _sc=startClaw;startClaw=function(){if(!base())return _sc.apply(this,arguments);
+ if(!pend&&P33.grace&&rnow()<P33.grace&&(p.combo>0||P33.graceCombo>0)){
+  if(!p.combo)p.combo=P33.graceCombo||0;
+  if(!P33.last&&P33.graceLast)P33.last=P33.graceLast;
+  pend={a:pick(aimed(),(p.combo||0)+1,false),s:1};
+  P33.grace=0;
+ }
  const n=Math.min(8,p.combo+1),fresh=!pend||p.combo===0;
- let a,s;if(pend&&!fresh){a=pend.a;s=pend.s}else{P33.last='';P33.beat=true;P33.str=[];a=pick(readInp(),1,false);s=0;P33.rec=false}
+ let a,s;if(pend&&!fresh){a=pend.a;s=pend.s}else{P33.last='';P33.beat=true;P33.str=[];a=pick(aimed(),1,false);s=0;P33.rec=false}
  pend=null;const c=CLAWS[n];Object.assign(c,{a,nm:PD[a][2],col:PD[a][3],sp:PD[a][3],lunge:0,k:'flat'});
  const n0=(window.K29&&K29.imp.length)||0;const prevF=(FR[p.anim]||[])[p.fi],px=p.x;
  _sc.apply(this,arguments);
  if(window.K29&&K29.imp.length>n0)K29.imp.splice(n0).forEach(o=>{if(!o.streak)K29.imp.push(o)});   // no straight claw streaks: the sheets carry their own trails
  if(p.state!=='claw')return;
  p.vy=p.ground?0:p.vy;p.vx=0;
- if(p.anim==='pcup'){P33.legacy=true;P33.last='';P33.a=null;return}    // ↑ + Claw: kitty29's sky swipe, old timing
+ if(p.anim==='pcup'&&!(window.PRACTICE&&PRACTICE.on&&a==='bxsu')){P33.legacy=true;P33.last='';P33.a=null;return}    // ↑ + Claw outside the Practice Room: kitty29's sky swipe
+ if(window.PRACTICE&&PRACTICE.on&&a==='bxsu'){p.vy=0;p.ground=true;if(typeof floorAt==='function')p.y=floorAt(p.x)}
  P33.legacy=false;
  if(p.anim!==a)setAnim(a,true);
  p.ft=s;p.fi=s;if(s>0){p.blend=0;p.prevF=null}   // cancels never crossfade (that would double the pose)
@@ -74,13 +83,17 @@ const _sc=startClaw;startClaw=function(){if(!base())return _sc.apply(this,argume
 // root jump for a cancel: the next punch's frame 1 sits where this punch's neutral would have been
 function rootJump(prevA,fromFi,nextA,s){const d=(rx(prevA,PD[prevA][7])-rx(prevA,fromFi))+rx(nextA,s)-rx(nextA,0);move(d*RS)}
 const LIM=a=>PD[a][8]?80:60;   // max travel (world px) per punch, so a long string can't skate across the arena
-function move(dx){if(!dx)return;let d=p.face*dx;
+function move(dx){if(!dx)return;
+ if(window.PRACTICE&&PRACTICE.on)return;   // the boxing sheets are foot-locked; the old root slide skates him
+ let d=p.face*dx;
  if(d*p.face>0){for(const q of dummies){if(!q.alive||q.benched)continue;const g=(q.x-p.x)*p.face;if(g>-20&&g<92&&Math.abs(q.y-p.y)<160){d=0;break}}}  // don't walk through the enemy
  if(P33.a&&d*p.face>0){const room=LIM(P33.a)-P33.trav;if(room<=0)d=0;else if(Math.abs(d)>room)d=p.face*room;P33.trav+=Math.abs(d)}
  p.x+=d;if(typeof clampX==='function')p.x=clampX(p.x)}
 // ---- per frame: input, root motion, cancels, recovery ----
 function tick(dt){if(!base()){P33.on=false;return}
- if(p.state!=='claw'){P33.a=null;P33.legacy=false;return}
+ if(p.state!=='claw'){
+  if(P33.grace&&rnow()>=P33.grace){P33.grace=0;P33.graceCombo=0;if(p.combo)p.combo=0;P33.last='';P33.graceLast=''}
+  P33.a=null;P33.legacy=false;return}
  if(P33.legacy){if(p.anim!=='pcup'){P33.legacy=false}else return}
  const a=p.anim,D=PD[a];if(!D)return;P33.on=true;
  if(p.face!==P33.face){P33.face=p.face;P33.lastFi=p.fi;P33.trav=0}       // turned round mid-punch (kitty29 restarts the punch)
@@ -90,11 +103,11 @@ function tick(dt){if(!base()){P33.on=false;return}
  // finisher button mid-string still works
  if(P.finisher&&p.combo>=2){delete P.finisher;finisher();return}
  if(P.attack){delete P.attack;acted=true;
-  if(a==='bxrec'){P33.q={t:now,inp:readInp(),beat:false,fresh:true}}
+  if(a==='bxrec'){P33.q={t:rnow(),inp:aimed(),beat:false,fresh:true}}
   else{const on=fi>=D[4]&&!P33.early;if(fi<D[4])P33.early=true;   // on the beat = one press, on or after the impact frame; mashing before the hit doesn't count
-   P33.q={t:now,inp:readInp(),beat:on}}}
+   P33.q={t:rnow(),inp:aimed(),beat:on}}}
  if(a==='bxrec'){if(P33.q){const inp=P33.q.inp;P33.q=null;pend={a:pick(inp,p.combo+1,false),s:1};startClaw();return}
-  if(ft>=3){p.state='normal';p.combo=0;p.cool=.04;P33.a=null}return}
+  if(ft>=3){P33.grace=rnow()+.25;P33.graceCombo=p.combo||0;P33.graceLast=P33.last;p.state='normal';p.cool=.04;P33.a=null}return}
  const q=P33.q;
  if(q&&fi>=D[5]){   // chain as soon as the hit has landed, so a free string does not stall in the recovery
   P33.q=null;const n=p.combo+1;
