@@ -39,9 +39,13 @@ function upd(d,dt){d.t+=dt;d.pt+=dt;d.flash-=dt;d.sq*=Math.pow(.01,dt);d.stun-=d
  d.fs+=(d.face-d.fs)*Math.min(1,dt*12);
  const held=CINE.includes(p.state)&&p.grab===d,frozen=d.mfz>0||(typeof M14!=='undefined'&&M14.tstop>0);
  // same launch / float / gravity as every other target, so launchers and juggles feel identical to a real fight
- const dIdle=now-(d.lastHitT||-9);if(d.y<GROUND-25&&dIdle>.5&&d.fl>0&&!(p.state==='lkult'||CINE.includes(p.state)))d.fl=0;d.fl-=dt;
- d.vy+=(d.fl>0?420:dIdle>.9&&d.y<GROUND-25?2300:1700)*dt;if(d.fl>0)d.vx*=Math.pow(.3,dt);
- d.x+=d.vx*dt;d.y+=d.vy*dt;const lo=LW+50,hi=WALL_X-50;if(d.x<lo){d.x=lo;d.vx=Math.abs(d.vx)*.5}if(d.x>hi){d.x=hi;d.vx=-Math.abs(d.vx)*.5}if(d.y<GROUND-560){d.y=GROUND-560;if(d.vy<0)d.vy=0}
+ const dIdle=now-(d.lastHitT||-9);if(d.y<GROUND-25&&dIdle>.32&&d.fl>0&&!(p.state==='lkult'||CINE.includes(p.state)))d.fl=0;d.fl-=dt;
+ // A launcher still pops him, then real gravity brings him back down. The old
+ // 420 drift plus a ceiling that zeroed his fall left him hanging in the lights.
+ const high=d.y<GROUND-300, grav=high?2800:(d.fl>0.15?1600:2100);
+ d.vy+=grav*dt;if(d.fl>0)d.vx*=Math.pow(.35,dt);
+ d.x+=d.vx*dt;d.y+=d.vy*dt;const lo=LW+50,hi=WALL_X-50;if(d.x<lo){d.x=lo;d.vx=Math.abs(d.vx)*.5}if(d.x>hi){d.x=hi;d.vx=-Math.abs(d.vx)*.5}
+ if(d.y<GROUND-500){d.y=GROUND-500;if(d.vy<120)d.vy=120;d.fl=0}
  let landed=false;if(d.y>=GROUND){d.y=GROUND;if(d.vy>350){landed=true;d.vy=Math.max(-300,d.vy*-.25);d.sq=.7;spark(d.x,GROUND,6,'#d9c49a',140)}else d.vy=0;d.vx*=Math.pow(.02,dt)}
  const air=d.y<GROUND-2||d.vy<-1;d.peak=Math.max(d.peak||0,GROUND-d.y);d.rot*=Math.pow(.001,dt);
  if(d.hp<=0){d.hp=d.max;d.hpShow=d.max;d.bub={t:'♥ REFILL',l:.9,c:'#7dff7a'};spark(d.x,d.y-120,10,['#7dff7a','#fff'],220)}   // never breaks
@@ -113,8 +117,11 @@ const _hd=hitDummy;hitDummy=function(d,move,dir){if(!d||!d.sp||!PR.on)return _hd
  return r};
 // count BLOCKED!/COUNTER! from every form's own defence (kitty guard/dodge-counter, samurai & knight parries)
 const _say=say;say=function(t){if(PR.on){if(t==='BLOCKED!')PR.s.blocked++;else if(t==='COUNTER!'){if(now-(PR.cT||-9)<.7)return _say.apply(this,arguments);PR.cT=now;PR.s.counter++;for(const d of live())if(d.role==='atk'){d.countered=1;d.cw=0}}else if(t==='DODGE!')return}return _say.apply(this,arguments)};
-const _dd=drawDummies;drawDummies=function(){const all=dummies.slice();if(!all.some(d=>d.sp))return _dd();const keep=all.filter(d=>!d.sp);dummies.length=0;dummies.push(...keep);
- try{_dd()}finally{dummies.length=0;dummies.push(...all)}for(const d of all)if(d.sp)drawD(d)};
+const _dd=drawDummies;drawDummies=function(){const all=dummies.slice();if(!all.some(d=>d.sp))return _dd();
+ // Behind Paddy and the spin rings. Drawing him after the whirl put the glove on top of the move.
+ for(const d of all)if(d.sp)drawD(d);
+ const keep=all.filter(d=>!d.sp);dummies.length=0;dummies.push(...keep);
+ try{_dd()}finally{dummies.length=0;dummies.push(...all)}};
 if(typeof r12Takedown==='function'){const _tk=r12Takedown;r12Takedown=function(){if(PR.on)return false;return _tk.apply(this,arguments)}}
 const _hud=r12HUD;r12HUD=function(){const r=_hud.apply(this,arguments);if(PR.on)try{panel()}catch(e){console.warn('pr panel',e)}return r};
 const _ud=updDummies;updDummies=function(dt){_ud(dt);if(PR.on){PR.hintT+=dt;if(p.hp<PR.hp0)p.hp=PR.hp0}};
@@ -131,13 +138,16 @@ function drawD(d){const hg=Math.max(0,GROUND-d.y);ctx.fillStyle='rgba(0,0,0,.2)'
  if(d.ps==='wind'){const u=Math.sin(now*22)*.5+.5,gx=d.x+d.face*40,gy=d.y-104;ctx.save();const g=ctx.createRadialGradient(gx,gy,4,gx,gy,90+u*20);
   g.addColorStop(0,`rgba(255,40,30,${.4+.3*u})`);g.addColorStop(.6,`rgba(255,60,40,${.16+.1*u})`);g.addColorStop(1,'rgba(255,40,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(gx,gy,115,0,6.283);ctx.fill();
   const r=18+80*(1-d.pt/WIND);ctx.lineWidth=4;ctx.strokeStyle=`rgba(255,255,255,${.5+.5*d.pt/WIND})`;ctx.beginPath();ctx.arc(d.x+d.face*(atkArt?DART.atk.reach*FSC()*SC*.85:26+GR*.75),gy,r,0,6.283);ctx.stroke();ctx.restore()}
- const [f,mir]=frame(d);if(!f){ctx.save();ctx.fillStyle='#d7c4a8';ctx.beginPath();ctx.ellipse(d.x,d.y-70,36,48,0,0,6.28);ctx.fill();ctx.restore()}if(f){const im=IMG[f.f];ctx.save();const air=d.ps==='air'&&d.y<GROUND-2;ctx.translate(d.x,d.y+(air?(f.lf||0)*SC:0));
+ const [f,mir]=frame(d);if(!f){ctx.save();ctx.fillStyle='#d7c4a8';ctx.beginPath();ctx.ellipse(d.x,d.y-70,36,48,0,0,6.28);ctx.fill();ctx.restore()}if(f){const im=IMG[f.f];ctx.save();const air=d.ps==='air'&&d.y<GROUND-2;
+ // launched_fall's anchor sits hundreds of pixels above the bitmap, so the picture hung in the air while the hit box stayed low.
+ const foot=f.ay>f.h+8?f.h-1:f.ay;
+ ctx.translate(d.x,d.y+(air?(f.lf||0)*SC:0));
   ctx.rotate(d.rot+(-d.face*d.lean*.2));
   const grabbed=window.CX&&CX.grab===d&&CX.grabT&&now-CX.grabT<0.7;
   const s=grabbed?1:(1+d.sq*.12+(d.ps==='wind'?d.lean*.06:0));
   if(grabbed) ctx.rotate(d.face*-0.22);
-  ctx.scale((mir?-1:1)*SC/s,SC*s);ctx.drawImage(im,-f.ax,-f.ay);
-  if(d.flash>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,d.flash/.12)*.5;ctx.drawImage(im,-f.ax,-f.ay)}ctx.restore()}
+  ctx.scale((mir?-1:1)*SC/s,SC*s);ctx.drawImage(im,-f.ax,-foot);
+  if(d.flash>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,d.flash/.12)*.5;ctx.drawImage(im,-f.ax,-foot)}ctx.restore()}
  if(gl)glove(d,d.ext);
  if(d.hpShow<d.max-.01&&d.ps!=='down'){const w=70,y=d.y-190;ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(d.x-w/2-2,y-2,w+4,8);ctx.fillStyle='#ffb347';ctx.fillRect(d.x-w/2,y,w*Math.max(0,d.hpShow)/d.max,4);ctx.fillStyle='#7dff7a';ctx.fillRect(d.x-w/2,y,w*Math.max(0,d.hp)/d.max,4)}
  if(d.bub){const b=d.bub,a=Math.min(1,b.l*3),big=b.t.length<=2,pop=big?1+.15*Math.sin(now*20):1;fancy(b.t,d.x+(big?d.face*30:0),d.y-(d.ps==='down'?100:big?215:225),big?46:24,0,pop,a,b.c)}}

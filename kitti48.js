@@ -158,7 +158,8 @@ function tick(dt){
   if(w.kind==='up'&&!p.ground){if(!w.pop){w.pop=1;for(const d of dummies){if(!d||!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-30&&g<210){d.vy=-1160;d.vx=p.face*70;d.fl=Math.max(d.fl||0,.95);if(d.sp){d.ps='air';d.pt=0;d.st='air'}}}}}
   else endPow();
  }else{if(t%.03<dt*1.5&&p.fi>=3&&p.fi<=6)ghost(.2,0);
-   const max=w.kind==='up'?40:w.kind==='hay'?70:95,sp=w.kind==='hay'?560:820;
+   const roomHay=w.kind==='hay'&&window.PRACTICE&&PRACTICE.on;
+   const max=w.kind==='up'?40:w.kind==='hay'?(roomHay?12:70):95,sp=w.kind==='hay'?(roomHay?140:560):820;
    if(p.fi>=3&&p.fi<=5&&w.lunge<max){let near=false;for(const d of dummies){if(!d.alive||d.benched)continue;const g=(d.x-p.x)*p.face;if(g>-20&&g<100&&Math.abs(d.y-p.y)<160)near=true}
     if(!near){const dx=Math.min(max-w.lunge,sp*dt);w.lunge+=dx;p.x+=p.face*dx;if(typeof clampX==='function')p.x=clampX(p.x)}}
    if(p.fi>=4&&p.fi<=6&&!w.arc){w.arc=1;A.arcs.push({x:p.x,y:p.y,face:p.face,kind:w.kind,l:1,lvl:w.lvl})}}}

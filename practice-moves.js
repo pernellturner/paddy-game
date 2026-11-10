@@ -245,7 +245,8 @@ function inRoom(){
 }
 function guardIdle(){
   if(!p.ground) return false;
-  if(p.state&&p.state!=='normal'&&p.state!=='land'&&p.state!=='stop') return false;
+  if(p.state==='land') return false;
+  if(p.state&&p.state!=='normal'&&p.state!=='stop') return false;
   if(window.CX&&CX.pose) return false;
   if(window.OD&&OD.move&&OD.move()) return false;
   if(Math.abs(p.vx||0)>30) return false;

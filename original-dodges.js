@@ -197,6 +197,12 @@ function hitArena(fly){
     if(!d||!d.alive||d.benched) continue;
     const dx=(d.x-p.x)*p.face;
     const popSoon=!!(act&&act.launch);
+    // Practice only: a punch that faces the other way must not connect, and a grounded swing
+    // cannot reach a dummy floating over his head.
+    if(window.PRACTICE&&PRACTICE.on&&typeof FORM==='function'&&FORM()===0){
+      if(dx<-12) continue;
+      if(p.ground&&!popSoon&&(dx>155||d.y<p.y-80)) continue;
+    }
     if(dx<-50||dx>(room?220:popSoon?260:180)) continue;
     if(!popSoon&&Math.abs((d.y||0)-(p.y||0))>220) continue;
     if(popSoon&&(d.y||0)<p.y-260) continue;
