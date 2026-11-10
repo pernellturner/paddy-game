@@ -34,7 +34,7 @@ function loadImage(src){
 }
 (async function boot(){
   try{
-    const r=await fetch('assets/sprites/boxing_v1/approved_play/animation.json?v=9');
+    const r=await fetch('assets/sprites/boxing_v1/approved_play/animation.json?v=10');
     if(!r.ok) throw new Error('animation.json '+r.status);
     const pack=await r.json();
     foot=pack.foot||foot;
@@ -43,9 +43,10 @@ function loadImage(src){
     for(const name in pack.moves){
       const m=pack.moves[name];
       const imgs=[];
-      for(const rel of m.frames) imgs.push(await loadImage(base+rel+'?v=9'));
+      for(const rel of m.frames) imgs.push(await loadImage(base+rel+'?v=10'));
       moves[name]={imgs, ms:m.durations_ms.map(v=>v/1000), impact:new Set(m.impact||[]), reach:m.reach_px||[]};
     }
+    moves.crossTurn=await loadImage(base+'cross/combo_turn.png?v=10');
     guard=moves.jab.imgs[0];
     loaded=true;
     const pad=i=>String(i).padStart(2,'0');
@@ -283,6 +284,52 @@ function jabImage(){
   }
   return imgs[imgs.length-1];
 }
+let vis=null;
+function punchNow(){
+  if(!inRoom()||!p||p.state!=='claw') return '';
+  const a=(p.anim==='p53'&&window.P33&&P33.a)?P33.a:p.anim;
+  return a==='bxx'||a==='bxlh'||a==='bxsu'?a:'';
+}
+function tickString(dt){
+  const id=punchNow();
+  if(!id){vis=null; return}
+  if(!vis||vis.id!==id){
+    const s=window.P33&&P33.str;
+    vis={id, t:0, chained:!!(window.P33&&P33.s>0), prev:s&&s.length>1?s[s.length-2]:''};
+  }else vis.t+=dt;
+}
+function frameAt(imgs, order, times, ms){
+  for(let i=0;i<order.length;i++){
+    if(ms<times[i]) return imgs[order[i]];
+    ms-=times[i];
+  }
+  return imgs[order[order.length-1]];
+}
+function stringImage(){
+  if(!vis||!moves) return null;
+  const ms=vis.t*1000;
+  if(vis.id==='bxx'&&moves.cross){
+    const imgs=moves.cross.imgs;
+    if(vis.chained&&vis.prev==='bxj1'&&moves.crossTurn&&moves.crossTurn.naturalWidth){
+      if(ms<50) return moves.crossTurn;
+      return frameAt(imgs, [2,3,4,5,6,7,8], [50,40,130,60,70,60,200], ms-50);
+    }
+    return frameAt(imgs, [1,2,3,4,5,6,7,8], [60,50,40,130,60,70,60,200], ms);
+  }
+  if(vis.id==='bxlh'&&moves.hook){
+    const chained=vis.chained&&vis.prev==='bxx';
+    return frameAt(moves.hook.imgs, chained?[2,3,4,5,6]:[1,2,3,4,5,6], chained?[60,130,60,70,200]:[80,60,130,60,70,200], ms);
+  }
+  if(vis.id==='bxsu'&&moves.string_upper){
+    const chained=vis.chained&&vis.prev==='bxlh';
+    return frameAt(moves.string_upper.imgs, chained?[1,2,3,4,5,6,7]:[0,1,2,3,4,5,6,7], chained?[70,110,70,130,80,80,110]:[100,70,110,70,130,80,80,110], ms);
+  }
+  return null;
+}
+function stringing(){
+  const im=stringImage();
+  return !!(im&&im.naturalWidth);
+}
 function drawApproved(img, scale){
   if(!img||!img.naturalWidth) return;
   ctx.save();
@@ -305,6 +352,7 @@ function paintBreath(){
 const _drawFrame=drawFrame;
 drawFrame=function(f,x,y,face,alpha){
   if(jabbing()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<40) return;
+  if(stringing()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<40) return;
   if(hiding()&&Math.abs(x-p.x)<4&&Math.abs(y-p.y)<8) return;
   if(hiding()&&Math.abs(x-(p.prevX||p.x))<4&&Math.abs(y-(p.prevY||p.y))<8) return;
   if(covering()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<30) return;
@@ -313,6 +361,7 @@ drawFrame=function(f,x,y,face,alpha){
 const _hud=drawHUD;
 drawHUD=function(){
   if(jabbing()){try{drawApproved(jabImage(), BOX)}catch(e){if(!drawApproved.jab){drawApproved.jab=1;console.error('jab draw', e)}}}
+  else if(stringing()){try{drawApproved(stringImage(), BOX)}catch(e){if(!drawApproved.str){drawApproved.str=1;console.error('string draw', e)}}}
   else if(hiding()){try{paint()}catch(e){if(!paint.err){paint.err=1;console.error('practice boxing draw', e)}}}
   else if(covering()){try{paintBreath()}catch(e){if(!paintBreath.err){paintBreath.err=1;console.error('breath', e)}}}
   return _hud.apply(this, arguments);
@@ -323,7 +372,7 @@ update=function(dt){
   if(on()) steal();
   const r=_update.apply(this, arguments);
   if(on()){try{sync(dt, x0)}catch(e){if(!sync.err){sync.err=1;console.error('practice boxing', e)}}}
-  else {try{tickBreath(dt)}catch(e){if(!tickBreath.err){tickBreath.err=1;console.error('breath', e)}}}
+  else {try{tickBreath(dt); tickString(dt)}catch(e){if(!tickBreath.err){tickBreath.err=1;console.error('breath', e)}}}
   return r;
 };
 const _start=startClaw;
