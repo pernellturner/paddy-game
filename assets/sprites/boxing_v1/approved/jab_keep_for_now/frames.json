@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "status": "review_only_not_game_ready",
+  "version": 4,
+  "status": "approved_by_pernell_2026-11-11_for_game",
   "canvas": {
     "width": 384,
     "height": 384
@@ -12,10 +12,10 @@
     "x": 244,
     "y": 332
   },
-  "loop_ms": 920,
+  "loop_ms": 1050,
   "strip": {
     "file": "jab_strip.png",
-    "columns": 8,
+    "columns": 10,
     "rows": 1,
     "frame_width": 384,
     "frame_height": 384
@@ -25,103 +25,158 @@
       "file": "frame_01_guard.png",
       "phase": "guard",
       "duration_ms": 280,
-      "source": "03_panel_01",
-      "scale": 1,
-      "translation_px": [
-        65,
-        54
+      "source": "old approved frame_01_guard (unchanged)",
+      "feet_bottom_y": 340,
+      "rear_paw_x": [
+        165,
+        204
       ],
-      "front_foot_anchor_x": 244
+      "front_paw_x": [
+        230,
+        264
+      ]
     },
     {
-      "file": "frame_02_load.png",
+      "file": "frame_02_stance_in.png",
+      "phase": "stance_in",
+      "duration_ms": 60,
+      "source": "load eased half way to the old guard stance (rear paw half way), head top 57, remap in-between",
+      "feet_bottom_y": 341,
+      "rear_paw_x": [
+        145,
+        177
+      ],
+      "front_paw_x": [
+        233,
+        264
+      ]
+    },
+    {
+      "file": "frame_03_load.png",
       "phase": "load",
-      "duration_ms": 80,
-      "source": "03_panel_10",
-      "scale": 1,
-      "translation_px": [
-        53,
-        56
+      "duration_ms": 100,
+      "source": "rig v3 load guide -> GenerateImage; old head/tail pasted; colour+shading matched, torso slimmed, head raised (shape.py)",
+      "feet_bottom_y": 341,
+      "rear_paw_x": [
+        121,
+        153
       ],
-      "front_foot_anchor_x": 244
+      "front_paw_x": [
+        233,
+        264
+      ]
     },
     {
-      "file": "frame_03_load_hold.png",
-      "phase": "load_hold",
+      "file": "frame_04_launch.png",
+      "phase": "launch",
       "duration_ms": 50,
-      "source": "03_panel_10",
-      "scale": 1,
-      "translation_px": [
-        53,
-        56
+      "source": "rig v3 launch guide -> GenerateImage; old head/tail; colour+shading matched, torso slimmed, head raised (shape.py); rear-foot pivot 18deg",
+      "feet_bottom_y": 341,
+      "rear_paw_x": [
+        129,
+        155
       ],
-      "front_foot_anchor_x": 244
+      "front_paw_x": [
+        233,
+        265
+      ]
     },
     {
-      "file": "frame_04_extension.png",
+      "file": "frame_05_extension.png",
       "phase": "extension",
-      "duration_ms": 50,
-      "source": "03_panel_11",
-      "scale": 1,
-      "translation_px": [
-        62,
-        56
+      "duration_ms": 40,
+      "source": "rig v3 extend guide -> GenerateImage; old head/tail; colour+shading matched, torso slimmed, head raised (shape.py); rear-foot pivot 24deg",
+      "feet_bottom_y": 341,
+      "rear_paw_x": [
+        122,
+        144
       ],
-      "front_foot_anchor_x": 244
+      "front_paw_x": [
+        232,
+        264
+      ]
     },
     {
-      "file": "frame_05_impact.png",
+      "file": "frame_06_impact.png",
       "phase": "impact",
-      "duration_ms": 110,
-      "source": "03_panel_03",
-      "scale": 1,
-      "translation_px": [
-        58,
-        65
+      "duration_ms": 130,
+      "source": "rig v3 impact guide -> GenerateImage; old head pasted rotated -12deg; colour+shading matched, torso slimmed, head raised (shape.py); rear-foot pivot 30deg",
+      "feet_bottom_y": 340,
+      "rear_paw_x": [
+        112,
+        138
       ],
-      "front_foot_anchor_x": 244
+      "front_paw_x": [
+        230,
+        267
+      ]
     },
     {
-      "file": "frame_06_recoil.png",
+      "file": "frame_07_recoil.png",
       "phase": "recoil",
       "duration_ms": 60,
-      "source": "03_panel_11",
-      "scale": 1,
-      "translation_px": [
-        62,
-        56
+      "source": "= extension",
+      "feet_bottom_y": 341,
+      "rear_paw_x": [
+        122,
+        144
       ],
-      "front_foot_anchor_x": 244
+      "front_paw_x": [
+        232,
+        264
+      ]
     },
     {
-      "file": "frame_07_return.png",
+      "file": "frame_08_return.png",
       "phase": "return",
-      "duration_ms": 90,
-      "source": "03_panel_04",
-      "scale": 1,
-      "translation_px": [
-        64,
-        62
+      "duration_ms": 70,
+      "source": "= launch",
+      "feet_bottom_y": 341,
+      "rear_paw_x": [
+        129,
+        155
       ],
-      "front_foot_anchor_x": 244
+      "front_paw_x": [
+        233,
+        265
+      ]
     },
     {
-      "file": "frame_08_guard.png",
+      "file": "frame_09_stance_out.png",
+      "phase": "stance_out",
+      "duration_ms": 60,
+      "source": "= stance_in",
+      "feet_bottom_y": 341,
+      "rear_paw_x": [
+        145,
+        177
+      ],
+      "front_paw_x": [
+        233,
+        264
+      ]
+    },
+    {
+      "file": "frame_10_guard.png",
       "phase": "guard",
       "duration_ms": 200,
-      "source": "03_panel_01",
-      "scale": 1,
-      "translation_px": [
-        65,
-        54
+      "source": "old approved frame_01_guard (unchanged)",
+      "feet_bottom_y": 340,
+      "rear_paw_x": [
+        165,
+        204
       ],
-      "front_foot_anchor_x": 244
+      "front_paw_x": [
+        230,
+        264
+      ]
     }
   ],
+  "punching_arm": "anatomical LEFT front paw (rig bones *.L at -X; verified in rig data and by eye)",
   "limitations": [
-    "Five unique drawn poses, with load held and extension reused on recoil; not eight newly drawn temporal poses.",
-    "Rear-paw stance changes between guard and load; front paw is anchored.",
-    "Load-to-extension needs a genuine anatomical in-between; the held load is not a genuine turn-start pose.",
-    "No reliable left/right-hand label is assigned from these generated perspectives."
+    "New frames' fawn patch layout (fawn shoulder/arm) differs from the old guard (fawn front belly); visible on close inspection.",
+    "Texture energy now slightly below the old guard (painted, less strand-like); cream shading std 11-12 vs old 15.5.",
+    "Recoil = extension, return = launch, stance_out = stance_in (reused, like the old set).",
+    "Rear-foot pivot and stance in-between are procedural warps of the generated frames."
   ]
 }

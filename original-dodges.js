@@ -5,7 +5,10 @@
 (function(){
 const BOX=0.5;
 const PUNCH={
-  jab:{steps:[[0,40],[1,36],[2,32],[3,32],[4,70],[5,36],[6,40],[7,44]], hit:4, stop:0.03, fly:1},
+  // New left jab (10 frames). The opening guard is already on screen, so the
+  // punch starts on the stance. Each step uses the approved duration. A press
+  // after the hit skips the recovery, the same way a claw string does.
+  jab:{steps:[[1,60],[2,100],[3,50],[4,40],[5,130],[6,60],[7,70],[8,60],[9,200]], hit:5, stop:0.03, fly:1},
   uppercut_left:{steps:[[0,40],[1,32],[2,32],[3,32],[4,36],[5,44],[6,80],[7,44],[8,36],[9,32],[10,32],[11,36]], hit:6, stop:0.05, fly:1},
   uppercut_right:{steps:[[0,40],[1,32],[2,32],[3,32],[4,36],[5,40],[6,44],[7,80],[8,44],[9,36],[10,32],[11,36]], hit:7, stop:0.05, fly:1},
   upper_quick_l:{steps:[[2,32],[3,32],[4,36],[5,40],[6,72],[7,40],[8,36],[9,32]], hit:6, stop:0.04, fly:1},
@@ -33,7 +36,7 @@ function loadImage(src){
 }
 (async function boot(){
   try{
-    const r=await fetch('assets/sprites/boxing_v1/approved_play/animation.json');
+    const r=await fetch('assets/sprites/boxing_v1/approved_play/animation.json?v=9');
     if(!r.ok) throw new Error('animation.json '+r.status);
     const pack=await r.json();
     foot=pack.foot||foot;
@@ -42,7 +45,7 @@ function loadImage(src){
     for(const name in pack.moves){
       const m=pack.moves[name];
       const imgs=[];
-      for(const rel of m.frames) imgs.push(await loadImage(baseUrl+rel));
+      for(const rel of m.frames) imgs.push(await loadImage(baseUrl+rel+'?v=9'));
       moves[name]={imgs};
     }
     loaded=true;
@@ -143,6 +146,15 @@ function throwUpper(face, charged, level){
 }
 function stepAct(dt){
   if(!act) return;
+  // Left jab only: remember a press, then drop the recovery once the hit has shown.
+  if(act.kind==='punch'&&act.name==='jab'&&!act.level){
+    if(typeof P!=='undefined'&&P.attack){act.buf=true; delete P.attack}
+    if(act.buf&&act.didHit&&act.fi!==act.hitFi){
+      finishAct();
+      if(typeof P!=='undefined') P.attack=1;
+      return;
+    }
+  }
   act.t+=dt; act.ft+=dt;
   const step=act.seq[act.si];
   const dur=step?step[1]:0.05;
