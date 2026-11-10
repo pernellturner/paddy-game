@@ -11,7 +11,7 @@ const CHAIN=['jab','uppercut_left','uppercut_right'];
 // press cancels the recovery. These schedules use the same approved drawings,
 // with the duplicate guards and extra crouches skipped so the snap matches.
 const PUNCH={
-  jab:{steps:[[1,70],[3,50],[4,85],[6,55]], hit:4, stop:0.03},
+  jab:{steps:[[1,60],[2,100],[3,50],[4,40],[5,130],[7,70]], hit:5, stop:0.03},
   uppercut_left:{steps:[[2,70],[4,45],[6,90],[8,55]], hit:6, stop:0.045},
   uppercut_right:{steps:[[3,70],[5,45],[7,90],[10,55]], hit:7, stop:0.045}
 };
@@ -34,7 +34,7 @@ function loadImage(src){
 }
 (async function boot(){
   try{
-    const r=await fetch('assets/sprites/boxing_v1/approved_play/animation.json');
+    const r=await fetch('assets/sprites/boxing_v1/approved_play/animation.json?v=9');
     if(!r.ok) throw new Error('animation.json '+r.status);
     const pack=await r.json();
     foot=pack.foot||foot;
@@ -43,7 +43,7 @@ function loadImage(src){
     for(const name in pack.moves){
       const m=pack.moves[name];
       const imgs=[];
-      for(const rel of m.frames) imgs.push(await loadImage(base+rel));
+      for(const rel of m.frames) imgs.push(await loadImage(base+rel+'?v=9'));
       moves[name]={imgs, ms:m.durations_ms.map(v=>v/1000), impact:new Set(m.impact||[]), reach:m.reach_px||[]};
     }
     guard=moves.jab.imgs[0];
@@ -265,6 +265,24 @@ function tickBreath(dt){
   window.__pbLead=!!intro;
 }
 function covering(){return inRoom()&&breathImgs&&(!!intro||guardIdle())}
+function jabbing(){
+  if(!inRoom()||!loaded||!moves||!moves.jab) return false;
+  if(!p||p.state!=='claw') return false;
+  const a=(p.anim==='p53'&&window.P33&&P33.a)?P33.a:p.anim;
+  return a==='bxj1';
+}
+// Motion frames only. Frame 0 is the guard he is already standing in.
+// Times are the approved duration_ms. punch33 still owns the hit and the cancel.
+const JAB_MS=[60,100,50,40,130,60,70,60,200];
+function jabImage(){
+  const imgs=moves.jab.imgs;
+  let ms=((p.ft||0)/12)*1000;
+  for(let i=0;i<JAB_MS.length;i++){
+    if(ms<JAB_MS[i]) return imgs[Math.min(i+1, imgs.length-1)];
+    ms-=JAB_MS[i];
+  }
+  return imgs[imgs.length-1];
+}
 function drawApproved(img, scale){
   if(!img||!img.naturalWidth) return;
   ctx.save();
@@ -286,6 +304,7 @@ function paintBreath(){
 
 const _drawFrame=drawFrame;
 drawFrame=function(f,x,y,face,alpha){
+  if(jabbing()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<40) return;
   if(hiding()&&Math.abs(x-p.x)<4&&Math.abs(y-p.y)<8) return;
   if(hiding()&&Math.abs(x-(p.prevX||p.x))<4&&Math.abs(y-(p.prevY||p.y))<8) return;
   if(covering()&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<30) return;
@@ -293,7 +312,8 @@ drawFrame=function(f,x,y,face,alpha){
 };
 const _hud=drawHUD;
 drawHUD=function(){
-  if(hiding()){try{paint()}catch(e){if(!paint.err){paint.err=1;console.error('practice boxing draw', e)}}}
+  if(jabbing()){try{drawApproved(jabImage(), BOX)}catch(e){if(!drawApproved.jab){drawApproved.jab=1;console.error('jab draw', e)}}}
+  else if(hiding()){try{paint()}catch(e){if(!paint.err){paint.err=1;console.error('practice boxing draw', e)}}}
   else if(covering()){try{paintBreath()}catch(e){if(!paintBreath.err){paintBreath.err=1;console.error('breath', e)}}}
   return _hud.apply(this, arguments);
 };
