@@ -112,6 +112,8 @@ copy_dir assets/bg26 "$SITE/assets/bg26"
 copy_dir assets/w1bg "$SITE/assets/w1bg"
 mkdir -p "$SITE/assets/sprites/boxing_v1/approved_play"
 copy_dir assets/sprites/boxing_v1/approved_play "$SITE/assets/sprites/boxing_v1/approved_play"
+mkdir -p "$SITE/assets/sprites/studio_v1"
+copy_dir assets/sprites/studio_v1 "$SITE/assets/sprites/studio_v1"
 
 for f in arena.webp ascended_lock.webp icon-180.png icon-192.png icon-512.png s1_05.png; do
   cp "assets/$f" "$SITE/assets/$f"

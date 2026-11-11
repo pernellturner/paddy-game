@@ -18,7 +18,7 @@ Forward means the way he is facing. Back means the other way.
 | Up + Claw, held | Rising launcher | |
 | In the air, tap | Air swipe. After a double jump, air spin | |
 | In the air, Down + Claw | Dive claw | |
-| Double-tap | No separate Claw double-tap | Directions do the double-taps |
+| Double-tap | Roundhouse kick. A high kick with a hit on the extension, then he blends back to guard | Two Claw taps close together, with no direction. A normal one-two is slower and stays Jab, Cross |
 
 ## Pounce
 
@@ -80,6 +80,7 @@ Forward means the way he is facing. Back means the other way.
 | Double-tap Up | Sky pounce | |
 | Tap Down | Crouch. A very fast tap can also be a weave | Both exist. Holding Down is always the crouch |
 | Double-tap Down | Cat slide | |
+| Down, Down, Up | Backflip. A backward dodge with a moment where he cannot be hit | The two Downs alone are still the cat slide. Up has to follow quickly |
 | Hold Forward | Walk or run forward | |
 | Double-tap Forward | Dash. Claw during it is a dash strike | |
 | Hold Back | Walk backward. He does not turn around | |
@@ -93,7 +94,9 @@ Forward means the way he is facing. Back means the other way.
 | Down + Pounce used to do nothing | The press was swallowed. It is now Low Pounce |
 | Air Blink hold and ground Pounce hold both say Shadow | They are different moves. The ground one leaps. The air one hops onto the dummy |
 | Tap Down can weave or crouch | A very fast tap weaves. Holding Down crouches |
-| No Claw double-tap and no Hunt direction moves | Left empty on purpose so the buttons you already know stay put |
+| No Hunt direction moves | Left empty on purpose so the buttons you already know stay put |
+| Land from a double jump or a ground slam | Power landing. A short slam and recovery. Any button cancels it | |
+| Knocked over in Spar | Knockdown. Plays once, holds the last frame, then he gets up. Any button gets him up sooner | |
 
 ## Timed strings
 
@@ -109,3 +112,5 @@ Press the next button within about a third of a second. On the beat (a bit quick
 | Pounce Jab | Pounce, Claw, Claw | POUNCE JAB |
 | Sky Mix | Jump, Pounce, Claw | SKY MIX |
 | Four Claws | Claw, Claw, Claw, Up+Claw | FOUR CLAWS |
+
+Roundhouse kick motion: ACCAD Open Motion Project, Ohio State Univ. (CC BY 3.0). Thanks to the CMU Graphics Lab Motion Capture Database and Quaternius.

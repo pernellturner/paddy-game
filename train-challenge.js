@@ -25,7 +25,9 @@ const LIST=[
   {lv:10, name:'Tail Blink', do:'Tail, Tail, Blink', steps:['tail','tail','blink'], icons:['Tail','Tail','Blink'], timed:1, play:[{k:'tail'},{k:'tail'},{k:'blink'}]},
   {lv:10, name:'Pounce Jab', do:'Pounce, Claw, Claw', steps:['pounce','claw','claw'], icons:['Pounce','Claw','Claw'], timed:1, play:[{k:'special', hold:50, wait:950},{k:'attack'},{k:'attack'}]},
   {lv:10, name:'Sky Mix', do:'Jump, Pounce, Claw', steps:['jump','pounce','claw'], icons:['Up','Pounce','Claw'], timed:1, play:[{k:'up', wait:400},{k:'special', hold:50, wait:900},{k:'attack'}]},
-  {lv:10, name:'Four Claws', do:'Claw, Claw, Claw, Up+Claw', steps:['claw','claw','claw','clawu'], icons:['Claw','Claw','Claw','Up+Claw'], timed:1, play:[{k:'attack'},{k:'attack'},{k:'attack'},{down:['up','attack']}]}
+  {lv:10, name:'Four Claws', do:'Claw, Claw, Claw, Up+Claw', steps:['claw','claw','claw','clawu'], icons:['Claw','Claw','Claw','Up+Claw'], timed:1, play:[{k:'attack'},{k:'attack'},{k:'attack'},{down:['up','attack']}]},
+  {lv:10, name:'Roundhouse', do:'Claw, Claw', steps:['rkick'], icons:['Claw','Claw'], play:[{k:'attack', wait:120},{k:'attack'}]},
+  {lv:10, name:'Backflip', do:'Down, Down, Up', steps:['sflip'], icons:['Down','Down','Up'], play:[{k:'down', hold:70, wait:180},{k:'down', hold:70, wait:200},{k:'up'}]}
 ];
 const TC=window.TC={on:false, i:0, at:0, best:0, guide:0, demo:false, cue:'', hold:false};
 try{TC.best=+localStorage.getItem(KEY)||0}catch(e){}
@@ -147,7 +149,7 @@ function start(){
 TC.start=start; TC.stop=stop;
 function build(){
   const css=document.createElement('style');
-  css.textContent='#tcstrip{position:fixed;left:50%;top:calc(max(6px,env(safe-area-inset-top)) + 44px);transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:6px;max-width:92vw;padding:3px 8px;border-radius:999px;background:rgba(12,10,34,.42);color:#fff;font:13px Bangers,Impact,sans-serif;letter-spacing:.3px;pointer-events:none}#tcstrip[hidden]{display:none!important}#tcstrip [data-do]{white-space:nowrap;opacity:.95}#tcstrip [data-icons]{display:flex;gap:3px;flex-wrap:nowrap}#tcstrip i{font-style:normal;border:1px solid #fff8;border-radius:999px;padding:1px 6px;opacity:.55;background:#2a3f7888}#tcstrip i.now{opacity:1;border-color:#ffe14d}#tcstrip i.on{opacity:1;background:#2f8a4a}#tcbeat{width:12px;height:12px;border-radius:50%;background:#fff4;flex:none}#tcbeat.pop{background:#7fffd4;box-shadow:0 0 8px #7fffd4}#tcmoves{position:fixed;left:0;right:0;top:0;bottom:0;z-index:8;background:rgba(8,6,24,.94);color:#fff;display:flex;flex-direction:column;padding:10px 12px 16px}#tcmoves[hidden]{display:none!important}#tcmoves h2{font:20px Bangers,Impact,sans-serif;color:#ffe14d;margin:6px 0}#tcmoves .tabs button{font:15px Bangers,Impact,sans-serif;color:#fff;background:#2a3f78;border:0;border-radius:999px;padding:4px 12px;margin-right:6px}#tcmoves .tabs button.cur{background:#c4492a}#tcmoves .sc{overflow:auto;flex:1;margin-top:8px}#tcmoves table{width:100%;border-collapse:collapse;font:15px system-ui,sans-serif}#tcmoves td{padding:6px 8px;border-bottom:1px solid #fff2;vertical-align:top}#tcmoves td:first-child{color:#ffe14d;white-space:nowrap}#tcmoves .x{align-self:flex-start;font:16px Bangers,Impact,sans-serif;color:#fff;background:#c4492a;border:0;border-radius:999px;padding:6px 14px;min-height:36px}';
+  css.textContent='#tcstrip{position:fixed;left:50%;top:calc(max(6px,env(safe-area-inset-top)) + 44px);transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:6px;max-width:92vw;padding:3px 8px;border-radius:999px;background:rgba(12,10,34,.42);color:#fff;font:13px Bangers,Impact,sans-serif;letter-spacing:.3px;pointer-events:none}#tcstrip[hidden]{display:none!important}#tcstrip [data-do]{white-space:nowrap;opacity:.95}#tcstrip [data-icons]{display:flex;gap:3px;flex-wrap:nowrap}#tcstrip i{font-style:normal;border:1px solid #fff8;border-radius:999px;padding:1px 6px;opacity:.55;background:#2a3f7888}#tcstrip i.now{opacity:1;border-color:#ffe14d}#tcstrip i.on{opacity:1;background:#2f8a4a}#tcbeat{width:12px;height:12px;border-radius:50%;background:#fff4;flex:none}#tcbeat.pop{background:#7fffd4;box-shadow:0 0 8px #7fffd4}#tcmoves{position:fixed;left:0;right:0;top:0;bottom:0;z-index:8;background:rgba(8,6,24,.94);color:#fff;display:flex;flex-direction:column;padding:10px 12px 16px}#tcmoves[hidden]{display:none!important}#tcmoves h2{font:20px Bangers,Impact,sans-serif;color:#ffe14d;margin:6px 0}#tcmoves .tabs button{font:15px Bangers,Impact,sans-serif;color:#fff;background:#2a3f78;border:0;border-radius:999px;padding:4px 12px;margin-right:6px}#tcmoves .tabs button.cur{background:#c4492a}#tcmoves .sc{overflow:auto;flex:1;margin-top:8px}#tcmoves table{width:100%;border-collapse:collapse;font:15px system-ui,sans-serif}#tcmoves td{padding:6px 8px;border-bottom:1px solid #fff2;vertical-align:top}#tcmoves td:first-child{color:#ffe14d;white-space:nowrap}#tcmoves .cr{font:13px system-ui,sans-serif;color:#ffe9a8;margin:10px 4px 0}#tcmoves .x{align-self:flex-start;font:16px Bangers,Impact,sans-serif;color:#fff;background:#c4492a;border:0;border-radius:999px;padding:6px 14px;min-height:36px}';
   document.head.appendChild(css);
   strip=document.createElement('div');
   strip.id='tcstrip'; strip.hidden=true;
@@ -164,6 +166,7 @@ const MOVE_ROWS=[
   ['Forward + Claw','Jab, or a slipping jab'],
   ['Back + Claw','Cross'],
   ['Claw in the air','Air swipe, or air spin after a double jump'],
+  ['Claw double-tap','Roundhouse kick'],
   ['Pounce tap','Short pounce and a paw swipe'],
   ['Pounce hold','Shadow Pounce'],
   ['Down + Pounce','Low Pounce'],
@@ -184,6 +187,9 @@ const MOVE_ROWS=[
   ['Double-tap Up','Sky pounce'],
   ['Hold Down','Crouch'],
   ['Double-tap Down','Cat slide'],
+  ['Down, Down, Up','Backflip'],
+  ['Land from a double jump','Power landing'],
+  ['Knocked over in Spar','Knockdown'],
   ['Hold Back','Walk backward, no turn'],
   ['Double-tap Back','Turn. Keep holding for a back dash'],
   ['Double-tap Forward','Dash']
@@ -209,7 +215,7 @@ function openMoves(){
     function show(tab){
       moves.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('cur', b.dataset.tab===tab));
       moves.querySelector('h2').textContent=tab==='combos'?'Combo strings':'What the buttons do';
-      sc.innerHTML=table(tab==='combos'?COMBO_ROWS:MOVE_ROWS);
+      sc.innerHTML=table(tab==='combos'?COMBO_ROWS:MOVE_ROWS)+(tab==='moves'?'<p class="cr">Roundhouse kick motion: ACCAD Open Motion Project, Ohio State Univ. (CC BY 3.0). Thanks to the CMU Graphics Lab Motion Capture Database and Quaternius.</p>':'');
     }
     moves.querySelector('.x').addEventListener('click',()=>{moves.hidden=true});
     moves.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tab)));
