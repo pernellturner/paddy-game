@@ -14,9 +14,17 @@ const LIST=[
   {lv:5, name:'Pounce', do:'Pounce', steps:['pounce'], icons:['Pounce'], play:[{k:'special', hold:50, wait:950}]},
   {lv:5, name:'Shadow Pounce', do:'Shadow Pounce', steps:['shadow'], icons:['Hold Pounce'], play:[{k:'special', hold:400, wait:900}]},
   {lv:6, name:'Low pounce', do:'Down+Pounce', steps:['lowpounce'], icons:['Down+Pounce'], play:[{down:['down','special'], hold:70, wait:800}]},
-  {lv:7, name:'Slip Finish', do:'Claw, Claw, Fwd+Claw, Claw', steps:['claw','claw','clawf','claw'], icons:['Claw','Claw','Fwd+Claw','Claw'], timed:1, play:[{k:'attack'},{k:'attack'},{down:['right','attack']},{k:'attack'}]},
+  {lv:6, name:'Tail', do:'Tail whip', steps:['tail'], icons:['Tail'], play:[{k:'tail'}]},
+  {lv:7, name:'Blink', do:'Blink', steps:['blink'], icons:['Blink'], play:[{k:'blink'}]},
+  {lv:7, name:'Double jump', do:'Double jump', steps:['djump'], icons:['Up','Up'], play:[{k:'up'},{k:'up', wait:260}]},
+  {lv:7, name:'Sky pounce', do:'Sky pounce', steps:['skypounce'], icons:['Up Up'], play:[{k:'up'},{k:'up', wait:140}]},
+  {lv:8, name:'Slip Finish', do:'Claw, Claw, Fwd+Claw, Claw', steps:['claw','claw','clawf','claw'], icons:['Claw','Claw','Fwd+Claw','Claw'], timed:1, play:[{k:'attack'},{k:'attack'},{down:['right','attack']},{k:'attack'}]},
   {lv:8, name:'Pounce Crash', do:'Pounce, Pounce, Down+Pounce', steps:['pounce','pounce','lowpounce'], icons:['Pounce','Pounce','Down+Pounce'], timed:1, play:[{k:'special', hold:50, wait:950},{k:'special', hold:50, wait:950},{down:['down','special'], hold:70, wait:950}]},
   {lv:9, name:'Body Line', do:'Claw, Down+Claw, Claw', steps:['claw','clawd','claw'], icons:['Claw','Down+Claw','Claw'], timed:1, play:[{k:'attack'},{down:['down','attack']},{k:'attack'}]},
+  {lv:9, name:'Rising Line', do:'Claw, Up+Claw, Claw', steps:['claw','clawu','claw'], icons:['Claw','Up+Claw','Claw'], timed:1, play:[{k:'attack'},{down:['up','attack']},{k:'attack'}]},
+  {lv:10, name:'Tail Blink', do:'Tail, Tail, Blink', steps:['tail','tail','blink'], icons:['Tail','Tail','Blink'], timed:1, play:[{k:'tail'},{k:'tail'},{k:'blink'}]},
+  {lv:10, name:'Pounce Jab', do:'Pounce, Claw, Claw', steps:['pounce','claw','claw'], icons:['Pounce','Claw','Claw'], timed:1, play:[{k:'special', hold:50, wait:950},{k:'attack'},{k:'attack'}]},
+  {lv:10, name:'Sky Mix', do:'Jump, Pounce, Claw', steps:['jump','pounce','claw'], icons:['Up','Pounce','Claw'], timed:1, play:[{k:'up', wait:400},{k:'special', hold:50, wait:900},{k:'attack'}]},
   {lv:10, name:'Four Claws', do:'Claw, Claw, Claw, Up+Claw', steps:['claw','claw','claw','clawu'], icons:['Claw','Claw','Claw','Up+Claw'], timed:1, play:[{k:'attack'},{k:'attack'},{k:'attack'},{down:['up','attack']}]}
 ];
 const TC=window.TC={on:false, i:0, at:0, best:0, guide:0, demo:false, cue:'', hold:false};
