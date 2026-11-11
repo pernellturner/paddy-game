@@ -154,8 +154,51 @@ function rescue(){
     }
   }else G.lost=0;
 }
+function drivePounce(dt){
+  const plan=window.MM&&MM.plan;
+  if(!plan) return;
+  if(p.state!=='pounce'){
+    if(plan.chain&&(p.state==='land'||p.state==='normal'||p.state==='claw')){
+      if(p.state!=='claw'){p.state='normal'; p.ground=true; if(typeof startClaw==='function') startClaw()}
+    }
+    p.noFlick=false; MM.plan=null; return;
+  }
+  const face=plan.face||p.face||1;
+  const travelled=(p.x-plan.x0)*face;
+  if(travelled>plan.gap) p.x=plan.x0+face*plan.gap;
+  else if(travelled<plan.gap-6) p.vx=face*Math.min(plan.shadow?640:460, (plan.gap-travelled)/Math.max(0.04, dt||0.016));
+  else p.vx*=0.2;
+  const t=p.t||0;
+  const frames=(F&&F.pounce)||[];
+  const n=frames.length||1;
+  if(t<0.1) p.fi=0;
+  else if(t<0.36) p.fi=1+Math.floor((t-0.1)/0.09)%Math.max(1, n-2);
+  else p.fi=n-1;
+  p.anim='pounce';
+  if(window.KD47&&KD47.lines) KD47.lines.length=0;
+  p.noFlick=true;
+  if(P.attack){plan.chain=true; delete P.attack}
+  if(!plan.hit&&t>0.14){
+    plan.hit=1;
+    let got=false;
+    for(const d of dummies){
+      if(!d||d.benched||d.alive===false) continue;
+      const g=(d.x-p.x)*face;
+      if(g>-50&&g<150&&Math.abs((d.y||0)-p.y)<200){hitDummy(d, plan.shadow?'pounce':'claw2', face); got=true; break}
+    }
+    if(!got&&typeof areaHit==='function') areaHit(p.x+face*60, p.y-40, plan.shadow?170:140, plan.shadow?'pounce':'claw2');
+    if(typeof shake!=='undefined') shake=Math.max(shake, plan.shadow?8:4);
+  }
+  if(p.ground&&t>0.2){
+    const chain=plan.chain;
+    MM.plan=null;
+    p.vx*=0.3; p.noFlick=false;
+    if(chain){p.state='normal'; p.ground=true; if(typeof startClaw==='function') startClaw()}
+  }
+}
 function after(dt){
   poseFix();
+  try{drivePounce(dt)}catch(e){if(!drivePounce.err){drivePounce.err=1; console.warn('pounce', e)}}
   rescue();
   if(room()&&p.state==='claw'&&p.anim==='bxph'&&window.KD48&&KD48.pow&&KD48.pow.kind==='hay'){
     if(G.hayX==null) G.hayX=p.x;

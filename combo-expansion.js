@@ -324,7 +324,7 @@ if(arena()&&typeof r9Pre==='function'){
       if(CX._st==='claw'&&p.state==='normal'&&!P.attack&&CX._fr){p.prevF=CX._fr;p.prevFace=p.face;p.prevX=p.x;p.prevY=p.y;p.blend=.1}
       if(P.attack||P.jump||P.dash) CX.absorb=0;
       CX._st=p.state;
-      if(CX.pose){p.vy=0; p.ground=true; p.state='ctap'; if(typeof floorAt==='function') p.y=floorAt(p.x)}
+      if(CX.pose&&!(window.MM&&MM.plan)){p.vy=0; p.ground=true; p.state='ctap'; if(typeof floorAt==='function') p.y=floorAt(p.x)}
     }catch(e){}
     return r;
   };
