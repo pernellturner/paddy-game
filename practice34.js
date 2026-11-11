@@ -183,6 +183,7 @@ body.proom #prbar{display:flex}body.proom #lbl,body.proom #trbar{display:none!im
 document.head.appendChild(css);
 const bar=document.createElement('div');bar.id='prbar';
 bar.innerHTML='<span class="nm">🥊 PRACTICE ROOM</span>'+Object.keys(ST).map(k=>`<button class="tap" data-st="${k}">${ST[k][0]} ${ST[k][1]}</button>`).join('')+
+ '<button class="tap" id="prtrain" type="button">TRAIN</button><button class="tap" id="prhelp" type="button">HELP</button>'+
  '<button class="tap i" id="prreset" title="reset counters (I)">↺</button><button class="tap i" id="prforms" title="change form">🔄</button><button class="tap i" id="prmoves" title="move list">📜</button><button class="tap i" id="prexit" title="exit">✕</button>';
 document.body.appendChild(bar);
 // shrink the bar until it clears the gear (left) and the sound / form / help buttons (right) on small phones
@@ -192,7 +193,9 @@ function fit(){if(!document.body.classList.contains('proom'))return;let s=1;bar.
 addEventListener('resize',()=>setTimeout(fit,60));
 const tap=(el,fn)=>el.addEventListener('click',e=>{e.preventDefault();el.blur();fn()});
 bar.querySelectorAll('[data-st]').forEach(b=>tap(b,()=>station(b.dataset.st)));
-tap(bar.querySelector('#prreset'),resetStats);tap(bar.querySelector('#prforms'),()=>window.TRAIN&&TRAIN.picker());tap(bar.querySelector('#prmoves'),()=>window.TRAIN&&TRAIN.moves());tap(bar.querySelector('#prexit'),close);
+tap(bar.querySelector('#prtrain'),()=>{if(window.TC&&TC.start)TC.start()});
+tap(bar.querySelector('#prhelp'),()=>{if(window.TC&&TC.help)TC.help()});
+tap(bar.querySelector('#prreset'),resetStats);tap(bar.querySelector('#prforms'),()=>window.TRAIN&&TRAIN.picker());tap(bar.querySelector('#prmoves'),()=>{if(window.TC&&TC.moves)TC.moves();else if(window.TRAIN)TRAIN.moves()});tap(bar.querySelector('#prexit'),close);
 function bench(on){const b=dummies.find(d=>!d.cr&&!d.sp);if(!b)return;if(on){b.benched=true;b.alive=false;b.bub=null}else if(b.benched){b.benched=false;b.alive=true;b.hp=b.max;b.hpShow=b.max;b.x=b.home;b.y=GROUND;b.vx=b.vy=0;dSet(b,'idle','r_idle');b.cool=2}}
 function preload(){if(!window.queueFrames||!F)return;const L=[];for(const k in F)if(k.startsWith('sd_'))F[k].forEach(f=>L.push(f.f));queueFrames(L,true)}
 function station(st){const train=st==='train';if(train)st='spar';if(window.TC&&TC.stop&&!TC.hold&&!train)TC.stop();if(!ST[st])st='spar';PR.st=st;PR.hintT=0;PR.lastD=null;clearSp();

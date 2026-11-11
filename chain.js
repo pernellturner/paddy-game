@@ -131,7 +131,7 @@ const _pre=r9Pre;r9Pre=function(dt){
 // triggers run first thing in the frame, before any form reads the Meow / Blink press
 const _nu=nUpdate;nUpdate=function(dt){
  if(!MOON.on&&!busy()){const jg=juggled();
-  if(P.special&&K.down&&jg&&!LAD.on){delete P.special;acted=true;moonStart(jg)}
+  if(P.special&&K.down&&jg&&!LAD.on&&!(window.PRACTICE&&PRACTICE.on)){delete P.special;acted=true;moonStart(jg)}
   else if(p.uf===6&&P.blink&&!LAD.on&&p.state!=='lk'){const g=juggled(560);if(g){delete P.blink;acted=true;ladStep(g)}}}
  _nu(dt)};
 const _draw=draw;draw=function(){_draw();if(MOON.on)moonDraw()};

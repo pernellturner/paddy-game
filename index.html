@@ -1,5 +1,21 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<script>
+(function(){
+  var V='12';
+  try{
+    if(navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})});
+    if(localStorage.getItem('paddyBuild')!==V){
+      localStorage.setItem('paddyBuild', V);
+      if(!/[?&]build=/.test(location.search)){
+        var join=location.search?'&':'?';
+        location.replace(location.pathname+location.search+join+'build='+V+location.hash);
+      }
+    }
+  }catch(e){}
+})();
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Paddy"><meta name="theme-color" content="#1a0f2e"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icon-180.png"><link rel="icon" href="assets/s1_05.png"><title>Paddy's Way Home</title>
 <style>
 @font-face{font-family:'Bangers';src:url(fonts/Bangers.woff2) format('woff2');font-display:block}
@@ -214,7 +230,7 @@ body.ov #moves{display:block}
 <script src="item5.js?v=20e"></script>
 <script src="poses2.js?v=20f"></script>
 <script src="styles.js?v=20b"></script>
-<script src="chain.js?v=26c"></script>
+<script src="chain.js?v=26d"></script>
 <script src="force2.js?v=20g"></script>
 <script src="gunslinger.js?v=40a"></script>
 <script src="crimson.js?v=43a"></script>
@@ -235,7 +251,7 @@ addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.cl
 lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 </script>
 <script src="controls.js?v=49"></script>
-<script src="en.js?v=44d"></script>
+<script src="en.js?v=44e"></script>
 <script src="story.js?v=45a"></script>
 <script src="sfx.js?v=43a"></script>
 <script src="formfx.js?v=30a"></script>
@@ -244,7 +260,7 @@ lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 <script src="kitty29.js?v=43a"></script>
 <script src="fin30.js?v=33a"></script>
 <script src="punch33.js?v=33f"></script>
-<script src="practice34.js?v=43f"></script>
+<script src="practice34.js?v=43g"></script>
 <script src="ninja35.js?v=35a"></script>
 <script src="kitty36.js?v=36a"></script>
 <script src="samurai37.js?v=37a"></script>
@@ -263,8 +279,9 @@ lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 <script src="punch52.js?v=54"></script>
 <script src="practice-moves.js?v=8"></script>
 <script src="original-dodges.js?v=13"></script>
-<script src="combo-expansion.js?v=10"></script>
-<script src="move-map.js?v=7"></script>
+<script src="combo-expansion.js?v=12"></script>
+<script src="move-map.js?v=8"></script>
 <script src="polish.js?v=6"></script>
-<script src="practice-fix.js?v=4"></script>
-<script src="train-challenge.js?v=2"></script></body></html>
+<script src="practice-fix.js?v=5"></script>
+<script src="combo-strings.js?v=6"></script>
+<script src="train-challenge.js?v=8"></script></body></html>

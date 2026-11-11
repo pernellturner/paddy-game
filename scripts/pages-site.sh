@@ -8,7 +8,7 @@ cd "$ROOT"
 rm -rf "$SITE"
 mkdir -p "$SITE/assets" "$SITE/fonts" "$SITE/levels"
 
-cp index.html level.html manifest.webmanifest "$SITE/"
+cp index.html level.html manifest.webmanifest build.txt "$SITE/"
 cp fonts/*.woff2 "$SITE/fonts/"
 : > "$SITE/.nojekyll"
 

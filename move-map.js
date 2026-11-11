@@ -249,15 +249,27 @@ function routeButton(which){
   return false;
 }
 
+function lowPounce(){
+  const face=p.face||1;
+  MM.last='lowpounce';
+  MM.plan={shadow:false, low:true, gap:110, x0:p.x, face, hit:false, chain:false};
+  if(window.CX) CX.pose=null;
+  if(window.KD47&&KD47.lines) KD47.lines.length=0;
+  beginArena('pounce','pounce','LOW POUNCE!',{vy:-220, vx:320, paws:1, c:'#ffb070'});
+  p.vx=face*320;
+}
 function arenaTick(){
   if(!base()) return;
   if(P.special){
+    if(practiceRoom()&&K.down&&!K.up&&!MM.pcharge){delete P.special; lowPounce()}
+    else{
     const moon=K.down&&!K.up&&!doubled()&&!tierOf();
     if(!moon&&!MM.pcharge){
       if(tierOf()&&doubled()) routeButton('pounce');
       else MM.pcharge={t:rt(), face:p.face, dir:dir(), dub:doubled(), chord:!!K.attack};
     }
     delete P.special;
+    }
   }
   if(MM.pcharge&&!MM.pcharge.level) chargePounce(K);
   else if(P.tail&&p.state!=='tailwhip'){if(!routeButton('tail')){} }

@@ -141,6 +141,8 @@ function rescue(){
   const lostPos=!isFinite(p.x)||!isFinite(p.y)||!isFinite(p.vx)||!isFinite(p.vy)||!isFinite(p.face)||!p.face
     ||p.x<(typeof LW==='number'?LW:40)-120||p.x>(typeof WALL_X==='number'?WALL_X:880)+120
     ||p.y<(typeof GROUND==='number'?GROUND:470)-2400||p.y>(typeof GROUND==='number'?GROUND:470)+80;
+  const fr=(typeof FR!=='undefined'&&FR[p.anim]||[])[p.fi];
+  if(fr&&/kidscoot|kidskate/.test(fr.f||'')){wake(); return}
   if(lostPos){wake(); return}
   if(typeof cine!=='undefined'&&cine&&(!isFinite(cine.z)||cine.z<0.25||cine.z>2.4)){cine.z=1; cine.tz=1; cine.fx=p.x; cine.fy=p.y-105}
   if(!onScreen()){
@@ -288,5 +290,48 @@ drawFx=function(){
   const r=_fx.apply(this, arguments);
   try{if(room()) paintSpin()}catch(e){}
   return r;
+};
+function badCat(){
+  const fr=(typeof FR!=='undefined'&&FR[p.anim]||[])[p.fi]||(typeof FR!=='undefined'&&FR[p.anim]||[])[0];
+  if(!fr||!fr.f) return true;
+  if(/kidscoot|kidskate|^en_/.test(fr.f)) return true;
+  const im=typeof IMG!=='undefined'&&IMG[fr.f];
+  if(!im||!im.naturalWidth) return true;
+  if((fr.ay||0)>(fr.h||0)+70) return true;
+  return false;
+}
+function paintCat(){
+  const idle=typeof FR!=='undefined'&&FR.idle&&FR.idle[0];
+  const im=idle&&typeof IMG!=='undefined'&&IMG[idle.f];
+  if(!idle||!im||!im.naturalWidth||typeof ctx==='undefined') return;
+  ctx.save();
+  ctx.globalAlpha=1;
+  ctx.globalCompositeOperation='source-over';
+  ctx.translate(p.x, p.y);
+  ctx.scale((p.face||1)*(typeof SC==='number'?SC:0.8), typeof SC==='number'?SC:0.8);
+  ctx.drawImage(im, -idle.ax, -idle.ay);
+  ctx.restore();
+}
+if(typeof r11Sq==='function'){
+  const _sq=r11Sq;
+  r11Sq=function(){
+    let s=1;
+    try{s=_sq()}catch(e){s=1}
+    if(!isFinite(s)||s<0.45||s>1.75) s=1;
+    if(room()) return 1;
+    return s;
+  };
+}
+const _hudCat=drawHUD;
+drawHUD=function(){
+  try{
+    if(room()&&badCat()){
+      if(/kidscoot|kidskate/.test(p.anim||'')||/kidscoot|kidskate/.test(((FR[p.anim]||[])[p.fi]||{}).f||'')){
+        p.state='normal'; if(typeof setAnim==='function') setAnim('idle', true);
+      }
+      paintCat();
+    }
+  }catch(e){}
+  return _hudCat.apply(this, arguments);
 };
 })(typeof window!=='undefined'?window:globalThis);
