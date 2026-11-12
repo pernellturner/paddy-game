@@ -34,7 +34,13 @@ const LIST=[
   {lv:10, name:'Capoeira', do:'Down, Forward, Tail', steps:['capkick'], icons:['Down','Fwd','Tail'], play:[{k:'down', hold:70, wait:220},{k:'right', hold:70, wait:220},{k:'tail'}]},
   {lv:10, name:'One-Two Kick', do:'Claw, Claw, Roundhouse', steps:['claw','claw','rkick'], icons:['Claw','Claw','Claw Claw'], timed:1, play:[{k:'attack', wait:280},{k:'attack', wait:160},{k:'attack', wait:110},{k:'attack'}]},
   {lv:10, name:'Roll Spin', do:'Roll, then Capoeira', steps:['roll','capkick'], icons:['Fwd','Fwd','Down','Tail'], timed:1, play:[{k:'right', hold:60, wait:150},{k:'right', hold:60, wait:180},{k:'down', wait:500},{k:'down', hold:70, wait:220},{k:'right', hold:70, wait:220},{k:'tail'}]},
-  {lv:10, name:'Slide Launch', do:'Slide, then Up+Claw', steps:['slide','clawu'], icons:['Fwd hold','Up+Claw'], timed:1, play:[{k:'right', hold:60, wait:150},{k:'right', hold:400, wait:500},{down:['up','attack']}]}
+  {lv:10, name:'Slide Launch', do:'Slide, then Up+Claw', steps:['slide','clawu'], icons:['Fwd hold','Up+Claw'], timed:1, play:[{k:'right', hold:60, wait:150},{k:'right', hold:400, wait:500},{down:['up','attack']}]},
+  {lv:10, name:'Punch combo', do:'Down, Forward, Claw', steps:['pclip'], icons:['Down','Fwd','Claw'], play:[{k:'down', hold:70, wait:200},{k:'right', hold:70, wait:200},{k:'attack'}]},
+  {lv:10, name:'All fours', do:'Down, Down, Down', steps:['drop'], icons:['Down','Down','Down'], play:[{k:'down', hold:60, wait:150},{k:'down', hold:60, wait:150},{k:'down'}]},
+  {lv:10, name:'Front kick', do:'On fours, Claw', steps:['fkick'], icons:['Claw'], play:[{k:'down', hold:60, wait:150},{k:'down', hold:60, wait:150},{k:'down', wait:700},{k:'attack'}]},
+  {lv:10, name:'Spin strike', do:'On fours, Tail', steps:['spin'], icons:['Tail'], play:[{k:'down', hold:60, wait:150},{k:'down', hold:60, wait:150},{k:'down', wait:700},{k:'tail'}]},
+  {lv:10, name:'Cat Kick', do:'Drop, then Claw', steps:['drop','fkick'], icons:['Down','Down','Down','Claw'], timed:1, play:[{k:'down', hold:60, wait:150},{k:'down', hold:60, wait:150},{k:'down', wait:700},{k:'attack'}]},
+  {lv:10, name:'Rush Spin', do:'Punch combo, then Tail', steps:['pclip','spin'], icons:['Claw','Tail'], timed:1, play:[{k:'down', hold:70, wait:200},{k:'right', hold:70, wait:200},{k:'attack', wait:900},{k:'tail'}]}
 ];
 const TC=window.TC={on:false, i:0, at:0, best:0, guide:0, demo:false, cue:'', hold:false};
 try{TC.best=+localStorage.getItem(KEY)||0}catch(e){}
@@ -206,7 +212,13 @@ const MOVE_ROWS=[
   ['Double-tap Forward, let go','Dash'],
   ['Double-tap Forward, then Down','Forward roll'],
   ['Double-tap Forward, then Up','Front flip'],
-  ['Double-tap Forward, hold','Slide']
+  ['Double-tap Forward, hold','Slide'],
+  ['Down, Forward, Claw','Painted punch combo'],
+  ['Down, Down, Down','Drop onto all fours'],
+  ['On all fours, hold Forward','Creep'],
+  ['On all fours, Up','Rise'],
+  ['On all fours, Claw','Front kick'],
+  ['On all fours, Tail','Spin strike']
 ];
 const COMBO_ROWS=[
   ['Slip Finish','Claw, Claw, Fwd+Claw, Claw'],
@@ -219,7 +231,9 @@ const COMBO_ROWS=[
   ['Four Claws','Claw, Claw, Claw, Up+Claw'],
   ['One-Two Kick','Claw, Claw, Roundhouse'],
   ['Roll Spin','Roll, then Capoeira'],
-  ['Slide Launch','Slide, then Up+Claw']
+  ['Slide Launch','Slide, then Up+Claw'],
+  ['Cat Kick','Drop to fours, then Claw'],
+  ['Rush Spin','Punch combo, then Tail']
 ];
 function table(rows){
   return '<table>'+rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</table>';

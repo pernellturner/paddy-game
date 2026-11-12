@@ -87,6 +87,12 @@ Forward means the way he is facing. Back means the other way.
 | Double-tap Forward, then Up | Front flip | Up by itself is still the jump. Up has to follow the dash quickly, after you let go |
 | Double-tap Forward, and keep holding | Slide. He goes along the ground and can hit | A quick double-tap that you let go is still the dash |
 | Down, then Forward, then Tail | Capoeira kick. A low spinning kick that hits | Three taps, about half a second apart. Down+Tail is still the sweep. Forward+Tail is still the trip |
+| Down, then Forward, then Claw | Painted punch combo. Jab, cross, lunge, turn punch, and a last hit | Same timing as the capoeira taps. Each hit keeps the combo. A button after a hit leaves the string |
+| Down, Down, Down | Drop onto all fours | Two Downs alone are still the cat slide. The third tap, quickly, puts him on his hands |
+| On all fours, hold Forward or Back | Creep. A low walk | He stays down until you tap Up |
+| On all fours, Up | Rise. Claw during it links into a punch | |
+| On all fours, Claw | Front kick. It hits | |
+| On all fours, Tail | Spin strike. It hits | Tail right after the painted combo is the same spin |
 | Hold Back | Walk backward. He does not turn around | |
 | Double-tap Back, let go | Turn around | The only turn |
 | Double-tap Back, then keep holding | Back dash | |
@@ -119,6 +125,8 @@ Press the next button within about a third of a second. On the beat (a bit quick
 | One-Two Kick | Claw, Claw, Roundhouse | ONE-TWO KICK |
 | Roll Spin | Forward roll, then the capoeira kick | ROLL SPIN |
 | Slide Launch | Slide, then Up+Claw | SLIDE LAUNCH |
+| Cat Kick | Drop to all fours, then Claw | CAT KICK |
+| Rush Spin | Painted punch combo, then Tail | RUSH SPIN |
 
 ## Linking and finishes
 
@@ -129,7 +137,7 @@ Once the combo counter is at 3, a FINISH button lights above the Claw and Pounce
 | Combo | Tier | What you see |
 | --- | --- | --- |
 | 3 or 4 | Power | Capoeira kick, a short stop, a small zoom, and the dummy pops up |
-| 5 to 7 | Big finish | Front flip, a longer stop, a little slow motion, and a higher launch |
+| 5 to 7 | Big finish | Front flip, or the spin strike if you press Tail during the painted combo |
 | 8 or more | Ultimate | Forward roll, a big stop, slow motion, and the dummy flies and bounces |
 
 The words sit along the top. Paddy's pose stays on screen.

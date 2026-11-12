@@ -7,10 +7,10 @@ function room(){
   try{return !!(window.PRACTICE&&PRACTICE.on)&&typeof FORM==='function'&&FORM()===0&&!(window.KITTY36&&KITTY36.on)}catch(e){return false}
 }
 function spar(){return room()&&window.PRACTICE&&PRACTICE.st==='spar'}
-fetch('assets/sprites/studio_v1/moves.json?v=2').then(r=>r.json()).then(pack=>{
+fetch('assets/sprites/studio_v1/moves.json?v=3').then(r=>r.json()).then(pack=>{
   for(const name in pack.moves){
     const mv=pack.moves[name];
-    mv.imgs=mv.frames.map(fr=>{const im=new Image();im.src='assets/sprites/studio_v1/'+name+'/'+fr.f+'?v=2';return im});
+    mv.imgs=mv.frames.map(fr=>{const im=new Image();im.src='assets/sprites/studio_v1/'+name+'/'+fr.f+'?v=3';return im});
   }
   SM.pack=pack; SM.ready=true;
 }).catch(e=>console.warn('studio', e));
@@ -60,7 +60,12 @@ if(typeof press==='function'){
         const age=fwdAge();
         if(k==='down'&&age>=0&&age<0.35&&!K[faceKey()]){delete P.down; begin('roll')}
         else if(k==='up'&&age>=0&&age<0.35&&!K[faceKey()]){delete P.jump; delete P.up; begin('frontflip')}
+        else if(k==='tail'&&SM.fours&&SM.fours.on){delete P.tail; begin('spin')}
         else if(k==='tail'&&capReady()){delete P.tail; cap.down=0; cap.fwd=0; begin('capoeira')}
+        else if(k==='attack'&&SM.fours&&SM.fours.on){delete P.attack; begin('fkick')}
+        else if(k==='attack'&&capReady()){delete P.attack; cap.down=0; cap.fwd=0; begin('pclip')}
+        else if(k==='up'&&SM.fours&&SM.fours.on){delete P.jump; delete P.up; begin('rise')}
+        else if(k==='down'&&twoDowns()){delete P.down; begin('drop')}
       }
       if(k==='attack'&&room()&&SM.ready&&p.ground&&plainClaw()&&!SM.move){
         const now=performance.now();
@@ -116,7 +121,12 @@ function begin(name){
     roll:['ROLL!','#bfe8ff','roll'],
     frontflip:['FRONT FLIP!','#ffe9a8','fflip'],
     slide:['SLIDE!','#ffb070','slide'],
-    capoeira:['CAPOEIRA!','#ff9ad5','capkick']
+    capoeira:['CAPOEIRA!','#ff9ad5','capkick'],
+    pclip:['PUNCH COMBO!','#ffe14d','pclip'],
+    drop:['ON ALL FOURS!','#ffe9a8','drop'],
+    rise:['UP!','#fff','rise'],
+    fkick:['FRONT KICK!','#ffe14d','fkick'],
+    spin:['SPIN STRIKE!','#ff9ad5','spin']
   };
   const row=said[name];
   if(row){
@@ -125,6 +135,7 @@ function begin(name){
     if(!SM.finish){try{if(typeof say==='function') say(row[0], row[1], true)}catch(e){}}
     if(row[2]&&window.CSTR&&CSTR.push) CSTR.push(row[2]);
   }
+  if(name!=='drop'&&name!=='fwalk') SM.fours=null;
   if(keep>0&&typeof C!=='undefined'){C.n=keep; C.t=Math.max(C.t||0, 1.8)}
   p.keepCombo=Math.max(p.keepCombo||0, keep); p.keepT=Math.max(p.keepT||0, 1.6);
   return true;
@@ -171,6 +182,7 @@ function kick(face, reach){
     const g=(d.x-p.x)*face;
     if(g>-36&&g<(reach||140)&&Math.abs((d.y||0)-p.y)<180){
       try{hitDummy(d,'claw2', face)}catch(e){}
+      if(SM.move&&SM.move.name==='pclip'&&SM.move.seg!=='last'){d.vx=face*36; d.vy=0; d.fl=0}
       if(typeof C!=='undefined') C.t=Math.max(C.t||0, 1.8);
       p.keepCombo=Math.max(p.keepCombo||0, typeof C!=='undefined'?C.n:0);
       p.keepT=Math.max(p.keepT||0, 1.6);
@@ -212,8 +224,10 @@ function step(dt){
     m.acc-=frames[m.i].ms;
     m.i++;
     const fr=frames[m.i];
-    if(fr.hit&&!m.hit&&(m.name==='roundhouse'||m.name==='slide'||m.name==='capoeira')) m.hit=kick(m.face, m.name==='slide'?200:150);
-    if(SM.finish&&!SM.finish.boom&&/tuck|roll|kick|impact/.test(fr.phase||'')) kick(m.face, 230);
+    const hitMove=m.name==='roundhouse'||m.name==='slide'||m.name==='capoeira'||m.name==='pclip'||m.name==='fkick'||m.name==='spin'||m.name==='rise';
+    if(fr.hit&&hitMove&&m.seg!==(fr.seg||'hit')){m.seg=fr.seg||'hit'; m.hit=true; kick(m.face, m.name==='slide'||m.name==='pclip'?210:160)}
+    if(SM.finish&&!SM.finish.boom&&/tuck|roll|kick|impact|spin|strike|spring/.test(fr.phase||'')) kick(m.face, 230);
+    if(fr.hold&&m.name==='drop'){parkFours(m); return}
     if(fr.hold){m.hold=true; m.held=0; return}
   }
   if(m.i>=frames.length-1&&m.acc>=frames[m.i].ms&&!frames[m.i].hold) endMove();
@@ -222,14 +236,35 @@ function fireLink(){
   const link=SM.link;
   if(!link||performance.now()-link.t>900){SM.link=null; return}
   SM.link=null;
+  const prevName=SM.move&&SM.move.name;
   const keep=typeof C!=='undefined'?C.n:0;
   endMove();
   if(typeof C!=='undefined'&&keep>0){C.n=keep; C.t=Math.max(C.t||0, 1.8)}
   p.keepCombo=keep; p.keepT=1.6;
+  if(link.k==='tail'&&prevName==='pclip'){
+    if(keep>=5){
+      SM.finish={tier:'big', boom:false};
+      SM.banner={t:performance.now(), text:TIER.big.label, col:TIER.big.col};
+    }
+    begin('spin');
+    return;
+  }
   if(link.k==='attack'&&typeof startClaw==='function'){p.combo=Math.max(0, Math.min(7, keep)); startClaw()}
   else if(link.k==='tail'&&typeof tailWhip==='function') tailWhip(1);
   else if(link.k==='special') P.special=1;
   else if(link.k==='finish') askFinish();
+}
+function parkFours(m){
+  if(m.spec.end_x&&!m.shifted){
+    p.x+=(m.face||1)*m.spec.end_x*(SM.pack.scale||0.42);
+    if(typeof clampX==='function') p.x=clampX(p.x);
+    m.shifted=true;
+  }
+  SM.fours={on:true, face:m.face, spec:m.spec, i:m.i};
+  if(m.cid&&window.CSTR&&CSTR.buf&&CSTR.buf[CSTR.buf.length-1]===m.cid) CSTR.lastT=performance.now();
+  SM.move=null;
+  p.state='sfours'; p.vx=0; p.vy=0; p.ground=true;
+  p.y=typeof GROUND==='number'?GROUND:p.y;
 }
 function paint(im, spec, i, face, alpha){
   if(!im||!im.naturalWidth||typeof ctx==='undefined'||!SM.pack) return false;
@@ -249,6 +284,14 @@ drawFrame=function(f,x,y,face,alpha){
   if(room()&&SM.move&&Math.abs((x||0)-p.x)<70&&Math.abs((y||0)-p.y)<90){
     const m=SM.move;
     if(paint(m.spec.imgs[m.i], m.spec, m.i, m.face, 1)) return;
+  }
+  if(room()&&SM.fours&&SM.fours.on&&!SM.move&&Math.abs((x||0)-p.x)<70&&Math.abs((y||0)-p.y)<90){
+    if(SM.fours.walking&&SM.pack.moves.fwalk){
+      const w=SM.pack.moves.fwalk, i=SM.fours.wi||0;
+      if(paint(w.imgs[i], w, i, SM.fours.face||p.face||1, 1)) return;
+    }
+    const spec=SM.fours.spec;
+    if(spec&&paint(spec.imgs[SM.fours.i], spec, SM.fours.i, SM.fours.face||1, 1)) return;
   }
   return _df.apply(this, arguments);
 };
@@ -320,8 +363,31 @@ function armFinish(){
 }
 armFinish();
 function after(dt){
-  if(!room()){SM.move=null; SM.air=null; syncFinish(); return}
+  if(!room()){SM.move=null; SM.air=null; SM.fours=null; syncFinish(); return}
   syncFinish();
+  if(SM.fours&&SM.fours.on&&!SM.move){
+    const face=SM.fours.face||p.face||1;
+    const fwd=K[face>0?'right':'left'], back=K[face>0?'left':'right'];
+    p.state='sfours'; p.vx=0; p.vy=0; p.rot=0; p.ground=true;
+    p.y=typeof GROUND==='number'?GROUND:p.y;
+    if((fwd||back)&&SM.pack&&SM.pack.moves.fwalk){
+      const n=SM.pack.moves.fwalk.frames.length;
+      SM.fours.walking=true;
+      SM.fours.acc=(SM.fours.acc||0)+(dt||0)*1000;
+      SM.fours.wd=SM.fours.wd||1;
+      SM.fours.wi=SM.fours.wi||0;
+      if(SM.fours.acc>60){
+        SM.fours.acc=0;
+        SM.fours.wi+=SM.fours.wd;
+        if(SM.fours.wi>=n-1){SM.fours.wi=n-1; SM.fours.wd=-1}
+        if(SM.fours.wi<=0){SM.fours.wi=0; SM.fours.wd=1}
+      }
+      const step=(fwd?1:-1)*face*220*(dt||0);
+      p.x+=step;
+      if(typeof clampX==='function') p.x=clampX(p.x);
+      if(!SM.fours.noted&&window.CSTR&&CSTR.push){SM.fours.noted=true; CSTR.push('fwalk')}
+    }else SM.fours.walking=false;
+  }
   if(!p.ground){
     if(p.anim==='djump') SM.air='djump';
     else if(p.state==='dive'||p.state==='diveclaw'||p.state==='kpound') SM.air='slam';

@@ -13,13 +13,15 @@ const LIST=[
   {id:'four', name:'Four Claws', fin:'FOUR CLAWS', steps:['claw','claw','claw','clawu']},
   {id:'otk', name:'One-Two Kick', fin:'ONE-TWO KICK', steps:['claw','claw','rkick']},
   {id:'spin', name:'Roll Spin', fin:'ROLL SPIN', steps:['roll','capkick']},
-  {id:'sllaunch', name:'Slide Launch', fin:'SLIDE LAUNCH', steps:['slide','clawu']}
+  {id:'sllaunch', name:'Slide Launch', fin:'SLIDE LAUNCH', steps:['slide','clawu']},
+  {id:'catkick', name:'Cat Kick', fin:'CAT KICK', steps:['drop','fkick']},
+  {id:'rush', name:'Rush Spin', fin:'RUSH SPIN', steps:['pclip','spin']}
 ];
 const CSTR=window.CSTR={list:LIST, buf:[], lastT:0, beat:true, win:0.35};
 function room(){
   try{return !!(window.PRACTICE&&PRACTICE.on)&&typeof FORM==='function'&&FORM()===0&&!(window.KITTY36&&KITTY36.on)}catch(e){return false}
 }
-const LONG={pounce:1,shadow:1,lowpounce:1,jump:1,djump:1,skypounce:1,tail:1,blink:1,crouch:1,roll:1,fflip:1,slide:1,capkick:1,rkick:1,sflip:1};
+const LONG={pounce:1,shadow:1,lowpounce:1,jump:1,djump:1,skypounce:1,tail:1,blink:1,crouch:1,roll:1,fflip:1,slide:1,capkick:1,rkick:1,sflip:1,pclip:1,drop:1,fkick:1,spin:1,rise:1,fwalk:1};
 function gap(){
   const help=window.TC&&TC.guide>0;
   const last=CSTR.buf[CSTR.buf.length-1];
