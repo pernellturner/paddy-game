@@ -7,16 +7,23 @@ function room(){
   try{return !!(window.PRACTICE&&PRACTICE.on)&&typeof FORM==='function'&&FORM()===0&&!(window.KITTY36&&KITTY36.on)}catch(e){return false}
 }
 function spar(){return room()&&window.PRACTICE&&PRACTICE.st==='spar'}
-fetch('assets/sprites/studio_v1/moves.json?v=1').then(r=>r.json()).then(pack=>{
+fetch('assets/sprites/studio_v1/moves.json?v=2').then(r=>r.json()).then(pack=>{
   for(const name in pack.moves){
     const mv=pack.moves[name];
-    mv.imgs=mv.frames.map(fr=>{const im=new Image();im.src='assets/sprites/studio_v1/'+name+'/'+fr.f+'?v=1';return im});
+    mv.imgs=mv.frames.map(fr=>{const im=new Image();im.src='assets/sprites/studio_v1/'+name+'/'+fr.f+'?v=2';return im});
   }
   SM.pack=pack; SM.ready=true;
 }).catch(e=>console.warn('studio', e));
 
 function plainClaw(){
   return !(K.up||K.down||K.left||K.right||K.jump);
+}
+function faceKey(){return (p.face||1)>0?'right':'left'}
+function fwdAge(){
+  const fu=window.KD47&&KD47.fu;
+  if(!fu||fu.k!=='fwd') return -1;
+  const age=performance.now()/1000-fu.t;
+  return age>=0&&age<0.45?age:-1;
 }
 let lastClaw=0, downAt=0;
 const downTaps=[];
@@ -26,6 +33,12 @@ if(typeof press==='function'){
     const r=_pr.apply(this, arguments);
     try{
       if(room()&&k==='down') downAt=performance.now();
+      if(room()&&SM.ready&&p.ground&&!SM.move){
+        const age=fwdAge();
+        if(k==='down'&&age>=0&&age<0.35&&!K[faceKey()]){delete P.down; begin('roll')}
+        else if(k==='up'&&age>=0&&age<0.35&&!K[faceKey()]){delete P.jump; delete P.up; begin('frontflip')}
+        else if(k==='tail'&&K.down&&K[faceKey()]){delete P.tail; begin('capoeira')}
+      }
       if(k==='attack'&&room()&&SM.ready&&p.ground&&plainClaw()&&!(SM.move&&SM.move.name==='roundhouse')){
         const now=performance.now();
         if(now-lastClaw<200&&now-lastClaw>40&&(p.combo||0)<=1) begin('roundhouse');
@@ -67,15 +80,20 @@ function begin(name){
   if(window.P33){P33.a=null; P33.q=null; P33.legacy=false}
   if(window.CX) CX.pose=null;
   delete P.attack;
-  if(name==='roundhouse'){
-    try{if(typeof say==='function') say('ROUNDHOUSE!','#ffe14d',true)}catch(e){}
-    if(window.TC&&TC.on&&!TC.demo&&TC.note) TC.note('rkick');
-  }else if(name==='backflip'){
-    p.inv=Math.max(p.inv||0, 0.9);
-    try{if(typeof say==='function') say('BACKFLIP!','#bfe8ff',true)}catch(e){}
-    if(window.TC&&TC.on&&!TC.demo&&TC.note) TC.note('sflip');
-  }else if(name==='knockdown'){
-    try{if(typeof say==='function') say('DOWN!','#ff9a9a',true)}catch(e){}
+  const said={
+    roundhouse:['ROUNDHOUSE!','#ffe14d','rkick'],
+    backflip:['BACKFLIP!','#bfe8ff','sflip'],
+    knockdown:['DOWN!','#ff9a9a',''],
+    roll:['ROLL!','#bfe8ff','roll'],
+    frontflip:['FRONT FLIP!','#ffe9a8','fflip'],
+    slide:['SLIDE!','#ffb070','slide'],
+    capoeira:['CAPOEIRA!','#ff9ad5','capkick']
+  };
+  const row=said[name];
+  if(row){
+    if(name==='backflip'||name==='roll') p.inv=Math.max(p.inv||0, name==='roll'?0.55:0.9);
+    try{if(typeof say==='function') say(row[0], row[1], true)}catch(e){}
+    if(row[2]&&window.TC&&TC.on&&!TC.demo&&TC.note) TC.note(row[2]);
   }
   return true;
 }
@@ -84,8 +102,8 @@ function tapped(){return !!(P.attack||P.jump||P.special||P.tail||P.blink||P.dash
 function endMove(){
   const m=SM.move; if(!m) return;
   const sc=SM.pack.scale;
-  if(m.name==='backflip'){
-    p.x+=(m.face||1)*(m.spec.end_x||0)*sc;
+  if(m.spec.end_x){
+    p.x+=(m.face||1)*m.spec.end_x*sc;
     if(typeof clampX==='function') p.x=clampX(p.x);
   }
   const im=m.spec.imgs[Math.min(m.i, m.spec.imgs.length-1)];
@@ -96,12 +114,12 @@ function endMove(){
   if(typeof setAnim==='function') setAnim('idle', true);
   if(window.P33){P33.a=null; P33.q=null}
 }
-function kick(face){
+function kick(face, reach){
   let got=false;
   for(const d of (typeof dummies!=='undefined'?dummies:[])){
     if(!d||d.alive===false||d.benched) continue;
     const g=(d.x-p.x)*face;
-    if(g>-36&&g<140&&Math.abs((d.y||0)-p.y)<180){
+    if(g>-36&&g<(reach||140)&&Math.abs((d.y||0)-p.y)<180){
       try{hitDummy(d,'claw2', face)}catch(e){}
       got=true; break;
     }
@@ -124,7 +142,7 @@ function step(dt){
     m.acc-=frames[m.i].ms;
     m.i++;
     const fr=frames[m.i];
-    if(m.name==='roundhouse'&&fr.hit&&!m.hit) m.hit=kick(m.face);
+    if(fr.hit&&!m.hit&&(m.name==='roundhouse'||m.name==='slide'||m.name==='capoeira')) m.hit=kick(m.face, m.name==='slide'?200:150);
     if(fr.hold){m.hold=true; m.held=0; return}
   }
   if(m.i>=frames.length-1&&m.acc>=frames[m.i].ms&&!frames[m.i].hold) endMove();
@@ -137,7 +155,8 @@ function paint(im, spec, i, face, alpha){
   ctx.globalCompositeOperation='source-over';
   ctx.translate(p.x+(spec.ox||0)*sc*face, p.y-(fr.trim||0)*sc);
   ctx.scale(face*sc*2, sc*2);
-  ctx.drawImage(im, -SM.pack.foot_x/2, -SM.pack.baseline_y/2);
+  const foot=(spec.foot_x||SM.pack.foot_x)/2;
+  ctx.drawImage(im, -foot, -SM.pack.baseline_y/2);
   ctx.restore();
   return true;
 }
@@ -173,9 +192,16 @@ update=function(dt){
 const _pre=r9Pre;
 r9Pre=function(dt){
   const r=_pre.apply(this, arguments);
-  try{stealFlip()}catch(e){}
+  try{stealFlip(); holdSlide()}catch(e){}
   return r;
 };
+function holdSlide(){
+  if(!room()||!SM.ready||SM.move||!p.ground) return;
+  const age=fwdAge();
+  if(age<0.16||age>0.4) return;
+  if(!K[faceKey()]) return;
+  begin('slide');
+}
 function stealFlip(){
   if(!room()||!SM.ready||!p.ground) return;
   if(!(P.jump||P.up)||(SM.move&&SM.move.name==='backflip')) return;
@@ -196,7 +222,7 @@ function after(dt){
   if(!SM.move) return;
   const m=SM.move;
   const fr=m.spec.frames[m.i];
-  if(m.name==='backflip'&&fr&&fr.air){p.inv=Math.max(p.inv||0, 0.16); p.noFlick=true}
+  if(fr&&fr.air&&(m.name==='backflip'||m.name==='roll'||m.name==='frontflip')){p.inv=Math.max(p.inv||0, 0.16); p.noFlick=true}
   if(window.CX) CX.pose=null;
   step(dt||0);
   if(!SM.move) return;

@@ -82,7 +82,11 @@ Forward means the way he is facing. Back means the other way.
 | Double-tap Down | Cat slide | |
 | Down, Down, Up | Backflip. A backward dodge with a moment where he cannot be hit | The two Downs alone are still the cat slide. Up has to follow quickly |
 | Hold Forward | Walk or run forward | |
-| Double-tap Forward | Dash. Claw during it is a dash strike | |
+| Double-tap Forward, let go | Dash. Claw during it is a dash strike | |
+| Double-tap Forward, then Down | Forward roll. He cannot be hit while he is off the ground | Down by itself is still the crouch. The roll only follows a fresh dash |
+| Double-tap Forward, then Up | Front flip | Up by itself is still the jump. Up has to follow the dash quickly, after you let go |
+| Double-tap Forward, and keep holding | Slide. He goes along the ground and can hit | A quick double-tap that you let go is still the dash |
+| Down + Forward + Tail | Capoeira kick. A low spinning kick that hits | Down+Tail alone is still the sweep. Forward+Tail alone is still the trip |
 | Hold Back | Walk backward. He does not turn around | |
 | Double-tap Back, let go | Turn around | The only turn |
 | Double-tap Back, then keep holding | Back dash | |
@@ -113,4 +117,4 @@ Press the next button within about a third of a second. On the beat (a bit quick
 | Sky Mix | Jump, Pounce, Claw | SKY MIX |
 | Four Claws | Claw, Claw, Claw, Up+Claw | FOUR CLAWS |
 
-Roundhouse kick motion: ACCAD Open Motion Project, Ohio State Univ. (CC BY 3.0). Thanks to the CMU Graphics Lab Motion Capture Database and Quaternius.
+Roundhouse kick and capoeira kick motion: ACCAD Open Motion Project, Ohio State Univ. (CC BY 3.0). Thanks to the CMU Graphics Lab Motion Capture Database and Quaternius.

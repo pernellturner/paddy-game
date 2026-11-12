@@ -112,6 +112,7 @@ copy_dir assets/bg26 "$SITE/assets/bg26"
 copy_dir assets/w1bg "$SITE/assets/w1bg"
 mkdir -p "$SITE/assets/sprites/boxing_v1/approved_play"
 copy_dir assets/sprites/boxing_v1/approved_play "$SITE/assets/sprites/boxing_v1/approved_play"
+# Studio moves (roundhouse, backflip, roll, front flip, slide, capoeira, and the landings).
 mkdir -p "$SITE/assets/sprites/studio_v1"
 copy_dir assets/sprites/studio_v1 "$SITE/assets/sprites/studio_v1"
 

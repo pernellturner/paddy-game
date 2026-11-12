@@ -27,7 +27,11 @@ const LIST=[
   {lv:10, name:'Sky Mix', do:'Jump, Pounce, Claw', steps:['jump','pounce','claw'], icons:['Up','Pounce','Claw'], timed:1, play:[{k:'up', wait:400},{k:'special', hold:50, wait:900},{k:'attack'}]},
   {lv:10, name:'Four Claws', do:'Claw, Claw, Claw, Up+Claw', steps:['claw','claw','claw','clawu'], icons:['Claw','Claw','Claw','Up+Claw'], timed:1, play:[{k:'attack'},{k:'attack'},{k:'attack'},{down:['up','attack']}]},
   {lv:10, name:'Roundhouse', do:'Claw, Claw', steps:['rkick'], icons:['Claw','Claw'], play:[{k:'attack', wait:120},{k:'attack'}]},
-  {lv:10, name:'Backflip', do:'Down, Down, Up', steps:['sflip'], icons:['Down','Down','Up'], play:[{k:'down', hold:70, wait:180},{k:'down', hold:70, wait:200},{k:'up'}]}
+  {lv:10, name:'Backflip', do:'Down, Down, Up', steps:['sflip'], icons:['Down','Down','Up'], play:[{k:'down', hold:70, wait:180},{k:'down', hold:70, wait:200},{k:'up'}]},
+  {lv:10, name:'Roll', do:'Forward, Forward, Down', steps:['roll'], icons:['Fwd','Fwd','Down'], play:[{k:'right', hold:60, wait:150},{k:'right', hold:60, wait:180},{k:'down'}]},
+  {lv:10, name:'Front flip', do:'Forward, Forward, Up', steps:['fflip'], icons:['Fwd','Fwd','Up'], play:[{k:'right', hold:60, wait:150},{k:'right', hold:60, wait:180},{k:'up'}]},
+  {lv:10, name:'Slide', do:'Forward, Forward, hold', steps:['slide'], icons:['Fwd','Fwd hold'], play:[{k:'right', hold:60, wait:150},{k:'right', hold:420}]},
+  {lv:10, name:'Capoeira', do:'Down+Forward+Tail', steps:['capkick'], icons:['Down+Fwd+Tail'], play:[{down:['down','right','tail'], hold:100}]}
 ];
 const TC=window.TC={on:false, i:0, at:0, best:0, guide:0, demo:false, cue:'', hold:false};
 try{TC.best=+localStorage.getItem(KEY)||0}catch(e){}
@@ -176,6 +180,7 @@ const MOVE_ROWS=[
   ['Tail hold or double-tap','Tail tornado'],
   ['Forward + Tail','Tail trip'],
   ['Down + Tail','Tail sweep'],
+  ['Down + Forward + Tail','Capoeira kick'],
   ['Blink tap','Blink forward'],
   ['Forward + Blink','Blink behind'],
   ['Up + Blink','Blink above'],
@@ -192,7 +197,10 @@ const MOVE_ROWS=[
   ['Knocked over in Spar','Knockdown'],
   ['Hold Back','Walk backward, no turn'],
   ['Double-tap Back','Turn. Keep holding for a back dash'],
-  ['Double-tap Forward','Dash']
+  ['Double-tap Forward, let go','Dash'],
+  ['Double-tap Forward, then Down','Forward roll'],
+  ['Double-tap Forward, then Up','Front flip'],
+  ['Double-tap Forward, hold','Slide']
 ];
 const COMBO_ROWS=[
   ['Slip Finish','Claw, Claw, Fwd+Claw, Claw'],
@@ -215,7 +223,7 @@ function openMoves(){
     function show(tab){
       moves.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('cur', b.dataset.tab===tab));
       moves.querySelector('h2').textContent=tab==='combos'?'Combo strings':'What the buttons do';
-      sc.innerHTML=table(tab==='combos'?COMBO_ROWS:MOVE_ROWS)+(tab==='moves'?'<p class="cr">Roundhouse kick motion: ACCAD Open Motion Project, Ohio State Univ. (CC BY 3.0). Thanks to the CMU Graphics Lab Motion Capture Database and Quaternius.</p>':'');
+      sc.innerHTML=table(tab==='combos'?COMBO_ROWS:MOVE_ROWS)+(tab==='moves'?'<p class="cr">Roundhouse kick and capoeira kick motion: ACCAD Open Motion Project, Ohio State Univ. (CC BY 3.0). Thanks to the CMU Graphics Lab Motion Capture Database and Quaternius.</p>':'');
     }
     moves.querySelector('.x').addEventListener('click',()=>{moves.hidden=true});
     moves.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tab)));

@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <script>
 (function(){
-  var V='13';
+  var V='14';
   try{
     if(navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})});
     if(localStorage.getItem('paddyBuild')!==V){
@@ -221,7 +221,7 @@ body.ov #moves{display:block}
 <p>Try now: <button data-try="zoomies">Zoomies</button><button data-try="hiss">Hiss</button><button data-try="swat">Swat</button><button data-try="victory">Victory</button><button data-try="hurtTest">Hurt</button></p>
 <p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
 <p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p>
-<p class="tip">Roundhouse kick motion: ACCAD Open Motion Project, Ohio State Univ. (CC BY 3.0). Thanks to the CMU Graphics Lab Motion Capture Database and Quaternius.</p></div></div>
+<p class="tip">Roundhouse kick and capoeira kick motion: ACCAD Open Motion Project, Ohio State Univ. (CC BY 3.0). Thanks to the CMU Graphics Lab Motion Capture Database and Quaternius.</p></div></div>
 <div id="rot"><div>🔄 Turn your phone sideways to play with Paddy</div><div id="rotor">or play the World 1 levels right now:</div><button id="rotw1" type="button">🌳 PLAY WORLD 1</button></div>
 <script src="game.js?v=44j"></script>
 <script src="mission.js?v=44a"></script>
@@ -285,5 +285,5 @@ lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 <script src="polish.js?v=6"></script>
 <script src="practice-fix.js?v=5"></script>
 <script src="combo-strings.js?v=6"></script>
-<script src="train-challenge.js?v=10"></script>
-<script src="studio-moves.js?v=1"></script></body></html>
+<script src="train-challenge.js?v=11"></script>
+<script src="studio-moves.js?v=2"></script></body></html>
