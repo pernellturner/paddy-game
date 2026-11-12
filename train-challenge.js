@@ -31,9 +31,9 @@ const LIST=[
   {lv:10, name:'Roll', do:'Forward, Forward, Down', steps:['roll'], icons:['Fwd','Fwd','Down'], play:[{k:'right', hold:60, wait:150},{k:'right', hold:60, wait:180},{k:'down'}]},
   {lv:10, name:'Front flip', do:'Forward, Forward, Up', steps:['fflip'], icons:['Fwd','Fwd','Up'], play:[{k:'right', hold:60, wait:150},{k:'right', hold:60, wait:180},{k:'up'}]},
   {lv:10, name:'Slide', do:'Forward, Forward, hold', steps:['slide'], icons:['Fwd','Fwd hold'], play:[{k:'right', hold:60, wait:150},{k:'right', hold:420}]},
-  {lv:10, name:'Capoeira', do:'Down+Forward+Tail', steps:['capkick'], icons:['Down+Fwd+Tail'], play:[{down:['down','right','tail'], hold:100}]},
+  {lv:10, name:'Capoeira', do:'Down, Forward, Tail', steps:['capkick'], icons:['Down','Fwd','Tail'], play:[{k:'down', hold:70, wait:220},{k:'right', hold:70, wait:220},{k:'tail'}]},
   {lv:10, name:'One-Two Kick', do:'Claw, Claw, Roundhouse', steps:['claw','claw','rkick'], icons:['Claw','Claw','Claw Claw'], timed:1, play:[{k:'attack', wait:280},{k:'attack', wait:160},{k:'attack', wait:110},{k:'attack'}]},
-  {lv:10, name:'Roll Spin', do:'Roll, then Capoeira', steps:['roll','capkick'], icons:['Fwd Fwd Down','Down+Fwd+Tail'], timed:1, play:[{k:'right', hold:60, wait:150},{k:'right', hold:60, wait:180},{k:'down', wait:700},{down:['down','right','tail'], hold:100}]},
+  {lv:10, name:'Roll Spin', do:'Roll, then Capoeira', steps:['roll','capkick'], icons:['Fwd','Fwd','Down','Tail'], timed:1, play:[{k:'right', hold:60, wait:150},{k:'right', hold:60, wait:180},{k:'down', wait:500},{k:'down', hold:70, wait:220},{k:'right', hold:70, wait:220},{k:'tail'}]},
   {lv:10, name:'Slide Launch', do:'Slide, then Up+Claw', steps:['slide','clawu'], icons:['Fwd hold','Up+Claw'], timed:1, play:[{k:'right', hold:60, wait:150},{k:'right', hold:400, wait:500},{down:['up','attack']}]}
 ];
 const TC=window.TC={on:false, i:0, at:0, best:0, guide:0, demo:false, cue:'', hold:false};
@@ -183,10 +183,10 @@ const MOVE_ROWS=[
   ['Tail hold or double-tap','Tail tornado'],
   ['Forward + Tail','Tail trip'],
   ['Down + Tail','Tail sweep'],
-  ['Down + Forward + Tail','Capoeira kick'],
-  ['Claw + Tail, combo 3','Power finish. Capoeira kick'],
-  ['Claw + Tail, combo 5','Big finish. Front flip'],
-  ['Claw + Tail, combo 8','Ultimate. Forward roll'],
+  ['Down, Forward, Tail','Capoeira kick'],
+  ['FINISH, combo 3','Power finish. Capoeira kick'],
+  ['FINISH, combo 5','Big finish. Front flip'],
+  ['FINISH, combo 8','Ultimate. Forward roll'],
   ['Blink tap','Blink forward'],
   ['Forward + Blink','Blink behind'],
   ['Up + Blink','Blink above'],

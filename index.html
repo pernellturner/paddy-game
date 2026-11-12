@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <script>
 (function(){
-  var V='15';
+  var V='16';
   try{
     if(navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})});
     if(localStorage.getItem('paddyBuild')!==V){
@@ -251,7 +251,7 @@ const mb=document.getElementById('mute');const ms=()=>mb.textContent=muted?'🔇
 addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.classList.contains('ov'))}else if(e.key==='Escape')ov(false)});
 lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 </script>
-<script src="controls.js?v=49"></script>
+<script src="controls.js?v=50"></script>
 <script src="en.js?v=44e"></script>
 <script src="story.js?v=45a"></script>
 <script src="sfx.js?v=43a"></script>
@@ -285,5 +285,5 @@ lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 <script src="polish.js?v=6"></script>
 <script src="practice-fix.js?v=5"></script>
 <script src="combo-strings.js?v=7"></script>
-<script src="train-challenge.js?v=12"></script>
-<script src="studio-moves.js?v=3"></script></body></html>
+<script src="train-challenge.js?v=13"></script>
+<script src="studio-moves.js?v=4"></script></body></html>

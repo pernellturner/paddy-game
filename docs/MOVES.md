@@ -86,7 +86,7 @@ Forward means the way he is facing. Back means the other way.
 | Double-tap Forward, then Down | Forward roll. He cannot be hit while he is off the ground | Down by itself is still the crouch. The roll only follows a fresh dash |
 | Double-tap Forward, then Up | Front flip | Up by itself is still the jump. Up has to follow the dash quickly, after you let go |
 | Double-tap Forward, and keep holding | Slide. He goes along the ground and can hit | A quick double-tap that you let go is still the dash |
-| Down + Forward + Tail | Capoeira kick. A low spinning kick that hits | Down+Tail alone is still the sweep. Forward+Tail alone is still the trip |
+| Down, then Forward, then Tail | Capoeira kick. A low spinning kick that hits | Three taps, about half a second apart. Down+Tail is still the sweep. Forward+Tail is still the trip |
 | Hold Back | Walk backward. He does not turn around | |
 | Double-tap Back, let go | Turn around | The only turn |
 | Double-tap Back, then keep holding | Back dash | |
@@ -124,7 +124,7 @@ Press the next button within about a third of a second. On the beat (a bit quick
 
 The roundhouse, backflip, roll, front flip, slide, and capoeira kick keep the combo going when they hit. Press the next button during the move. It is remembered and comes out as the move finishes, so a string does not have to be perfect.
 
-Once the combo counter is at 3, press Claw and Tail together, with no direction. That is the finish. It gets easier and bigger as the combo grows.
+Once the combo counter is at 3, a FINISH button lights above the Claw and Pounce buttons. One tap plays the finish for the tier he is on. On a keyboard, Claw and Tail together still does it. The button hides when the combo drops.
 
 | Combo | Tier | What you see |
 | --- | --- | --- |

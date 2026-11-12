@@ -31,6 +31,11 @@ function layout(){const cs=getComputedStyle(probe);SA={t:parseFloat(cs.paddingTo
  const tz=Math.round(Math.max(34,Math.min(50,H*.13)*Math.min(1,SZ+.15))),tb=(id,i)=>{const b=document.querySelector(id);if(!b)return;Object.assign(b.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',right:Math.round(mr+i*(tz+12))+'px',top:mt+'px',bottom:'auto',left:'auto'})};
  tb('#qbtn',0);tb('#ui .b[data-k=morph]',1);tb('#mute',2);{const g=document.getElementById('gear');if(g)Object.assign(g.style,{width:tz+'px',height:tz+'px',fontSize:Math.round(tz*.42)+'px',left:ml+'px',top:mt+'px',right:'auto',bottom:'auto'})}
  const pc=document.getElementById('pclose');if(pc){pc.style.top=(mt+tz+8)+'px';pc.style.left=ml+'px'}
+ const fin=document.getElementById('pfinish');
+ if(fin){
+  const z=Math.round(S*.92), w=Math.round(S*1.45);
+  Object.assign(fin.style,{width:w+'px',height:z+'px',fontSize:Math.round(z*.3)+'px',right:(mr+Math.round(S*.12))+'px',bottom:(mb+Math.round(S*2.62))+'px',left:'auto',top:'auto'});
+ }
  rects=null}
 let rects=null;function getRects(){if(rects)return rects;rects=BTN().map(b=>{const r=b.getBoundingClientRect();return {b,k:b.dataset.k,x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2}});return rects}
 addEventListener('resize',()=>{layout()});addEventListener('orientationchange',()=>setTimeout(layout,300));layout();setTimeout(layout,500);
