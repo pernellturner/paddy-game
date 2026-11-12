@@ -116,5 +116,22 @@ Press the next button within about a third of a second. On the beat (a bit quick
 | Pounce Jab | Pounce, Claw, Claw | POUNCE JAB |
 | Sky Mix | Jump, Pounce, Claw | SKY MIX |
 | Four Claws | Claw, Claw, Claw, Up+Claw | FOUR CLAWS |
+| One-Two Kick | Claw, Claw, Roundhouse | ONE-TWO KICK |
+| Roll Spin | Forward roll, then the capoeira kick | ROLL SPIN |
+| Slide Launch | Slide, then Up+Claw | SLIDE LAUNCH |
+
+## Linking and finishes
+
+The roundhouse, backflip, roll, front flip, slide, and capoeira kick keep the combo going when they hit. Press the next button during the move. It is remembered and comes out as the move finishes, so a string does not have to be perfect.
+
+Once the combo counter is at 3, press Claw and Tail together, with no direction. That is the finish. It gets easier and bigger as the combo grows.
+
+| Combo | Tier | What you see |
+| --- | --- | --- |
+| 3 or 4 | Power | Capoeira kick, a short stop, a small zoom, and the dummy pops up |
+| 5 to 7 | Big finish | Front flip, a longer stop, a little slow motion, and a higher launch |
+| 8 or more | Ultimate | Forward roll, a big stop, slow motion, and the dummy flies and bounces |
+
+The words sit along the top. Paddy's pose stays on screen.
 
 Roundhouse kick and capoeira kick motion: ACCAD Open Motion Project, Ohio State Univ. (CC BY 3.0). Thanks to the CMU Graphics Lab Motion Capture Database and Quaternius.
