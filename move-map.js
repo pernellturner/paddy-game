@@ -70,9 +70,39 @@ function beginArena(state, anim, name, opt){
   MM.h1=MM.h2=false;
   keep();
 }
+function practiceRoom(){
+  try{return !!(window.PRACTICE&&PRACTICE.on)&&typeof FORM==='function'&&FORM()===0&&!(window.KITTY36&&KITTY36.on)&&!p.hunt}catch(e){return false}
+}
+// A tap is a short leap that stops in front of the dummy and swipes.
+// A hold is the longer Shadow Pounce. Both use his real frames, no speed lines.
+function practiceLeap(shadow, opt){
+  const face0=p.face||1;
+  let best=null, bd=1e9, face=face0;
+  const chase=shadow?320:200;
+  for(const d of dummies){
+    if(!d||d.benched||d.alive===false||!isFinite(d.x)) continue;
+    const g=(d.x-p.x)*face0;
+    if(g>24&&g<chase&&g<bd){bd=g; best=d}
+  }
+  if(best) face=best.x>=p.x?1:-1;
+  p.face=face;
+  if(window.PL) PL.rest=face;
+  const room=best?Math.abs(best.x-p.x): (shadow?220:130);
+  const stop=72;
+  const gap=best?Math.max(36, Math.min(shadow?260:160, room-stop)):(shadow?200:110);
+  MM.plan={shadow:!!shadow, gap, x0:p.x, face, hit:false, chain:!!(opt&&opt.chord)};
+  MM.last=shadow?'shadow':'pounce';
+  if(window.CX) CX.pose=null;
+  if(window.KD47&&KD47.lines) KD47.lines.length=0;
+  const speed=Math.max(180, gap/0.22);
+  beginArena('pounce','pounce', shadow?'SHADOW POUNCE!':'POUNCE!', {vy:shadow?-420:-300, vx:speed, paws:shadow?3:2, power:!!shadow, c:shadow?'#ff9ad5':'#ffe9a8', quiet:false});
+  p.vx=face*speed;
+  p.noFlick=true;
+  if(opt&&opt.chord) MM.thenClaw=true;
+}
 function firePounce(k, opt){
   opt=opt||{};
-  const tap=k<0.12;
+  const tap=practiceRoom()?k<0.22:k<0.12;
   const u=Math.min(1, k/0.8);
   try{ if(typeof P!=='undefined'&&P) delete P.special }catch(e){}
   push('P');
@@ -96,6 +126,7 @@ function firePounce(k, opt){
   }
   const kind=opt.dub?'flurry':opt.dir;
   const big=0.75+u*0.9;
+  if(practiceRoom()&&kind!=='up'&&kind!=='back'&&kind!=='flurry'){practiceLeap(!tap, opt); return}
   if(kind==='up') beginArena('pawpop','pawpop',tap?'POP POUNCE!':'BIG POP!',{vy:-420-u*360,vx:120+u*160,paws:1,power:u>0.45});
   else if(kind==='fwd') beginArena('pounce','pounce',tap?'LEAP SWIPE!':'BIG LEAP!',{vy:-280-u*320,vx:(240+u*620)*big,paws:tap?1:2,power:u>0.45});
   else if(kind==='back') beginArena('pounce','pounce',tap?'BACK SWIPE!':'BIG BACK SWIPE!',{vy:-180-u*180,vx:-(160+u*420),paws:tap?1:2,power:u>0.4});
@@ -149,13 +180,14 @@ function blinkTo(mode){
     if(!d.alive&&!(d.sp&&d.ps&&d.ps!=='rec'&&d.ps!=='down')) continue;
     const dd=Math.abs(d.x-p.x); if(dd<bd){bd=dd; best=d}
   }
+  if(best&&(!isFinite(best.x)||!isFinite(best.y))) best=null;
   if(mode==='barge'){
-    if(best) p.face=Math.sign(best.x-p.x)||p.face;
+    if(best) p.face=Math.sign(best.x-p.x)||p.face||1;
     if(typeof blinkBarge==='function') blinkBarge();
     else { p.vx=p.face*900; p.state='barge'; }
     if(best&&typeof hitDummy==='function') hitDummy(best, 'claw2', p.face);
   } else if(mode==='above'&&best){
-    p.face=Math.sign(best.x-p.x)||p.face;
+    p.face=Math.sign(best.x-p.x)||p.face||1;
     p.x=best.x-p.face*8; p.y=Math.max(70, best.y-150); p.vy=360; p.ground=false;
     if(typeof hitDummy==='function') hitDummy(best, 'claw1', p.face);
   } else if(mode==='behind'&&best){
@@ -217,15 +249,27 @@ function routeButton(which){
   return false;
 }
 
+function lowPounce(){
+  const face=p.face||1;
+  MM.last='lowpounce';
+  MM.plan={shadow:false, low:true, gap:110, x0:p.x, face, hit:false, chain:false};
+  if(window.CX) CX.pose=null;
+  if(window.KD47&&KD47.lines) KD47.lines.length=0;
+  beginArena('pounce','pounce','LOW POUNCE!',{vy:-220, vx:320, paws:1, c:'#ffb070'});
+  p.vx=face*320;
+}
 function arenaTick(){
   if(!base()) return;
   if(P.special){
+    if(practiceRoom()&&K.down&&!K.up&&!MM.pcharge){delete P.special; lowPounce()}
+    else{
     const moon=K.down&&!K.up&&!doubled()&&!tierOf();
     if(!moon&&!MM.pcharge){
       if(tierOf()&&doubled()) routeButton('pounce');
       else MM.pcharge={t:rt(), face:p.face, dir:dir(), dub:doubled(), chord:!!K.attack};
     }
     delete P.special;
+    }
   }
   if(MM.pcharge&&!MM.pcharge.level) chargePounce(K);
   else if(P.tail&&p.state!=='tailwhip'){if(!routeButton('tail')){} }

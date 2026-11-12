@@ -87,7 +87,9 @@ function tick(dt){if(!on()){KD.req=null;KD.fu=null;return}
  if(P.attack&&fu){
   if(fu.k==='dodge'&&(S2==='kdodge'||(S2==='normal'&&t-fu.t<.65))){delete P.attack;counterSlash()}
   else if(fu.k==='up'&&(S2==='kpounce'||(S2==='normal'&&!p.ground&&t-fu.t<1))){delete P.attack;launcher()}
-  else if(fu.k==='down'&&(S2==='kslide'||(['normal','stop'].includes(S2)&&p.ground&&t-fu.t<.75))){delete P.attack;sweep()}}
+  else if(fu.k==='down'&&(S2==='kslide'||(['normal','stop'].includes(S2)&&p.ground&&t-fu.t<.75))){
+   const chord=window.PRACTICE&&PRACTICE.on&&(P.attack||(window.P33&&P33.aim&&performance.now()/1000-P33.aim.t<.22&&P33.aim.inp.down));
+   if(!chord){delete P.attack;sweep()}}}
  if(fu&&t-fu.t>1.2)KD.fu=null;
  // dash strike -> Claw = straight back into the punch string (counter keeps going)
  if(p.state==='dashstrike'&&P.attack&&p.t>.16){delete P.attack;p.state='normal';startClaw()}

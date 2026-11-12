@@ -225,13 +225,13 @@ function update(dt){
   else if(p.sam){sMoves(dir)}
   else if(N){nMoves(dir)}
   else if(!p.ground&&!p.wall&&P.down){ if(K.left||K.right){p.face=K.left?-1:1;act('diveclaw','diveclaw',{say:'DIVE CLAW!',c:'#ffb070'})} else act('dive','dive',{say:'DIVE BOMB!',c:'#ffd070'}) }
-  else if(P.attack&&!p.wall&&(K.up||K.jump)&&(p.ground||(p.vy<0&&now-p.lastJump<.35))&&!p.hunt)uppercut();
+  else if(P.attack&&!p.wall&&(K.up||K.jump)&&(p.ground||(p.vy<0&&now-p.lastJump<.35))&&!p.hunt&&!(window.PRACTICE&&PRACTICE.on))uppercut();
   else if(P.attack&&!p.wall&&p.ground&&now-p.lastDash<.2&&!p.hunt)dashStrike();
   else if(P.attack&&!p.ground&&!p.wall){ if(p.jumps>=2&&!p.airSpin){p.airSpin=true;act('airspin','airspin',{say:'AIR SPIN!',c:'#8fe0ff'});p.vy=-200;shake=5}
    else if(!p.airSwipe||p.airHits>0){p.airHits=0;p.airSwipe=true;act('airswipe','airswipe',{say:'AIR SWIPE!',c:'#bfe8ff'});p.vy=Math.min(p.vy,-120);p.vx=p.face*Math.max(Math.abs(p.vx),280);spark(p.x+p.face*70,p.y-60,8,'#bfe8ff')} }
   else if(P.attack&&p.cool<=0&&!p.wall&&p.ground){
    if(p.hunt){act('wiggle','wiggle',{say:'wiggle wiggle...',c:'#ffe08a'})}
-   else if(K.down){act('pawpop','pawpop',{say:'PAW POP!',c:'#7fffd4'});p.vy=-420;p.ground=false;p.jumps=1;slash('up','#7fffd4')}
+   else if(K.down&&!(window.PRACTICE&&PRACTICE.on)){act('pawpop','pawpop',{say:'PAW POP!',c:'#7fffd4'});p.vy=-420;p.ground=false;p.jumps=1;slash('up','#7fffd4')}
    else {p.combo=p.keepT>0?p.keepCombo:0;p.keepT=0;startClaw()} }
   else if(P.swat&&p.ground&&!p.wall)act('swat','swat',{say:'SWAT!',c:'#bfe8ff'});
   else if(P.finisher&&p.ground&&!p.wall)finisher();
@@ -294,7 +294,7 @@ function update(dt){
 
  meleeHits(dt);updDummies(dt);
  shake*=.85; // input buffer: an unused press stays live for ~0.15s so moves chain; any new action consumes it
- for(const k in P)if(acted||INSTANT.includes(k)||now-(BUF[k]??-9)>.15)delete P[k];acted=false;
+ for(const k in P)if(acted||INSTANT.includes(k)||now-(BUF[k]??-9)>.22)delete P[k];acted=false;
  const nm={manner:p.anim,claw:p.anim.replace(/^claw(\d)/,'claw $1/3')}[p.state]||(p.state==='normal'?p.anim:p.state);
  if(now-errShown>3)lbl.textContent=(p.uf?UF[p.uf].ico+' '+UF[p.uf].nm+' · ':p.xf===3?'🛡️ KNIGHT · ':p.xf===4?'⚓ PIRATE · ':p.ninja?'🥷 NINJA · ':p.sam?'⚔️ SAMURAI · ':'')+nm.replace(/^([nsr]|kn|pi|gs|lp|pb|cb|sr|sh|mst|mde|mph|mfm|mmc|mtc|mch|mbk|mds)_/,'')+(p.wall?' (wall)':'')+(p.hunt?' · HUNT':'');
 }
@@ -415,7 +415,7 @@ function loadSprites(tries){fetch('assets/frames.json?v='+VER).then(r=>{if(!r.ok
   im.onload=()=>{if(done)return;done=true;clearTimeout(timer);if(im.decode)im.decode().catch(()=>{});finish(nm,true)};im.onerror=fail;go()}
  function pump(){while(active<6&&queue.length){active++;loadOne(queue.shift())}}
  // Knight / Pirate sprites load on demand (or quietly in the background once everything else is in)
- window.loadForm=function(pre,hi){const list=[];[pre+'_idle',pre+'_run',pre+'_rise',pre+'_apex',pre+'_fall',pre+'_land',pre+'_h1',pre+'_power',pre+'_victory'].concat(Object.keys(FR).filter(a=>String(A[a][0]).startsWith(pre+'_'))).forEach(a=>add(a,list));
+ window.loadForm=function(pre,hi){const list=[];[pre+'_idle',pre+'_run',pre+'_rise',pre+'_apex',pre+'_fall',pre+'_land',pre+'_h1',pre+'_power',pre+'_victory'].concat(Object.keys(FR).filter(a=>{const spec=A[a];return !!(spec&&String(spec[0]).startsWith(pre+'_'))})).forEach(a=>add(a,list));
   if(list.length){SPRITES.total+=list.length;queue.push(...list)}if(hi){const mine=queue.filter(n=>n.startsWith('p/'+pre+'_')),rest2=queue.filter(n=>!n.startsWith('p/'+pre+'_'));queue.length=0;queue.push(...mine,...rest2)}pump()};
  window.queueFrames=function(names,hi){const list=names.filter(n=>!seen.has(n));list.forEach(n=>seen.add(n));if(!list.length)return;SPRITES.total+=list.length;if(hi)queue.unshift(...list);else queue.push(...list);pump()};
  pump();setTimeout(startGame,6000)}).catch(e=>{console.error(e);if((tries||0)<4)setTimeout(()=>loadSprites((tries||0)+1),1500);else{lbl.textContent='could not load – please refresh';startGame()}})}

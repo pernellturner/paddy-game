@@ -274,10 +274,14 @@ function preArena(){
   if(window.KD47&&KD47.req&&!act&&!feint){
     const q=KD47.req;
     if(q.k==='fwd'||q.k==='down'){
-      KD47.req=null; delete P.dash;
-      const claw=!!(K.attack);
-      if(q.k==='down'||claw) startDodge(q.k==='down'?'weave':'slip', q.face, false);
-      else startDash(true, q.face, false);
+      const claw=!!(K.attack||P.attack);
+      const room=!!(window.PRACTICE&&PRACTICE.on);
+      if(room&&claw){KD47.req=null; delete P.dash}
+      else{
+        KD47.req=null; delete P.dash;
+        if(q.k==='down'||claw) startDodge(q.k==='down'?'weave':'slip', q.face, false);
+        else startDash(true, q.face, false);
+      }
     }
   }
   if(P.attack) note('atk '+p.state+' a='+(act?act.kind:'-')+' f='+(follow?follow.kind:'-')+' age='+(follow?(now()-follow.t).toFixed(2):'-'));
@@ -293,7 +297,12 @@ function preArena(){
   else if(!act&&inCombo()&&P.special) startFeint();
   if(!act&&chainUpper) chainUpper=false;
   const upClaw=!(window.PL&&PL.owns)&&K.up&&K.attack&&p.ground&&!p.wall&&!act&&!feint&&!link;
-  if(upClaw){
+  const roomUp=!!(window.PRACTICE&&PRACTICE.on);
+  const heldUp=(()=>{const h=window.KD48&&KD48.H&&KD48.H.attack;return h&&h.down?now()-h.t:0})();
+  const inString=p.state==='claw'||!!(window.P33&&P33.a);
+  // Practice Room: a quick Up+Claw stays in the string as a grounded uppercut.
+  // A real hold from a standstill still becomes the rising launcher below.
+  if(upClaw&&!(roomUp&&(heldUp<0.32||inString))){
     delete P.attack; delete P.jump; upWait=true;
     const h=window.KD48&&KD48.H&&KD48.H.attack;
     const held=h&&h.down?now()-h.t:0.02;
@@ -347,7 +356,10 @@ if(arena()&&typeof r9Pre==='function'){
     return r};
   const _df=drawFrame;
   drawFrame=function(f,x,y,face,alpha){
-    if(window.__odCover&&Math.abs((x||0)-p.x)<8&&Math.abs((y||0)-p.y)<14) return;
+    if(window.__odCover&&act&&act.imgs){
+      const img=act.imgs[Math.min(act.fi||0, act.imgs.length-1)];
+      if(img&&img.naturalWidth&&Math.abs((x||0)-p.x)<8&&Math.abs((y||0)-p.y)<14) return;
+    }
     return _df.apply(this, arguments);
   };
   const _draw=draw;
@@ -360,6 +372,8 @@ function paint(x, y, c){
   const img=act.imgs[Math.min(act.fi, act.imgs.length-1)];
   if(!img||!img.naturalWidth) return;
   c.save();
+  c.globalAlpha=1;
+  c.globalCompositeOperation='source-over';
   c.translate(x, y);
   c.scale((act.face||1)*BOX, BOX);
   c.drawImage(img, -foot[0], -foot[1]);

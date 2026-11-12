@@ -107,6 +107,7 @@ function paintPose(c, x, y){
     if(!img||!img.naturalWidth) return;
     c.save();
     c.globalAlpha=alpha==null?1:alpha;
+    c.globalCompositeOperation='source-over';
     c.translate(px, py+(pose.dy||0));
     c.rotate((pose.rot||0)*(pose.face||1));
     c.scale((pose.face||1)*BOX, BOX);
@@ -181,6 +182,9 @@ function noteTap(k, face){
 }
 function onTapRelease(k){
   if(!base()) return;
+  if(p.state==='claw'||p.state==='pounce'||(window.P33&&P33.a)||(window.MM&&(MM.plan||MM.pcharge))) return;
+  const held=window.KD48&&KD48.H&&KD48.H[k];
+  if(held&&rt()-held.t>0.22) return;
   if(window.KD48&&KD48.H&&KD48.H[k]&&KD48.H[k].dt) return;
   if(window.KD47&&KD47.req) return;
   if(window.KD48) KD48.req=null;
@@ -321,13 +325,16 @@ if(arena()&&typeof r9Pre==='function'){
       if(CX._st==='claw'&&p.state==='normal'&&!P.attack&&CX._fr){p.prevF=CX._fr;p.prevFace=p.face;p.prevX=p.x;p.prevY=p.y;p.blend=.1}
       if(P.attack||P.jump||P.dash) CX.absorb=0;
       CX._st=p.state;
-      if(CX.pose){p.vy=0; p.ground=true; p.state='ctap'; if(typeof floorAt==='function') p.y=floorAt(p.x)}
+      if(CX.pose&&!(window.MM&&MM.plan)&&p.state!=='claw'&&p.state!=='pounce'){p.vy=0; p.ground=true; p.state='ctap'; if(typeof floorAt==='function') p.y=floorAt(p.x)}
     }catch(e){}
     return r;
   };
   const _df=drawFrame;
   drawFrame=function(f,x,y,face,alpha){
-    if(CX.pose&&Math.abs((x||0)-p.x)<80&&Math.abs((y||0)-(p.y||0))<80) return;
+    const pose=CX.pose;
+    const imgs=pose&&pose.imgs;
+    const img=imgs&&imgs[Math.max(0, Math.min(imgs.length-1, pose.fi||0))];
+    if(pose&&img&&img.naturalWidth&&Math.abs((x||0)-p.x)<80&&Math.abs((y||0)-(p.y||0))<80) return;
     return _df.apply(this, arguments);
   };
   const _fx=drawFx;

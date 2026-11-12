@@ -158,11 +158,11 @@ function updCritter(d,dt){const D=d.D;
 // ---------- kids (dodge-only obstacles, never targets) ----------
 function spawnKid(){const id=Math.random()<.5?'kidscoot':'kidskate';need([id]);const dir=Math.random()<.5?1:-1;
  kids.push({id,dir,x:dir>0?LW-160:WALL_X+160,warn:1,t:0,bumped:0,ft:0})}
-function updKids(dt){for(const k of kids){k.t+=dt;if(k.warn>0){k.warn-=dt;continue}k.x+=k.dir*KIDS[k.id].spd*dt;k.ft+=dt*9;
+function updKids(dt){if(window.PRACTICE&&PRACTICE.on){kids.length=0;return}for(const k of kids){k.t+=dt;if(k.warn>0){k.warn-=dt;continue}k.x+=k.dir*KIDS[k.id].spd*dt;k.ft+=dt*9;
   if(!k.bumped&&p.inv<=0&&p.state!=='respawn'&&!CINE.includes(p.state)&&Math.abs(p.x-k.x)<55&&p.y>GROUND-70){k.bumped=1;p.vx=k.dir*360;p.vy=-360;p.ground=false;p.inv=Math.max(p.inv,.6);
    say(['WHOA! SORRY PADDY!','BEEP BEEP!','COMING THROUGH!'][Math.floor(Math.random()*3)],'#9fe8ff');shake=Math.max(shake,3)}}
  for(let i=kids.length-1;i>=0;i--)if(kids[i].x<LW-260||kids[i].x>WALL_X+260)kids.splice(i,1)}
-function drawKids(){for(const k of kids){if(k.warn>0){const x=k.dir>0?LW+40:WALL_X-40,a=.5+.5*Math.sin(now*18);fancy(k.dir>0?'⚠ ▶':'◀ ⚠',x,GROUND-70,30,0,1,a,'#ffe14d');continue}
+function drawKids(){if(window.PRACTICE&&PRACTICE.on){kids.length=0;return}for(const k of kids){if(k.warn>0){const x=k.dir>0?LW+40:WALL_X-40,a=.5+.5*Math.sin(now*18);fancy(k.dir>0?'⚠ ▶':'◀ ⚠',x,GROUND-70,30,0,1,a,'#ffe14d');continue}
   const fr=FR[`en_${k.id}_ride`];if(!fr)continue;const f=fr[Math.floor(k.ft)%fr.length],im=IMG[f.f];if(!imgOK(im))continue;
   ctx.fillStyle='rgba(0,0,0,.16)';ctx.beginPath();ctx.ellipse(k.x,GROUND+3,46,9,0,0,6.28);ctx.fill();
   ctx.save();ctx.translate(k.x,GROUND+4);ctx.scale(k.dir*ESC*.78,ESC*.78);ctx.drawImage(im,-f.ax,-f.ay);ctx.restore()}}

@@ -1,5 +1,21 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<script>
+(function(){
+  var V='17';
+  try{
+    if(navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})});
+    if(localStorage.getItem('paddyBuild')!==V){
+      localStorage.setItem('paddyBuild', V);
+      if(!/[?&]build=/.test(location.search)){
+        var join=location.search?'&':'?';
+        location.replace(location.pathname+location.search+join+'build='+V+location.hash);
+      }
+    }
+  }catch(e){}
+})();
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Paddy"><meta name="theme-color" content="#1a0f2e"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icon-180.png"><link rel="icon" href="assets/s1_05.png"><title>Paddy's Way Home</title>
 <style>
 @font-face{font-family:'Bangers';src:url(fonts/Bangers.woff2) format('woff2');font-display:block}
@@ -204,9 +220,10 @@ body.ov #moves{display:block}
 </table>
 <p>Try now: <button data-try="zoomies">Zoomies</button><button data-try="hiss">Hiss</button><button data-try="swat">Swat</button><button data-try="victory">Victory</button><button data-try="hurtTest">Hurt</button></p>
 <p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
-<p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p></div></div>
+<p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p>
+<p class="tip">Roundhouse kick and capoeira kick motion: ACCAD Open Motion Project, Ohio State Univ. (CC BY 3.0). Thanks to the CMU Graphics Lab Motion Capture Database and Quaternius.</p></div></div>
 <div id="rot"><div>🔄 Turn your phone sideways to play with Paddy</div><div id="rotor">or play the World 1 levels right now:</div><button id="rotw1" type="button">🌳 PLAY WORLD 1</button></div>
-<script src="game.js?v=44g"></script>
+<script src="game.js?v=44j"></script>
 <script src="mission.js?v=44a"></script>
 <script src="smooth.js?v=32a"></script>
 <script src="darkside.js?v=20g"></script>
@@ -214,7 +231,7 @@ body.ov #moves{display:block}
 <script src="item5.js?v=20e"></script>
 <script src="poses2.js?v=20f"></script>
 <script src="styles.js?v=20b"></script>
-<script src="chain.js?v=26c"></script>
+<script src="chain.js?v=26d"></script>
 <script src="force2.js?v=20g"></script>
 <script src="gunslinger.js?v=40a"></script>
 <script src="crimson.js?v=43a"></script>
@@ -234,8 +251,8 @@ const mb=document.getElementById('mute');const ms=()=>mb.textContent=muted?'🔇
 addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.classList.contains('ov'))}else if(e.key==='Escape')ov(false)});
 lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 </script>
-<script src="controls.js?v=49"></script>
-<script src="en.js?v=44d"></script>
+<script src="controls.js?v=50"></script>
+<script src="en.js?v=44e"></script>
 <script src="story.js?v=45a"></script>
 <script src="sfx.js?v=43a"></script>
 <script src="formfx.js?v=30a"></script>
@@ -243,8 +260,8 @@ lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 <script src="combo26.js?v=26a"></script>
 <script src="kitty29.js?v=43a"></script>
 <script src="fin30.js?v=33a"></script>
-<script src="punch33.js?v=33c"></script>
-<script src="practice34.js?v=43e"></script>
+<script src="punch33.js?v=33f"></script>
+<script src="practice34.js?v=43g"></script>
 <script src="ninja35.js?v=35a"></script>
 <script src="kitty36.js?v=36a"></script>
 <script src="samurai37.js?v=37a"></script>
@@ -256,14 +273,17 @@ lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 <script src="crimson43.js?v=43a"></script>
 <script src="juggle44.js?v=44b"></script>
 <script src="dev44.js?v=45a"></script>
-<script src="kitti47.js?v=49"></script>
-<script src="kitti48.js?v=61"></script>
+<script src="kitti47.js?v=50"></script>
+<script src="kitti48.js?v=62"></script>
 <script src="p53_frames.js?v=54"></script>
 <script src="uc49.js?v=58"></script>
 <script src="punch52.js?v=54"></script>
-<script src="practice-moves.js?v=6"></script>
-<script src="original-dodges.js?v=9"></script>
-<script src="combo-expansion.js?v=7"></script>
-<script src="move-map.js?v=5"></script>
+<script src="practice-moves.js?v=8"></script>
+<script src="original-dodges.js?v=13"></script>
+<script src="combo-expansion.js?v=12"></script>
+<script src="move-map.js?v=8"></script>
 <script src="polish.js?v=6"></script>
-<script src="practice-fix.js?v=1"></script></body></html>
+<script src="practice-fix.js?v=5"></script>
+<script src="combo-strings.js?v=8"></script>
+<script src="train-challenge.js?v=14"></script>
+<script src="studio-moves.js?v=5"></script></body></html>
