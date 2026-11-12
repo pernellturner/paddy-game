@@ -39,13 +39,9 @@ function upd(d,dt){d.t+=dt;d.pt+=dt;d.flash-=dt;d.sq*=Math.pow(.01,dt);d.stun-=d
  d.fs+=(d.face-d.fs)*Math.min(1,dt*12);
  const held=CINE.includes(p.state)&&p.grab===d,frozen=d.mfz>0||(typeof M14!=='undefined'&&M14.tstop>0);
  // same launch / float / gravity as every other target, so launchers and juggles feel identical to a real fight
- const dIdle=now-(d.lastHitT||-9);if(d.y<GROUND-25&&dIdle>.32&&d.fl>0&&!(p.state==='lkult'||CINE.includes(p.state)))d.fl=0;d.fl-=dt;
- // A launcher still pops him, then real gravity brings him back down. The old
- // 420 drift plus a ceiling that zeroed his fall left him hanging in the lights.
- const high=d.y<GROUND-300, grav=high?2800:(d.fl>0.15?1600:2100);
- d.vy+=grav*dt;if(d.fl>0)d.vx*=Math.pow(.35,dt);
- d.x+=d.vx*dt;d.y+=d.vy*dt;const lo=LW+50,hi=WALL_X-50;if(d.x<lo){d.x=lo;d.vx=Math.abs(d.vx)*.5}if(d.x>hi){d.x=hi;d.vx=-Math.abs(d.vx)*.5}
- if(d.y<GROUND-500){d.y=GROUND-500;if(d.vy<120)d.vy=120;d.fl=0}
+ const dIdle=now-(d.lastHitT||-9);if(d.y<GROUND-25&&dIdle>.5&&d.fl>0&&!(p.state==='lkult'||CINE.includes(p.state)))d.fl=0;d.fl-=dt;
+ d.vy+=(d.fl>0?420:dIdle>.9&&d.y<GROUND-25?2300:1700)*dt;if(d.fl>0)d.vx*=Math.pow(.3,dt);
+ d.x+=d.vx*dt;d.y+=d.vy*dt;const lo=LW+50,hi=WALL_X-50;if(d.x<lo){d.x=lo;d.vx=Math.abs(d.vx)*.5}if(d.x>hi){d.x=hi;d.vx=-Math.abs(d.vx)*.5}if(d.y<-90000)d.y=-90000;
  let landed=false;if(d.y>=GROUND){d.y=GROUND;if(d.vy>350){landed=true;d.vy=Math.max(-300,d.vy*-.25);d.sq=.7;spark(d.x,GROUND,6,'#d9c49a',140)}else d.vy=0;d.vx*=Math.pow(.02,dt)}
  const air=d.y<GROUND-2||d.vy<-1;d.peak=Math.max(d.peak||0,GROUND-d.y);d.rot*=Math.pow(.001,dt);
  if(d.hp<=0){d.hp=d.max;d.hpShow=d.max;d.bub={t:'♥ REFILL',l:.9,c:'#7dff7a'};spark(d.x,d.y-120,10,['#7dff7a','#fff'],220)}   // never breaks
@@ -95,17 +91,13 @@ const _upd=updDog;updDog=function(d,dt){if(d.sp)return upd(d,dt);return _upd(d,d
 const _dh=dogHit;dogHit=function(d,move,air){if(!d.sp)return _dh(d,move,air);d.hitT=now;d.bub=d.bub&&d.bub.t==='!'?d.bub:null;
  if(d.ps==='wind'||d.ps==='punch'){d.arm=1;return}            // armoured while attacking: you have to defend, not mash
  if(d.ps==='rec')return;
- const k=KB[move]||KB.claw1;const launchy=(k[1]||0)<-500;
- const floor=typeof GROUND==='number'?GROUND:470, airborne=d.ps==='air'||d.y<floor-25;
- if(d.role==='atk'&&fighter()&&!launchy&&!airborne){go(d,'heavy');return}if(air||d.vy<-250||launchy||airborne){if(d.ps!=='air')go(d,'air');return}
+ const k=KB[move]||KB.claw1;if(d.role==='atk'&&fighter()){go(d,'heavy');return}if(air||d.vy<-250){if(d.ps!=='air')go(d,'air');return}
  if(d.ps==='down'){if(d.downT<2.2){d.pt=Math.min(d.pt,(5-d.i0)/DART.fps);d.vy=-140}return}   // OTG bounce, but it always gets up
  const heavy=k[3]>=.07||Math.abs(k[0])>=300||k[1]<-350;if(heavy&&Math.abs(d.vx)>=560)go(d,'down',0);else go(d,heavy?'heavy':'light')};
 const _ko=startKO;startKO=function(d){if(d.sp){d.hp=d.max;return}return _ko(d)};
 const _hd=hitDummy;hitDummy=function(d,move,dir){if(!d||!d.sp||!PR.on)return _hd.apply(this,arguments);
  const wasAir=d.y<GROUND-25,r=_hd.apply(this,arguments);
- const k=KB[move]||KB.claw1, launchy=(k[1]||0)<-500;
- const floor=typeof GROUND==='number'?GROUND:470, airborne=d.ps==='air'||d.y<floor-25;
- if(d.role==='atk'&&fighter()&&!launchy&&!airborne){d.fl=0;if(d.vy<0)d.vy=Math.max(d.vy,-60);d.vx=Math.max(-260,Math.min(260,d.vx))}   // the fighter stays on its spring until a launcher pops it
+ if(d.role==='atk'&&fighter()){d.fl=0;if(d.vy<0)d.vy=Math.max(d.vy,-60);d.vx=Math.max(-260,Math.min(260,d.vx))}   // the fighter stays on its spring
  if(d.arm){d.arm=0;d.vx=0;if(d.y>=GROUND-1)d.vy=0;d.fl=0;d.flash=.12;d.bub={t:'!',l:Math.max(.3,WIND-d.pt),c:'#ff4040'}}
  if(d.role==='launch'&&d.y<GROUND-25)d.vx*=.4;   // juggle station: keep it over Paddy instead of carrying it into the wall
  const S=PR.s;S.hits++;S.best=Math.max(S.best,C.n);
@@ -117,11 +109,8 @@ const _hd=hitDummy;hitDummy=function(d,move,dir){if(!d||!d.sp||!PR.on)return _hd
  return r};
 // count BLOCKED!/COUNTER! from every form's own defence (kitty guard/dodge-counter, samurai & knight parries)
 const _say=say;say=function(t){if(PR.on){if(t==='BLOCKED!')PR.s.blocked++;else if(t==='COUNTER!'){if(now-(PR.cT||-9)<.7)return _say.apply(this,arguments);PR.cT=now;PR.s.counter++;for(const d of live())if(d.role==='atk'){d.countered=1;d.cw=0}}else if(t==='DODGE!')return}return _say.apply(this,arguments)};
-const _dd=drawDummies;drawDummies=function(){const all=dummies.slice();if(!all.some(d=>d.sp))return _dd();
- // Behind Paddy and the spin rings. Drawing him after the whirl put the glove on top of the move.
- for(const d of all)if(d.sp)drawD(d);
- const keep=all.filter(d=>!d.sp);dummies.length=0;dummies.push(...keep);
- try{_dd()}finally{dummies.length=0;dummies.push(...all)}};
+const _dd=drawDummies;drawDummies=function(){const all=dummies.slice();if(!all.some(d=>d.sp))return _dd();const keep=all.filter(d=>!d.sp);dummies.length=0;dummies.push(...keep);
+ try{_dd()}finally{dummies.length=0;dummies.push(...all)}for(const d of all)if(d.sp)drawD(d)};
 if(typeof r12Takedown==='function'){const _tk=r12Takedown;r12Takedown=function(){if(PR.on)return false;return _tk.apply(this,arguments)}}
 const _hud=r12HUD;r12HUD=function(){const r=_hud.apply(this,arguments);if(PR.on)try{panel()}catch(e){console.warn('pr panel',e)}return r};
 const _ud=updDummies;updDummies=function(dt){_ud(dt);if(PR.on){PR.hintT+=dt;if(p.hp<PR.hp0)p.hp=PR.hp0}};
@@ -138,22 +127,15 @@ function drawD(d){const hg=Math.max(0,GROUND-d.y);ctx.fillStyle='rgba(0,0,0,.2)'
  if(d.ps==='wind'){const u=Math.sin(now*22)*.5+.5,gx=d.x+d.face*40,gy=d.y-104;ctx.save();const g=ctx.createRadialGradient(gx,gy,4,gx,gy,90+u*20);
   g.addColorStop(0,`rgba(255,40,30,${.4+.3*u})`);g.addColorStop(.6,`rgba(255,60,40,${.16+.1*u})`);g.addColorStop(1,'rgba(255,40,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(gx,gy,115,0,6.283);ctx.fill();
   const r=18+80*(1-d.pt/WIND);ctx.lineWidth=4;ctx.strokeStyle=`rgba(255,255,255,${.5+.5*d.pt/WIND})`;ctx.beginPath();ctx.arc(d.x+d.face*(atkArt?DART.atk.reach*FSC()*SC*.85:26+GR*.75),gy,r,0,6.283);ctx.stroke();ctx.restore()}
- const [f,mir]=frame(d);if(!f){ctx.save();ctx.fillStyle='#d7c4a8';ctx.beginPath();ctx.ellipse(d.x,d.y-70,36,48,0,0,6.28);ctx.fill();ctx.restore()}if(f){const im=IMG[f.f];ctx.save();const air=d.ps==='air'&&d.y<GROUND-2;
- // launched_fall's anchor sits hundreds of pixels above the bitmap, so the picture hung in the air while the hit box stayed low.
- const foot=f.ay>f.h+8?f.h-1:f.ay;
- ctx.translate(d.x,d.y+(air?(f.lf||0)*SC:0));
-  ctx.rotate(d.rot+(-d.face*d.lean*.2));
-  const grabbed=window.CX&&CX.grab===d&&CX.grabT&&now-CX.grabT<0.7;
-  const s=grabbed?1:(1+d.sq*.12+(d.ps==='wind'?d.lean*.06:0));
-  if(grabbed) ctx.rotate(d.face*-0.22);
-  ctx.scale((mir?-1:1)*SC/s,SC*s);ctx.drawImage(im,-f.ax,-foot);
-  if(d.flash>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,d.flash/.12)*.5;ctx.drawImage(im,-f.ax,-foot)}ctx.restore()}
+ const [f,mir]=frame(d);if(f){const im=IMG[f.f];ctx.save();const air=d.ps==='air'&&d.y<GROUND-2;ctx.translate(d.x,d.y+(air?(f.lf||0)*SC:0));
+  ctx.rotate(d.rot+(-d.face*d.lean*.2));const s=1+d.sq*.12+(d.ps==='wind'?d.lean*.06:0);ctx.scale((mir?-1:1)*SC/s,SC*s);ctx.drawImage(im,-f.ax,-f.ay);
+  if(d.flash>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,d.flash/.12)*.5;ctx.drawImage(im,-f.ax,-f.ay)}ctx.restore()}
  if(gl)glove(d,d.ext);
  if(d.hpShow<d.max-.01&&d.ps!=='down'){const w=70,y=d.y-190;ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(d.x-w/2-2,y-2,w+4,8);ctx.fillStyle='#ffb347';ctx.fillRect(d.x-w/2,y,w*Math.max(0,d.hpShow)/d.max,4);ctx.fillStyle='#7dff7a';ctx.fillRect(d.x-w/2,y,w*Math.max(0,d.hp)/d.max,4)}
  if(d.bub){const b=d.bub,a=Math.min(1,b.l*3),big=b.t.length<=2,pop=big?1+.15*Math.sin(now*20):1;fancy(b.t,d.x+(big?d.face*30:0),d.y-(d.ps==='down'?100:big?215:225),big?46:24,0,pop,a,b.c)}}
 const ST={spar:['🥊','SPAR','it hits back — defend, then punish'],turn:['↔','TURN','one in front, one behind'],launch:['🚀','LAUNCH','launch it, then juggle']};
 function hints(){const nin=FORM()===1||FORM()===2||FORM()===3||FORM()===4||FORM()===5||FORM()===6||FORM()===7||FORM()===8,base=FORM()===0||nin,kb=!document.body.classList.contains('touchy');
- if(PR.st==='spar')return [`Red glow + closing ring = punch coming!`,base?(kb?'DODGE: double-tap a direction, or tap down to crouch':'DODGE: double-tap a direction, or tap down'):'Jump over it, dash or Blink away',base?'Dodge right as it lands, then Claw = COUNTER':'Samurai & Knight: parry it',`Hit back straight after = COUNTER!`];
+ if(PR.st==='spar')return [`Red glow + closing ring = punch coming!`,base?(kb?'DODGE: O · BLOCK: hold B':'DODGE: tap 🛡 · BLOCK: hold 🛡'):'Jump over it, dash or Blink away',base?(nin?'Block/dodge right as it lands = COUNTER (or Claw while blocking)':'Dodge/block right as it lands = COUNTER'):'Samurai & Knight: parry it',`Hit back straight after = COUNTER!`];
  if(PR.st==='turn')return ['Start a combo on one dummy…',kb?'…tap ← / → mid-combo to turn round':'…tap ◀ / ▶ mid-combo to turn round','Keep the chain going on both sides'];
  if(FORM()===8)return ['Launch: ↑+Claw (High Time)','then Claw ×3 in the air: air slash, spin slash, helm breaker','Air Dash (Blink) in the air closes the gap · every air hit = JUGGLE ×n'];
  if(FORM()===7)return ['Launch: ↑+Claw (Rising Breaker)','then Claw ×3 in the air: air chop, spin sweep, plunge','Air Dash (Blink) in the air closes the gap · every air hit = JUGGLE ×n'];
@@ -205,9 +187,9 @@ function open(st){if(window.TRAIN&&TRAIN.TR.on){TRAIN.TR.on=false;document.body.
  if(window.ENW){if(ENW.W.on)ENW.W.on=false;for(let i=dummies.length-1;i>=0;i--)if(dummies[i].cr)dummies.splice(i,1);ENW.shots.length=0;ENW.kids.length=0}
  if(window.STORY&&STORY.mode&&STORY.mode!=='off'){window.STORYPAUSE=false;STORY.mode='off';document.body.classList.remove('story');try{last=performance.now()}catch(_){}}
  if(window.UNLx){UNLx.d.tryAll=true;UNLx.d.tryMyth=true}
- bench(true);PR.on=true;PR.hp0=Math.max(3,p.hp||3);p.hp=PR.hp0;document.body.classList.add('proom');setTimeout(fit,30);setTimeout(()=>dispatchEvent(new Event('resize')),40);preload();PR.s=zero();station(st||PR.st);
+ bench(true);PR.on=true;PR.hp0=Math.max(3,p.hp||3);p.hp=PR.hp0;document.body.classList.add('proom');setTimeout(fit,30);preload();PR.s=zero();station(st||PR.st);
  card('🥊 PRACTICE ROOM','dummies never break — pick a station up top','#ffe14d')}
-function close(){PR.on=false;clearSp();document.body.classList.remove('proom');setTimeout(()=>dispatchEvent(new Event('resize')),40);bench(false);if(window.STORY&&STORY.title)STORY.title()}
+function close(){PR.on=false;clearSp();document.body.classList.remove('proom');bench(false);if(window.STORY&&STORY.title)STORY.title()}
 Object.assign(PR,{open,close,station,reset:resetStats,DART,dummies:live,sheet,hints});
 addEventListener('keydown',e=>{if(!PR.on||e.repeat||document.body.classList.contains('ov')||document.body.classList.contains('fp')||document.body.classList.contains('st'))return;
  if(e.code==='KeyU'){e.preventDefault();const k=Object.keys(ST);station(k[(k.indexOf(PR.st)+1)%k.length])}else if(e.code==='KeyI'){e.preventDefault();resetStats()}});

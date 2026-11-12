@@ -52,10 +52,12 @@ body.ov #moves{display:block}
  <div class="b" data-k="up"    style="left:calc(56px + env(safe-area-inset-left));bottom:168px;width:56px;height:56px">▲</div>
  <div class="b" data-k="down"  style="left:calc(56px + env(safe-area-inset-left));bottom:96px;width:56px;height:56px">▼</div>
  <div class="b" data-k="attack"  style="right:calc(96px + env(safe-area-inset-right));bottom:24px">Claw</div>
- <div class="b" data-k="special" style="right:calc(100px + env(safe-area-inset-right));bottom:100px">Pounce</div>
+ <div class="b" data-k="jump"    style="right:calc(16px + env(safe-area-inset-right));bottom:56px;width:72px;height:72px">Jump</div>
+ <div class="b" data-k="special" style="right:calc(100px + env(safe-area-inset-right));bottom:100px">Meow</div>
  <div class="b s" data-k="hunt" style="right:calc(176px + env(safe-area-inset-right));bottom:44px">Hunt</div>
  <div class="b s" data-k="tail" style="right:calc(176px + env(safe-area-inset-right));bottom:108px">Tail</div>
  <div class="b s gpow" data-k="gpow" style="display:none;right:calc(236px + env(safe-area-inset-right));bottom:108px">⚡<small>POWER</small></div>
+ <div class="b s" data-k="guard" style="right:calc(176px + env(safe-area-inset-right));bottom:172px">🛡</div>
  <div class="b s" data-k="blink" style="right:calc(236px + env(safe-area-inset-right));bottom:44px">Blink</div>
  <div class="b s t" data-k="morph" style="right:calc(64px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🥷</div>
  <div class="b s t" id="mute" style="right:calc(120px + env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))">🔊</div>
@@ -206,7 +208,7 @@ body.ov #moves{display:block}
 <p class="tip">When to use them: <b>Zoomies</b> = speed burst across the level · <b>Hiss</b> = push the Rottweiler back · <b>Swat</b> = quick pop-up paw · <b>Victory</b> = celebrate · <b>Hurt</b> = test the ouch and the nine lives · 🔊 = sound on/off.</p>
 <p class="tip">Hit the Rottweiler to build combos (keep hitting within ~1.2 s).</p></div></div>
 <div id="rot"><div>🔄 Turn your phone sideways to play with Paddy</div><div id="rotor">or play the World 1 levels right now:</div><button id="rotw1" type="button">🌳 PLAY WORLD 1</button></div>
-<script src="game.js?v=44g"></script>
+<script src="game.js?v=44d"></script>
 <script src="mission.js?v=44a"></script>
 <script src="smooth.js?v=32a"></script>
 <script src="darkside.js?v=20g"></script>
@@ -214,7 +216,7 @@ body.ov #moves{display:block}
 <script src="item5.js?v=20e"></script>
 <script src="poses2.js?v=20f"></script>
 <script src="styles.js?v=20b"></script>
-<script src="chain.js?v=26c"></script>
+<script src="chain.js?v=26a"></script>
 <script src="force2.js?v=20g"></script>
 <script src="gunslinger.js?v=40a"></script>
 <script src="crimson.js?v=43a"></script>
@@ -234,7 +236,7 @@ const mb=document.getElementById('mute');const ms=()=>mb.textContent=muted?'🔇
 addEventListener('keydown',e=>{if(e.key==='?'||e.key==='/'){ov(!document.body.classList.contains('ov'))}else if(e.key==='Escape')ov(false)});
 lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 </script>
-<script src="controls.js?v=49"></script>
+<script src="controls.js?v=48"></script>
 <script src="en.js?v=44d"></script>
 <script src="story.js?v=45a"></script>
 <script src="sfx.js?v=43a"></script>
@@ -243,8 +245,8 @@ lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 <script src="combo26.js?v=26a"></script>
 <script src="kitty29.js?v=43a"></script>
 <script src="fin30.js?v=33a"></script>
-<script src="punch33.js?v=33c"></script>
-<script src="practice34.js?v=43e"></script>
+<script src="punch33.js?v=33a"></script>
+<script src="practice34.js?v=43a"></script>
 <script src="ninja35.js?v=35a"></script>
 <script src="kitty36.js?v=36a"></script>
 <script src="samurai37.js?v=37a"></script>
@@ -256,14 +258,5 @@ lbl.style.pointerEvents='auto';lbl.addEventListener('pointerdown',()=>ov(true));
 <script src="crimson43.js?v=43a"></script>
 <script src="juggle44.js?v=44b"></script>
 <script src="dev44.js?v=45a"></script>
-<script src="kitti47.js?v=49"></script>
-<script src="kitti48.js?v=61"></script>
-<script src="p53_frames.js?v=54"></script>
-<script src="uc49.js?v=58"></script>
-<script src="punch52.js?v=54"></script>
-<script src="practice-moves.js?v=6"></script>
-<script src="original-dodges.js?v=9"></script>
-<script src="combo-expansion.js?v=7"></script>
-<script src="move-map.js?v=5"></script>
-<script src="polish.js?v=6"></script>
-<script src="practice-fix.js?v=1"></script></body></html>
+<script src="kitti47.js?v=48"></script>
+<script src="kitti48.js?v=48"></script></body></html>

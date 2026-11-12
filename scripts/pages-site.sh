@@ -100,6 +100,7 @@ PY
 
 copy_dir() {
   local src="$1" dest="$2"
+  [ -d "$src" ] || { echo "skip missing folder: $src"; return 0; }
   mkdir -p "$dest"
   cp -a "$src"/. "$dest"/
 }
@@ -110,12 +111,12 @@ copy_dir assets/music "$SITE/assets/music"
 copy_dir assets/story "$SITE/assets/story"
 copy_dir assets/bg26 "$SITE/assets/bg26"
 copy_dir assets/w1bg "$SITE/assets/w1bg"
-mkdir -p "$SITE/assets/sprites/boxing_v1/approved_play"
 copy_dir assets/sprites/boxing_v1/approved_play "$SITE/assets/sprites/boxing_v1/approved_play"
 
 for f in arena.webp ascended_lock.webp icon-180.png icon-192.png icon-512.png s1_05.png; do
-  cp "assets/$f" "$SITE/assets/$f"
+  [ -f "assets/$f" ] && cp "assets/$f" "$SITE/assets/$f" || echo "skip missing file: assets/$f"
 done
+
 
 cp levels/*.json "$SITE/levels/"
 mkdir -p "$SITE/levels/art"

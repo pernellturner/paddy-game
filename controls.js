@@ -17,9 +17,8 @@ const SET=window.BSET={d:{sz:'s',op:'m'},load(){try{Object.assign(this.d,JSON.pa
  k(){return {s:.74,m:.87,l:1}[this.d.sz]||.74},o(){return {l:.28,m:.45,h:.75}[this.d.op]||.45}};SET.load();
 let SA={t:0,r:0,b:0,l:0};const probe=document.createElement('div');probe.style.cssText='position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';document.body.appendChild(probe);
 function layout(){const cs=getComputedStyle(probe);SA={t:parseFloat(cs.paddingTop)||0,r:parseFloat(cs.paddingRight)||0,b:parseFloat(cs.paddingBottom)||0,l:parseFloat(cs.paddingLeft)||0};
- const prac=document.body.classList.contains('proom')?.86:1;
- const W=innerWidth,H=innerHeight,SZ=SET.k(),S=Math.round(Math.max(56,Math.min(86,H*.205,W*.085))*SZ*prac),ml=Math.max(10,SA.l+4),mr=Math.max(10,SA.r+4),mb=Math.max(6,SA.b+2),mt=Math.max(4,SA.t+2);
- document.documentElement.style.setProperty('--bo',String(SET.o()*(prac<1?.7:1)));
+ const W=innerWidth,H=innerHeight,SZ=SET.k(),S=Math.round(Math.max(56,Math.min(86,H*.205,W*.085))*SZ),ml=Math.max(10,SA.l+4),mr=Math.max(10,SA.r+4),mb=Math.max(6,SA.b+2),mt=Math.max(4,SA.t+2);
+ document.documentElement.style.setProperty('--bo',SET.o());
  const put=(k,o)=>{const b=document.querySelector(`#ui .b[data-k="${k}"]`)||document.getElementById(k);if(!b)return;const z=Math.round(S*o.s);Object.assign(b.style,{width:z+'px',height:z+'px',fontSize:Math.round(Math.max(13,z*.24))+'px',left:o.l!=null?Math.round(o.l)+'px':'auto',right:o.r!=null?Math.round(o.r)+'px':'auto',bottom:o.b!=null?Math.round(o.b)+'px':'auto',top:o.t!=null?Math.round(o.t)+'px':'auto'})};
  // buttons are placed by their CENTRES (in units of S) so circles never touch, whatever the screen size
  const place=(k,d,cx,cy,side)=>{const b=document.querySelector(`#ui .b[data-k="${k}"]`);if(!b)return;const z=Math.round(S*d),o={s:d,b:mb+S*cy-z/2};if(side<0)o.l=ml+S*cx-z/2;else o.r=mr+S*cx-z/2;put(k,o)};

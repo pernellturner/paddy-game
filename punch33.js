@@ -4,7 +4,7 @@
 //   press buffered from the impact frame (4) on; cancel at the END of frame 6; the next punch starts at ITS frame 2 (frame 7 is
 //   never played twice); its frame 1 sits where this punch's frame 7 would have been (root motion from the _roots.txt).
 //   Last punch: play frame 7, then string_recover frames 2-3 back to the upright guard.
-// What a tap throws (player-built strings):   Claw = the next number of the 1-2-3-4 string (1 jab -> 2 cross -> 3 left hook -> 4 right uppercut -> 1 ...)
+// What a tap throws (player-built strings):   Claw = the next number of the 1-2-3-4 string (1 jab -> 2 cross -> 3 hook -> 4 body -> 1 ...)
 //   → (toward the enemy) + Claw = JAB (a second jab in a row is the slipping jab 1')     ↓ + Claw = BODY SHOT     ↑/Jump + Claw = SKY SWIPE
 //   so 1-2 = C C · 1-1-2 = →C →C C · 1-2-3-4 = C C C C ...
 // The 8-hit timed combo stays: hits 1-3 any rhythm; from the 3rd hit on, press ON THE BEAT (the ring goes green = the impact frame
@@ -21,7 +21,6 @@ const PD={
  bxj1:['k_ps_jab1','jab','JAB!','#ffffff',3,4,5,6,0], bxj2:['k_ps_jab2','jab','JAB!','#ffffff',3,4,5,6,0],
  bxx:['k_ps_cross','cross','CROSS!','#bfe8ff',3,4,5,6,0], bxlh:['k_ps_lhook','hook','LEFT HOOK!','#bfe8ff',3,4,5,6,0],
  bxrb:['k_ps_rbody','body','BODY SHOT!','#ffb040',3,4,5,6,0],
- bxsu:['k_ps_rbody','suc','RIGHT UPPERCUT!','#ffe14d',3,4,5,6,0],
  bxpj:['k_pw_jab','jab','POWER JAB!','#ffe9a8',4,6,7,8,1], bxph:['k_pw_hook','hook','POWER HOOK!','#9fe8ff',4,6,7,8,1],
  bxpb:['k_pw_body','body','POWER BODY!','#ffb040',4,6,7,8,1], bxpu:['k_pw_upper','upper','UPPERCUT!','#ffe14d',4,6,8,9,1],
  bxrec:['k_ps_rec','rec','','#fff',-1,-1,9,9,0]};
@@ -31,11 +30,11 @@ const NEW={};for(const a in PD)NEW[a]=[FPS,0,PD[a][0]];
 Object.assign(NEW,{pc1:[FPS,0,'k_ps_jab1'],pc2:[FPS,0,'k_ps_cross'],pc3:[FPS,0,'k_ps_cross'],pc4:[FPS,0,'k_ps_jab2'],pc5:[FPS,0,'k_ps_lhook'],pc6:[FPS,0,'k_ps_rbody'],pc7:[FPS,0,'k_pw_upper'],pc8:[FPS,0,'k_pw_body']});
 SM(0,'',NEW);for(const k in NEW){const v=NEW[k];A[k]=[v[2],null,v[0],0];if(window.SMOOTH)SMOOTH.DONE.delete(k)}
 for(const a in PD)delete window.K29EXT[a];
-Object.assign(NAMES,{bxj1:'JAB!',bxj2:'JAB!',bxx:'CROSS!',bxlh:'LEFT HOOK!',bxrb:'BODY SHOT!',bxsu:'RIGHT UPPERCUT!',bxpj:'POWER JAB!',bxph:'POWER HOOK!',bxpb:'POWER BODY!',bxpu:'UPPERCUT!'});
+Object.assign(NAMES,{bxj1:'JAB!',bxj2:'JAB!',bxx:'CROSS!',bxlh:'LEFT HOOK!',bxrb:'BODY SHOT!',bxpj:'POWER JAB!',bxph:'POWER HOOK!',bxpb:'POWER BODY!',bxpu:'UPPERCUT!'});
 // knockback [x, y, ...]: jabs barely push so strings keep connecting; body shots and power punches drive him back; the uppercut pops him up
-Object.assign(KB,{bxj1:[60,-50,0,.05],bxj2:[60,-50,0,.05],bxx:[110,-80,0,.06],bxlh:[120,-100,0,.065],bxrb:[240,-160,.08,.09],bxsu:[140,-80,0,.06],
+Object.assign(KB,{bxj1:[60,-50,0,.05],bxj2:[60,-50,0,.05],bxx:[110,-80,0,.06],bxlh:[120,-100,0,.065],bxrb:[240,-160,.08,.09],
  bxpj:[220,-170,.06,.08],bxph:[240,-220,.08,.09],bxpb:[320,-220,.1,.1],bxpu:[60,-640,.45,.11]});
-Object.assign(REACH,{bxj1:[195,165],bxj2:[195,170],bxx:[200,165],bxlh:[185,160],bxrb:[195,130],bxsu:[200,170],bxpj:[215,165],bxph:[195,160],bxpb:[210,130],bxpu:[150,300]});
+Object.assign(REACH,{bxj1:[195,165],bxj2:[195,170],bxx:[200,165],bxlh:[185,160],bxrb:[195,130],bxpj:[215,165],bxph:[195,160],bxpb:[210,130],bxpu:[150,300]});
 const FX={jab:[2,.03,4],cross:[4,.045,6],hook:[5,.05,7],body:[7,.07,10],upper:[13,.1,14]};   // shake, game hitstop, sparks
 const P33=window.P33={on:false,a:null,last:'',q:null,beat:true,rec:false,str:[],hits:{},vox:0,log:[],
  own(){return base()&&p.state==='claw'&&!!PD[p.anim]&&!this.legacy}};
@@ -43,17 +42,13 @@ const fr=a=>(F&&F[PD[a][0]])||[];
 const rx=(a,i)=>{const L=fr(a);const f=L[Math.max(0,Math.min(L.length-1,i))];return f&&f.rx||0};
 // ---- which punch a tap throws ----
 const POWER={jab:'bxpj',cross:'bxph',hook:'bxph',body:'bxpb'};   // the cross has no power sheet: it becomes the power hook
-const NEXT={'':'bxj1',jab:'bxx',cross:'bxlh',hook:'bxsu',body:'bxj1',upper:'bxj1',suc:'bxj1',rec:'bxj1'};
+const NEXT={'':'bxj1',jab:'bxx',cross:'bxlh',hook:'bxrb',body:'bxj1',upper:'bxj1',rec:'bxj1'};
 function pick(inp,n,beat){const lastK=P33.last?PD[P33.last][1]:'';let a;
- if(inp.down)a='bxrb';
- else if(inp.up)a=(lastK==='hook'||lastK==='upper')?'bxpu':'bxlh';
- else if(inp.back)a='bxx';
- else if(inp.fwd)a=(P33.last==='bxj1')?'bxj2':'bxj1';
- else a=NEXT[lastK]||'bxj1';
- if(!inp.down&&!inp.up&&!inp.back&&!inp.fwd&&n===7&&beat)return 'bxpu';
- if(n>=4&&n<=6&&beat&&!inp.up&&!inp.down)return POWER[PD[a][1]]||a;
+ if(inp.down)a='bxrb';else if(inp.fwd)a=(lastK==='jab'&&P33.last==='bxj1')?'bxj2':'bxj1';else a=NEXT[lastK]||'bxj1';
+ if(n===7&&beat)return 'bxpu';                         // hit 7 on the beat: the power uppercut
+ if(n>=4&&n<=6&&beat)return POWER[PD[a][1]]||a;        // hits 4-6 on the beat: the power version of the punch you threw
  return a}
-function readInp(){const fwd=p.face>0?K.right:K.left,back=p.face>0?K.left:K.right;return{down:!!K.down&&!K.up,up:!!K.up,fwd:!!fwd&&!back,back:!!back&&!fwd}}
+function readInp(){const f=p.face>0?K.right:K.left;return{down:!!K.down,fwd:!!f}}
 // ---- start a punch (wraps startClaw so the game's own opener goes through here too) ----
 let pend=null;   // {a, s} set by our continuation; null = the game opened a fresh string
 const _sc=startClaw;startClaw=function(){if(!base())return _sc.apply(this,arguments);
@@ -93,10 +88,10 @@ function tick(dt){if(!base()){P33.on=false;return}
   if(a==='bxrec'){P33.q={t:now,inp:readInp(),beat:false,fresh:true}}
   else{const on=fi>=D[4]&&!P33.early;if(fi<D[4])P33.early=true;   // on the beat = one press, on or after the impact frame; mashing before the hit doesn't count
    P33.q={t:now,inp:readInp(),beat:on}}}
- if(a==='bxrec'){if(P33.q){const inp=P33.q.inp;P33.q=null;pend={a:pick(inp,p.combo+1,false),s:1};startClaw();return}
+ if(a==='bxrec'){if(P33.q){P33.q=null;p.combo=0;pend=null;startClaw();return}
   if(ft>=3){p.state='normal';p.combo=0;p.cool=.04;P33.a=null}return}
  const q=P33.q;
- if(q&&fi>=D[5]){   // chain as soon as the hit has landed, so a free string does not stall in the recovery
+ if(q&&ft>=D[6]+1){   // cancel point reached: throw the next punch from its frame 2
   P33.q=null;const n=p.combo+1;
   if(p.combo>=3)P33.beat=P33.beat&&q.beat;
   if(a==='bxpu'){if(P33.beat&&q.beat){say('PERFECT!','#7fffd4',true);bunnyKick();return}}
