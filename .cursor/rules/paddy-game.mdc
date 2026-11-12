@@ -1,0 +1,37 @@
+---
+description: Core guardrails and workflow for all AI agents developing Paddy: Hibiscus Coast
+alwaysApply: true
+---
+
+# Paddy: Hibiscus Coast — mandatory project rules
+
+## Mission and approval
+- The immediate priority is to PERFECT the existing base Paddy and Silverdale Level 1, not expand into other worlds or transform the game into a new concept.
+- The human project owner is the final approver. Propose changes on a separate branch / pull request. Never merge to main without explicit owner approval.
+- Prefer the smallest possible change that solves the assigned problem. Never overwrite, reset, or "clean up" unrelated work from other agents.
+
+## Preserve Paddy's identity
+- Paddy is a Ragdoll cat, not "Patty" or "Paddy Bow".
+- The canonical base reference is `src/s4.png`. Preserve Paddy's existing face, blue eyes, cream/white blaze, white muzzle and mitts, brown eye markings, chocolate ears and tail, fawn body, proportions and established visual style. Do not make the whole face brown.
+- Preserve the existing movement sprites, attack chains, input bindings, frame timing and working gameplay unless the assigned task explicitly requires a specific edit.
+- Do NOT regenerate or replace artwork, frame maps, `assets/`, `generated/`, or `references/` during ordinary code tasks. Any asset changes require explicit approval and before/after previews.
+
+## Learn the existing implementation first
+- Read `README.md` and the relevant code and tests before proposing an implementation.
+- This is a browser-based JavaScript game. The main entry points include `index.html`, `level.html`, `game.js`, `level.js`, `controls.js`, `kitti47.js`, and `kitti48.js`.
+- Level 1 maps live in `levels/silverdale_*.json`.
+- Existing visual reference and handover instructions live in `docs/sprite-handover.md`.
+- Use existing conventions rather than replacing architecture or rewriting working modules.
+
+## QA and acceptance
+- Test both story/Level 1 and practice/free play when shared controls or animations change.
+- Include keyboard and iPhone-landscape touch behaviour; existing Playwright tests use an 844 x 390 viewport.
+- Run the specific existing tests relevant to the change, such as `tests/t47_story.py`, `tests/t48_kitti_taps.py`, and `tests/t49_uppercut_ab.py`, when the environment supports them. State clearly if tests could not run.
+- Confirm changes do not regress the jab/cross/hook/body-shot/uppercut string, dodge, dash, sky pounce, cat slide, slip, weave, and charged attacks.
+- Demonstrate results with concise test logs and screenshots/video when possible; document any regressions or unverified cases.
+
+## Working with parallel agents
+- Assign each agent a single bounded task and own branch. Avoid concurrent edits to the same file.
+- Recommended roles: Studio/integration, Paddy movement & combat, Silverdale environment, enemy behaviour, and QA/testing. Roles are work assignments, not separate paid subscriptions.
+- Submit a short PR summary: goal, files changed, tests run, screenshots/video, risks, and rollback plan.
+- Do not auto-merge, deploy, run paid services or trigger costly model loops without owner approval.
