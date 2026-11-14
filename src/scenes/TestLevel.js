@@ -1,4 +1,5 @@
 import { WORLD, PLATFORMS, MOVE, CAMERA } from '../config.js';
+import { PracticeTarget, overlaps } from '../targets/PracticeTarget.js';
 import { Paddy } from '../player/Paddy.js';
 import { InputState, hookKeyboard, mountTouchControls, gaitFromStick } from '../input/TouchControls.js';
 
@@ -8,7 +9,7 @@ export class TestLevel extends Phaser.Scene {
   }
 
   create() {
-    this.input.addPointer(2);
+    this.input.addPointer(3);
     this.physics.world.setBounds(0, 0, WORLD.width, WORLD.height);
     this.physics.world.gravity.y = MOVE.gravity;
 
@@ -16,6 +17,10 @@ export class TestLevel extends Phaser.Scene {
     this._buildGroundAndPlatforms();
 
     this.paddy = new Paddy(this, WORLD.spawnX, WORLD.spawnY);
+    this.targets = [
+      new PracticeTarget(this, 320, 'cushion'),
+      new PracticeTarget(this, 445, 'straw'),
+    ];
 
     this.physics.add.collider(this.paddy.sprite, this.ground);
     this.physics.add.collider(
@@ -88,7 +93,7 @@ export class TestLevel extends Phaser.Scene {
       strokeThickness: 4,
     }).setOrigin(0, 0).setDepth(1);
 
-    this.add.text(180, 90, 'Run and jump. That is all for now.', {
+    this.add.text(180, 90, 'Run, jump, and swipe.', {
       fontFamily: 'system-ui, -apple-system, Segoe UI, sans-serif',
       fontSize: '14px',
       color: '#2c4c5c',
@@ -136,7 +141,11 @@ export class TestLevel extends Phaser.Scene {
 
   _exposeDebug() {
     const debug = new URLSearchParams(location.search).has('debug');
-    if (debug) this.physics.world.drawDebug = true;
+    this._debug = debug;
+    if (debug) {
+      this.physics.world.createDebugGraphic();
+      this._hitboxGfx = this.add.graphics().setDepth(20);
+    }
     window.__paddy = {
       getState: () => this.paddy.getState(),
       setPos: (x, y) => {
@@ -153,6 +162,9 @@ export class TestLevel extends Phaser.Scene {
         this.paddy.visSY = 1;
         this.paddy.gait = 'idle';
         this.paddy.walkLeadUntil = 0;
+        this.paddy.attacking = false;
+        this.paddy.attackPhase = null;
+        this.paddy.attackQueued = false;
         this.paddy._setCrouching(false);
         this.paddy._play('idle', false);
       },
@@ -166,13 +178,35 @@ export class TestLevel extends Phaser.Scene {
         y: this.cameras.main.scrollY,
       }),
       gaitFromStick,
+      targets: () => this.targets.map((t) => ({ x: t.x, y: t.y, w: t.w, h: t.h, kind: t.kind, hitUntil: t.hitUntil })),
     };
+  }
+
+  _resolveHits(time) {
+    const hb = this.paddy.getHitbox();
+    if (!hb) return;
+    for (const target of this.targets) {
+      if (overlaps(hb, target.getBounds())) target.hit(time);
+    }
+  }
+
+  _drawHitbox() {
+    if (!this._hitboxGfx) return;
+    this._hitboxGfx.clear();
+    const hb = this.paddy.getHitbox();
+    if (!hb) return;
+    this._hitboxGfx.lineStyle(2, 0xff4d4d, 0.95);
+    this._hitboxGfx.fillStyle(0xff4d4d, 0.22);
+    this._hitboxGfx.fillRect(hb.x, hb.y, hb.w, hb.h);
+    this._hitboxGfx.strokeRect(hb.x, hb.y, hb.w, hb.h);
   }
 
   update(time, delta) {
     if (!this.paddy) return;
     this.inputState.sync();
     this.paddy.update(time, delta, this.inputState);
+    this._resolveHits(time);
+    this._drawHitbox();
     if (this._paddyLogging) {
       const s = this.paddy.getState();
       s.t = time;

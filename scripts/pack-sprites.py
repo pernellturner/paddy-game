@@ -18,6 +18,7 @@ FAMILY_SCALE = {
     "kt_walk": 35 / 40.5,   # 0.864  walk was drawn larger
     "k_run": 35 / 31,       # 1.129  run was drawn smaller
     "k_jump": 35 / 34.5,    # 1.014  already close
+    "kt_m_airswipe": 35 / 40.5,  # same Kitti sheet family as walk
 }
 
 
@@ -40,7 +41,7 @@ def main():
     with open(os.path.join(ROOT, "frames.json")) as f:
         data = json.load(f)
     order = []
-    for key in ["k_spin", "k_run", "k_jump", "kt_walk"]:
+    for key in ["k_spin", "k_run", "k_jump", "kt_walk", "kt_m_airswipe"]:
         s = FAMILY_SCALE[key]
         for i, fr in enumerate(data[key]):
             path = os.path.join(ROOT, fr["f"] + ".png")
@@ -90,6 +91,7 @@ def main():
                 "run": [f"k_run_{i:02d}" for i in range(len(data["k_run"]))],
                 "walk": [f"kt_walk_{i:02d}" for i in range(len(data["kt_walk"]))],
                 "jump": [f"k_jump_{i:02d}" for i in range(len(data["k_jump"]))],
+                "swipe": [f"kt_m_airswipe_{i:02d}" for i in range(len(data["kt_m_airswipe"]))],
             },
         },
     }

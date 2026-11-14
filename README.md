@@ -3,7 +3,7 @@
 A clean restart of Paddy's Way Home. This branch has no history from the old game.
 The live game on `main` is untouched.
 
-Right now Paddy can only run and jump, on one quiet test level. No attacks, no enemies, no other forms.
+Right now Paddy can run, jump, and do one front-paw swipe, on one quiet test level. No enemies or other forms.
 
 ## Play
 
@@ -11,7 +11,7 @@ Open `index.html` through any static file server (needed for ES modules), or use
 
 `https://raw.githack.com/pernellturner/paddy-game/<commit-sha>/index.html`
 
-On a phone, turn it sideways. A stick is on the left, a Jump button on the right. A light push on the stick (about 15–55% of the way out) is a walk; a firm push (60% and beyond) is a run. Push the stick down to crouch. On a keyboard: arrows or WASD to run, hold Shift to walk, Down or S to crouch, Space / Up / W to jump. Tap jump again in the air for a double jump. Let go early for a shorter jump. You can jump from a crouch.
+On a phone, turn it sideways. A stick is on the left; Attack and Jump are on the right, close enough for one thumb. A light push on the stick (about 15–55% of the way out) is a walk; a firm push (60% and beyond) is a run. Push the stick down to crouch. On a keyboard: arrows or WASD to run, hold Shift to walk, Down or S to crouch, Space / Up / W to jump, X / J / Z to swipe. Tap jump again in the air for a double jump. Let go early for a shorter jump. You can jump from a crouch. A second tap of Attack during the swipe recovery queues one more swipe.
 
 ## What's in this folder
 
@@ -20,8 +20,9 @@ On a phone, turn it sideways. A stick is on the left, a Jump button on the right
 - `src/config.js` — every movement and layout number, in one place
 - `src/scenes/BootScene.js` — loads the Paddy spritesheet
 - `src/scenes/TestLevel.js` — the test level, camera, collisions
-- `src/player/Paddy.js` — run, jump, double jump, coyote time, jump buffer
-- `src/input/TouchControls.js` — virtual stick, jump button, keyboard
+- `src/player/Paddy.js` — run, jump, double jump, coyote time, jump buffer, swipe
+- `src/input/TouchControls.js` — virtual stick, jump and attack buttons, keyboard
+- `src/targets/PracticeTarget.js` — stationary practice dummies that wobble when hit
 - `lib/phaser.min.js` — Phaser 3.90.0, vendored so there is no CDN
 - `assets/paddy/` — base Paddy art only (idle, run, jump / fall)
 - `scripts/pack-sprites.py` — rebuilds the spritesheet from the individual PNGs
@@ -35,7 +36,7 @@ These are the same base Paddy frames the old game used (not Dante, Golden Fury, 
 - Run: `k_run_00`, `02`, `03`, `04`, `05`, `06` (`01` and `07` are packed but skipped — they bunch up and hitch against the long strides)
 - Crouch: `k_jump_00` (the gather frame; there is no separate k_crouch sheet)
 - Jump, apex, fall, land: `k_jump_00`–`05` (rise is 01–02, apex 03, fall 04, land 05)
-- Double-jump flip: `k_spin_01`–`05`
+- Swipe: `kt_m_airswipe_00`–`03` (same Kitti side-on face as the walk; packed at the walk family scale)
 
 They are packed into `assets/paddy/paddy.png` plus `paddy.json`, with a shared foot origin so he does not wobble when the animation changes. Each source family is rescaled at pack time (idle stays 1, walk is slightly reduced, run is slightly enlarged) so the body matches one size, measured ear-tip to eye, not including the tail. Idle breathing and the landing squash always return to scale 1.
 

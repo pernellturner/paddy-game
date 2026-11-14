@@ -21,6 +21,7 @@ export class InputState {
     this.right = false;
     this.jumpHeld = false;
     this._jumpQueued = false;
+    this._attackQueued = false;
     this._touchMoveX = 0;
     this._touchGait = 'idle';
     this._touchCrouch = false;
@@ -41,6 +42,18 @@ export class InputState {
   consumeJumpPress() {
     if (this._jumpQueued) {
       this._jumpQueued = false;
+      return true;
+    }
+    return false;
+  }
+
+  queueAttack() {
+    this._attackQueued = true;
+  }
+
+  consumeAttackPress() {
+    if (this._attackQueued) {
+      this._attackQueued = false;
       return true;
     }
     return false;
@@ -76,6 +89,9 @@ export function hookKeyboard(scene, input) {
   const up = kb.addKey('UP', true, false);
   const w = kb.addKey('W', true, false);
   const space = kb.addKey('SPACE', true, false);
+  const xKey = kb.addKey('X', true, false);
+  const jKey = kb.addKey('J', true, false);
+  const zKey = kb.addKey('Z', true, false);
 
   const onJumpDown = () => {
     input._keyJump = true;
@@ -91,6 +107,11 @@ export function hookKeyboard(scene, input) {
   up.on('up', onJumpUp);
   w.on('up', onJumpUp);
   space.on('up', onJumpUp);
+
+  const onAttackDown = () => input.queueAttack();
+  xKey.on('down', onAttackDown);
+  jKey.on('down', onAttackDown);
+  zKey.on('down', onAttackDown);
 
   scene.events.on('update', () => {
     const l = left.isDown || a.isDown;
@@ -138,13 +159,15 @@ export function mountTouchControls(input) {
   const base = document.getElementById('stick-base');
   const knob = document.getElementById('stick-knob');
   const jumpBtn = document.getElementById('jump-btn');
-  if (!ui || !stick || !base || !knob || !jumpBtn) return;
+  const attackBtn = document.getElementById('attack-btn');
+  if (!ui || !stick || !base || !knob || !jumpBtn || !attackBtn) return;
 
   ui.classList.add('ready');
 
   const radius = TOUCH.stickRadius;
   let stickId = null;
   let jumpId = null;
+  let attackId = null;
   let originX = 0;
   let originY = 0;
 
@@ -177,7 +200,7 @@ export function mountTouchControls(input) {
 
   const startStick = (e) => {
     if (stickId !== null) return;
-    if (e.pointerId === jumpId) return;
+    if (e.pointerId === jumpId || e.pointerId === attackId) return;
     stickId = e.pointerId;
     const rect = base.getBoundingClientRect();
     originX = rect.left + rect.width / 2;
@@ -213,7 +236,7 @@ export function mountTouchControls(input) {
 
   const startJump = (e) => {
     if (jumpId !== null) return;
-    if (e.pointerId === stickId) return;
+    if (e.pointerId === stickId || e.pointerId === attackId) return;
     e.preventDefault();
     jumpId = e.pointerId;
     jumpBtn.classList.add('active');
@@ -235,6 +258,26 @@ export function mountTouchControls(input) {
   jumpBtn.addEventListener('pointerup', endJump);
   jumpBtn.addEventListener('pointercancel', endJump);
   jumpBtn.addEventListener('lostpointercapture', endJump);
+
+  const startAttack = (e) => {
+    if (attackId !== null) return;
+    if (e.pointerId === stickId || e.pointerId === jumpId) return;
+    e.preventDefault();
+    attackId = e.pointerId;
+    attackBtn.classList.add('active');
+    input.queueAttack();
+    input.sync();
+    try { attackBtn.setPointerCapture(e.pointerId); } catch (_) { /* ignore */ }
+  };
+  const endAttack = (e) => {
+    if (e.pointerId !== attackId) return;
+    attackId = null;
+    attackBtn.classList.remove('active');
+  };
+  attackBtn.addEventListener('pointerdown', startAttack);
+  attackBtn.addEventListener('pointerup', endAttack);
+  attackBtn.addEventListener('pointercancel', endAttack);
+  attackBtn.addEventListener('lostpointercapture', endAttack);
 
   const showTouch = () => ui.classList.remove('kb');
   const hideTouch = () => ui.classList.add('kb');

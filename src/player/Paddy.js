@@ -1,4 +1,4 @@
-import { MOVE } from '../config.js';
+import { MOVE, ATTACK } from '../config.js';
 
 function approach(current, target, maxDelta) {
   if (current < target) return Math.min(current + maxDelta, target);
@@ -36,6 +36,14 @@ export class Paddy {
     this.djStart = 0;
     this.gait = 'idle';
     this.walkLeadUntil = 0;
+    this.attacking = false;
+    this.attackPhase = null;
+    this.attackFrame = 0;
+    this.attackT0 = 0;
+    this.attackElapsed = 0;
+    this.attackQueued = false;
+    this.nudgeUntil = 0;
+    this._slashOnThisStrike = false;
 
     const sprite = scene.physics.add.sprite(x, y, 'paddy', 'k_spin_00');
     sprite.setOrigin(MOVE.footX / MOVE.cellW, MOVE.footY / MOVE.cellH);
@@ -224,7 +232,7 @@ export class Paddy {
     } else {
       this.djUntil = 0;
       this.sprite.body.setVelocityY(velocity);
-      this._play('jump', false);
+      if (!this.attacking) this._play('jump', false);
     }
   }
 
@@ -270,7 +278,7 @@ export class Paddy {
         this.squashDuration = MOVE.landDuration;
         this.squashUntil = time + this.squashDuration;
         this.landingUntil = time + this.squashDuration;
-        this._play('land', false);
+        if (!this.attacking) this._play('land', false);
       }
     } else {
       this._setCrouching(false);
@@ -308,7 +316,14 @@ export class Paddy {
     }
     if (body.velocity.y >= 0 && time >= this.djUntil) this.variableJump = false;
 
-    const wantCrouch = onFloor && input.crouch && !wantsJump;
+    if (input.consumeAttackPress()) {
+      if (this.attacking && this.attackPhase === 'recover') this.attackQueued = true;
+      else if (this.attacking) this.attackQueued = true; // buffer one follow-up
+      else this._startSwipe(time, onFloor);
+    }
+    if (this.attacking) this._updateSwipe(time, delta, onFloor);
+
+    const wantCrouch = onFloor && input.crouch && !wantsJump && !this.attacking;
     this._setCrouching(wantCrouch);
 
     const moveX = Phaser.Math.Clamp(input.moveX || 0, -1, 1);
@@ -316,19 +331,28 @@ export class Paddy {
     const top = wantCrouch
       ? 0
       : (inputGait === 'walk' ? MOVE.speed * MOVE.walkMul : MOVE.speed);
-    const target = wantCrouch ? 0 : moveX * top;
+    // During a swipe, ground walk/run is briefly slowed. Air movement is left alone.
+    const moveScale = (this.attacking && onFloor) ? ATTACK.moveMul : 1;
+    const target = wantCrouch ? 0 : moveX * top * moveScale;
     const accel = onFloor ? MOVE.accel : MOVE.airAccel;
     const decel = onFloor ? MOVE.decel : MOVE.airDecel;
     let vx = body.velocity.x;
 
     if (!wantCrouch && moveX !== 0) {
-      this.facing = Math.sign(moveX);
-      this.sprite.setFlipX(this.facing < 0);
+      if (!this.attacking) {
+        this.facing = Math.sign(moveX);
+        this.sprite.setFlipX(this.facing < 0);
+      }
       const turning = Math.sign(vx) !== 0 && Math.sign(vx) !== Math.sign(moveX);
       const rate = turning ? decel + accel : (Math.abs(target) < Math.abs(vx) ? decel : accel);
       vx = approach(vx, target, rate * dt);
     } else {
       vx = approach(vx, 0, decel * dt);
+    }
+    if (this.attacking && onFloor && time < this.nudgeUntil) {
+      const n = ATTACK.nudgeSpeed * this.facing;
+      if (this.facing > 0) vx = Math.max(vx, n);
+      else vx = Math.min(vx, n);
     }
     body.setVelocityX(vx);
 
@@ -342,6 +366,15 @@ export class Paddy {
   }
 
   _updateAnim(time, onFloor, vx, vy) {
+    if (this.attacking) {
+      const spec = ATTACK.frames[this.attackFrame];
+      if (spec) {
+        this.sprite.anims.stop();
+        this.sprite.setFrame(spec.frame);
+      }
+      this.sprite.anims.timeScale = 1;
+      return;
+    }
     if (!onFloor) {
       this.landingUntil = 0;
       // Pose follows actual vertical speed so the second jump eases
@@ -376,7 +409,11 @@ export class Paddy {
     let ty = 1;
     let angle = 0;
     const inDouble = time < this.djUntil;
-    if (time < this.squashUntil && !this.crouching) {
+    if (this.attacking) {
+      tx = 1;
+      ty = 1;
+      this.breathPhase = null;
+    } else if (time < this.squashUntil && !this.crouching) {
       const t = 1 - (this.squashUntil - time) / this.squashDuration;
       const wave = Math.sin(Phaser.Math.Clamp(t, 0, 1) * Math.PI);
       const amt = this.squashAmount * wave;
@@ -427,6 +464,86 @@ export class Paddy {
     body.setOffset(MOVE.footX - srcW / 2, MOVE.footY - srcH);
   }
 
+
+  _startSwipe(time, onFloor) {
+    this._setCrouching(false);
+    this.attacking = true;
+    this.attackPhase = ATTACK.frames[0].phase;
+    this.attackFrame = 0;
+    this.attackT0 = time;
+    this.attackElapsed = 0;
+    this.attackQueued = false;
+    this.nudgeUntil = 0;
+    this._slashOnThisStrike = false;
+    this.landingUntil = 0;
+    this.squashUntil = 0;
+    this.breathPhase = null;
+    this.visSX = 1;
+    this.visSY = 1;
+    this.sprite.setAngle(0);
+    this.sprite.anims.stop();
+    this.sprite.setFrame(ATTACK.frames[0].frame);
+    this.sprite.setFlipX(this.facing < 0);
+  }
+
+  _updateSwipe(time, delta, onFloor) {
+    this.attackElapsed += Math.min(delta, 32);
+    const spec = ATTACK.frames[this.attackFrame];
+    if (this.attackPhase === 'strike' && !this._slashOnThisStrike) {
+      this._slashOnThisStrike = true;
+      this._slashFlash();
+      if (onFloor) this.nudgeUntil = time + ATTACK.nudgeTime;
+    }
+    if (this.attackElapsed >= spec.duration) {
+      this.attackElapsed -= spec.duration;
+      this.attackFrame += 1;
+      if (this.attackFrame >= ATTACK.frames.length) {
+        if (this.attackQueued) {
+          this._startSwipe(time, onFloor);
+          return;
+        }
+        this.attacking = false;
+        this.attackPhase = null;
+        this.attackFrame = 0;
+        this.nudgeUntil = 0;
+        return;
+      }
+      const next = ATTACK.frames[this.attackFrame];
+      this.attackPhase = next.phase;
+      this.sprite.anims.stop();
+      this.sprite.setFrame(next.frame);
+      if (next.phase !== 'strike') this._slashOnThisStrike = false;
+    }
+  }
+
+  _slashFlash() {
+    const s = this.sprite;
+    const dir = this.facing;
+    const x = s.x + dir * 42;
+    const y = s.y - 62;
+    const g = this.scene.add.graphics().setDepth(12);
+    g.lineStyle(2.4, 0xffffff, 0.8);
+    // Three short claw marks just in front of the paw, not over the body.
+    for (let i = 0; i < 3; i++) {
+      const oy = -8 + i * 8;
+      g.lineBetween(x + dir * 2, y + oy - 2, x + dir * 26, y + oy + 10);
+    }
+    this.scene.tweens.add({
+      targets: g,
+      alpha: 0,
+      duration: ATTACK.flashLife,
+      onComplete: () => g.destroy(),
+    });
+  }
+
+  getHitbox() {
+    if (!this.attacking || this.attackPhase !== 'strike') return null;
+    const hb = ATTACK.hitbox;
+    const x = this.facing < 0 ? this.sprite.x - hb.x - hb.w : this.sprite.x + hb.x;
+    const y = this.sprite.y + hb.y;
+    return { x, y, w: hb.w, h: hb.h };
+  }
+
   getState() {
     const b = this.sprite.body;
     return {
@@ -439,7 +556,7 @@ export class Paddy {
       facing: this.facing,
       anim: this.sprite.anims.currentAnim?.key || null,
       frame: this.sprite.anims.currentFrame?.index ?? 0,
-      frameName: this.sprite.anims.currentFrame?.frame?.name || this.sprite.frame?.name || null,
+      frameName: this.sprite.frame?.name || this.sprite.anims.currentFrame?.frame?.name || null,
       phase: this._cyclePhase(),
       timeScale: this.sprite.anims.timeScale,
       gait: this.gait,
@@ -449,6 +566,10 @@ export class Paddy {
       angle: this.sprite.angle,
       bodyH: b.height,
       bodyW: b.width,
+      attacking: this.attacking,
+      attackPhase: this.attackPhase,
+      attackFrame: this.attackFrame,
+      hitbox: this.getHitbox(),
     };
   }
 }

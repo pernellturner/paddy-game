@@ -50,8 +50,9 @@ export const MOVE = {
   squashMin: 0.07,
   squashMax: 0.18,
   // Physics body, in texture (unscaled atlas cell) pixels.
-  // Atlas cell is 263x250 with the foot at (143, 248).
-  cellW: 263,
+  // Atlas cell is 333x250 with the foot at (143, 248).
+  // Wider than before only to fit the swipe slash; the foot is unchanged.
+  cellW: 333,
   cellH: 250,
   bodyWidth: 90,
   bodyHeight: 100,
@@ -76,6 +77,23 @@ export const MOVE = {
   walkMul: 0.45, // walk speed as a fraction of run
   crouchBodyWidth: 110,
   crouchBodyHeight: 58,
+};
+
+// One front-paw swipe. Movement numbers above stay as they are.
+export const ATTACK = {
+  // Frame timings in ms: wind-up, wind-up, strike, recover. Total 280ms.
+  frames: [
+    { frame: 'kt_m_airswipe_00', duration: 50, phase: 'windup' },
+    { frame: 'kt_m_airswipe_01', duration: 50, phase: 'windup' },
+    { frame: 'kt_m_airswipe_02', duration: 80, phase: 'strike' },
+    { frame: 'kt_m_airswipe_03', duration: 100, phase: 'recover' },
+  ],
+  moveMul: 0.4,       // walk/run is slowed to this fraction while swiping
+  nudgeSpeed: 130,    // brief ground nudge on the strike, px/s
+  nudgeTime: 70,      // then it stops, no slide
+  // Hitbox in world pixels, relative to the foot, facing right. Active on strike only.
+  hitbox: { x: 32, y: -96, w: 60, h: 82 },
+  flashLife: 90,
 };
 
 export const CAMERA = {
