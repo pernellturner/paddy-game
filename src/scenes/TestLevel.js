@@ -139,6 +139,26 @@ export class TestLevel extends Phaser.Scene {
     if (debug) this.physics.world.drawDebug = true;
     window.__paddy = {
       getState: () => this.paddy.getState(),
+      setPos: (x, y) => {
+        this.paddy.sprite.setPosition(x, y);
+        this.paddy.sprite.body.reset(x, y);
+        this.paddy.sprite.body.setVelocity(0, 0);
+        this.paddy.canDouble = true;
+        this.paddy.djUntil = 0;
+        this.paddy.squashUntil = 0;
+        this.paddy.landingUntil = 0;
+        this.paddy.variableJump = false;
+        this.paddy.sprite.setAngle(0);
+        this.paddy.visSX = 1;
+        this.paddy.visSY = 1;
+        this.paddy.gait = 'idle';
+        this.paddy.walkLeadUntil = 0;
+        this.paddy._setCrouching(false);
+        this.paddy._play('idle', false);
+      },
+      startLog: () => { this._paddyLog = []; this._paddyLogging = true; },
+      stopLog: () => { this._paddyLogging = false; return this._paddyLog || []; },
+      isFlipX: () => this.paddy.sprite.flipX,
       world: { width: WORLD.width, height: WORLD.height, groundTop: WORLD.groundTop },
       platforms: PLATFORMS.slice(),
       camera: () => ({
@@ -153,6 +173,13 @@ export class TestLevel extends Phaser.Scene {
     if (!this.paddy) return;
     this.inputState.sync();
     this.paddy.update(time, delta, this.inputState);
+    if (this._paddyLogging) {
+      const s = this.paddy.getState();
+      s.t = time;
+      s.dt = delta;
+      s.flipX = this.paddy.sprite.flipX;
+      this._paddyLog.push(s);
+    }
 
     // Soft respawn if he somehow drops out of the world.
     if (this.paddy.sprite.y > WORLD.height + 80) {

@@ -50,20 +50,29 @@ export const MOVE = {
   squashMin: 0.07,
   squashMax: 0.18,
   // Physics body, in texture (unscaled atlas cell) pixels.
-  // Atlas cell is 280x247 with the foot at (154, 245).
-  cellW: 280,
-  cellH: 247,
+  // Atlas cell is 263x250 with the foot at (143, 248).
+  cellW: 263,
+  cellH: 250,
   bodyWidth: 90,
   bodyHeight: 100,
-  footX: 154,
-  footY: 245,
+  footX: 143,
+  footY: 248,
   idleFps: 1,
-  runFps: 16,
+  runFps: 16,       // frame rate at full run speed
   jumpFps: 16,
-  flipFps: 28,
-  walkFps: 9,
+  walkFps: 11,      // frame rate at walk speed
   landFps: 10,
+  // Drop the hitching frames (walk 03 changes angle/tail side; run 01 and 07
+  // are extreme gathers that pop against the extended strides).
+  walkFrames: [0, 1, 2, 4, 5],
+  runFrames: [0, 2, 3, 4, 5, 6],
+  idleSpeedIn: 22,   // drop to idle below this
+  idleSpeedOut: 40,  // leave idle above this
+  runSpeedIn: 230,   // start the run cycle above this
+  runSpeedOut: 185,  // return to walk below this
   runAnimThreshold: 40,
+  walkLead: 120, // ms of walk after leaving idle before a run can start
+  doubleJumpBlend: 180, // ms to ease into the second jump
   walkMul: 0.45, // walk speed as a fraction of run
   crouchBodyWidth: 110,
   crouchBodyHeight: 58,
