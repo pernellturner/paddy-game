@@ -50,10 +50,10 @@ export const MOVE = {
   squashMin: 0.07,
   squashMax: 0.18,
   // Physics body, in texture (unscaled atlas cell) pixels.
-  // Atlas cell is 369x258 with the foot at (143, 248).
+  // Atlas cell is 374x254 with the foot at (143, 248).
   // Wider to fit the longer strike reach; the foot origin is unchanged.
-  cellW: 369,
-  cellH: 258,
+  cellW: 374,
+  cellH: 254,
   bodyWidth: 90,
   bodyHeight: 100,
   footX: 143,
@@ -81,28 +81,31 @@ export const MOVE = {
 
 // One front-paw swipe. Movement numbers above stay as they are.
 export const ATTACK = {
-  // Clear coil -> launch -> held strike -> recover. Total 290ms.
-  // Ground frames are planted on the foot line; air frames use the original leap anchors.
+  // Wind-up, mid, in-between, held strike, recover. Total 300ms.
+  // Same kt_m_airswipe drawings as walk (face and colour). Ground frames are
+  // planted on the hind feet; air frames keep a slight leap. The strike paw
+  // is a careful forearm stretch, not a new drawing.
   groundFrames: [
-    { frame: 'k_m_power_00', duration: 70, phase: 'windup' },
-    { frame: 'k_m_power_01', duration: 40, phase: 'windup' },
-    { frame: 'k_m_power_02', duration: 90, phase: 'strike' },
-    { frame: 'k_m_power_03', duration: 90, phase: 'recover' },
+    { frame: 'kt_swipe_g_00', duration: 65, phase: 'windup' },
+    { frame: 'kt_swipe_g_01', duration: 30, phase: 'windup' },
+    { frame: 'kt_swipe_g_02', duration: 30, phase: 'windup' },
+    { frame: 'kt_swipe_g_03', duration: 90, phase: 'strike' },
+    { frame: 'kt_swipe_g_04', duration: 85, phase: 'recover' },
   ],
   airFrames: [
-    { frame: 'k_m_power_air_00', duration: 70, phase: 'windup' },
-    { frame: 'k_m_power_air_01', duration: 40, phase: 'windup' },
-    { frame: 'k_m_power_air_02', duration: 90, phase: 'strike' },
-    { frame: 'k_m_power_air_03', duration: 90, phase: 'recover' },
+    { frame: 'kt_swipe_a_00', duration: 65, phase: 'windup' },
+    { frame: 'kt_swipe_a_01', duration: 30, phase: 'windup' },
+    { frame: 'kt_swipe_a_02', duration: 30, phase: 'windup' },
+    { frame: 'kt_swipe_a_03', duration: 90, phase: 'strike' },
+    { frame: 'kt_swipe_a_04', duration: 85, phase: 'recover' },
   ],
   moveMul: 0.4,       // walk/run is slowed to this fraction while swiping
   nudgeSpeed: 130,    // brief ground nudge on the strike, px/s
   nudgeTime: 70,      // then it stops, no slide
   // Hitbox in world pixels, relative to the foot, facing right. Active on strike only.
-  // Extended to match the longer forward paw (about 123px of reach).
-  hitbox: { x: 28, y: -88, w: 108, h: 78 },
+  hitbox: { x: 30, y: -90, w: 100, h: 80 },
   flashLife: 90,
-  flashOffset: { x: 108, y: -66 },
+  flashOffset: { x: 100, y: -72 },
 };
 
 export const CAMERA = {

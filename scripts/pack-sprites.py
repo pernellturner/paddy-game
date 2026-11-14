@@ -19,8 +19,10 @@ FAMILY_SCALE = {
     "k_run": 35 / 31,       # 1.129  run was drawn smaller
     "k_jump": 35 / 34.5,    # 1.014  already close
     "kt_m_airswipe": 35 / 40.5,  # same Kitti sheet family as walk
-    "k_m_power": 1.0,            # same k_ family as idle / jump; visually matches
+    "k_m_power": 1.0,
     "k_m_power_air": 1.0,
+    "kt_swipe_g": 35 / 40.5,     # processed from kt_m_airswipe (same family as walk)
+    "kt_swipe_a": 35 / 40.5,
 }
 
 
@@ -43,7 +45,7 @@ def main():
     with open(os.path.join(ROOT, "frames.json")) as f:
         data = json.load(f)
     order = []
-    for key in ["k_spin", "k_run", "k_jump", "kt_walk", "kt_m_airswipe", "k_m_power", "k_m_power_air"]:
+    for key in ["k_spin", "k_run", "k_jump", "kt_walk", "kt_m_airswipe", "kt_swipe_g", "kt_swipe_a"]:
         s = FAMILY_SCALE[key]
         for i, fr in enumerate(data[key]):
             path = os.path.join(ROOT, fr["f"] + ".png")
@@ -94,8 +96,8 @@ def main():
                 "walk": [f"kt_walk_{i:02d}" for i in range(len(data["kt_walk"]))],
                 "jump": [f"k_jump_{i:02d}" for i in range(len(data["k_jump"]))],
                 "swipe": [f"kt_m_airswipe_{i:02d}" for i in range(len(data["kt_m_airswipe"]))],
-                "swipeGround": [f"k_m_power_{i:02d}" for i in range(len(data["k_m_power"]))],
-                "swipeAir": [f"k_m_power_air_{i:02d}" for i in range(len(data["k_m_power_air"]))],
+                "swipeGround": [f"kt_swipe_g_{i:02d}" for i in range(len(data["kt_swipe_g"]))],
+                "swipeAir": [f"kt_swipe_a_{i:02d}" for i in range(len(data["kt_swipe_a"]))],
             },
         },
     }
