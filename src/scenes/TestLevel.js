@@ -1,6 +1,6 @@
 import { WORLD, PLATFORMS, MOVE, CAMERA } from '../config.js';
 import { Paddy } from '../player/Paddy.js';
-import { InputState, hookKeyboard, mountTouchControls } from '../input/TouchControls.js';
+import { InputState, hookKeyboard, mountTouchControls, gaitFromStick } from '../input/TouchControls.js';
 
 export class TestLevel extends Phaser.Scene {
   constructor() {
@@ -145,6 +145,7 @@ export class TestLevel extends Phaser.Scene {
         x: this.cameras.main.scrollX,
         y: this.cameras.main.scrollY,
       }),
+      gaitFromStick,
     };
   }
 

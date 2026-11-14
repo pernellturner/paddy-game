@@ -9,7 +9,7 @@ def main():
     with open(os.path.join(ROOT, "frames.json")) as f:
         data = json.load(f)
     order = []
-    for key in ["idle_test_1", "k_run", "k_jump"]:
+    for key in ["k_spin", "k_run", "k_jump", "kt_walk"]:
         for i, fr in enumerate(data[key]):
             path = os.path.join(ROOT, fr["f"] + ".png")
             im = Image.open(path).convert("RGBA")
@@ -51,8 +51,11 @@ def main():
             "cell": {"w": cell_w, "h": cell_h},
             "foot": {"x": foot_x, "y": foot_y},
             "anims": {
-                "idle": [f"idle_test_1_{i:02d}" for i in range(len(data["idle_test_1"]))],
+                "idle": ["k_spin_00"],
+                "crouch": ["k_jump_00"],
+                "flip": [f"k_spin_{i:02d}" for i in range(len(data["k_spin"]))],
                 "run": [f"k_run_{i:02d}" for i in range(len(data["k_run"]))],
+                "walk": [f"kt_walk_{i:02d}" for i in range(len(data["kt_walk"]))],
                 "jump": [f"k_jump_{i:02d}" for i in range(len(data["k_jump"]))],
             },
         },

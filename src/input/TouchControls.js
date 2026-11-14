@@ -1,21 +1,37 @@
 import { TOUCH } from '../config.js';
 
 /**
- * Shared input, filled by a left-side virtual stick + right-side jump button
- * (DOM overlay, multi-touch safe) and by the keyboard.
+ * Shared input from the left-side virtual stick, the jump button, and the keyboard.
+ *
+ * Stick, as a fraction of its radius:
+ *   below stickDeadzone (0.15) = stop
+ *   0.15–0.55 = walk
+ *   0.60 and above = run
+ *   a clearly downward hold (0.45, more down than sideways) = crouch
+ *
+ * Keyboard: arrows / WASD run, hold Shift to walk, Down / S to crouch.
+ * moveX is the facing direction (-1, 0, 1). gait is 'idle' | 'walk' | 'run'.
  */
 export class InputState {
   constructor() {
+    this.moveX = 0;
+    this.gait = 'idle';
+    this.crouch = false;
     this.left = false;
     this.right = false;
     this.jumpHeld = false;
     this._jumpQueued = false;
-    this._touchLeft = false;
-    this._touchRight = false;
-    this._keyLeft = false;
-    this._keyRight = false;
+    this._touchMoveX = 0;
+    this._touchGait = 'idle';
+    this._touchCrouch = false;
+    this._touchActive = false;
+    this._keyMoveX = 0;
+    this._keyGait = 'idle';
+    this._keyCrouch = false;
+    this._keyShift = false;
     this._keyJump = false;
     this._touchJump = false;
+    this._stickGait = 'idle';
   }
 
   queueJump() {
@@ -31,8 +47,17 @@ export class InputState {
   }
 
   sync() {
-    this.left = this._keyLeft || this._touchLeft;
-    this.right = this._keyRight || this._touchRight;
+    if (this._touchActive) {
+      this.crouch = this._touchCrouch;
+      this.moveX = this.crouch ? 0 : this._touchMoveX;
+      this.gait = this.crouch ? 'idle' : this._touchGait;
+    } else {
+      this.crouch = this._keyCrouch;
+      this.moveX = this.crouch ? 0 : this._keyMoveX;
+      this.gait = this.crouch ? 'idle' : this._keyGait;
+    }
+    this.left = this.moveX < 0;
+    this.right = this.moveX > 0;
     this.jumpHeld = this._keyJump || this._touchJump;
   }
 }
@@ -43,6 +68,11 @@ export function hookKeyboard(scene, input) {
   const right = kb.addKey('RIGHT', true, false);
   const a = kb.addKey('A', true, false);
   const d = kb.addKey('D', true, false);
+  const down = kb.addKey('DOWN', true, false);
+  const s = kb.addKey('S', true, false);
+  const onShift = (e) => { input._keyShift = !!e.shiftKey; };
+  window.addEventListener('keydown', onShift);
+  window.addEventListener('keyup', onShift);
   const up = kb.addKey('UP', true, false);
   const w = kb.addKey('W', true, false);
   const space = kb.addKey('SPACE', true, false);
@@ -63,10 +93,43 @@ export function hookKeyboard(scene, input) {
   space.on('up', onJumpUp);
 
   scene.events.on('update', () => {
-    input._keyLeft = left.isDown || a.isDown;
-    input._keyRight = right.isDown || d.isDown;
+    const l = left.isDown || a.isDown;
+    const r = right.isDown || d.isDown;
+    input._keyCrouch = down.isDown || s.isDown;
+    input._keyMoveX = (r ? 1 : 0) - (l ? 1 : 0);
+    if (input._keyMoveX === 0) input._keyGait = 'idle';
+    else input._keyGait = input._keyShift ? 'walk' : 'run';
     input.sync();
   });
+}
+
+/**
+ * Map a stick offset to direction + gait.
+ * dx/dy are pixels from the stick centre (down is positive dy, matching pointer coords).
+ * lastGait is used for hysteresis between 0.55 and 0.60.
+ */
+export function gaitFromStick(dx, dy, radius, lastGait = 'idle') {
+  const dead = radius * TOUCH.stickDeadzone;
+  const walkEnd = radius * TOUCH.stickWalkEnd;
+  const runStart = radius * TOUCH.stickRunStart;
+  const crouchDown = radius * TOUCH.stickCrouch;
+
+  if (dy >= crouchDown && dy >= Math.abs(dx)) {
+    return { moveX: 0, gait: 'idle', crouch: true };
+  }
+
+  const ax = Math.abs(dx);
+  if (ax <= dead) {
+    return { moveX: 0, gait: 'idle', crouch: false };
+  }
+
+  const sign = Math.sign(dx);
+  let gait;
+  if (ax >= runStart) gait = 'run';
+  else if (ax <= walkEnd) gait = 'walk';
+  else gait = lastGait === 'run' ? 'run' : 'walk';
+
+  return { moveX: sign, gait, crouch: false };
 }
 
 export function mountTouchControls(input) {
@@ -80,7 +143,6 @@ export function mountTouchControls(input) {
   ui.classList.add('ready');
 
   const radius = TOUCH.stickRadius;
-  const dead = TOUCH.stickDeadzone;
   let stickId = null;
   let jumpId = null;
   let originX = 0;
@@ -88,8 +150,11 @@ export function mountTouchControls(input) {
 
   const resetKnob = () => {
     knob.style.transform = 'translate(-50%, -50%)';
-    input._touchLeft = false;
-    input._touchRight = false;
+    input._touchMoveX = 0;
+    input._touchGait = 'idle';
+    input._touchCrouch = false;
+    input._touchActive = false;
+    input._stickGait = 'idle';
     input.sync();
   };
 
@@ -101,8 +166,12 @@ export function mountTouchControls(input) {
     const kx = dx * clamp;
     const ky = dy * clamp;
     knob.style.transform = `translate(calc(-50% + ${kx}px), calc(-50% + ${ky}px))`;
-    input._touchLeft = kx < -dead;
-    input._touchRight = kx > dead;
+    const result = gaitFromStick(kx, ky, radius, input._stickGait);
+    input._stickGait = result.gait;
+    input._touchMoveX = result.moveX;
+    input._touchGait = result.gait;
+    input._touchCrouch = result.crouch;
+    input._touchActive = true;
     input.sync();
   };
 
@@ -167,8 +236,6 @@ export function mountTouchControls(input) {
   jumpBtn.addEventListener('pointercancel', endJump);
   jumpBtn.addEventListener('lostpointercapture', endJump);
 
-  // Hide the on-screen stick/button when a keyboard is clearly in use,
-  // show them again on a touch. They stay in the DOM either way.
   const showTouch = () => ui.classList.remove('kb');
   const hideTouch = () => ui.classList.add('kb');
   window.addEventListener('touchstart', showTouch, { passive: true });
