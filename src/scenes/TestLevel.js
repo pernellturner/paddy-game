@@ -163,6 +163,7 @@ export class TestLevel extends Phaser.Scene {
         this.paddy.gait = 'idle';
         this.paddy.walkLeadUntil = 0;
         this.paddy.attacking = false;
+        this.paddy.attackAir = false;
         this.paddy.attackPhase = null;
         this.paddy.attackQueued = false;
         this.paddy._setCrouching(false);

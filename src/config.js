@@ -50,10 +50,10 @@ export const MOVE = {
   squashMin: 0.07,
   squashMax: 0.18,
   // Physics body, in texture (unscaled atlas cell) pixels.
-  // Atlas cell is 333x250 with the foot at (143, 248).
-  // Wider than before only to fit the swipe slash; the foot is unchanged.
-  cellW: 333,
-  cellH: 250,
+  // Atlas cell is 369x258 with the foot at (143, 248).
+  // Wider to fit the longer strike reach; the foot origin is unchanged.
+  cellW: 369,
+  cellH: 258,
   bodyWidth: 90,
   bodyHeight: 100,
   footX: 143,
@@ -81,19 +81,28 @@ export const MOVE = {
 
 // One front-paw swipe. Movement numbers above stay as they are.
 export const ATTACK = {
-  // Frame timings in ms: wind-up, wind-up, strike, recover. Total 280ms.
-  frames: [
-    { frame: 'kt_m_airswipe_00', duration: 50, phase: 'windup' },
-    { frame: 'kt_m_airswipe_01', duration: 50, phase: 'windup' },
-    { frame: 'kt_m_airswipe_02', duration: 80, phase: 'strike' },
-    { frame: 'kt_m_airswipe_03', duration: 100, phase: 'recover' },
+  // Clear coil -> launch -> held strike -> recover. Total 290ms.
+  // Ground frames are planted on the foot line; air frames use the original leap anchors.
+  groundFrames: [
+    { frame: 'k_m_power_00', duration: 70, phase: 'windup' },
+    { frame: 'k_m_power_01', duration: 40, phase: 'windup' },
+    { frame: 'k_m_power_02', duration: 90, phase: 'strike' },
+    { frame: 'k_m_power_03', duration: 90, phase: 'recover' },
+  ],
+  airFrames: [
+    { frame: 'k_m_power_air_00', duration: 70, phase: 'windup' },
+    { frame: 'k_m_power_air_01', duration: 40, phase: 'windup' },
+    { frame: 'k_m_power_air_02', duration: 90, phase: 'strike' },
+    { frame: 'k_m_power_air_03', duration: 90, phase: 'recover' },
   ],
   moveMul: 0.4,       // walk/run is slowed to this fraction while swiping
   nudgeSpeed: 130,    // brief ground nudge on the strike, px/s
   nudgeTime: 70,      // then it stops, no slide
   // Hitbox in world pixels, relative to the foot, facing right. Active on strike only.
-  hitbox: { x: 32, y: -96, w: 60, h: 82 },
+  // Extended to match the longer forward paw (about 123px of reach).
+  hitbox: { x: 28, y: -88, w: 108, h: 78 },
   flashLife: 90,
+  flashOffset: { x: 108, y: -66 },
 };
 
 export const CAMERA = {

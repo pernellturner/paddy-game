@@ -37,6 +37,7 @@ export class Paddy {
     this.gait = 'idle';
     this.walkLeadUntil = 0;
     this.attacking = false;
+    this.attackAir = false;
     this.attackPhase = null;
     this.attackFrame = 0;
     this.attackT0 = 0;
@@ -367,7 +368,7 @@ export class Paddy {
 
   _updateAnim(time, onFloor, vx, vy) {
     if (this.attacking) {
-      const spec = ATTACK.frames[this.attackFrame];
+      const spec = this._attackFrames()[this.attackFrame];
       if (spec) {
         this.sprite.anims.stop();
         this.sprite.setFrame(spec.frame);
@@ -465,10 +466,15 @@ export class Paddy {
   }
 
 
+  _attackFrames() {
+    return this.attackAir ? ATTACK.airFrames : ATTACK.groundFrames;
+  }
+
   _startSwipe(time, onFloor) {
     this._setCrouching(false);
+    this.attackAir = !onFloor;
     this.attacking = true;
-    this.attackPhase = ATTACK.frames[0].phase;
+    this.attackPhase = this._attackFrames()[0].phase;
     this.attackFrame = 0;
     this.attackT0 = time;
     this.attackElapsed = 0;
@@ -482,13 +488,13 @@ export class Paddy {
     this.visSY = 1;
     this.sprite.setAngle(0);
     this.sprite.anims.stop();
-    this.sprite.setFrame(ATTACK.frames[0].frame);
+    this.sprite.setFrame(this._attackFrames()[0].frame);
     this.sprite.setFlipX(this.facing < 0);
   }
 
   _updateSwipe(time, delta, onFloor) {
     this.attackElapsed += Math.min(delta, 32);
-    const spec = ATTACK.frames[this.attackFrame];
+    const spec = this._attackFrames()[this.attackFrame];
     if (this.attackPhase === 'strike' && !this._slashOnThisStrike) {
       this._slashOnThisStrike = true;
       this._slashFlash();
@@ -497,7 +503,7 @@ export class Paddy {
     if (this.attackElapsed >= spec.duration) {
       this.attackElapsed -= spec.duration;
       this.attackFrame += 1;
-      if (this.attackFrame >= ATTACK.frames.length) {
+      if (this.attackFrame >= this._attackFrames().length) {
         if (this.attackQueued) {
           this._startSwipe(time, onFloor);
           return;
@@ -508,7 +514,7 @@ export class Paddy {
         this.nudgeUntil = 0;
         return;
       }
-      const next = ATTACK.frames[this.attackFrame];
+      const next = this._attackFrames()[this.attackFrame];
       this.attackPhase = next.phase;
       this.sprite.anims.stop();
       this.sprite.setFrame(next.frame);
@@ -519,8 +525,9 @@ export class Paddy {
   _slashFlash() {
     const s = this.sprite;
     const dir = this.facing;
-    const x = s.x + dir * 42;
-    const y = s.y - 62;
+    const off = ATTACK.flashOffset || { x: 108, y: -66 };
+    const x = s.x + dir * off.x;
+    const y = s.y + off.y;
     const g = this.scene.add.graphics().setDepth(12);
     g.lineStyle(2.4, 0xffffff, 0.8);
     // Three short claw marks just in front of the paw, not over the body.

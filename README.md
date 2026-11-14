@@ -36,7 +36,7 @@ These are the same base Paddy frames the old game used (not Dante, Golden Fury, 
 - Run: `k_run_00`, `02`, `03`, `04`, `05`, `06` (`01` and `07` are packed but skipped — they bunch up and hitch against the long strides)
 - Crouch: `k_jump_00` (the gather frame; there is no separate k_crouch sheet)
 - Jump, apex, fall, land: `k_jump_00`–`05` (rise is 01–02, apex 03, fall 04, land 05)
-- Swipe: `kt_m_airswipe_00`–`03` (same Kitti side-on face as the walk; packed at the walk family scale)
+- Swipe: `k_m_power_00`–`03` on the ground (planted on the foot line: coil, reach, recover) and the same poses with their original air anchors in the air. Same Kitti face and body scale as idle and jump.
 
 They are packed into `assets/paddy/paddy.png` plus `paddy.json`, with a shared foot origin so he does not wobble when the animation changes. Each source family is rescaled at pack time (idle stays 1, walk is slightly reduced, run is slightly enlarged) so the body matches one size, measured ear-tip to eye, not including the tail. Idle breathing and the landing squash always return to scale 1.
 
