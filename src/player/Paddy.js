@@ -1,4 +1,5 @@
 import { MOVE, ATTACK } from '../config.js';
+import { whoosh } from '../audio/Sfx.js';
 
 function approach(current, target, maxDelta) {
   if (current < target) return Math.min(current + maxDelta, target);
@@ -43,8 +44,10 @@ export class Paddy {
     this.attackT0 = 0;
     this.attackElapsed = 0;
     this.attackQueued = false;
-    this.nudgeUntil = 0;
     this._slashOnThisStrike = false;
+    this._lungeActive = false;
+    this._lungeMoved = 0;
+    this._lungeVxApplied = 0;
 
     const sprite = scene.physics.add.sprite(x, y, 'paddy', 'k_spin_00');
     sprite.setOrigin(MOVE.footX / MOVE.cellW, MOVE.footY / MOVE.cellH);
@@ -350,12 +353,17 @@ export class Paddy {
     } else {
       vx = approach(vx, 0, decel * dt);
     }
-    if (this.attacking && onFloor && time < this.nudgeUntil) {
-      const n = ATTACK.nudgeSpeed * this.facing;
-      if (this.facing > 0) vx = Math.max(vx, n);
-      else vx = Math.min(vx, n);
-    }
     body.setVelocityX(vx);
+    // Position-step the lunge so it eases exactly 10–14px and leaves no leftover slide.
+    if (this.attacking && this._lungeActive && onFloor) {
+      const dur = this._lungeDuration();
+      const u = dur > 0 ? Phaser.Math.Clamp((time - this.attackT0) / dur, 0, 1) : 1;
+      const want = ATTACK.lungePx * easeInOutSine(u);
+      const step = (want - this._lungeMoved) * this.facing;
+      this._lungeMoved = want;
+      if (step) this.sprite.x += step;
+      if (u >= 1) this._lungeActive = false;
+    }
 
     if (body.velocity.y > MOVE.maxFallSpeed) {
       body.setVelocityY(MOVE.maxFallSpeed);
@@ -411,9 +419,17 @@ export class Paddy {
     let angle = 0;
     const inDouble = time < this.djUntil;
     if (this.attacking) {
-      tx = 1;
-      ty = 1;
       this.breathPhase = null;
+      if (this.attackPhase === 'windup') {
+        tx = ATTACK.squashX;
+        ty = ATTACK.squashY;
+      } else if (this.attackPhase === 'strike') {
+        tx = ATTACK.stretchX;
+        ty = ATTACK.stretchY;
+      } else {
+        tx = 1;
+        ty = 1;
+      }
     } else if (time < this.squashUntil && !this.crouching) {
       const t = 1 - (this.squashUntil - time) / this.squashDuration;
       const wave = Math.sin(Phaser.Math.Clamp(t, 0, 1) * Math.PI);
@@ -442,7 +458,7 @@ export class Paddy {
       this.breathPhase = null;
     }
 
-    const rate = (tx === 1 && ty === 1) ? 14 : 20;
+    const rate = this.attacking ? 28 : ((tx === 1 && ty === 1) ? 14 : 20);
     this.visSX = approach(this.visSX, tx, rate * dt);
     this.visSY = approach(this.visSY, ty, rate * dt);
     if (tx === 1 && ty === 1 && Math.abs(this.visSX - 1) < 0.002 && Math.abs(this.visSY - 1) < 0.002) {
@@ -479,17 +495,49 @@ export class Paddy {
     this.attackT0 = time;
     this.attackElapsed = 0;
     this.attackQueued = false;
-    this.nudgeUntil = 0;
     this._slashOnThisStrike = false;
+    this._lungeMoved = 0;
+    this._lungeVxApplied = 0;
+    this._lungeActive = onFloor && !this.attackAir;
     this.landingUntil = 0;
     this.squashUntil = 0;
     this.breathPhase = null;
-    this.visSX = 1;
-    this.visSY = 1;
     this.sprite.setAngle(0);
     this.sprite.anims.stop();
     this.sprite.setFrame(this._attackFrames()[0].frame);
     this.sprite.setFlipX(this.facing < 0);
+    if (this._lungeActive) this._lungePuff();
+  }
+
+  _lungeDuration() {
+    return this._attackFrames()
+      .filter((f) => f.phase === 'windup')
+      .reduce((sum, f) => sum + f.duration, 0);
+  }
+
+  _lungePuff() {
+    const x = this.sprite.x;
+    const y = this.sprite.y - 4;
+    for (let i = 0; i < 4; i += 1) {
+      const r = 2.5 + Math.random() * 3;
+      const c = this.scene.add.circle(
+        x + (Math.random() - 0.5) * 16,
+        y,
+        r,
+        0xddc9a8,
+        0.7,
+      );
+      c.setDepth(9);
+      this.scene.tweens.add({
+        targets: c,
+        x: c.x - this.facing * (10 + Math.random() * 16) + (Math.random() - 0.5) * 8,
+        y: c.y - (5 + Math.random() * 10),
+        alpha: 0,
+        scale: 1.8,
+        duration: 260 + Math.random() * 80,
+        onComplete: () => c.destroy(),
+      });
+    }
   }
 
   _updateSwipe(time, delta, onFloor) {
@@ -498,7 +546,7 @@ export class Paddy {
     if (this.attackPhase === 'strike' && !this._slashOnThisStrike) {
       this._slashOnThisStrike = true;
       this._slashFlash();
-      if (onFloor) this.nudgeUntil = time + ATTACK.nudgeTime;
+      whoosh();
     }
     if (this.attackElapsed >= spec.duration) {
       this.attackElapsed -= spec.duration;
@@ -511,7 +559,11 @@ export class Paddy {
         this.attacking = false;
         this.attackPhase = null;
         this.attackFrame = 0;
-        this.nudgeUntil = 0;
+        this._lungeActive = false;
+        this._lungeVxApplied = 0;
+        if (Math.abs(this.visSX - 1) < 0.04) this.visSX = 1;
+        if (Math.abs(this.visSY - 1) < 0.04) this.visSY = 1;
+        this.sprite.setScale(MOVE.spriteScale * this.visSX, MOVE.spriteScale * this.visSY);
         return;
       }
       const next = this._attackFrames()[this.attackFrame];
@@ -525,15 +577,23 @@ export class Paddy {
   _slashFlash() {
     const s = this.sprite;
     const dir = this.facing;
-    const off = ATTACK.flashOffset || { x: 108, y: -66 };
+    const off = ATTACK.flashOffset || { x: 108, y: -74 };
     const x = s.x + dir * off.x;
     const y = s.y + off.y;
     const g = this.scene.add.graphics().setDepth(12);
-    g.lineStyle(2.4, 0xffffff, 0.8);
-    // Three short claw marks just in front of the paw, not over the body.
-    for (let i = 0; i < 3; i++) {
-      const oy = -8 + i * 8;
-      g.lineBetween(x + dir * 2, y + oy - 2, x + dir * 26, y + oy + 10);
+    // Soft cyan glow, then a brighter white core. Still in front of the paw.
+    const marks = [
+      [-10, -4, 38, 12],
+      [-2, 0, 40, 14],
+      [2, 6, 36, 16],
+    ];
+    g.lineStyle(7, 0xb8e8ff, 0.4);
+    for (const m of marks) {
+      g.lineBetween(x + dir * m[0], y + m[1], x + dir * m[2], y + m[3]);
+    }
+    g.lineStyle(3.2, 0xffffff, 0.95);
+    for (const m of marks) {
+      g.lineBetween(x + dir * (m[0] + 2), y + m[1] + 1, x + dir * (m[2] - 2), y + m[3] - 1);
     }
     this.scene.tweens.add({
       targets: g,
@@ -576,6 +636,7 @@ export class Paddy {
       attacking: this.attacking,
       attackPhase: this.attackPhase,
       attackFrame: this.attackFrame,
+      lungeMoved: this._lungeMoved,
       hitbox: this.getHitbox(),
     };
   }

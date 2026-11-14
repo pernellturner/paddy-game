@@ -1,6 +1,7 @@
 import { GAME, MOVE } from './config.js';
 import { BootScene } from './scenes/BootScene.js';
 import { TestLevel } from './scenes/TestLevel.js';
+import { attachUnlock } from './audio/Sfx.js';
 
 const config = {
   type: Phaser.AUTO,
@@ -31,3 +32,4 @@ const config = {
 
 const game = new Phaser.Game(config);
 window.__game = game;
+attachUnlock();

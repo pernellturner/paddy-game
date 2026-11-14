@@ -50,9 +50,9 @@ export const MOVE = {
   squashMin: 0.07,
   squashMax: 0.18,
   // Physics body, in texture (unscaled atlas cell) pixels.
-  // Atlas cell is 374x254 with the foot at (143, 248).
+  // Atlas cell is 384x254 with the foot at (143, 248).
   // Wider to fit the longer strike reach; the foot origin is unchanged.
-  cellW: 374,
+  cellW: 384,
   cellH: 254,
   bodyWidth: 90,
   bodyHeight: 100,
@@ -100,12 +100,21 @@ export const ATTACK = {
     { frame: 'kt_swipe_a_04', duration: 85, phase: 'recover' },
   ],
   moveMul: 0.4,       // walk/run is slowed to this fraction while swiping
-  nudgeSpeed: 130,    // brief ground nudge on the strike, px/s
-  nudgeTime: 70,      // then it stops, no slide
+  // Ground lunge: eased slide of this many world pixels during wind-up into
+  // the strike, then it stops. Air swipes do not lunge.
+  lungePx: 12,
   // Hitbox in world pixels, relative to the foot, facing right. Active on strike only.
-  hitbox: { x: 30, y: -90, w: 100, h: 80 },
-  flashLife: 90,
-  flashOffset: { x: 100, y: -72 },
+  hitbox: { x: 28, y: -90, w: 112, h: 80 },
+  flashLife: 110,
+  flashOffset: { x: 108, y: -74 },
+  hitStop: 70,        // ms freeze when a swipe connects
+  shakeDuration: 90,
+  shakeIntensity: 0.008,
+  // Subtle anticipation squash / strike stretch, then back to scale 1.
+  squashX: 1.06,
+  squashY: 0.93,
+  stretchX: 0.96,
+  stretchY: 1.07,
 };
 
 export const CAMERA = {

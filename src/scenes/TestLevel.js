@@ -1,7 +1,8 @@
-import { WORLD, PLATFORMS, MOVE, CAMERA } from '../config.js';
+import { WORLD, PLATFORMS, MOVE, CAMERA, ATTACK } from '../config.js';
 import { PracticeTarget, overlaps } from '../targets/PracticeTarget.js';
 import { Paddy } from '../player/Paddy.js';
 import { InputState, hookKeyboard, mountTouchControls, gaitFromStick } from '../input/TouchControls.js';
+import { Sfx, thump } from '../audio/Sfx.js';
 
 export class TestLevel extends Phaser.Scene {
   constructor() {
@@ -43,6 +44,10 @@ export class TestLevel extends Phaser.Scene {
     hookKeyboard(this, this.inputState);
     mountTouchControls(this.inputState);
 
+    this._hitStopLeft = 0;
+    this._frozenVx = 0;
+    this._frozenVy = 0;
+    this._shakeUntil = 0;
     this._exposeDebug();
   }
 
@@ -166,6 +171,10 @@ export class TestLevel extends Phaser.Scene {
         this.paddy.attackAir = false;
         this.paddy.attackPhase = null;
         this.paddy.attackQueued = false;
+        this.paddy._lungeActive = false;
+        this.paddy._lungeMoved = 0;
+        this.paddy._lungeVxApplied = 0;
+        this._hitStopLeft = 0;
         this.paddy._setCrouching(false);
         this.paddy._play('idle', false);
       },
@@ -179,15 +188,31 @@ export class TestLevel extends Phaser.Scene {
         y: this.cameras.main.scrollY,
       }),
       gaitFromStick,
-      targets: () => this.targets.map((t) => ({ x: t.x, y: t.y, w: t.w, h: t.h, kind: t.kind, hitUntil: t.hitUntil })),
+      targets: () => this.targets.map((t) => ({ x: t.x, y: t.y, w: t.w, h: t.h, kind: t.kind, hitUntil: t.hitUntil, cx: t.container.x, angle: t.container.angle, flash: t.flash.alpha })),
+      sfx: () => ({ unlocked: Sfx.unlocked, whoosh: Sfx.whooshCount, thump: Sfx.thumpCount }),
+      hitStopLeft: () => this._hitStopLeft,
+      isShaking: () => this.time.now < this._shakeUntil,
     };
   }
 
   _resolveHits(time) {
     const hb = this.paddy.getHitbox();
     if (!hb) return;
+    let connected = false;
     for (const target of this.targets) {
-      if (overlaps(hb, target.getBounds())) target.hit(time);
+      if (overlaps(hb, target.getBounds())) {
+        if (target.hit(time, this.paddy.facing)) connected = true;
+      }
+    }
+    if (connected) {
+      if (this._hitStopLeft <= 0) {
+        this._hitStopLeft = ATTACK.hitStop;
+        this._frozenVx = this.paddy.sprite.body.velocity.x;
+        this._frozenVy = this.paddy.sprite.body.velocity.y;
+      }
+      this.cameras.main.shake(ATTACK.shakeDuration, ATTACK.shakeIntensity);
+      this._shakeUntil = time + ATTACK.shakeDuration;
+      thump();
     }
   }
 
@@ -205,6 +230,20 @@ export class TestLevel extends Phaser.Scene {
   update(time, delta) {
     if (!this.paddy) return;
     this.inputState.sync();
+    if (this._hitStopLeft > 0) {
+      this._hitStopLeft -= delta;
+      this.paddy.sprite.body.setVelocity(this._frozenVx, this._frozenVy);
+      this._drawHitbox();
+      if (this._paddyLogging) {
+        const s = this.paddy.getState();
+        s.t = time;
+        s.dt = delta;
+        s.hitStop = true;
+        s.flipX = this.paddy.sprite.flipX;
+        this._paddyLog.push(s);
+      }
+      return;
+    }
     this.paddy.update(time, delta, this.inputState);
     this._resolveHits(time);
     this._drawHitbox();

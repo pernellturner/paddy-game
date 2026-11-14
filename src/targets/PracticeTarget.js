@@ -62,23 +62,27 @@ export class PracticeTarget {
     };
   }
 
-  hit(time) {
+  hit(time, dir = 1) {
     if (time < this.hitUntil) return false;
-    this.hitUntil = time + 180;
-    this.container.setScale(1.08);
-    this.container.setAngle(this.kind === 'straw' ? -14 : 10);
-    this.flash.setAlpha(0.75);
+    this.hitUntil = time + 220;
+    this.scene.tweens.killTweensOf(this.container);
+    this.scene.tweens.killTweensOf(this.flash);
+    this.container.x = this.x + dir * 18;
+    this.container.setScale(1.16);
+    this.container.setAngle(dir * (this.kind === 'straw' ? -24 : 16));
+    this.flash.setAlpha(1);
     this.scene.tweens.add({
       targets: this.container,
+      x: this.x,
       angle: 0,
       scale: 1,
-      duration: 280,
+      duration: 380,
       ease: 'Sine.easeOut',
     });
     this.scene.tweens.add({
       targets: this.flash,
       alpha: 0,
-      duration: 140,
+      duration: 180,
     });
     return true;
   }
